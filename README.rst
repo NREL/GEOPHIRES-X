@@ -4,7 +4,7 @@ Overview
 
 Distributable python package version of GEOPHIRES-X.
 
-Ported from https://github.com/malcolm-dsider/GEOPHIRES-X using https://github.com/ionelmc/cookiecutter-pylibrary/.
+Ported from https://github.com/malcolm-dsider/GEOPHIRES-X and https://github.com/softwareengineerprogrammer/python-geophires-x using https://github.com/ionelmc/cookiecutter-pylibrary/.
 
 * Free software: MIT license
 
@@ -20,9 +20,9 @@ Ported from https://github.com/malcolm-dsider/GEOPHIRES-X using https://github.c
       - | |version| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
 
-.. |github-actions| image:: https://github.com/softwareengineerprogrammer/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
+.. |github-actions| image:: https://github.com/NREL/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
-    :target: https://github.com/softwareengineerprogrammer/python-geophires-x/actions
+    :target: https://github.com/NREL/python-geophires-x/actions
 
 .. |version| image:: https://img.shields.io/pypi/v/geophires-x.svg
     :alt: PyPI Package latest release
@@ -40,9 +40,9 @@ Ported from https://github.com/malcolm-dsider/GEOPHIRES-X using https://github.c
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/python-geophires-x/v1.3.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v1.3.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/python-geophires-x/compare/v1.3.0...main
+    :target: https://github.com/NREL/python-geophires-x/compare/v1.3.0...main
 
 
 
@@ -54,7 +54,7 @@ Installation
 
 Install the in-development version with::
 
-    pip install https://github.com/softwareengineerprogrammer/python-geophires-x/archive/main.zip
+    pip install https://github.com/NREL/python-geophires-x/archive/main.zip
 
 (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
@@ -64,7 +64,7 @@ Documentation
 =============
 
 
-See https://github.com/softwareengineerprogrammer/python-geophires-x/blob/main/tests/test_geophires_x.py for example usage
+See https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py for example usage
 
 
 Development

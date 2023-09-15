@@ -20,9 +20,9 @@ setup(
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')),
     ),
-    author='softwareengineerprogrammer',
+    author='NREL',
     author_email='4056124+softwareengineerprogrammer@users.noreply.github.com',
-    url='https://github.com/softwareengineerprogrammer/python-geophires-x',
+    url='https://github.com/NREL/python-geophires-x',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[path.stem for path in Path('src').glob('*.py')],
@@ -54,8 +54,8 @@ setup(
         'Private :: Do Not Upload',
     ],
     project_urls={
-        'Changelog': 'https://github.com/softwareengineerprogrammer/python-geophires-x/blob/master/CHANGELOG.rst',
-        'Issue Tracker': 'https://github.com/softwareengineerprogrammer/python-geophires-x/issues',
+        'Changelog': 'https://github.com/NREL/python-geophires-x/blob/master/CHANGELOG.rst',
+        'Issue Tracker': 'https://github.com/NREL/python-geophires-x/issues',
     },
     keywords=[
         # eg: "keyword1", "keyword2", "keyword3",

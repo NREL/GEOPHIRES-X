@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/softwareengineerprogrammer/python-geophires-x/issues>`_ please include:
+When `reporting a bug <https://github.com/NREL/python-geophires-x/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -24,7 +24,7 @@ articles, and such.
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/softwareengineerprogrammer/python-geophires-x/issues.
+The best way to send feedback is to file an issue at https://github.com/NREL/python-geophires-x/issues.
 
 If you are proposing a feature:
 
@@ -37,11 +37,11 @@ Development
 
 To set up `python-geophires-x` for local development:
 
-1. Fork `python-geophires-x <https://github.com/softwareengineerprogrammer/python-geophires-x>`_
+1. Fork `python-geophires-x <https://github.com/NREL/python-geophires-x>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
-    git clone git@github.com:YOURGITHUBNAME/python-geophires-x.git
+    git clone git@github.com:NREL/python-geophires-x.git
 
 3. Create a branch for local development::
 

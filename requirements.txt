@@ -1,0 +1,11 @@
+mpmath
+numpy
+Pint
+jsons
+deepdiff
+cryptography
+setuptools
+mysql
+
+h5py
+scipy

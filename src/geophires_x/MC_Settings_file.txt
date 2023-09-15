@@ -1,0 +1,7 @@
+INPUT, Maximum Temperature, normal, #, 10
+INPUT, Utilization Factor,uniform, 0.7, 0.95
+INPUT, Ambient Temperature,triangular, 15, #, 25
+OUTPUT, Average Net Electricity Production
+OUTPUT, Average Annual Total Electricity Generation
+ITERATIONS, 10
+MC_OUTPUT_FILE, MC_Result.txt

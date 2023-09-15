@@ -1,0 +1,9 @@
+numpy
+numpy-financial
+pint
+forex_python
+jsons
+mpmath
+deepdiff
+mysql.connector
+cryptography

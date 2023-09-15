@@ -1,0 +1,4 @@
+include mpmath/*.py
+include mpmath/tests/*.py
+include LICENSE
+include CHANGES

@@ -1,0 +1,95 @@
+Metadata-Version: 2.1
+Name: geophires-x
+Version: 1.3.0
+Summary: Distributable python package version of https://github.com/malcolm-dsider/GEOPHIRES-X
+Home-page: https://github.com/softwareengineerprogrammer/python-geophires-x
+Author: softwareengineerprogrammer
+Author-email: 4056124+softwareengineerprogrammer@users.noreply.github.com
+License: MIT
+Project-URL: Changelog, https://github.com/softwareengineerprogrammer/python-geophires-x/blob/master/CHANGELOG.rst
+Project-URL: Issue Tracker, https://github.com/softwareengineerprogrammer/python-geophires-x/issues
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Unix
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Utilities
+Classifier: Private :: Do Not Upload
+Requires-Python: >=3.7
+License-File: LICENSE
+License-File: AUTHORS.rst
+
+========
+Overview
+========
+
+Distributable python package version of GEOPHIRES-X.
+
+Ported from https://github.com/malcolm-dsider/GEOPHIRES-X using https://github.com/ionelmc/cookiecutter-pylibrary/.
+
+* Free software: MIT license
+
+
+
+Installation
+============
+
+
+Install the in-development version with::
+
+    pip install https://github.com/softwareengineerprogrammer/python-geophires-x/archive/main.zip
+
+(Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
+
+
+
+Documentation
+=============
+
+
+See https://github.com/softwareengineerprogrammer/python-geophires-x/blob/main/tests/test_geophires_x.py for example usage
+
+
+Development
+===========
+
+To run all the tests run::
+
+    tox
+
+Note, to combine the coverage data from all the tox environments run:
+
+.. list-table::
+    :widths: 10 90
+    :stub-columns: 1
+
+    - - Windows
+      - ::
+
+            set PYTEST_ADDOPTS=--cov-append
+            tox
+
+    - - Other
+      - ::
+
+            PYTEST_ADDOPTS=--cov-append tox
+
+
+Changelog
+=========
+
+0.0.0 (2023-07-12)
+------------------
+
+* First release on PyPI.

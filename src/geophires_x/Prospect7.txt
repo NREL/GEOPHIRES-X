@@ -1,0 +1,141 @@
+Ramey Production Wellbore Model, 1
+Number of Injection Wells, 8
+Number of Production Wells, 10
+Production Flow Rate per Well, 0
+Gradient 4,50
+Well Separation,1000
+ElecOnly,True
+HeatOnly,False
+Production Wellbore Temperature Drop,.5
+Injection Wellbore Temperature Gain,0
+Number of Fractures,20
+Maximum Drawdown,1
+Print Output to Console,1
+Time steps per year,6
+Number of Segments,1
+Production Flow Rate per Well,70
+CarbonModel,True
+Number of Injection Wells,8
+Number of Production Wells,10
+Power Plant Type,2
+End-Use Option,1
+CHP Bottoming Entering Temperature,150
+CHP Fraction,0.5
+End-Use Efficiency Factor,0.9
+Circulation Pump Efficiency,0.8
+Utilization Factor,0.9
+Injection Well Diameter,7
+Production Well Diameter,7
+Gradient 3,50
+Gradient 2,30
+Thickness 4,2
+Thickness 3,2
+Thickness 2,2
+Thickness 1,4
+Ramey Production Wellbore Model,1
+Reservoir Depth,5
+Reservoir Volume Option,2
+Reservoir Volume,1860000000
+Reservoir Model,1
+Fracture Separation,.1
+Fracture Width,500
+Fracture Height,150
+Fracture Area,250000
+Fracture Shape,3
+TOUGH2 Model/File Name,Tough2Output.txt
+Reservoir Output File Name,ReservoirOutput.txt
+Drawdown Parameter,0.005
+Injectivity Index,5
+Productivity Index,5
+Water Loss Fraction,.02
+Reservoir Width,3500
+Reservoir Thickness,150
+Reservoir Permeability,2E-16
+Reservoir Heat Capacity,1000
+Reservoir Porosity,0.08
+Reservoir Density,2640
+Reservoir Thermal Conductivity,3.5
+HeatEndPrice,30
+HeatEscalationStart,7
+HeatEscalationRate,1
+HeatStartPrice,10
+ElecEndPrice,100
+ElecEscalationStart,10
+ElecEscalationRate,5
+ElecStartPrice,50
+Plant Construction,3
+Economic Model,1
+Plant Lifetime,30
+Reservoir Stimulation Capital Cost Adjustment Factor,1
+Surface Plant O&M Cost Adjustment Factor,1
+Water Cost Adjustment Factor,1
+Wellfield O&M Cost Adjustment Factor,1
+Exploration Capital Cost Adjustment Factor,1
+Field Gathering System Capital Cost Adjustment Factor,1
+Surface Plant Capital Cost Adjustment Factor,1
+Well Drilling and Completion Capital Cost Adjustment Factor,1
+Discount Rate,0.07
+Heat Rate,0.02
+Electricity Rate,0.07
+Fixed Internal Rate,6.25
+Well Drilling Cost Correlation,2
+Inflation Rate During Construction,0
+Property Tax Rate,0
+Investment Tax Credit Rate,0
+Gross Revenue Tax Rate,0
+Combined Income Tax Rate,0.3
+Inflation Rate,0.02
+Inflated Equity Interest Rate,0.1
+Inflated Bond Interest Rate,0.05
+Fraction of Investment in Bonds,0.5
+Fixed Charge Rate,.05
+Annual License etc,0
+Flat License etc,0
+Other Incentives,0
+Tax Relief,30
+Total Grant,20
+LACE Year,2024
+LACE Target,25
+LACE Region,0
+Gradient 1,30
+Maximum Temperature,400
+Injection Temperature,70
+Ambient Temperature,5
+Surface Temperature,3
+CCUSEscalationRate,30
+CCUSEndPrice,200
+CCUSEscalationStart,10
+CCUSStartPrice,40
+CCUSGridCO2,477.55
+CCUSYearsAfterStart,5
+CCUSCalc,1
+Add1Nickname,DesalPlant
+Add1AdditionalProfit,0
+Add1HeatGained,0
+Add1ElecGained,0
+Add1OPEX,0
+Add1CAPEX,0
+Add2Nickname,LithiumExtractionPlant
+Add2AdditionalProfit,0
+Add2HeatGained,0
+Add2ElecGained,0
+Add2OPEX,0
+Add2CAPEX,0
+Add3Nickname,Greenhouse
+Add3AdditionalProfit,0
+Add3HeatGained,0
+Add3ElecGained,0
+Add3OPEX,0
+Add3CAPEX,0
+Add4Nickname,MethaneProcessing
+Add4AdditionalProfit,0
+Add4HeatGained,0
+Add4ElecGained,0
+Add4OPEX,0
+Add4CAPEX,0
+Add5Nickname,CarbonProcessing
+Add5AdditionalProfit,0
+Add5HeatGained,0
+Add5ElecGained,0
+Add5OPEX,0
+Add5CAPEX,0

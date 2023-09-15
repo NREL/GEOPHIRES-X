@@ -1,0 +1,191 @@
+                               *****************
+                               ***CASE REPORT***
+                               *****************
+
+Simulation Metadata
+----------------------
+ GEOPHIRES Version: 3.0
+ GEOPHIRES Build Date: 2022-06-30
+ Simulation Date: 2023-06-23
+ Simulation Time:  15:23
+ Calculation Time:      0.170 sec
+
+                           ***SUMMARY OF RESULTS***
+
+      End-Use Option: Direct-Use Heat
+      Average Direct-Use Heat Production:                    27.97 MW
+      Direct-Use heat breakeven price:                        5.85 USD/MMBTU
+      Number of production wells:                             2
+      Number of injection wells:                              2
+      Flowrate per production well:                          50.0 kg/sec
+      Well depth:                                             3.0 kilometer
+      Geothermal gradient:                                   50.0 degC/km
+
+
+                           ***ECONOMIC PARAMETERS***
+
+      Economic Model = Standard Levelized Cost
+      Interest Rate:                                          7.00
+      Accrued financing during construction:                  0.00
+      Project lifetime:                                      30 yr
+      Capacity factor:                                       90.0 %
+
+                          ***ENGINEERING PARAMETERS***
+
+      Number of Production Wells:                             2
+      Number of Injection Wells:                              2
+      Well depth:                                             3.0 kilometer
+      Water loss rate:                                        0.0
+      Pump efficiency:                                       75.0
+      Injection temperature:                                 70.0 degC
+      Production Wellbore heat transmission calculated with Ramey's model
+      Average production well temperature drop:               2.8 degC
+      Flowrate per production well:                          50.0 kg/sec
+      Injection well casing ID:                               8.000 in
+      Produciton well casing ID:                              8.000 in
+      Number of times redrilling:                             0
+
+
+                         ***RESOURCE CHARACTERISTICS***
+
+      Maximum reservoir temperature:                        250.0 degC
+      Number of segments:                                     1
+      Geothermal gradient:                                   50.0 degC/km
+
+
+                           ***RESERVOIR PARAMETERS***
+
+      Reservoir Model = Multiple Parallel Fractures Model
+      Bottom-hole temperature:                              165.00 degC
+      Fracture model = Circular fracture with known area
+      Well seperation: fracture diameter:                   564.19 meter
+      Fracture area:                                     250000.00 m**2
+      Reservoir volume:                               125000000 m**3
+      Reservoir hydrostatic pressure:                     28291.91 kPa
+      Plant outlet pressure:                                971.75 kPa
+      Production wellhead pressure:                        1040.70 kPa
+      Productivity Index:                                    10.00 kg/sec/bar
+      Injectivity Index:                                     10.00 kg/sec/bar
+      Reservoir density:                                   2700.00 kg/m**3
+      Reservoir thermal conductivity:                         3.00 watt/m/kelvin
+      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+
+
+                           ***RESERVOIR SIMULATION RESULTS***
+
+      Maximum Production Temperature:                       160.8 degC
+      Average Production Temperature:                       143.4 degC
+      Minimum Production Temperature:                       118.3 degC
+      Initial Production Temperature:                       160.5 degC
+      Average Reservoir Heat Extraction:                     31.08 MW
+      Production Wellbore Heat Transmission Model = Ramey Model
+      Average Production Well Temperature Drop:               2.8 degC
+      Average Injection Well Pump Pressure Drop:           -515.9 kPa
+      Average Production Well Pump Pressure Drop:           629.6 kPa
+
+
+                          ***CAPITAL COSTS (M$)***
+
+         Drilling and completion costs:                      21.95 MUSD
+         Drilling and completion costs per well:              5.49 MUSD
+         Stimulation costs:                                   3.02 MUSD
+         Surface power plant costs:                          12.38 MUSD
+         Field gathering system costs:                        2.31 MUSD
+         Total surface equipment costs:                      14.69 MUSD
+         Exploration costs:                                   5.33 MUSD
+      Total capital costs:                                   44.98 MUSD
+
+
+                ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
+
+         Wellfield maintenance costs:                         0.49 MUSD/yr
+         Power plant maintenance costs:                       0.93 MUSD/yr
+         Water costs:                                         0.00 MUSD/yr
+         Average annual pumping costs                         0.05 MUSD/yr
+      Total operating and maintenance costs:                  1.47 MUSD/yr
+
+
+                           ***SURFACE EQUIPMENT SIMULATION RESULTS***
+
+      Maximum Net Heat Production:                           34.61 MW
+      Average Net Heat Production:                           27.97 MW
+      Minimum Net Heat Production:                           18.41 MW
+      Initial Net Heat Production:                           34.48 MW
+      Average Annual Heat Production:                       220.93 kW
+      Average Pumping Power:                                  0.09 MW
+
+                                        ******************************
+                                        *  POWER GENERATION PROFILE  *
+                                        ******************************
+  YEAR       THERMAL               GEOFLUID               PUMP               NET
+             DRAWDOWN             TEMPERATURE             POWER              HEAT
+                                   (deg C)                (MW)               (MW)
+   0           1.0000                160.46               0.0180           34.4785
+   1           1.0000                160.46               0.0180           34.4785
+   2           1.0020                160.78               0.0177           34.5999
+   3           1.0021                160.79               0.0182           34.6062
+   4           0.9999                160.44               0.0202           34.4709
+   5           0.9954                159.72               0.0238           34.1960
+   6           0.9891                158.71               0.0286           33.8116
+   7           0.9816                157.50               0.0342           33.3507
+   8           0.9732                156.15               0.0403           32.8384
+   9           0.9642                154.72               0.0468           32.2910
+  10           0.9549                153.22               0.0534           31.7179
+  11           0.9452                151.66               0.0601           31.1241
+  12           0.9352                150.05               0.0670           30.5124
+  13           0.9249                148.41               0.0739           29.8848
+  14           0.9144                146.72               0.0809           29.2427
+  15           0.9037                145.00               0.0879           28.5878
+  16           0.8928                143.26               0.0949           27.9217
+  17           0.8817                141.48               0.1018           27.2464
+  18           0.8706                139.69               0.1088           26.5636
+  19           0.8593                137.89               0.1157           25.8754
+  20           0.8480                136.07               0.1225           25.1835
+  21           0.8367                134.25               0.1292           24.4897
+  22           0.8253                132.43               0.1358           23.7958
+  23           0.8140                130.61               0.1423           23.1034
+  24           0.8027                128.81               0.1487           22.4140
+  25           0.7915                127.01               0.1549           21.7290
+  26           0.7804                125.23               0.1609           21.0498
+  27           0.7694                123.46               0.1668           20.3775
+  28           0.7586                121.72               0.1726           19.7132
+  29           0.7479                120.00               0.1781           19.0579
+  30           0.7373                118.31               0.1835           18.4125
+
+
+                              ***************************************************************
+                              *  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *
+                              ***************************************************************
+  YEAR               HEAT                       HEAT                RESERVOIR            PERCENTAGE OF
+                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED
+                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)
+   1                 271.8                       302.0                 30.98                   3.39
+   2                 272.3                       302.6                 29.89                   6.79
+   3                 272.8                       303.1                 28.79                  10.19
+   4                 272.3                       302.6                 27.71                  13.59
+   5                 270.7                       300.8                 26.62                  16.97
+   6                 268.1                       297.9                 25.55                  20.31
+   7                 264.8                       294.2                 24.49                  23.61
+   8                 260.9                       289.9                 23.45                  26.87
+   9                 256.7                       285.3                 22.42                  30.07
+  10                 252.3                       280.4                 21.41                  33.22
+  11                 247.7                       275.2                 20.42                  36.31
+  12                 243.0                       270.0                 19.45                  39.34
+  13                 238.1                       264.5                 18.50                  42.31
+  14                 233.1                       259.0                 17.56                  45.22
+  15                 228.0                       253.3                 16.65                  48.06
+  16                 222.8                       247.5                 15.76                  50.84
+  17                 217.5                       241.6                 14.89                  53.56
+  18                 212.1                       235.7                 14.04                  56.20
+  19                 206.7                       229.7                 13.22                  58.78
+  20                 201.3                       223.6                 12.41                  61.29
+  21                 195.8                       217.6                 11.63                  63.73
+  22                 190.3                       211.5                 10.87                  66.11
+  23                 184.9                       205.4                 10.13                  68.42
+  24                 179.4                       199.4                  9.41                  70.65
+  25                 174.0                       193.3                  8.71                  72.83
+  26                 168.6                       187.4                  8.04                  74.93
+  27                 163.3                       181.5                  7.39                  76.97
+  28                 158.0                       175.6                  6.75                  78.94
+  29                 152.8                       169.8                  6.14                  80.84
+  30                 147.7                       164.1                  5.55                  82.69

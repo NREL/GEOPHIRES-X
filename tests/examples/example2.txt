@@ -1,0 +1,69 @@
+GEOPHIRES v2.0 Input File
+Created on 6/11/2018
+Last modified on 6/12/2018
+Geothermal Direct-Use Example Problem using a Linear Heat Sweep Model.
+
+Example 2 Description: This problem considers an EGS reservoir at 3km depth.
+Ramey's model is applied to simulate production wellbore heat losses. The heat
+is used in direct-use heat application with reinjection temperature of 70deg.C
+
+***Subsurface Technical Parameters***
+*************************************
+
+Reservoir Model,2,						---Linear Heat Sweep Model
+Reservoir Depth,3,						---[km]
+Number of Segments,1,						---[-]
+Gradient 1,55,							---[deg.C/km]
+Number of Production Wells,2,					---[-]
+Number of Injection Wells,2,					---[-]
+Production Well Diameter,8,					---[inch]
+Injection Well Diameter,8,					---[inch]
+Ramey Production Wellbore Model,1,				---Should be 0 (disable) or 1(enable)
+Injection Wellbore Temperature Gain,0,				---[deg.C]
+Production Flow Rate per Well,30,				---[kg/s]
+Fracture Shape,2,						---Should be 1 2 3 or 4. See manual for option details
+Fracture Height,300,						---[m]
+Reservoir Volume Option,2,					---Should be 1 2 3 or 4. See manual for option details
+Fracture Separation,60,						---[m]
+Reservoir Impedance,0.2,					---[GPa*s/m3]
+Injection Temperature,70,					---[deg.C]
+Maximum Drawdown,.3,						---Should be between 0 and 1 depending on redrilling
+Reservoir Heat Capacity,975,					---[J/kg/K]
+Reservoir Density,3000,						---[kg/m3]
+Reservoir Thermal Conductivity,3.2,				---[W/m/K]
+Reservoir Porosity,.1,						---[-]
+
+***Surface Technical Parameters***
+**********************************
+End-Use Option,2,						---Direct Use Heat
+Circulation Pump Efficiency,.8,					---[-]
+Utilization Factor,.9,						---[-]
+End-Use Efficiency Factor,.9,					---[-]
+Surface Temperature,15,						---[deg.C]
+
+***Financial Parameters***
+**************************
+
+Plant Lifetime,25,						---[years]
+Economic Model,2,						---Standard Levelized Cost Model
+Discount Rate,.05,						---[-]
+Inflation Rate During Construction,0,				---[-]
+
+***Capital and O&M Cost Parameters***
+*************************************
+
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[M$/well] Use built-in correlations
+Well Drilling Cost Correlation,1,				---[-]
+Reservoir Stimulation Capital Cost Adjustment Factor,1, 	---[-] Use built-in correlations
+Surface Plant Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Field Gathering System Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Exploration Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Wellfield O&M Cost Adjustment Factor,1,				---[-] Use built in correlations
+Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
+Electricity Rate,.05,						---[$/kWh]
+
+***Simulation Parameters***
+***************************
+Print Output to Console,1,					---should be either 0 (do not show) or 1 (show)
+Time steps per year,3,						---[-]

@@ -62,16 +62,16 @@ Install the in-development version with::
 Dev Setup
 =========
 
-1. Setup virtualenv:
+1. Setup and activate virtualenv (https://virtualenv.pypa.io/en/latest/installation.html#via-pip)::
 
     python -m venv venv
     source venv/bin/activate
 
-1. Install dependencies in setup.py:
+2. Install dependencies in setup.py::
 
     pip install .
 
-1. Setup pre-commit:
+3. Setup pre-commit (https://pre-commit.com/)::
 
     pre-commit install
 

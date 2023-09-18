@@ -1,13 +1,10 @@
 import os.path
-import unittest
 import sys
+import unittest
 from pathlib import Path
-from geophires_x import HIP_RA
 
+from geophires_x import HIP_RA
 from geophires_x_client import GeophiresXClient
-from geophires_x_client import GeophiresXResult
-from geophires_x_client.geophires_input_parameters import EndUseOption
-from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 
 
 # noinspection PyTypeChecker
@@ -15,7 +12,7 @@ class HIP_RATestCase(unittest.TestCase):
     maxDiff = None
 
     def test_HIP_RA_examples(self):
-        client = GeophiresXClient()
+        GeophiresXClient()
         example_files = self._list_test_files_dir(test_files_dir='examples')
 
         def get_output_file_for_example(example_file: str):

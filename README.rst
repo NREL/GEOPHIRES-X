@@ -59,6 +59,22 @@ Install the in-development version with::
 (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
 
+Dev Setup
+=========
+
+1. Setup virtualenv:
+
+    python -m venv venv
+    source venv/bin/activate
+
+1. Install dependencies in setup.py:
+
+    pip install .
+
+1. Setup pre-commit:
+
+    pre-commit install
+
 
 Documentation
 =============

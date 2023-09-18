@@ -4,6 +4,7 @@ from pathlib import Path
 
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 
@@ -186,6 +187,7 @@ class GeophiresXTestCase(unittest.TestCase):
     def test_geophires_examples(self):
         client = GeophiresXClient()
         example_files = self._list_test_files_dir(test_files_dir='examples')
+        _get_logger()
 
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
@@ -193,8 +195,8 @@ class GeophiresXTestCase(unittest.TestCase):
         for example_file_path in example_files:
             if example_file_path.startswith('example') and '_output' not in example_file_path:
                 with self.subTest(msg=example_file_path):
+                    print(f'Running example test {example_file_path}')
                     input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('examples', example_file_path)))
-
                     geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
                     del geophires_result.result['metadata']
 

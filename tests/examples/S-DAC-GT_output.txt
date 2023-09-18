@@ -26,7 +26,7 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model  = BICYCLE
-      Accrued financing during construction:                  0.00 
+      Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                        -147.27 MUSD
@@ -39,8 +39,8 @@ Simulation Metadata
       Number of Production Wells:                             3
       Number of Injection Wells:                              3
       Well depth (or total length, if not vertical):          3.0 kilometer
-      Water loss rate:                                        2.0 
-      Pump efficiency:                                       80.0 
+      Water loss rate:                                        2.0
+      Pump efficiency:                                       80.0
       Injection temperature:                                 70.0 degC
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               0.0 degC
@@ -54,7 +54,7 @@ Simulation Metadata
                          ***RESOURCE CHARACTERISTICS***
 
       Maximum reservoir temperature:                        400.0 degC
-      Number of segments:                                     1 
+      Number of segments:                                     1
       Geothermal gradient:                                    0.0700 degC/m
 
 

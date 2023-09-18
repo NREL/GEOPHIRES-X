@@ -1,6 +1,7 @@
 .vs/
 *.py[cod]
 __pycache__
+tests/__pycache__
 
 # Temp files
 .*.sw[po]

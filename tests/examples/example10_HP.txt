@@ -1,0 +1,79 @@
+GEOPHIRES v2.0 Input File
+Geothermal Combined Heat and Power Problem using a Thermal Drawdown Reservoir Model and BICYCLE Economic Model
+
+Example 3 description: This example problem considers an EGS reservoir at 3.1km depth. 
+The heat is used in a combined heat and power topping cycle model with double flash as
+topping cycle and electricity considered as the main product. 
+
+***Subsurface technical parameters***
+*************************************
+Reservoir Model,3,						---m/A Single Fracture Thermal Drawdown
+Drawdown Parameter,.00002,					---[kg/s/m2]
+Reservoir Depth,2.1,						---[km]
+Number of Segments,1,						---[-]
+Gradient 1,45,							---[deg.C/km]
+Maximum Temperature,400,					---[deg.C]
+Number of Production Wells,2,					---[-]
+Number of Injection Wells,2,					---[-]
+Production Well Diameter,8.5,					---[inch]
+Injection Well Diameter,8.5,					---[inch]
+Ramey Production Wellbore Model,0,				---Should be 0 (disabled) or 1 (enabled)
+Production Wellbore Temperature Drop,5,				---[deg.C]
+Injection Wellbore Temperature Gain,3,				---[deg.C]
+Production Flow Rate per Well,70,				---[kg/s]
+Reservoir Volume Option,1,					---Should be 1,2,3 or 4. See manual for details.
+Fracture Shape,1,						---Should be 1,2,3 or 4
+Fracture Area,200000,						---[m2]
+Number of Fractures,12,						---[-]
+Fracture Separation,80,						---[m]
+Injectivity Index,5,						---[kg/s/bar]
+Injection Temperature,80,					---[deg.C]
+Maximum Drawdown,1,						---[-] no redrilling considered
+Reservoir Heat Capacity,1000,					---[J/kg/K]
+Reservoir Density,3000,						---[kg/m3]
+Reservoir Thermal Conductivity,3,				---[W/m/K]
+Water Loss Fraction,0.02,						---[-]
+
+***Surface Technical Parameters***
+**********************************
+
+End-Use Option,7,						--- centralized heat pump
+Circulation Pump Efficiency,.80,				---[-]
+Utilization Factor,.9,						---[-]
+End-Use Efficiency Factor,.9,					---[-]
+Surface Temperature,15,						---[deg.C]
+Ambient Temperature,15,						---[deg.C]
+Heat Pump COP, 2.8,            --- [-]
+
+
+***Financial Parameters***
+**************************
+
+Plant Lifetime,30,						---[years]
+Economic Model,2,						---BICYCLE Levelized Cost Model
+Discount Rate, 0.05,			--- [-] Required if Standard LCOE/LCOH model is selected. See manual for details.
+Inflation Rate During Construction,0.05,				---[-]
+
+***Capital and O&M Cost Parameters***
+*************************************
+
+Well Drilling and Completion Capital Cost Adjustment Factor,1, 	---[-] use built in correlations
+Well Drilling Cost Correlation,1,				---[-] use built in correlations
+Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] use built in correlations
+Surface Plant Capital Cost Adjustment Factor,1,			---[-] use built in correlations
+Field Gathering System Capital Cost Adjustment Factor,1,	---[-] use built in correlations
+Exploration Capital Cost Adjustment Factor,1,			---[-] use built in correlations
+Wellfield O&M Cost Adjustment Factor,1,				---[-] use built in correlations
+Surface Plant O&M Cost Adjustment Factor,1,			---[-] use built in correlations
+Water Cost Adjustment Factor,1,					---[-] use built in correlations
+Electricity Rate,.07,							---[$/kWh]
+Heat Pump Capital Cost,3.74,               --- [$M] 
+
+
+***Simulation Parameters***
+***************************
+
+Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
+Time steps per year,10,						---[-]
+
+

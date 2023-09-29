@@ -11,6 +11,9 @@ class EndUseOptions(str, Enum):
     COGENERATION_BOTTOMING_EXTRA_HEAT = "Cogeneration Bottoming Cycle, Heat sales considered as extra income"  # 42
     COGENERATION_PARALLEL_EXTRA_HEAT = "Cogeneration Parallel Cycle, Heat sales considered as extra income"  # 51
     COGENERATION_PARALLEL_EXTRA_ELECTRICTY = "Cogeneration Parallel Cycle, Electricity sales considered as extra income"  # 52
+    ABSORPTION_CHILLER = "Absorption Chiller"  # 6
+    HEAT_PUMP = "Heat Pump"  # 7
+    DISTRICT_HEATING = "District Heating"  # 8
 
 
 class EconomicModel(str, Enum):

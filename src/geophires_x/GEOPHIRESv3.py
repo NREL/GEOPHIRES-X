@@ -10,12 +10,12 @@ Created on Wed Dec  6 10:34:04 2017
 # build date: May 2022
 # github address: https://github.com/malcolm-dsider/GEOPHIRES-X
 
-import os
-import sys
 import logging
 import logging.config
+import os
+import sys
 import geophires_x.Model as Model
-
+import OptionList
 
 def main(enable_geophires_logging_config=True):
     # set the starting directory to be the directory that this file is in
@@ -51,6 +51,10 @@ def main(enable_geophires_logging_config=True):
             # Now write each line to the screen
             for line in content:
                 sys.stdout.write(line)
+
+    #make district heating plot
+    if model.surfaceplant.enduseoption.value == OptionList.EndUseOptions.DISTRICT_HEATING:
+        model.outputs.MakeDistrictHeatingPlot(model)
 
     logger.info("Complete "+ str(__name__) + ": " + sys._getframe().f_code.co_name)
 

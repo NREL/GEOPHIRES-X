@@ -10,7 +10,7 @@ from .WellBores import WellBores
 from .SurfacePlant import SurfacePlant
 from .Economics import Economics
 from .Outputs import Outputs
-
+from .OptionList import EndUseOptions
 
 class Model(object):
     """
@@ -124,9 +124,20 @@ class Model(object):
 
         # calculate the results
         self.logger.info("Run calculations for the elements of the Model")
+
+        #if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
+        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING:
+            self.surfaceplant.CalculateDHDemand(self) #calculate district heating demand
+
         self.reserv.Calculate(self)  # model the reservoir
         self.wellbores.Calculate(self)  # model the wellbores
         self.surfaceplant.Calculate(self)  # model the surfaceplant
+
+        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING: #in case of district heating, the surface plant module may have updated the utilization factor, and therefore we need to recalculate the modules reservoir, wellbore and surface plant. 1 iteration should be sufficient.
+            self.reserv.Calculate(self) #model the reservoir
+            self.wellbores.Calculate(self) #model the wellbores
+            self.surfaceplant.Calculate(self) #model the surfaceplant
+
         self.economics.Calculate(self)  # model the economics
 
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

@@ -41,6 +41,7 @@ class Units(IntEnum):
     AVAILABILITY = auto()
     CO2PRODUCTION = auto()
     ENERGYPERCO2 = auto()
+    POPDENSITY = auto()
 
 
 class TemperatureUnit(str, Enum):
@@ -125,7 +126,11 @@ class EnergyFrequencyUnit(str, Enum):
     KWPERYEAR = "kW/yr"
     MWPERYEAR = "MW/yr"
     GWPERYEAR = "GW/yr"
-
+    KWhPERYEAR = "kWh/yr"
+    MWhPERHOUR = "MWh/hr"
+    MWhPERDAY = "MWh/day"
+    MWhPERYEAR = "MWh/year"
+    GWhPERYEAR = "GWh/year"
 
 class CurrencyUnit(str, Enum):
     """Currency Units"""
@@ -291,3 +296,7 @@ class MassUnit(str, Enum):
     TON = "ton"
     LB = "pound"
     OZ = "ounce"
+
+class PopDensityUnit(str,Enum):
+    """Population Density Units"""
+    perkm2 = "Population per square km"

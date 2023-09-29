@@ -61,20 +61,18 @@ def CalculateFinancialPerformance(plantlifetime: int, FixedInternalRate: float, 
 
 
 def CalculateLCOELCOH(self, model: Model) -> tuple:
-    LCOE = LCOH = 0.0
+    LCOE = LCOH = LCOC =  0.0
 
-    # Calculate LCOE/LCOH
+    # Calculate LCOE/LCOH/LCOC
     if self.econmodel.value == EconomicModel.FCR:
         if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:
             LCOE = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value) / \
                    np.average(model.surfaceplant.NetkWhProduced.value)*1E8  # cents/kWh
         elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:
-            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value) * \
-                                                   model.surfaceplant.elecprice.value/1E6  # M$/year
             LCOH = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value +
                     self.averageannualpumpingcosts.value)/np.average(model.surfaceplant.HeatkWhProduced.value)*1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-        elif model.surfaceplant.enduseoption.value not in [EndUseOptions.ELECTRICITY, EndUseOptions.HEAT]:  # cogeneration
+        elif model.surfaceplant.enduseoption.value  in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]: #co-gen
             # heat sales is additional income revenue stream
             if model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                          EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
@@ -87,15 +85,23 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 averageannualelectricityincome = np.average(model.surfaceplant.NetkWhProduced.value)*model.surfaceplant.elecprice.value/1E6  # M$/year
                 LCOH = (self.CCap.value + self.Coam.value - averageannualelectricityincome)/np.average(model.surfaceplant.HeatkWhProduced.value)*1E8  # cents/kWh
                 LCOH = LCOH * 2.931  # $/MMBTU
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.ABSORPTION_CHILLER:
+            LCOC = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value)/np.average(model.surfaceplant.CoolingkWhProduced.value)*1E8 #cents/kWh
+            LCOC = LCOC*2.931 #$/Million Btu
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT_PUMP:
+            LCOH = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualheatpumpelectricitycost.value)/np.average(model.surfaceplant.HeatkWhProduced.value)*1E8 #cents/kWh
+            LCOH = LCOH*2.931 #$/Million Btu
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            LCOH = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualngcost.value)/model.surfaceplant.annualheatingdemand.value*1E2 #cents/kWh
+            LCOH = LCOH*2.931 #$/Million Btu
     elif self.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
         discountvector = 1./np.power(1+self.discountrate.value, np.linspace(0, model.surfaceplant.plantlifetime.value-1,model.surfaceplant.plantlifetime.value))
         if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:
             LCOE = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum(self.Coam.value*discountvector))/np.sum(model.surfaceplant.NetkWhProduced.value*discountvector)*1E8  # cents/kWh
         elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:
-            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value)*model.surfaceplant.elecprice.value/1E6  # M$/year
             LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6)*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*discountvector)*1E8 #cents/kWh
             LCOH = LCOH * 2.931  # $/MMBTU
-        elif model.surfaceplant.enduseoption.value not in [EndUseOptions.ELECTRICITY, EndUseOptions.HEAT]:
+        elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]: #co-gen
             if model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                          EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                          EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # heat sales is additional income revenue stream
@@ -107,6 +113,19 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 annualelectricityincome = model.surfaceplant.NetkWhProduced.value*self.elecprice.value/1E6  # M$/year
                 LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value-annualelectricityincome)*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*discountvector)*1E8  # cents/kWh
                 LCOH = LCOH*2.931  # $/MMBTU
+
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.ABSORPTION_CHILLER:
+            LCOC = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6)*discountvector))/np.sum(model.surfaceplant.CoolingkWhProduced.value*discountvector)*1E8 #cents/kWh
+            LCOC = LCOC*2.931 #$/Million Btu
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT_PUMP:
+            LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6+\
+                model.surfaceplant.HeatPumpElectricitykWhUsed.value*model.surfaceplant.elecprice.value/1E6)*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*discountvector)*1E8 #cents/kWh
+            LCOH = LCOH*2.931 #$/Million Btu
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6+\
+                self.annualngcost.value)*discountvector))/np.sum(model.surfaceplant.annualheatingdemand.value*discountvector)*1E2 #cents/kWh
+            LCOH = self.LCOH.value*2.931 #$/Million Btu
+
     elif self.econmodel.value == EconomicModel.BICYCLE:
         iave = self.FIB.value*self.BIR.value*(1-self.CTR.value) + (1-self.FIB.value)*self.EIR.value  # average return on investment (tax and inflation adjusted)
         CRF = iave/(1-np.power(1+iave,-model.surfaceplant.plantlifetime.value))  # capital recovery factor
@@ -122,12 +141,11 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
             LCOE = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc)/np.sum(model.surfaceplant.NetkWhProduced.value*inflationvector*discountvector)*1E8
         elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:
             PumpingCosts = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6
-            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value)*model.surfaceplant.elecprice.value/1E6  # M$/year
             NPVoandm = np.sum((self.Coam.value+PumpingCosts)*inflationvector*discountvector)
             NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
             LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc)/np.sum(model.surfaceplant.HeatkWhProduced.value*inflationvector*discountvector)*1E8
             LCOH = LCOH*2.931  # $/MMBTU
-        elif model.surfaceplant.enduseoption.value not in [EndUseOptions.ELECTRICITY, EndUseOptions.HEAT]:
+        elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]: #co-gen
             if model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                          EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                          EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # heat sales is additional income revenue stream
@@ -143,7 +161,30 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
                 LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc - np.sum(annualelectricityincome*inflationvector*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*inflationvector*discountvector)*1E8
                 LCOH = self.LCOELCOHCombined.value*2.931  # $/MMBTU
-    return LCOE, LCOH
+
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.ABSORPTION_CHILLER:
+            PumpingCosts = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6
+            NPVoandm = np.sum((self.Coam.value+PumpingCosts)*inflationvector*discountvector)
+            NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
+            LCOC  = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc)/np.sum(model.surfaceplant.CoolingkWhProduced.value*inflationvector*discountvector)*1E8
+            LCOC = LCOC*2.931 #$/MMBTU
+
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT_PUMP:
+            PumpingCosts = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6
+            HeatPumpElecCosts = model.surfaceplant.HeatPumpElectricitykWhUsed.value*model.surfaceplant.elecprice.value/1E6
+            NPVoandm = np.sum((self.Coam.value+PumpingCosts+HeatPumpElecCosts)*inflationvector*discountvector)
+            NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
+            LCOH  = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc)/np.sum(model.surfaceplant.HeatkWhProduced.value*inflationvector*discountvector)*1E8
+            LCOH = self.LCOH.value*2.931 #$/MMBTU
+
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            PumpingCosts = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6
+            NPVoandm = np.sum((self.Coam.value+PumpingCosts+self.annualngcost.value)*inflationvector*discountvector)
+            NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
+            LCOH  = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc)/np.sum(model.surfaceplant.annualheatingdemand.value*inflationvector*discountvector)*1E2
+            LCOH = LCOH*2.931 #$/MMBTU
+
+    return LCOE, LCOH, LCOC
 
 
 class Economics:
@@ -637,6 +678,152 @@ class Economics:
             ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including \
             drilling, casing, cement, insulated insert"
         )
+
+        # absorption chiller
+        self.chillercapex = self.ParameterDict[self.chillercapex.Name] = floatParameter(
+            "Absorption Chiller Capital Cost",
+            value=-1.0,
+            Min=0,
+            Max=100,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            Valid=False,
+            ToolTipText="Absorption chiller capital cost"
+        )
+        self.chilleropex = self.ParameterDict[self.chilleropex.Name] = floatParameter(
+            "Absorption Chiller O&M Cost",
+            value=-1.0,
+            Min=0,
+            Max=100,
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            Provided=False,
+            Valid=False,
+            ToolTipText="Absorption chiller O&M cost"
+        )
+
+        #heat pump
+        self.heatpumpcapex = self.ParameterDict[self.heatpumpcapex.Name] = floatParameter(
+            "Heat Pump Capital Cost",
+            value = -1.0,
+            Min=0,
+            Max=100,
+            UnitType = Units.CURRENCY,
+            PreferredUnits = CurrencyUnit.MDOLLARS,
+            CurrentUnits = CurrencyUnit.MDOLLARS,
+            Provided = False,
+            Valid = False,
+            ToolTipText = "Heat pump capital cost"
+        )
+
+        # district heating
+        self.ngprice = self.ParameterDict[self.ngprice.Name] = floatParameter(
+            "Peaking Fuel Cost Rate",
+            value=0.034,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
+            ErrMessage="assume default peaking fuel rate ($0.034/kWh)",
+            ToolTipText="Price of peaking fuel for peaking boilers"
+        )
+        self.peakingboilerefficiency = self.ParameterDict[self.peakingboilerefficiency.Name] = floatParameter(
+            "Peaking Boiler Efficiency",
+            value=0.85,
+            Min=0,
+            Max=1,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            Provided=False,
+            Valid=False,
+            ErrMessage="assume default peaking boiler efficiency (85%)",
+            ToolTipText="Peaking boiler efficiency"
+        )
+        self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
+            "District Heating Piping Cost Rate",
+            value=1200,
+            Min=0,
+            Max=10000,
+            UnitType=Units.COSTPERDISTANCE,
+            PreferredUnits=CostPerDistanceUnit.DOLLARSPERM,
+            CurrentUnits=CostPerDistanceUnit.DOLLARSPERM,
+            Provided=False,
+            Valid=False,
+            ErrMessage="assume default district heating piping cost rate ($1,200/m)",
+            ToolTipText="District heating piping cost rate ($/m)"
+        )
+        self.dhtotaldistrictnetworkcost = self.ParameterDict[self.dhtotaldistrictnetworkcost.Name] = floatParameter(
+            "Total District Heating Network Cost",
+            value=10,
+            Min=0,
+            Max=1000,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            Valid=False,
+            ErrMessage="assume default district heating network cost ($10M)",
+            ToolTipText="Total district heating network cost ($M)"
+        )
+        self.dhoandmcost = self.ParameterDict[self.dhoandmcost.Name] = floatParameter(
+            "District Heating O&M Cost",
+            value=1,
+            Min=0,
+            Max=100,
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            Provided=False, Valid=False,
+            ToolTipText="Total annual district heating O&M cost ($M/year)"
+        )
+        self.dhpipinglength = self.ParameterDict[self.dhpipinglength.Name] = floatParameter(
+            "District Heating Network Piping Length",
+            value=10.0,
+            Min=0,
+            Max=1000,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.KILOMETERS,
+            CurrentUnits=LengthUnit.KILOMETERS,
+            ErrMessage="assume default district heating network piping length (10 km)",
+            ToolTipText="District heating network piping length (km)"
+        )
+        self.dhroadlength = self.ParameterDict[self.dhroadlength.Name] = floatParameter(
+            "District Heating Road Length",
+            value=10.0,
+            Min=0,
+            Max=1000,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.KILOMETERS,
+            CurrentUnits=LengthUnit.KILOMETERS,
+            ErrMessage="assume default district heating road length (10 km)",
+            ToolTipText="District heating road length (km)"
+        )
+        self.dhlandarea = self.ParameterDict[self.dhlandarea.Name] = floatParameter(
+            "District Heating Land Area",
+            value=10.0,
+            Min=0,
+            Max=1000,
+            UnitType=Units.AREA,
+            PreferredUnits=AreaUnit.KILOMETERS2,
+            CurrentUnits=AreaUnit.KILOMETERS2,
+            ErrMessage="assume default district heating land area (10 km2)",
+            ToolTipText="District heating land area (km2)"
+        )
+        self.dhpopulation = self.ParameterDict[self.dhpopulation.Name] = floatParameter(
+            "District Heating Population",
+            value=200,
+            Min=0,
+            Max=1000000,
+            UnitType=Units.NONE,
+            ErrMessage="assume default population (200)",
+            ToolTipText="Specify the population in the district heating network"
+        )
+
         self.ElecPrice = self.OutputParameterDict[self.ElecPrice.Name] = OutputParameter(
             "Electricity Sale Price Model",
             value=[0.055],
@@ -651,6 +838,15 @@ class Economics:
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH
         )
+
+        self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
+            Name="LCOC",
+            value=0.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
+        )
+
         self.HeatStartPrice = self.ParameterDict[self.HeatStartPrice.Name] = floatParameter(
             "Starting Heat Sale Price",
             value=0.025,
@@ -908,6 +1104,60 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+
+        #heat pump
+        self.averageannualheatpumpelectricitycost = self.OutputParameterDict[self.averageannualheatpumpelectricitycost.Name] = OutputParameter(
+            Name = "Average Annual Heat Pump Electricity Cost",
+            value=0.0,
+            UnitType = Units.CURRENCYFREQUENCY,
+            PreferredUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR
+        )
+
+        #district heating
+        self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
+            Name = "Peaking boiler cost",
+            value=0,
+            UnitType = Units.CURRENCY,
+            PreferredUnits = CurrencyUnit.MDOLLARS,
+            CurrentUnits = CurrencyUnit.MDOLLARS
+        )
+        self.dhdistrictcost = self.OutputParameterDict[self.dhdistrictcost.Name] = OutputParameter(
+            Name = "District Heating System Cost",
+            value=0,
+            UnitType = Units.CURRENCY,
+            PreferredUnits = CurrencyUnit.MDOLLARS,
+            CurrentUnits = CurrencyUnit.MDOLLARS
+        )
+        self.populationdensity = self.OutputParameterDict[self.populationdensity.Name] = OutputParameter(
+            Name = "District Heating System Population Density",
+            value=0,
+            UnitType = Units.POPDENSITY,
+            PreferredUnits = PopDensityUnit.perkm2,
+            CurrentUnits = PopDensityUnit.perkm2
+        )
+        self.annualngcost = self.OutputParameterDict[self.annualngcost.Name] = OutputParameter(
+            Name = "Annual Peaking Fuel Cost",
+            value=0, UnitType = Units.CURRENCYFREQUENCY,
+            PreferredUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR
+        )
+        self.dhdistrictoandmcost = self.OutputParameterDict[self.dhdistrictoandmcost.Name] = OutputParameter(
+            Name = "Annual District Heating O&M Cost",
+            value=0,
+            UnitType = Units.CURRENCYFREQUENCY,
+            PreferredUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR
+        )
+        self.averageannualngcost = self.OutputParameterDict[self.averageannualngcost.Name] = OutputParameter(
+            Name = "Average Annual Peaking Fuel Cost",
+            value=0,
+            UnitType = Units.CURRENCYFREQUENCY,
+            PreferredUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR
+        )
+
+
 
         self.ElecRevenue = self.OutputParameterDict[self.ElecRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Electricity Production",
@@ -1472,6 +1722,47 @@ class Economics:
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 self.Cplant.value = 1.12*1.15*self.ccplantadjfactor.value*250E-6*np.max(model.surfaceplant.HeatExtracted.value)*1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+
+        # absorption chiller
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.ABSORPTION_CHILLER:  # absorption chiller
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # this is for the direct-use part all the way up to the absorprtion chiller
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
+                    self.chillercapex.value = 1.12 * 1.15 * np.max(
+                        model.surfaceplant.CoolingProduced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+
+                # now add chiller cost to surface plant cost
+                self.Cplant.value += self.chillercapex.value
+
+        # heat pump
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT_PUMP:
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # this is for the direct-use part all the way up to the heat pump
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
+                    self.heatpumpcapex.value = 1.12 * 1.15 * np.max(
+                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+
+                # now add heat pump cost to surface plant cost
+                self.Cplant.value += self.heatpumpcapex.value
+
+        #district heating
+        elif model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                self.Cplant.value = 1.12*1.15*self.ccplantadjfactor.value*250E-6*np.max(model.surfaceplant.HeatExtracted.value)*1000. #1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.peakingboilercost.value = 65*model.surfaceplant.maxpeakingboilerdemand.value/1000 #add 65$/KW for peaking boiler
+                self.Cplant.value += self.peakingboilercost.value                       #add peaking boiler cost to surface plant cost
+
+
         else:  # all other options have power plant
             if model.surfaceplant.pptype.value == PowerPlantType.SUB_CRITICAL_ORC:
                 MaxProducedTemperature = np.max(model.surfaceplant.TenteringPP.value)
@@ -1612,8 +1903,8 @@ class Economics:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                # 1.02 to convert cost from 2012 to 2016 #factor 1.15 for 15% contingency and 1.12 for 12% indirect costs.
-                self.Cplant.value = 1.12*1.15*self.ccplantadjfactor.value*self.Cplantcorrelation*1.02
+                # 1.02 to convert cost from 2012 to 2016 #factor 1.15 for 15% contingency and 1.12 for 12% indirect costs. factor 1.10 to convert from 2016 to 2022
+                self.Cplant.value = 1.12*1.15*self.ccplantadjfactor.value*self.Cplantcorrelation*1.02*1.10
 
         # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
         if not self.ccplantfixed.Valid: # 1.15 below for contingency and 1.12 for indirect costs
@@ -1637,11 +1928,54 @@ class Economics:
             # Surface Piping Length Costs (M$) #assumed $750k/km
             self.Cpiping.value = 750/1000*model.surfaceplant.pipinglength.value
 
-            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value
+            #district heating network costs
+            if model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING: #district heat
+                if self.dhtotaldistrictnetworkcost.Provided:
+                    self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
+                elif self.dhpipinglength.Provided:
+                    self.dhdistrictcost.value = self.dhpipinglength.value*self.dhpipingcostrate.value/1000 #M$
+                elif self.dhroadlength.Provided:          #check if road length is provided to calculate cost
+                    self.dhdistrictcost.value = self.dhroadlength.value*0.75*self.dhpipingcostrate.value/1000 #M$ (assuming 75% of road length is used for district network piping)
+                else: #calculate district network cost based on population density
+                    if self.dhlandarea.Provided == False:
+                        model.logger.warning("District heating network cost calculated based on default district area")
+                    if self.dhpopulation.Provided:
+                        self.populationdensity.value = self.dhpopulation.value/self.dhlandarea.value
+                    elif model.surfaceplant.dhnumberofhousingunits.Provided:
+                        self.populationdensity.value = model.surfaceplant.dhnumberofhousingunits.value*2.6/self.dhlandarea.value #estimate population based on 2.6 number of people per household
+                    else:
+                        model.logger.warning("District heating network cost calculated based on default number of people in district")
+                        self.populationdensity.value = self.dhpopulation.value/self.dhlandarea.value
+
+                    if self.populationdensity.value > 1000:
+                        self.dhpipinglength.value = 7.5*self.dhlandarea.value             #using constant 7.5km of pipe per km^2 when population density is >1500
+                    else:
+                        self.dhpipinglength.value = max(self.populationdensity.value/1000*7.5*self.dhlandarea.value, self.dhlandarea.value)   #scale the piping length based on population density, but with a minimum of 1 km of piping per km^2 of area
+                    self.dhdistrictcost.value = self.dhpipingcostrate.value*self.dhpipinglength.value/1000
+
+            else:
+                self.dhdistrictcost.value = 0
+
+
+            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value + self.dhdistrictcost.value
         else:
             self.CCap.value = self.totalcapcost.value
 
         # O&M costs
+        #calculate first O&M costs independent of whether oamtotalfixed is provided or not
+        #additional electricity cost for heat pump as end-use
+        if model.surfaceplant.enduseoption.value ==  EndUseOptions.HEAT_PUMP: #heat pump:
+            self.averageannualheatpumpelectricitycost.value = np.average(model.surfaceplant.HeatPumpElectricitykWhUsed.value) * model.surfaceplant.elecprice.value / 1E6  # M$/year
+
+        #district heating peaking fuel annual cost
+        if model.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING: #district heating
+            self.annualngcost.value = model.surfaceplant.annualngdemand.value*self.ngprice.value/1000/self.peakingboilerefficiency.value #array with annual O&M cost for peaking fuel
+            self.averageannualngcost.value = np.average(self.annualngcost.value)
+
+        #calculate average annual pumping costs in case no electricity is provided
+        if model.surfaceplant.enduseoption.value in [EndUseOptions.HEAT, EndUseOptions.ABSORPTION_CHILLER, EndUseOptions.HEAT_PUMP, EndUseOptions.DISTRICT_HEATING]:
+            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value)*model.surfaceplant.elecprice.value/1E6 #M$/year
+
         if not self.oamtotalfixed.Valid:
             # labor cost
             if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:  # electricity
@@ -1678,7 +2012,34 @@ class Economics:
                                                                      model.reserv.waterloss.value*model.surfaceplant.utilfactor.value *
                                                                      365.*24.*3600./1E6*925./1E6)
 
-            self.Coam.value = self.Coamwell.value + self.Coamplant.value + self.Coamwater.value  # total O&M cost (M$/year)
+            # additional O&M cost for absorption chiller if used
+            if model.surfaceplant.enduseoption.value == EndUseOptions.ABSORPTION_CHILLER:  # absorption chiller:
+                if self.chilleropex.value == -1:
+                    self.chilleropex.value = self.chillercapex.value * 2 / 100  # assumed annual O&M for chiller is 2% of investment cost
+
+                # correct plant O&M cost as otherwise chiller opex would be counted double (subtract chiller capex from plant cost when calculating Coandmplant)
+                if self.oamplantfixed.Valid == False:
+                    self.Coamplant.value = self.oamplantadjfactor.value * (
+                            1.5 / 100. * (self.Cplant.value - self.chillercapex.value) + 0.75 * self.Claborcorrelation)
+
+            else:
+                self.chilleropex.value = 0
+
+            # district heating O&M cost
+            if model.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:  # district heating
+                self.annualngcost.value = model.surfaceplant.annualngdemand.value * self.ngprice.value / 1000  # array with annual O&M cost for peaking fuel
+
+                if self.dhoandmcost.Provided:
+                    self.dhdistrictoandmcost.value = self.dhoandmcost.value  # M$/yr
+                else:
+                    self.dhdistrictoandmcost.value = 0.01 * self.dhdistrictcost.value + 0.02 * sum(
+                        model.surfaceplant.dailyheatingdemand.value) * model.surfaceplant.elecprice.value / 1000  # [M$/year] we assume annual district OPEX equals 1% of district CAPEX and 2% of total heat demand for pumping costs
+
+            else:
+                self.dhdistrictoandmcost.value = 0
+
+
+            self.Coam.value = self.Coamwell.value + self.Coamplant.value + self.Coamwater.value + self.chilleropex.value + self.dhdistrictoandmcost.value #total O&M cost (M$/year)
 
         else:
             self.Coam.value = self.oamtotalfixed.value  # total O&M cost (M$/year)
@@ -1720,7 +2081,8 @@ class Economics:
                self.Coam.value, model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
             self.TotalRevenue.value = self.HeatRevenue.value
             self.TotalCummRevenue.value = self.HeatCummRevenue.value
-        else:
+        elif model.surfaceplant.enduseoption.value  in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]: #co-gen
+        #else:
             self.ElecRevenue.value, self.ElecCummRevenue.self = CalculateRevenue(
                model.surfaceplant.plantlifetime.value, model.surfaceplant.ConstructionYears.value, self.CCap.value,
                self.Coam.value, model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
@@ -1744,7 +2106,7 @@ class Economics:
                                                self.Coam.value)
 
         # Calculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value = CalculateLCOELCOH(self, model)
+        self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOH(self, model)
 
         model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
 

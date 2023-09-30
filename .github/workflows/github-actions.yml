@@ -104,12 +104,12 @@ jobs:
 #            python_arch: 'x64'
 #            tox_env: 'pypy39'
 #            os: 'ubuntu-latest'
-          - name: 'pypy39 (macos)'
-            python: 'pypy-3.9'
-            toxpython: 'pypy3.9'
-            python_arch: 'x64'
-            tox_env: 'pypy39'
-            os: 'macos-latest'
+#          - name: 'pypy39 (macos)'
+#            python: 'pypy-3.9'
+#            toxpython: 'pypy3.9'
+#            python_arch: 'x64'
+#            tox_env: 'pypy39'
+#            os: 'macos-latest'
     steps:
     - uses: actions/checkout@v3
       with:

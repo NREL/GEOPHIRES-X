@@ -61,13 +61,11 @@ Wellfield O&M Cost Adjustment Factor,1,				---[-] use built in correlations
 Surface Plant O&M Cost Adjustment Factor,1,			---[-] use built in correlations
 Water Cost Adjustment Factor,1,					---[-] use built in correlations
 Electricity Rate,.07,							---[$/kWh]
-Absorption Chiller Capital Cost,3.74,               --- [$M] 
-Absorption Chiller O&M Cost,0.065,               --- [$M/year] 
+Absorption Chiller Capital Cost,3.74,               --- [$M]
+Absorption Chiller O&M Cost,0.065,               --- [$M/year]
 
 ***Simulation Parameters***
 ***************************
 
 Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
 Time steps per year,10,						---[-]
-
-

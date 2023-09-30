@@ -1,9 +1,9 @@
 GEOPHIRES v2.0 Input File
 Geothermal Combined Heat and Power Problem using a Thermal Drawdown Reservoir Model and BICYCLE Economic Model
 
-Example 3 description: This example problem considers an EGS reservoir at 3.1km depth. 
+Example 3 description: This example problem considers an EGS reservoir at 3.1km depth.
 The heat is used in a combined heat and power topping cycle model with double flash as
-topping cycle and electricity considered as the main product. 
+topping cycle and electricity considered as the main product.
 
 ***Subsurface technical parameters***
 *************************************
@@ -67,7 +67,7 @@ Wellfield O&M Cost Adjustment Factor,1,				---[-] use built in correlations
 Surface Plant O&M Cost Adjustment Factor,1,			---[-] use built in correlations
 Water Cost Adjustment Factor,1,					---[-] use built in correlations
 Electricity Rate,.07,							---[$/kWh]
-Heat Pump Capital Cost,3.74,               --- [$M] 
+Heat Pump Capital Cost,3.74,               --- [$M]
 
 
 ***Simulation Parameters***
@@ -75,5 +75,3 @@ Heat Pump Capital Cost,3.74,               --- [$M]
 
 Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
 Time steps per year,10,						---[-]
-
-

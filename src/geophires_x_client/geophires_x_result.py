@@ -200,7 +200,7 @@ class GeophiresXResult:
 
     def _get_power_generation_profile(self):
         s1 = '*  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-        s2 = '************************************************************'
+        s2 = '***************************************************************'  # header of next profile
         profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
         return self._get_data_from_profile_lines(profile_lines)
 

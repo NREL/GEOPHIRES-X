@@ -8,7 +8,8 @@ Created on Wed November  16 10:43:04 2017
 
 @author: Malcolm Ross V3
 """
-
+# TODO Use this video to update this function https://www.youtube.com/watch?v=fKl2JW_qrso
+# TODO Remove this line: logger.warn("space found in line " + str(result_count))
 
 import os
 import sys

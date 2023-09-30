@@ -494,17 +494,4 @@ def SmartCalculate(model, obj):
     :param obj: The object that contains the Calculate Method we will run unless the database contains the has we are looking for
     :doc-author: Malcolm Ross
     """
-    key = CheckForExistingResult(model, obj)  # This will rehydrate the object if it is found
-    if key == "":
-        obj.Calculate(model)  # run calculation because there was nothing in the database
-
-        # store the calculated result and associated object parameters in the database
-        resultkey = store_result(model, obj)
-        if resultkey.startswith("ERROR"):
-            print("Failed To Store " + str(obj.MyClass) + " " + obj.MyPath)
-            model.logger.warn("Failed To Store " + str(obj.MyClass) + " " + obj.MyPath)
-        elif len(resultkey) == 0:
-            pass  # Do nothing - not using database
-        else:
-            print("stored " + str(obj.MyClass) + " " + obj.MyPath + " as: " + resultkey)
-            model.logger.info("stored " + str(obj.MyClass) + " " + obj.MyPath + " as: " + resultkey)
+    obj.Calculate(model)  # run calculation because there was nothing in the database

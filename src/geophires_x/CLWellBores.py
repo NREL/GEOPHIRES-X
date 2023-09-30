@@ -3,11 +3,10 @@ import sys
 import os
 import numpy as np
 from scipy.interpolate import interpn, interp1d
-import AdvModel
-import WellBores
-import AdvGeoPHIRESUtils
-from Parameter import floatParameter, intParameter, boolParameter, OutputParameter
-from Units import *
+import geophires_x.Model as Model
+from geophires_x.WellBores import *
+from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter
+from .Units import *
 
 esp2 = 10.0e-10
 
@@ -158,12 +157,12 @@ def inverselaplace(self, NL, MM, model):
     return Toutlet
 
 
-class CLWellBores(WellBores.WellBores):
+class CLWellBores(WellBores):
     """
     CLWellBores Child class of WellBores; it is the same, but has advanced closed-loop functionality
     """
 
-    def __init__(self, model: AdvModel):
+    def __init__(self, model: Model) -> None:
         """
         The __init__ function is called automatically every time the class is instantiated.
         This function sets up all the parameters that will be used by this class, and also creates temporary variables
@@ -175,7 +174,7 @@ class CLWellBores(WellBores.WellBores):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        # Initialze the superclass first to make those variables available
+        # Initialize the superclass first to make those variables available
         super().__init__(model)
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
@@ -300,7 +299,7 @@ class CLWellBores(WellBores.WellBores):
         self.HorizontalPressureDrop.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def read_parameters(self, model: AdvModel) -> None:
+    def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function is called by the model to read in all the parameters that have been set
         for this object.  It loops through all the parameters that have been set for this object, looking for ones
@@ -335,7 +334,7 @@ class CLWellBores(WellBores.WellBores):
         self.alpha_rock = model.reserv.krock.value / model.reserv.rhorock.value / model.reserv.cprock.value * 24.0 * 3600.0
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def Calculate(self, model: AdvModel) -> None:
+    def Calculate(self, model: Model) -> None:
         """
         The Calculate function is the main function that runs all the calculations for this child.
         :param self: Reference the class itself
@@ -345,86 +344,74 @@ class CLWellBores(WellBores.WellBores):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        # before we calculate anything, let's see if there is a suitable result already in the database
-        key = AdvGeoPHIRESUtils.CheckForExistingResult(model, self)
-        if key is None:
-            super().Calculate(model)  # run calculation because there was nothing in the database
-            # initialize the temperature to be the initial temperature of the reservoir
-            self.Tini = model.reserv.Tresoutput.value[0]
+        super().Calculate(model)  # run calculation because there was nothing in the database
+        # initialize the temperature to be the initial temperature of the reservoir
+        self.Tini = model.reserv.Tresoutput.value[0]
 
-            while self.time_operation.value <= self.time_max:
-                # MIR figure out how to calculate year ands extract Tini from reserv Tresoutput array
-                year = math.trunc(self.time_operation.value / self.al)
-                self.HorizontalProducedTemperature.value[year] = inverselaplace(16, 0, model)
-                # update alpha_fluid value based on next temperature of resevoir
-                self.alpha_fluid = self.WaterThermalConductivity.value / model.reserv.densitywater(
-                    self.HorizontalProducedTemperature.value[year]) / model.reserv.heatcapacitywater(
-                    self.HorizontalProducedTemperature.value[year]) * 24.0 * 3600.0
-                self.time_operation.value += self.al
+        while self.time_operation.value <= self.time_max:
+            # MIR figure out how to calculate year ands extract Tini from reserv Tresoutput array
+            year = math.trunc(self.time_operation.value / self.al)
+            self.HorizontalProducedTemperature.value[year] = inverselaplace(16, 0, model)
+            # update alpha_fluid value based on next temperature of reservoir
+            self.alpha_fluid = self.WaterThermalConductivity.value / model.reserv.densitywater(
+                self.HorizontalProducedTemperature.value[year]) / model.reserv.heatcapacitywater(
+                self.HorizontalProducedTemperature.value[year]) * 24.0 * 3600.0
+            self.time_operation.value += self.al
 
-            # ------------------------------------------
-            # recalculate pressure drops and pumping power
-            # ------------------------------------------
-            # horizontal wellbore fluid conditions based on current temperature
-            rhowater = model.reserv.densitywater(self.HorizontalProducedTemperature.value[year])
-            muwater = model.reserv.viscositywater(self.HorizontalProducedTemperature.value[year])
-            vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.diameter.value ** 2)
+        # ------------------------------------------
+        # recalculate pressure drops and pumping power
+        # ------------------------------------------
+        # horizontal wellbore fluid conditions based on current temperature
+        rhowater = model.reserv.densitywater(self.HorizontalProducedTemperature.value[year])
+        muwater = model.reserv.viscositywater(self.HorizontalProducedTemperature.value[year])
+        vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.diameter.value ** 2)
 
-            # Calculate reynolds number to decide if laminar or turbulent flow.
-            Rewaterhoriz = 4. * self.q_circulation / (muwater * math.pi * self.diameter.value)
-            if Rewaterhoriz < 2300.0:
-                friction = 64. / Rewaterhoriz  # laminar
+        # Calculate reynolds number to decide if laminar or turbulent flow.
+        Rewaterhoriz = 4. * self.q_circulation / (muwater * math.pi * self.diameter.value)
+        if Rewaterhoriz < 2300.0:
+            friction = 64. / Rewaterhoriz  # laminar
+        else:
+            if self.HorizontalsCased:
+                relroughness = 1E-4 / self.diameter.value
             else:
-                if self.HorizontalsCased:
-                    relroughness = 1E-4 / self.diameter.value
-                else:
-                    # note the higher relative roughness for uncased horizontal bores
-                    relroughness = 0.02 / self.diameter.value
-                # 6 iterations to converge
-                friction = 1. / np.power(-2 * np.log10(relroughness / 3.7 + 5.74 / np.power(Rewaterhoriz, 0.9)), 2.)
-                friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
-                friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
-                friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
-                friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
-                friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
+                # note the higher relative roughness for uncased horizontal bores
+                relroughness = 0.02 / self.diameter.value
+            # 6 iterations to converge
+            friction = 1. / np.power(-2 * np.log10(relroughness / 3.7 + 5.74 / np.power(Rewaterhoriz, 0.9)), 2.)
+            friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
+            friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
+            friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
+            friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
+            friction = 1. / np.power((-2 * np.log10(relroughness / 3.7 + 2.51 / Rewaterhoriz / np.sqrt(friction))), 2.)
 
-                # assume everything stays liquid throughout
-                # horizontal section pressure drop [kPa] per lateral section
-                # assume no buoyancy effect because laterals are horizontal, or if they are not,
-                # they return to the same place, so there is no buoyancy effect
-                self.HorizontalPressureDrop.value[year] = friction * (rhowater * vhoriz ** 2 / 2) * (
-                    self.l_pipe.value / self.diameter.value) / 1E3  # /1E3 to convert from Pa to kPa
+            # assume everything stays liquid throughout
+            # horizontal section pressure drop [kPa] per lateral section
+            # assume no buoyancy effect because laterals are horizontal, or if they are not,
+            # they return to the same place, so there is no buoyancy effect
+            self.HorizontalPressureDrop.value[year] = friction * (rhowater * vhoriz ** 2 / 2) * (
+                self.l_pipe.value / self.diameter.value) / 1E3  # /1E3 to convert from Pa to kPa
 
-            # overall pressure drop  = previous pressure drop (as calculated from the verticals) +
-            # horizontal section pressure drop
-            # interpolation is required because HorizontalPressureDrop is sampled yearly, and
-            # DPOverall is sampled more frequently
-            f = interp1d(np.arange(0, len(self.HorizontalPressureDrop.value)), self.HorizontalPressureDrop.value, fill_value="extrapolate")
-            self.HorizontalPressureDrop.value = f(np.arange(0, len(self.DPOverall.value), 1))
-            model.wellbores.DPOverall.value = model.wellbores.DPOverall.value + self.HorizontalPressureDrop.value
+        # overall pressure drop  = previous pressure drop (as calculated from the verticals) +
+        # horizontal section pressure drop
+        # interpolation is required because HorizontalPressureDrop is sampled yearly, and
+        # DPOverall is sampled more frequently
+        f = interp1d(np.arange(0, len(self.HorizontalPressureDrop.value)), self.HorizontalPressureDrop.value, fill_value="extrapolate")
+        self.HorizontalPressureDrop.value = f(np.arange(0, len(self.DPOverall.value), 1))
+        model.wellbores.DPOverall.value = model.wellbores.DPOverall.value + self.HorizontalPressureDrop.value
 
-            # recalculate pumping power [MWe] (approximate)
-            model.wellbores.PumpingPower.value = model.wellbores.DPOverall.value * self.q_circulation / rhowater / model.surfaceplant.pumpeff.value / 1E3
+        # recalculate pumping power [MWe] (approximate)
+        model.wellbores.PumpingPower.value = model.wellbores.DPOverall.value * self.q_circulation / rhowater / model.surfaceplant.pumpeff.value / 1E3
 
-            # in GEOPHIRES v1.2, negative pumping power values become zero
-            # (b/c we are not generating electricity) = thermosiphon is happening!
-            model.wellbores.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
+        # in GEOPHIRES v1.2, negative pumping power values become zero
+        # (b/c we are not generating electricity) = thermosiphon is happening!
+        model.wellbores.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
-            # done with calculations. Now overlay the HorizontalProducedTemperature onto WellBores.ProducedTemperatures
-            # - interpolation is required because HorizontalProducedTemperature is sampled yearly,
-            # and ProducedTemperature is sampled more frequently
-            f = interp1d(np.arange(0, len(self.HorizontalProducedTemperature.value)), self.HorizontalProducedTemperature.value, fill_value="extrapolate")
-            model.wellbores.ProducedTemperature.value = f(np.arange(0, len(self.HorizontalProducedTemperature.value),
-                                                                    1.0 / model.economics.timestepsperyear.value))
-
-            # store the calculation result and associated object parameters in the database
-            resultkey = AdvGeoPHIRESUtils.store_result(model, self)
-            if resultkey is None:
-                pass
-            elif resultkey.startswith("ERROR"):
-                model.logger.warn("Failed To Store " + str(__class__) + " " + os.path.abspath(__file__))
-            else:
-                model.logger.info("stored " + str(__class__) + " " + os.path.abspath(__file__) + " as: " + resultkey)
+        # done with calculations. Now overlay the HorizontalProducedTemperature onto WellBores.ProducedTemperatures
+        # - interpolation is required because HorizontalProducedTemperature is sampled yearly,
+        # and ProducedTemperature is sampled more frequently
+        f = interp1d(np.arange(0, len(self.HorizontalProducedTemperature.value)), self.HorizontalProducedTemperature.value, fill_value="extrapolate")
+        model.wellbores.ProducedTemperature.value = f(np.arange(0, len(self.HorizontalProducedTemperature.value),
+                                                                1.0 / model.economics.timestepsperyear.value))
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

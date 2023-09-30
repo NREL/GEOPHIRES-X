@@ -1,24 +1,25 @@
 import sys
 import os
 import numpy as np
-import AdvModel
-import SurfacePlant
-import AdvGeoPHIRESUtils
-from Parameter import floatParameter, OutputParameter
-from Units import *
-from OptionList import WorkingFluid, EndUseOptions
+import geophires_x.Model as Model
+from geophires_x.WellBores import *
+import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
+from .Parameter import floatParameter, OutputParameter
+from .Units import *
+from .OptionList import WorkingFluid, EndUseOptions
+from geophires_x.SurfacePlant import SurfacePlant as SurfacePlant
 
 # code from Koenraad
 import scipy
 from scipy.interpolate import interpn, interp1d
 
 
-class AGSSurfacePlant(SurfacePlant.SurfacePlant):
+class AGSSurfacePlant(SurfacePlant):
     """
     AGSSurfacePlant Child class of SurfacePlant; it is the same, but has advanced AGS closed-loop functionality
     """
 
-    def __init__(self, model: AdvModel):
+    def __init__(self, model: Model):
         """
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
@@ -285,7 +286,7 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
     def __str__(self):
         return "AGSSurfacePlant"
 
-    def read_parameters(self, model: AdvModel) -> None:
+    def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
@@ -297,8 +298,10 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)
-        # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases for the variables in this class
-        # because the call to the super.readparameters will set all the variables, including the ones that are specific to this class
+        # if we call super, we don't need to deal with setting the parameters here,
+        # just deal with the special cases for the variables in this class
+        # because the call to the super.readparameters will set all the variables,
+        # including the ones that are specific to this class
 
         if len(model.InputParameters) > 0:
             # loop through all the parameters that the user wishes to set, looking for parameters that match this object
@@ -331,7 +334,7 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def verify(self, model: AdvModel) -> int:
+    def verify(self, model: Model) -> int:
         """
         The validate function checks that all values provided are within the range expected by AGS modeling system.
         These values in within a smaller range than the value ranges available to GEOPHIRES-X
@@ -340,8 +343,7 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
         :return: 0 if all OK, 1 if error.
         :doc-author: Koenraad Beckers
         """
-        model.logger.info("Init " + str(
-            __class__) + ": " + sys._getframe().f_code.co_name)  # Verify inputs are within allowable bounds
+        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         self.error = 0
         if self.T0 < 278.15 or self.T0 > 303.15:
             print("Error: CLGS model database imposes additional range restrictions: Dead-state temperature must be \
@@ -622,7 +624,7 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
         self.FirstYearElectricityProduction.value = self.Annual_electricity_production[0]  # kWh
         self.Inst_Net_Electricity_production = self.Inst_electricity_production - self.PumpingPower  # [kW]
 
-    def initialize(self, model: AdvModel) -> None:
+    def initialize(self, model: Model) -> None:
         """
         The initialize function reads values and arrays to be in the format that AGS model systems expects
 
@@ -702,7 +704,7 @@ class AGSSurfacePlant(SurfacePlant.SurfacePlant):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def Calculate(self, model: AdvModel) -> None:
+    def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and extracts the values from the AGS model
 

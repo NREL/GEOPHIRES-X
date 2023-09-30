@@ -1,18 +1,20 @@
-# copyright, 2023, Malcolm I Ross
 import sys
 import geophires_x.Model as Model
 import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
 
 
-class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
+class AdvModel(Model, AdvGeoPHIRESUtils):
     """
-    AdvModel is the container class of the advanced elements of the application, giving access to everything optional, including the logger
+    AdvModel is the container class of the advanced elements of the application,
+    giving access to everything optional, including the logger
     """
 
     def __init__(self):
         """
-        The __init__ function is called automatically every time the class is being used to create a new object.
-        The self parameter is a Python convention. It must be included in each function definition and points to the current instance of the class (the object that is being created).
+        The __init__ function is called automatically every time the class is being used to create
+        a new object.
+        The self parameter is a Python convention. It must be included in each function
+        definition and points to the current instance of the class (the object that is being created).
         :param self: Reference the class instance itself
         :return: Nothing
         :doc-author: Malcolm Ross
@@ -30,14 +32,15 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
         self.RunStoredProcedure("delete_model", [14])
         self.RunStoredProcedure("add_new_model", ["dummy", "new", 999])
 
-        # We don't initiate the optional elements here because we don't know if the user wants to use them or not -
-        # we won't know that until we read the parameters (in the next step)
+        # We don't initiate the optional elements here because we don't know if the user wants to use
+        # them or not - we won't know that until we read the parameters (in the next step)
 
         self.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def read_parameters(self) -> None:
         """
-        The read_parameters function reads the parameters from the input file and stores them in a dictionary.
+        The read_parameters function reads the parameters from the input file and stores them
+        in a dictionary.
         :param self: Access the variables and other functions of the class
         :return: None
         :doc-author: Malcolm Ross
@@ -49,7 +52,8 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
         self.logger.info("Read parameters for the newer elements of the Model and instantiate new attributes as needed")
 
         if self.wellbores.IsAGS.value:
-            # If we are doing AGS, we need to replace the various objects we with versions of the objects that have AGS functionality.
+            # If we are doing AGS, we need to replace the various objects we with versions of the objects
+            # that have AGS functionality.
             # that means importing them, initializing them, then reading their parameters
             self.logger.info("Initiate the AGS elements")
             import CylindricalReservoir  # use the simple cylindrical reservoir for all AGS systems.
@@ -75,7 +79,8 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
             self.economics.read_parameters(self)
             self.outputs.read_parameters(self)
 
-        if self.economics.DoAddOnCalculations.value:  # if we find out we have a add-ons, we need to instanitaite it, then read for the parameters
+        # if we find out we have an add-ons, we need to instantiate it, then read for the parameters
+        if self.economics.DoAddOnCalculations.value:
             self.logger.info("Initiate the Add-on elements")
             import EconomicsAddOns  # do this only is user wants add-ons
             self.addeconomics = EconomicsAddOns.EconomicsAddOns(self)
@@ -83,7 +88,8 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
             self.addeconomics.read_parameters(self)
             self.addoutputs = OutputsAddOns.OutputsAddOns(self)
             self.addoutputs.read_parameters(self)
-        if self.economics.DoCCUSCalculations.value:  # if we find out we have a ccus, we need to instanitaite it, then read for the parameters
+            # if we find out we have a ccus, we need to instantiate it, then read for the parameters
+        if self.economics.DoCCUSCalculations.value:
             self.logger.info("Initiate the CCUS elements")
             import EconomicsCCUS  # do this only is user wants CCUS
             self.ccuseconomics = EconomicsCCUS.EconomicsCCUS(self)
@@ -91,7 +97,9 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
             import OutputsCCUS
             self.ccusoutputs = OutputsCCUS.OutputsCCUS(self)
             self.ccusoutputs.read_parameters(self)
-        if self.economics.DoSDACGTCalculations.value:  # if we find out we have a S-DAC-GT calculation, we need to instanitaite it, then read for the parameters
+            # if we find out we have an S-DAC-GT calculation, we need to instantiate it,
+            # then read for the parameters
+        if self.economics.DoSDACGTCalculations.value:
             self.logger.info("Initiate the S-DAC-GT elements")
             import EconomicsS_DAC_GT  # do this only is user wants S-DAC-GT
             self.sdacgteconomics = EconomicsS_DAC_GT.EconomicsS_DAC_GT(self)
@@ -104,16 +112,21 @@ class AdvModel(Model.Model, AdvGeoPHIRESUtils.AdvGeoPHIRESUtils):
 
     def Calculate(self):
         """
-        The Calculate function is where all the calculations are made.  This is handled on a class-by-class basis.
-        The Calculate function does not return anything, but it does store the results in self.reserv, self.wellbores, self.surfaceplant, and self.economics (and their children) for later use by other functions.
+        The Calculate function is where all the calculations are made.  This is handled on a
+        class-by-class basis.
+        The Calculate function does not return anything, but it does store the results in
+        self.reserv, self.wellbores, self.surfaceplant, and self.economics (and their children)
+        for later use by other functions.
         :param self: Access the class variables
         :return: None
         :doc-author: Malcolm Ross
         """
         self.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        # This is where all the calculations are made using all the values that have been set.  This is handled on a class-by-class basis
-        # We choose not to call the calculate of the parent, but rather let the child handle the call to the parent if it is needed.
+        # This is where all the calculations are made using all the values that have been set.
+        # This is handled on a class-by-class basis
+        # We choose not to call calculate of the parent, but rather let the child handle the
+        # call to the parent if it is needed.
 
         # Reservoir
         self.SmartCalculate(self, self.reserv)

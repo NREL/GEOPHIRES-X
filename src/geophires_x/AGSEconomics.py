@@ -1,7 +1,7 @@
 import sys
 import os
 import numpy as np
-import geophires_x.AdvModel as AdvModel
+import geophires_x.Model as Model
 import geophires_x.Economics as Economics
 import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
 from .Parameter import floatParameter
@@ -12,9 +12,34 @@ from .OptionList import WorkingFluid, EndUseOptions, EconomicModel
 class AGSEconomics(Economics.Economics):
     """
     AGSEconomics Child class of Economics; it is the same, but has advanced AGS closed-loop functionality
+    .. list-table:: **Parameters**
+        :widths: 100 25 25 50 25 25 25
+        :header-rows: 1
+        * - Name
+          - Type
+          - Default Value
+          - Units
+          - Min
+          - Max
+          - Required
+        * - Operation & Maintenance Cost of Surface Plant
+          - float
+          - 0.015
+          - PercentUnit.TENTH
+          - 0.0
+          - 0.2
+          - True
+        * - Capital Cost for Surface Plant for Direct-use System
+          - float
+          - 100.0
+          - EnergyCostUnit.DOLLARSPERKW
+          - 0.0,
+          - 10000.0
+          - False
+
     """
 
-    def __init__(self, model: AdvModel):
+    def __init__(self, model: Model):
         """
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
@@ -43,15 +68,17 @@ class AGSEconomics(Economics.Economics):
         self.CAPEX_Drilling = 0
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and Unit Name of that value,
-        # sets it as required (or not), sets allowable range, the error message if that range is exceeded, the ToolTip Text,
-        # and the name of teh class that created it.
+        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
+        # and Unit Name of that value, sets it as required (or not), sets allowable range,
+        # the error message if that range is exceeded, the ToolTip Text, and the name of the class that created it.
         # This includes setting up temporary variables that will be available to all the class but noy read in by user,
         # or used for Output
         # This also includes all Parameters that are calculated and then published using the Printouts function.
         # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set all these parameters to your class.
-        # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the last possible time
+        # If you do, you can also choose to call this method from you class, which will effectively add
+        # and set all these parameters to your class.
+        # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values
+        # are set at the last possible time
 
         self.O_and_M_cost_plant = self.ParameterDict[self.O_and_M_cost_plant.Name] = floatParameter(
             "Operation & Maintenance Cost of Surface Plant",
@@ -96,7 +123,7 @@ class AGSEconomics(Economics.Economics):
     def __str__(self):
         return "AGSEconomics"
 
-    def read_parameters(self, model: AdvModel) -> None:
+    def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
@@ -110,8 +137,10 @@ class AGSEconomics(Economics.Economics):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)  # read the default parameters
-        # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases for the variables in this class
-        # because the call to the super.readparameters will set all the variables, including the ones that are specific to this class
+        # if we call super, we don't need to deal with setting the parameters here,
+        # just deal with the special cases for the variables in this class
+        # because the call to the super.readparameters will set all the variables,
+        # including the ones that are specific to this class
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
         self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
@@ -119,7 +148,7 @@ class AGSEconomics(Economics.Economics):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def verify(self, model: AdvModel) -> int:
+    def verify(self, model: Model) -> int:
         """
         The validate function checks that all values provided are within the range expected by AGS modeling system.
         These values in within a smaller range than the value ranges available to GEOPHIRES-X
@@ -188,7 +217,7 @@ class AGSEconomics(Economics.Economics):
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         return self.error
 
-    def Calculate(self, model: AdvModel) -> None:
+    def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and calculate the values for the AGS model
 
@@ -250,7 +279,7 @@ class AGSEconomics(Economics.Economics):
                     model.surfaceplant.error_codes = np.append(model.surfaceplant.error_codes, 6000)
                 else:
                     self.LCOE.value = (self.TotalCAPEX + np.sum(self.OPEX_Plant * Discount_vector)) * 1e6 / np.sum((
-                                                                                                                           model.surfaceplant.Annual_electricity_production - model.surfaceplant.Annual_pumping_power) / 1e3 * Discount_vector)  # $/MWh
+                        model.surfaceplant.Annual_electricity_production - model.surfaceplant.Annual_pumping_power) / 1e3 * Discount_vector)  # $/MWh
                 if self.LCOE.value < 0:
                     self.LCOE.value = 9999
                     model.surfaceplant.error_codes = np.append(model.surfaceplant.error_codes, 7000)
@@ -274,13 +303,6 @@ class AGSEconomics(Economics.Economics):
             self.Cplant.CurrentUnits = CurrencyUnit.MDOLLARS
             self.Coam.value = self.AverageOPEX_Plant * 1000
             self.Coam.CurrentUnits = CurrencyFrequencyUnit.KDOLLARSPERYEAR
-
-        # store the calculation result and associated object parameters in the database
-        resultkey = AdvGeoPHIRESUtils.store_result(model, self)
-        if resultkey.startswith("ERROR"):
-            model.logger.warn("Failed To Store " + str(__class__) + " " + os.path.abspath(__file__))
-        else:
-            pass
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

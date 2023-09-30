@@ -83,17 +83,17 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 LCOE = (self.FCR.value*(1+self.inflrateconstruction.value)*self.CCap.value + self.Coam.value - averageannualheatincome)/np.average(model.surfaceplant.NetkWhProduced.value)*1E8  # cents/kWh
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY,
                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY,
-                                                           EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]: #electricity sales is additional income revenue stream
+                                                           EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]:  # electricity sales is additional income revenue stream
                 averageannualelectricityincome = np.average(model.surfaceplant.NetkWhProduced.value)*model.surfaceplant.elecprice.value/1E6  # M$/year
                 LCOH = (self.CCap.value + self.Coam.value - averageannualelectricityincome)/np.average(model.surfaceplant.HeatkWhProduced.value)*1E8  # cents/kWh
                 LCOH = LCOH * 2.931  # $/MMBTU
     elif self.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
-        discountvector = 1./np.power(1+self.discountrate.value, np.linspace(0, model.surfaceplant.plantlifetime.value-1,model.surfaceplant.plantlifetime.value))
+        discountvector = 1./np.power(1+self.discountrate.value, np.linspace(0, model.surfaceplant.plantlifetime.value-1, model.surfaceplant.plantlifetime.value))
         if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:
             LCOE = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum(self.Coam.value*discountvector))/np.sum(model.surfaceplant.NetkWhProduced.value*discountvector)*1E8  # cents/kWh
         elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:
             self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value)*model.surfaceplant.elecprice.value/1E6  # M$/year
-            LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6)*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*discountvector)*1E8 #cents/kWh
+            LCOH = ((1+self.inflrateconstruction.value)*self.CCap.value + np.sum((self.Coam.value+model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1E6)*discountvector))/np.sum(model.surfaceplant.HeatkWhProduced.value*discountvector)*1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/MMBTU
         elif model.surfaceplant.enduseoption.value not in [EndUseOptions.ELECTRICITY, EndUseOptions.HEAT]:
             if model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
@@ -109,9 +109,9 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 LCOH = LCOH*2.931  # $/MMBTU
     elif self.econmodel.value == EconomicModel.BICYCLE:
         iave = self.FIB.value*self.BIR.value*(1-self.CTR.value) + (1-self.FIB.value)*self.EIR.value  # average return on investment (tax and inflation adjusted)
-        CRF = iave/(1-np.power(1+iave,-model.surfaceplant.plantlifetime.value))  # capital recovery factor
-        inflationvector = np.power(1+self.RINFL.value,np.linspace(1,model.surfaceplant.plantlifetime.value, model.surfaceplant.plantlifetime.value))
-        discountvector = 1./np.power(1+iave,np.linspace(1, model.surfaceplant.plantlifetime.value, model.surfaceplant.plantlifetime.value))
+        CRF = iave/(1-np.power(1+iave, -model.surfaceplant.plantlifetime.value))  # capital recovery factor
+        inflationvector = np.power(1+self.RINFL.value, np.linspace(1, model.surfaceplant.plantlifetime.value, model.surfaceplant.plantlifetime.value))
+        discountvector = 1./np.power(1+iave, np.linspace(1, model.surfaceplant.plantlifetime.value, model.surfaceplant.plantlifetime.value))
         NPVcap = np.sum((1+self.inflrateconstruction.value)*self.CCap.value*CRF*discountvector)
         NPVfc = np.sum((1+self.inflrateconstruction.value)*self.CCap.value*self.PTR.value*inflationvector*discountvector)
         NPVit = np.sum(self.CTR.value/(1-self.CTR.value)*((1+self.inflrateconstruction.value)*self.CCap.value*CRF-self.CCap.value/model.surfaceplant.plantlifetime.value)*discountvector)
@@ -135,7 +135,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 NPVoandm = np.sum(self.Coam.value*inflationvector*discountvector)
                 NPVgrt = self.GTR.value/(1-self.GTR.value)*(NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
                 LCOE = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc - np.sum(annualheatincome*inflationvector*discountvector))/np.sum(model.surfaceplant.NetkWhProduced.value*inflationvector*discountvector)*1E8
-            elif model.surfaceplant.enduseoption.value  in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY,
+            elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY,
                                                             EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY,
                                                             EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]:  # electricity sales is additional income revenue stream
                 annualelectricityincome = model.surfaceplant.NetkWhProduced.value*model.surfaceplant.elecprice.value/1E6  # M$/year
@@ -166,7 +166,7 @@ class Economics:
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc) and
+        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and
         # Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that range
         # is exceeded, the ToolTip Text, and the name of teh class that created it.
         # This includes setting up temporary variables that will be available to all the class but noy read in by user,
@@ -188,11 +188,11 @@ class Economics:
             "Economic Model",
             value=EconomicModel.STANDARDIZED_LEVELIZED_COST,
             DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
-            AllowableRange=[1,2,3,4],
+            AllowableRange=[1, 2, 3, 4],
             Required=True,
             ErrMessage="assume default economic model (2)",
-            ToolTipText="Specify the economic model to calculate the levelized cost of energy. \
-            1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS"
+            ToolTipText="Specify the economic model to calculate the levelized cost of energy." +
+            " 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS"
         )
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost",
@@ -413,8 +413,8 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ErrMessage="calculate total capital cost using user-provided costs or \
-            built-in correlations for each category.",
+            ErrMessage="calculate total capital cost using user-provided costs or" +
+            " built-in correlations for each category.",
             ToolTipText="Total initial capital cost."
         )
         self.oamtotalfixed = self.ParameterDict[self.oamtotalfixed.Name] = floatParameter(
@@ -435,7 +435,7 @@ class Economics:
             "Time steps per year",
             value=4,
             DefaultValue=4,
-            AllowableRange=list(range(1,101,1)),
+            AllowableRange=list(range(1, 101, 1)),
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default number of time steps per year (4)",
@@ -576,13 +576,13 @@ class Economics:
             "Well Drilling Cost Correlation",
             value=WellDrillingCostCorrelation.VERTICAL_SMALL,
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_SMALL,
-            AllowableRange=[1,2,3,4,5],
+            AllowableRange=[1, 2, 3, 4, 5],
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (1)",
-            ToolTipText="Select the built-in horizontal well drilling and completion cost correlation. \
-            1: vertical open-hole, small diameter; 2: deviated liner, small diameter; \
-            3: vertical open-hole, large diameter; 4: deviated liner, large diameter; \
-            5: Simple - user specified cost per meter"
+            ToolTipText="Select the built-in horizontal well drilling and completion cost correlation." +
+            " 1: vertical open-hole, small diameter; 2: deviated liner, small diameter;" +
+            " 3: vertical open-hole, large diameter; 4: deviated liner, large diameter;" +
+            " 5: Simple - user specified cost per meter"
         )
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
@@ -621,8 +621,8 @@ class Economics:
             PreferredUnits=CostPerDistanceUnit.DOLLARSPERM,
             CurrentUnits=CostPerDistanceUnit.DOLLARSPERM,
             ErrMessage="assume default all-in cost for drill vertical well segment(s) (1000 $/m)",
-            ToolTipText="Set user specified all-in cost per meter of vertical drilling, \
-            including drilling, casing, cement, insulated insert"
+            ToolTipText="Set user specified all-in cost per meter of vertical drilling," +
+            " including drilling, casing, cement, insulated insert"
         )
         self.Nonvertical_drilling_cost_per_m = self.ParameterDict[self.Nonvertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Nonvertical Drilling Costs",
@@ -634,8 +634,8 @@ class Economics:
             PreferredUnits=CostPerDistanceUnit.DOLLARSPERM,
             CurrentUnits=CostPerDistanceUnit.DOLLARSPERM,
             ErrMessage="assume default all-in cost for drill non-vertical well segment(s) (1300 $/m)",
-            ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including \
-            drilling, casing, cement, insulated insert"
+            ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including" +
+            " drilling, casing, cement, insulated insert"
         )
         self.ElecPrice = self.OutputParameterDict[self.ElecPrice.Name] = OutputParameter(
             "Electricity Sale Price Model",
@@ -671,11 +671,11 @@ class Economics:
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH
         )
-        self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name]  = intParameter(
+        self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name] = intParameter(
             "Heat Escalation Start Year",
             value=5,
             DefaultValue=5,
-            AllowableRange=list(range(0,101,1)),
+            AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.YEAR,
             CurrentUnits=TimeUnit.YEAR,
@@ -714,11 +714,11 @@ class Economics:
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH
         )
-        self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name]  = intParameter(
+        self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name] = intParameter(
             "Electricity Escalation Start Year",
             value=5,
             DefaultValue=5,
-            AllowableRange=list(range(0,101,1)),
+            AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.YEAR,
             CurrentUnits=TimeUnit.YEAR,
@@ -742,7 +742,7 @@ class Economics:
             "Annual License Fees Etc",
             value=0.0,
             DefaultValue=0.0,
-            Min= -1000.0,
+            Min=-1000.0,
             Max=1000.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
@@ -750,7 +750,7 @@ class Economics:
         )
         self.FlatLicenseEtc = self.ParameterDict[self.FlatLicenseEtc.Name] = floatParameter(
             "One-time Flat License Fees Etc",
-            Min= -1000.0,
+            Min=-1000.0,
             Max=1000.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
@@ -758,7 +758,7 @@ class Economics:
         )
         self.OtherIncentives = self.ParameterDict[self.OtherIncentives.Name] = floatParameter(
             "Other Incentives",
-            Min= -1000.0,
+            Min=-1000.0,
             Max=1000.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
@@ -778,7 +778,7 @@ class Economics:
         )
         self.TotalGrant = self.ParameterDict[self.TotalGrant.Name] = floatParameter(
             "One-time Grants Etc",
-            Min= -1000.0,
+            Min=-1000.0,
             Max=1000.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
@@ -823,7 +823,7 @@ class Economics:
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
-        )    #$/MMBTU
+        )    # $/MMBTU
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
             value=-999.9,
@@ -980,7 +980,7 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH
         )
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -1002,7 +1002,7 @@ class Economics:
         # in your class.
 
         if len(model.InputParameters) > 0:
-            # loop thru all the parameters that the user wishes to set, looking for parameters that match this object
+            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
             for item in self.ParameterDict.items():
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
@@ -1035,310 +1035,311 @@ class Economics:
                             self.wellcorrelation.value = WellDrillingCostCorrelation.VERTICAL_LARGE
                         elif ParameterReadIn.sValue == '4':
                             self.wellcorrelation.value = WellDrillingCostCorrelation.DEVIATED_LARGE
-                        else: self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
+                        else:
+                            self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
                     elif ParameterToModify.Name == "Reservoir Stimulation Capital Cost Adjustment Factor":
                         if self.ccstimfixed.Valid and ParameterToModify.Valid:
-                            print("Warning: Provided reservoir stimulation cost adjustment factor not considered \
-                            because valid total reservoir stimulation cost provided.")
-                            model.logger.warning("Provided reservoir stimulation cost adjustment factor not considered \
-                            because valid total reservoir stimulation cost provided.")
+                            print("Warning: Provided reservoir stimulation cost adjustment factor not considered" +
+                            " because valid total reservoir stimulation cost provided.")
+                            model.logger.warning("Provided reservoir stimulation cost adjustment factor not considered" +
+                            " because valid total reservoir stimulation cost provided.")
                         elif not self.ccstimfixed.Provided and not ParameterToModify.Provided:
                             ParameterToModify.value = 1.0
-                            print("Warning: No valid reservoir stimulation total cost or adjustment factor provided. \
-                            GEOPHIRES will assume default built-in reservoir stimulation cost correlation with \
-                            adjustment factor = 1.")
-                            model.logger.warning("No valid reservoir stimulation total cost or adjustment factor \
-                            provided. GEOPHIRES will assume default built-in reservoir stimulation cost correlation \
-                            with adjustment factor = 1.")
+                            print("Warning: No valid reservoir stimulation total cost or adjustment factor provided." +
+                            " GEOPHIRES will assume default built-in reservoir stimulation cost correlation with" +
+                            " adjustment factor = 1.")
+                            model.logger.warning("No valid reservoir stimulation total cost or adjustment factor" +
+                            " provided. GEOPHIRES will assume default built-in reservoir stimulation cost correlation" +
+                            " with adjustment factor = 1.")
                         elif self.ccstimfixed.Provided and not self.ccstimfixed.Valid:
-                            print("Warning: Provided reservoir stimulation cost outside of range 0-100. GEOPHIRES \
-                            will assume default built-in reservoir stimulation cost correlation with \
-                            adjustment factor = 1.")
-                            model.logger.warning("Provided reservoir stimulation cost outside of range 0-100. GEOPHIRES \
-                            will assume default built-in reservoir stimulation cost correlation with \
-                            adjustment factor = 1.")
+                            print("Warning: Provided reservoir stimulation cost outside of range 0-100. GEOPHIRES" +
+                            " will assume default built-in reservoir stimulation cost correlation with" +
+                            " adjustment factor = 1.")
+                            model.logger.warning("Provided reservoir stimulation cost outside of range 0-100. GEOPHIRES" +
+                            " will assume default built-in reservoir stimulation cost correlation with" +
+                            " adjustment factor = 1.")
                             ParameterToModify.value = 1.0
                         elif not self.ccstimfixed.Provided and ParameterToModify.Provided and not ParameterToModify.Valid:
-                            print("Warning: Provided reservoir stimulation cost adjustment factor outside of \
-                            range 0-10. GEOPHIRES will assume default reservoir stimulation cost correlation with \
-                            adjustment factor = 1.")
-                            model.logger.warning("Provided reservoir stimulation cost adjustment factor outside of \
-                            range 0-10. GEOPHIRES will assume default reservoir stimulation cost correlation with \
-                            adjustment factor = 1.")
+                            print("Warning: Provided reservoir stimulation cost adjustment factor outside of" +
+                            " range 0-10. GEOPHIRES will assume default reservoir stimulation cost correlation with" +
+                            " adjustment factor = 1.")
+                            model.logger.warning("Provided reservoir stimulation cost adjustment factor outside of" +
+                            " range 0-10. GEOPHIRES will assume default reservoir stimulation cost correlation with" +
+                            " adjustment factor = 1.")
                             ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Exploration Capital Cost Adjustment Factor":
                         if self.totalcapcost.Valid:
                             if self.ccexplfixed.Provided:
-                                print("Warning: Provided exploration cost not considered because valid \
-                                total capital cost provided.")
-                                model.logger.warning("Warning: Provided exploration cost not considered \
-                                because valid total capital cost provided.")
+                                print("Warning: Provided exploration cost not considered because valid" +
+                                " total capital cost provided.")
+                                model.logger.warning("Warning: Provided exploration cost not considered" +
+                                " because valid total capital cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided exploration cost adjustment factor not considered because \
-                                valid total capital cost provided.")
-                                model.logger.warning("Warning: Provided exploration cost not considered because valid \
-                                total capital cost provided.")
+                                print("Warning: Provided exploration cost adjustment factor not considered because" +
+                                " valid total capital cost provided.")
+                                model.logger.warning("Warning: Provided exploration cost not considered because valid" +
+                                " total capital cost provided.")
                         else:
                             if self.ccexplfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided exploration cost adjustment factor not considered \
-                                because valid total exploration cost provided.")
-                                model.logger.warning("Provided exploration cost adjustment factor not \
-                                considered because valid total exploration cost provided.")
+                                print("Warning: Provided exploration cost adjustment factor not considered" +
+                                " because valid total exploration cost provided.")
+                                model.logger.warning("Provided exploration cost adjustment factor not" +
+                                " considered because valid total exploration cost provided.")
                             elif not self.ccexplfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid exploration total cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in exploration cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("No valid exploration total cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in exploration cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: No valid exploration total cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in exploration cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("No valid exploration total cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in exploration cost correlation with" +
+                                " adjustment factor = 1.")
                             elif self.ccexplfixed.Provided and not self.ccexplfixed.Valid:
-                                print("Warning: Provided exploration cost outside of range 0-100. GEOPHIRES \
-                                will assume default built-in exploration cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided exploration cost outside of range 0-100. GEOPHIRES \
-                                will assume default built-in exploration cost correlation with adjustment factor = 1.")
+                                print("Warning: Provided exploration cost outside of range 0-100. GEOPHIRES" +
+                                " will assume default built-in exploration cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided exploration cost outside of range 0-100. GEOPHIRES" +
+                                " will assume default built-in exploration cost correlation with adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.ccexplfixed.Provided and ParameterToModify.Provided and not ParameterToModify.Valid:
-                                print("Warning: Provided exploration cost adjustment factor outside of range 0-10. \
-                                GEOPHIRES will assume default exploration cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided exploration cost adjustment factor outside of \
-                                range 0-10. GEOPHIRES will assume default exploration cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided exploration cost adjustment factor outside of range 0-10." +
+                                " GEOPHIRES will assume default exploration cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided exploration cost adjustment factor outside of" +
+                                " range 0-10. GEOPHIRES will assume default exploration cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Well Drilling and Completion Capital Cost Adjustment Factor":
                         if self.ccwellfixed.Valid and ParameterToModify.Valid:
-                            print("Warning: Provided well drilling and completion cost adjustment factor not \
-                            considered because valid total well drilling and completion cost provided.")
-                            model.logger.warning("Provided well drilling and completion cost adjustment factor not \
-                            considered because valid total well drilling and completion cost provided.")
+                            print("Warning: Provided well drilling and completion cost adjustment factor not" +
+                            " considered because valid total well drilling and completion cost provided.")
+                            model.logger.warning("Provided well drilling and completion cost adjustment factor not" +
+                            " considered because valid total well drilling and completion cost provided.")
                         elif not self.ccwellfixed.Provided and not self.ccwelladjfactor.Provided:
                             ParameterToModify.value = 1.0
-                            print("Warning: No valid well drilling and completion total cost or adjustment \
-                            factor provided. GEOPHIRES will assume default built-in well drilling and \
-                            completion cost correlation with adjustment factor = 1.")
-                            model.logger.warning("No valid well drilling and completion total cost or adjustment factor\
-                             provided. GEOPHIRES will assume default built-in well drilling and completion cost \
-                             correlation with adjustment factor = 1.")
+                            print("Warning: No valid well drilling and completion total cost or adjustment" +
+                            " factor provided. GEOPHIRES will assume default built-in well drilling and" +
+                            " completion cost correlation with adjustment factor = 1.")
+                            model.logger.warning("No valid well drilling and completion total cost or adjustment factor" +
+                            " provided. GEOPHIRES will assume default built-in well drilling and completion cost" +
+                            " correlation with adjustment factor = 1.")
                         elif self.ccwellfixed.Provided and not self.ccwellfixed.Valid:
-                            print("Warning: Provided well drilling and completion cost outside of range 0-1000. \
-                            GEOPHIRES will assume default built-in well drilling and completion cost correlation \
-                            with adjustment factor = 1.")
-                            model.logger.warning("Provided well drilling and completion cost outside of range 0-1000. \
-                            GEOPHIRES will assume default built-in well drilling and completion cost correlation with \
-                            adjustment factor = 1.")
+                            print("Warning: Provided well drilling and completion cost outside of range 0-1000." +
+                            " GEOPHIRES will assume default built-in well drilling and completion cost correlation" +
+                            " with adjustment factor = 1.")
+                            model.logger.warning("Provided well drilling and completion cost outside of range 0-1000." +
+                            " GEOPHIRES will assume default built-in well drilling and completion cost correlation with" +
+                            " adjustment factor = 1.")
                             self.ccwelladjfactor.value = 1.0
                         elif not self.ccwellfixed.Provided and self.ccwelladjfactor.Provided and not self.ccwelladjfactor.Valid:
-                            print("Warning: Provided well drilling and completion cost adjustment factor outside \
-                            of range 0-10. GEOPHIRES will assume default built-in well drilling and completion \
-                            cost correlation with adjustment factor = 1.")
-                            model.logger.warning("Provided well drilling and completion cost adjustment factor outside \
-                            of range 0-10. GEOPHIRES will assume default built-in well drilling and completion \
-                            cost correlation with adjustment factor = 1.")
+                            print("Warning: Provided well drilling and completion cost adjustment factor outside" +
+                            " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
+                            " cost correlation with adjustment factor = 1.")
+                            model.logger.warning("Provided well drilling and completion cost adjustment factor outside" +
+                            " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
+                            " cost correlation with adjustment factor = 1.")
                             self.ccwelladjfactor.value = 1.0
                     elif ParameterToModify.Name == "Wellfield O&M Cost Adjustment Factor":
                         if self.oamtotalfixed.Valid:
                             if self.oamwellfixed.Provided:
-                                print("Warning: Provided total wellfield O&M cost not considered because \
-                                valid total annual O&M cost provided.")
-                                model.logger.warning("Provided total wellfield O&M cost not considered because \
-                                valid total annual O&M cost provided.")
+                                print("Warning: Provided total wellfield O&M cost not considered because" +
+                                " valid total annual O&M cost provided.")
+                                model.logger.warning("Provided total wellfield O&M cost not considered because" +
+                                " valid total annual O&M cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided wellfield O&M cost adjustment factor not considered because \
-                                valid total annual O&M cost provided.")
-                                model.logger.warning("Provided wellfield O&M cost adjustment factor not considered \
-                                because valid total annual O&M cost provided.")
+                                print("Warning: Provided wellfield O&M cost adjustment factor not considered because" +
+                                " valid total annual O&M cost provided.")
+                                model.logger.warning("Provided wellfield O&M cost adjustment factor not considered" +
+                                " because valid total annual O&M cost provided.")
                         else:
                             if self.oamwellfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided wellfield O&M cost adjustment factor not considered \
-                                because valid total wellfield O&M cost provided.")
-                                model.logger.warning("Provided wellfield O&M cost adjustment factor not considered \
-                                because valid total wellfield O&M cost provided.")
+                                print("Warning: Provided wellfield O&M cost adjustment factor not considered" +
+                                " because valid total wellfield O&M cost provided.")
+                                model.logger.warning("Provided wellfield O&M cost adjustment factor not considered" +
+                                " because valid total wellfield O&M cost provided.")
                             elif not self.oamwellfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid total wellfield O&M cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in wellfield O&M cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("No valid total wellfield O&M cost or adjustment factor \
-                                provided. GEOPHIRES will assume default built-in wellfield O&M cost correlation \
-                                with adjustment factor = 1.")
+                                print("Warning: No valid total wellfield O&M cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in wellfield O&M cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("No valid total wellfield O&M cost or adjustment factor" +
+                                " provided. GEOPHIRES will assume default built-in wellfield O&M cost correlation" +
+                                " with adjustment factor = 1.")
                             elif self.oamwellfixed.Provided and not self.oamwellfixed.Valid:
-                                print("Warning: Provided total wellfield O&M cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in wellfield O&M cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("Provided total wellfield O&M cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in wellfield O&M cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided total wellfield O&M cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in wellfield O&M cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("Provided total wellfield O&M cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in wellfield O&M cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.oamwellfixed.Provided and self.oamwelladjfactor.Provided and not self.oamwelladjfactor.Valid:
-                                print("Warning: Provided wellfield O&M cost adjustment factor outside of range 0-10. \
-                                GEOPHIRES will assume default wellfield O&M cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided wellfield O&M cost adjustment factor outside of \
-                                range 0-10. GEOPHIRES will assume default wellfield O&M cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided wellfield O&M cost adjustment factor outside of range 0-10." +
+                                " GEOPHIRES will assume default wellfield O&M cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided wellfield O&M cost adjustment factor outside of" +
+                                " range 0-10. GEOPHIRES will assume default wellfield O&M cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Surface Plant Capital Cost Adjustment Factor":
                         if self.totalcapcost.Valid:
                             if self.ccplantfixed.Provided:
-                                print("Warning: Provided surface plant cost not considered because valid \
-                                total capital cost provided.")
-                                model.logger.warning("Provided surface plant cost not considered because valid \
-                                total capital cost provided.")
+                                print("Warning: Provided surface plant cost not considered because valid" +
+                                " total capital cost provided.")
+                                model.logger.warning("Provided surface plant cost not considered because valid" +
+                                " total capital cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided surface plant cost adjustment factor not considered \
-                                because valid total capital cost provided.")
-                                model.logger.warning("Provided surface plant cost adjustment factor not considered \
-                                because valid total capital cost provided.")
+                                print("Warning: Provided surface plant cost adjustment factor not considered" +
+                                " because valid total capital cost provided.")
+                                model.logger.warning("Provided surface plant cost adjustment factor not considered" +
+                                " because valid total capital cost provided.")
                         else:
                             if self.ccplantfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided surface plant cost adjustment factor not considered because \
-                                valid total surface plant cost provided.")
-                                model.logger.warning("Provided surface plant cost adjustment factor not considered \
-                                because valid total surface plant cost provided.")
+                                print("Warning: Provided surface plant cost adjustment factor not considered because" +
+                                " valid total surface plant cost provided.")
+                                model.logger.warning("Provided surface plant cost adjustment factor not considered" +
+                                " because valid total surface plant cost provided.")
                             elif not self.ccplantfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid surface plant total cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in surface plant cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("No valid surface plant total cost or adjustment factor \
-                                provided. GEOPHIRES will assume default built-in surface plant cost correlation \
-                                with adjustment factor = 1.")
+                                print("Warning: No valid surface plant total cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in surface plant cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("No valid surface plant total cost or adjustment factor" +
+                                " provided. GEOPHIRES will assume default built-in surface plant cost correlation" +
+                                " with adjustment factor = 1.")
                             elif self.ccplantfixed.Provided and not self.ccplantfixed.Valid:
-                                print("Warning: Provided surface plant cost outside of range 0-1000. \
-                                GEOPHIRES will assume default built-in surface plant cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("Provided surface plant cost outside of range 0-1000. \
-                                GEOPHIRES will assume default built-in surface plant cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided surface plant cost outside of range 0-1000." +
+                                " GEOPHIRES will assume default built-in surface plant cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("Provided surface plant cost outside of range 0-1000." +
+                                " GEOPHIRES will assume default built-in surface plant cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.ccplantfixed.Provided and self.ccplantadjfactor.Provided and not self.ccplantadjfactor.Valid:
-                                print("Warning: Provided surface plant cost adjustment factor outside of range 0-10. \
-                                GEOPHIRES will assume default surface plant cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("Provided surface plant cost adjustment factor outside of \
-                                range 0-10. GEOPHIRES will assume default surface plant cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided surface plant cost adjustment factor outside of range 0-10." +
+                                " GEOPHIRES will assume default surface plant cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("Provided surface plant cost adjustment factor outside of" +
+                                " range 0-10. GEOPHIRES will assume default surface plant cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Field Gathering System Capital Cost Adjustment Factor":
                         if self.totalcapcost.Valid:
                             if self.ccgathfixed.Provided:
-                                print("Warning: Provided field gathering system cost not considered because valid \
-                                total capital cost provided.")
-                                model.logger.warning("Provided field gathering system cost not considered because valid\
-                                 total capital cost provided.")
+                                print("Warning: Provided field gathering system cost not considered because valid" +
+                                " total capital cost provided.")
+                                model.logger.warning("Provided field gathering system cost not considered because valid" +
+                                " total capital cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided field gathering system cost adjustment factor not \
-                                considered because valid total capital cost provided.")
-                                model.logger.warning("Provided field gathering system cost adjustment factor not \
-                                considered because valid total capital cost provided.")
+                                print("Warning: Provided field gathering system cost adjustment factor not" +
+                                " considered because valid total capital cost provided.")
+                                model.logger.warning("Provided field gathering system cost adjustment factor not" +
+                                " considered because valid total capital cost provided.")
                         else:
                             if self.ccgathfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided field gathering system cost adjustment factor not \
-                                considered because valid total field gathering system cost provided.")
-                                model.logger.warning("Provided field gathering system cost adjustment factor not \
-                                considered because valid total field gathering system cost provided.")
+                                print("Warning: Provided field gathering system cost adjustment factor not" +
+                                " considered because valid total field gathering system cost provided.")
+                                model.logger.warning("Provided field gathering system cost adjustment factor not" +
+                                " considered because valid total field gathering system cost provided.")
                             elif not self.ccgathfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid field gathering system total cost or adjustment factor \
-                                provided. GEOPHIRES will assume default built-in field gathering system cost \
-                                correlation with adjustment factor = 1.")
-                                model.logger.warning("No valid field gathering system total cost or adjustment factor \
-                                provided. GEOPHIRES will assume default built-in field gathering system cost \
-                                correlation with adjustment factor = 1.")
+                                print("Warning: No valid field gathering system total cost or adjustment factor" +
+                                " provided. GEOPHIRES will assume default built-in field gathering system cost" +
+                                " correlation with adjustment factor = 1.")
+                                model.logger.warning("No valid field gathering system total cost or adjustment factor" +
+                                " provided. GEOPHIRES will assume default built-in field gathering system cost" +
+                                " correlation with adjustment factor = 1.")
                             elif self.ccgathfixed.Provided and not self.ccgathfixed.Valid:
-                                print("Warning: Provided field gathering system cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in field gathering system cost correlation \
-                                with adjustment factor = 1.")
-                                model.logger.warning("Provided field gathering system cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in field gathering system cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided field gathering system cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in field gathering system cost correlation" +
+                                " with adjustment factor = 1.")
+                                model.logger.warning("Provided field gathering system cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in field gathering system cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.ccgathfixed.Provided and ParameterToModify.Provided and not ParameterToModify.Valid:
-                                print("Warning: Provided field gathering system cost adjustment factor \
-                                outside of range 0-10. GEOPHIRES will assume default field gathering system \
-                                cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided field gathering system cost adjustment factor \
-                                outside of range 0-10. GEOPHIRES will assume default field gathering system cost \
-                                correlation with adjustment factor = 1.")
+                                print("Warning: Provided field gathering system cost adjustment factor" +
+                                " outside of range 0-10. GEOPHIRES will assume default field gathering system" +
+                                " cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided field gathering system cost adjustment factor" +
+                                " outside of range 0-10. GEOPHIRES will assume default field gathering system cost" +
+                                " correlation with adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Water Cost Adjustment Factor":
                         if self.oamtotalfixed.Valid:
                             if self.oamwaterfixed.Provided:
-                                print("Warning: Provided total water cost not considered because valid \
-                                total annual O&M cost provided.")
-                                model.logger.warning("Provided total water cost not considered because valid \
-                                total annual O&M cost provided.")
+                                print("Warning: Provided total water cost not considered because valid" +
+                                " total annual O&M cost provided.")
+                                model.logger.warning("Provided total water cost not considered because valid" +
+                                " total annual O&M cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided water cost adjustment factor not considered because \
-                                valid total annual O&M cost provided.")
-                                model.logger.warning("Provided water cost adjustment factor not considered because \
-                                valid total annual O&M cost provided.")
+                                print("Warning: Provided water cost adjustment factor not considered because" +
+                                " valid total annual O&M cost provided.")
+                                model.logger.warning("Provided water cost adjustment factor not considered because" +
+                                " valid total annual O&M cost provided.")
                         else:
                             if self.oamwaterfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided water cost adjustment factor not considered because \
-                                valid total water cost provided.")
-                                model.logger.warning("Provided water cost adjustment factor not considered because \
-                                valid total water cost provided.")
+                                print("Warning: Provided water cost adjustment factor not considered because" +
+                                " valid total water cost provided.")
+                                model.logger.warning("Provided water cost adjustment factor not considered because" +
+                                " valid total water cost provided.")
                             elif not self.oamwaterfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid total water cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in water cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("No valid total water cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in water cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: No valid total water cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in water cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("No valid total water cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in water cost correlation with" +
+                                " adjustment factor = 1.")
                             elif self.oamwaterfixed.Provided and not self.oamwaterfixed.Valid:
-                                print("Warning: Provided total water cost outside of range 0-100. GEOPHIRES \
-                                will assume default built-in water cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided total water cost outside of range 0-100. GEOPHIRES \
-                                will assume default built-in water cost correlation with adjustment factor = 1.")
+                                print("Warning: Provided total water cost outside of range 0-100. GEOPHIRES" +
+                                " will assume default built-in water cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided total water cost outside of range 0-100. GEOPHIRES" +
+                                " will assume default built-in water cost correlation with adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.oamwaterfixed.Provided and ParameterToModify.Provided and not ParameterToModify.Valid:
-                                print("Warning: Provided water cost adjustment factor outside of range 0-10. \
-                                GEOPHIRES will assume default water cost correlation with adjustment factor = 1.")
-                                model.logger.warning("Provided water cost adjustment factor outside of range 0-10. \
-                                GEOPHIRES will assume default water cost correlation with adjustment factor = 1.")
+                                print("Warning: Provided water cost adjustment factor outside of range 0-10." +
+                                " GEOPHIRES will assume default water cost correlation with adjustment factor = 1.")
+                                model.logger.warning("Provided water cost adjustment factor outside of range 0-10." +
+                                " GEOPHIRES will assume default water cost correlation with adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Surface Plant O&M Cost Adjustment Factor":
                         if self.oamtotalfixed.Valid:
                             if self.oamplantfixed.Provided:
-                                print("Warning: Provided total surface plant O&M cost not considered because \
-                                valid total annual O&M cost provided.")
-                                model.logger.warning("Provided total surface plant O&M cost not considered because \
-                                valid total annual O&M cost provided.")
+                                print("Warning: Provided total surface plant O&M cost not considered because" +
+                                " valid total annual O&M cost provided.")
+                                model.logger.warning("Provided total surface plant O&M cost not considered because" +
+                                " valid total annual O&M cost provided.")
                             if ParameterToModify.Provided:
-                                print("Warning: Provided surface plant O&M cost adjustment factor not considered \
-                                because valid total annual O&M cost provided.")
-                                model.logger.warning("Provided surface plant O&M cost adjustment factor not considered \
-                                because valid total annual O&M cost provided.")
+                                print("Warning: Provided surface plant O&M cost adjustment factor not considered" +
+                                " because valid total annual O&M cost provided.")
+                                model.logger.warning("Provided surface plant O&M cost adjustment factor not considered" +
+                                " because valid total annual O&M cost provided.")
                         else:
                             if self.oamplantfixed.Valid and ParameterToModify.Valid:
-                                print("Warning: Provided surface plant O&M cost adjustment factor not considered \
-                                because valid total surface plant O&M cost provided.")
-                                model.logger.warning("Provided surface plant O&M cost adjustment factor not considered \
-                                because valid total surface plant O&M cost provided.")
+                                print("Warning: Provided surface plant O&M cost adjustment factor not considered" +
+                                " because valid total surface plant O&M cost provided.")
+                                model.logger.warning("Provided surface plant O&M cost adjustment factor not considered" +
+                                " because valid total surface plant O&M cost provided.")
                             elif not self.oamplantfixed.Provided and not ParameterToModify.Provided:
                                 ParameterToModify.value = 1.0
-                                print("Warning: No valid surface plant O&M cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("No valid surface plant O&M cost or adjustment factor provided. \
-                                GEOPHIRES will assume default built-in surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: No valid surface plant O&M cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("No valid surface plant O&M cost or adjustment factor provided." +
+                                " GEOPHIRES will assume default built-in surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
                             elif self.oamplantfixed.Provided and not self.oamplantfixed.Valid:
-                                print("Warning: Provided surface plant O&M cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("Provided surface plant O&M cost outside of range 0-100. \
-                                GEOPHIRES will assume default built-in surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided surface plant O&M cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("Provided surface plant O&M cost outside of range 0-100." +
+                                " GEOPHIRES will assume default built-in surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                             elif not self.oamplantfixed.Provided and ParameterToModify.Provided and not ParameterToModify.Valid:
-                                print("Warning: Provided surface plant O&M cost adjustment factor outside of \
-                                range 0-10. GEOPHIRES will assume default surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
-                                model.logger.warning("Provided surface plant O&M cost adjustment factor outside of \
-                                range 0-10. GEOPHIRES will assume default surface plant O&M cost correlation with \
-                                adjustment factor = 1.")
+                                print("Warning: Provided surface plant O&M cost adjustment factor outside of" +
+                                " range 0-10. GEOPHIRES will assume default surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
+                                model.logger.warning("Provided surface plant O&M cost adjustment factor outside of" +
+                                " range 0-10. GEOPHIRES will assume default surface plant O&M cost correlation with" +
+                                " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
         else:
             model.logger.info("No parameters read because no content provided")
@@ -1357,8 +1358,7 @@ class Economics:
                 self.DoSDACGTCalculations.value = True
                 break
 
-        model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
-
+        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def Calculate(self, model: Model) -> None:
         """
@@ -1371,10 +1371,10 @@ class Economics:
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        #This is where all the calculations are made using all the values that have been set.
-        #If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        # This is where all the calculations are made using all the values that have been set.
+        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
         # but that assumes you have set all the values that are required for these calculations
-        #If you choose to subclass this master class, you can also choose to override this method (or not),
+        # If you choose to subclass this master class, you can also choose to override this method (or not),
         # and if you do, do it before or after you call you own version of this method.  If you do,
         # you can also choose to call this method from you class, which can effectively run the calculations
         # of the superclass, making all thr values available to your methods. but you had
@@ -1392,8 +1392,8 @@ class Economics:
             if model.reserv.depth.CurrentUnits != LengthUnit.METERS:
                 checkdepth = checkdepth*1000.0
             if (checkdepth > 7000.0 or checkdepth < 500) and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
-                print ("Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
-                model.logger.warning ("Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
+                print("Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
+                model.logger.warning("Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
                 self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
             if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:  # use SIMPLE approach
                 if hasattr(model.wellbores, 'Configuration'):
@@ -1442,8 +1442,9 @@ class Economics:
             self.Cgath.value = self.ccgathadjfactor.value*50-6*np.max(model.surfaceplant.HeatExtracted.value)*1000.  # (GEOPHIRES v1 correlation)
             if model.wellbores.impedancemodelused.value:
                 pumphp = np.max(model.wellbores.PumpingPower.value)*1341
-                numberofpumps = np.ceil(pumphp/2000) # pump can be maximum 2,000 hp
-                if numberofpumps == 0: self.Cpumps = 0.0
+                numberofpumps = np.ceil(pumphp/2000)  # pump can be maximum 2,000 hp
+                if numberofpumps == 0:
+                    self.Cpumps = 0.0
                 else:
                     pumphpcorrected = pumphp/numberofpumps
                     self.Cpumps = numberofpumps*1.5*((1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
@@ -1452,10 +1453,11 @@ class Economics:
                     prodpumphp = np.max(model.wellbores.PumpingPowerProd.value)/model.wellbores.nprod.value*1341
                     Cpumpsprod = model.wellbores.nprod.value*1.5*(1750 * prodpumphp ** 0.7 + 5750 *
                                 prodpumphp ** 0.2 + 10000 + np.max(model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
-                else: Cpumpsprod = 0
+                else:
+                    Cpumpsprod = 0
 
                 injpumphp = np.max(model.wellbores.PumpingPowerInj.value)*1341
-                numberofinjpumps = np.ceil(injpumphp/2000) # pump can be maximum 2,000 hp
+                numberofinjpumps = np.ceil(injpumphp/2000)  # pump can be maximum 2,000 hp
                 if numberofinjpumps == 0:
                     Cpumpsinj = 0
                 else:
@@ -1485,8 +1487,9 @@ class Economics:
                     CCAPP1 = 2231 - 2*(MaxProducedTemperature-150.)
                 x = np.max(model.surfaceplant.ElectricityProduced.value)
                 y = np.max(model.surfaceplant.ElectricityProduced.value)
-                if y == 0.0: y = 15.0
-                z=math.pow(y/15.,-0.06)
+                if y == 0.0:
+                    y = 15.0
+                z = math.pow(y/15., -0.06)
                 self.Cplantcorrelation = CCAPP1*z*x*1000./1E6
 
             elif model.surfaceplant.pptype.value == PowerPlantType.SUPER_CRITICAL_ORC:
@@ -1554,7 +1557,8 @@ class Economics:
                 b = math.log(CCAPPRL/CCAPPLL)/math.log(PRL/PLL)
                 a = CCAPPRL/PRL**b
                 # factor 0.75 to make double flash 25% more expansive than single flash
-                self.Cplantcorrelation = 0.8*a*math.pow(np.max(model.surfaceplant.ElectricityProduced.value),b)*np.max(self.ElectricityProduced.value)*1000./1E6
+                self.Cplantcorrelation = (0.8*a*math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
+                                          np.max(model.surfaceplant.ElectricityProduced.value)*1000./1E6)
 
             elif model.surfaceplant.pptype.value == PowerPlantType.DOUBLE_FLASH:
                 if np.max(model.surfaceplant.ElectricityProduced.value) < 10.:
@@ -1607,7 +1611,8 @@ class Economics:
                 CCAPPRL = D2*maxProdTemp**2 + D1*maxProdTemp + D0
                 b = math.log(CCAPPRL/CCAPPLL)/math.log(PRL/PLL)
                 a = CCAPPRL/PRL**b
-                self.Cplantcorrelation = a*math.pow(np.max(model.surfaceplant.ElectricityProduced.value),b)*np.max(model.surfaceplant.ElectricityProduced.value)*1000./1E6
+                self.Cplantcorrelation = (a*math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
+                                          np.max(model.surfaceplant.ElectricityProduced.value)*1000./1E6)
 
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
@@ -1616,12 +1621,12 @@ class Economics:
                 self.Cplant.value = 1.12*1.15*self.ccplantadjfactor.value*self.Cplantcorrelation*1.02
 
         # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
-        if not self.ccplantfixed.Valid: # 1.15 below for contingency and 1.12 for indirect costs
+        if not self.ccplantfixed.Valid:  # 1.15 below for contingency and 1.12 for indirect costs
             if model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY,
                                                          EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduseoption = 3: cogen topping cycle
                 self.Cplant.value = self.Cplant.value + 1.12*1.15*self.ccplantadjfactor.value*250E-6*np.max(model.surfaceplant.HeatProduced.value/model.surfaceplant.enduseefficiencyfactor.value)*1000.
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
-                                                           EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY]: # enduseoption = 4: cogen bottoming cycle
+                                                           EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY]:  # enduseoption = 4: cogen bottoming cycle
                 self.Cplant = self.Cplant.value + 1.12*1.15*self.ccplantadjfactor.value*250E-6*np.max(model.surfaceplant.HeatProduced.value/model.surfaceplant.enduseefficiencyfactor.value)*1000.
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY,
                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
@@ -1652,7 +1657,8 @@ class Economics:
             else:
                 if np.max(model.surfaceplant.HeatExtracted.value) < 2.5*5.:
                     self.Claborcorrelation = 236./1E3  # M$/year
-                else: self.Claborcorrelation = (589.*math.log(np.max(model.surfaceplant.HeatExtracted.value)/5.)-304.)/1E3  # M$/year
+                else:
+                    self.Claborcorrelation = (589.*math.log(np.max(model.surfaceplant.HeatExtracted.value)/5.)-304.)/1E3  # M$/year
                 # * 1.1 to convert from 2012 to 2016$ with BLS employment cost index (for utilities in March)
             self.Claborcorrelation = self.Claborcorrelation*1.1
 
@@ -1684,10 +1690,9 @@ class Economics:
             self.Coam.value = self.oamtotalfixed.value  # total O&M cost (M$/year)
 
         if model.wellbores.redrill.value > 0:
+            # account for well redrilling
             model.Coam.value = model.Coam.value + \
-                (self.Cwell.value + model.reserv.Cstim.value)*\
-                               model.wellbores.redrill.value/\
-                               model.surfaceplant.plantlifetime.value   # account for well redrilling
+                (self.Cwell.value + model.reserv.Cstim.value) * model.wellbores.redrill.value / model.surfaceplant.plantlifetime.value
 
         # The Reservoir depth measure was arbitrarily changed to meters despite being defined in the docs as kilometers.
         # For display consistency sake, we need to convert it back

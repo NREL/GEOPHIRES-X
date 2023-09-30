@@ -10,12 +10,13 @@ import sys
 import os
 import math
 import numpy as np
-import AdvModel
-import WellBores
-import AdvGeoPHIRESUtils
-from Parameter import floatParameter, intParameter, boolParameter, OutputParameter
-from Units import *
-from OptionList import WorkingFluid, Configuration
+import geophires_x.Model as Model
+from geophires_x.WellBores import *
+import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
+from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter
+from .Reservoir import densitywater, heatcapacitywater
+from .Units import *
+from .OptionList import WorkingFluid, Configuration
 
 import h5py
 import scipy
@@ -146,26 +147,26 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     temp = 0.0
     for i in range(1, n + 1):
         b = a * 10.0
-        temp = temp + Chebyshev(a, b, m, yy, zz, yt, zt, ye, ze, alpha, sp, self.pointsource)
+        temp = temp + Chebyshev(self, a, b, m, yy, zz, yt, zt, ye, ze, alpha, sp, pointsource)
         a = b
     return temp + (1 / sp * (math.exp(-sp * 1.0e5) - math.exp(-sp * 1.0e30))) / (ye * ze) / self.rhorock / self.cprock
 
 
 # ############################Duhamerl convolution method for closed-loop system######################################
-def laplace_solution(self, sp, model) -> float:
+def laplace_solution(self, sp) -> float:
     Toutletl = 0.0
-    ss = 1.0 / sp / self.chebeve_pointsource(self.y_well, self.z_well, self.y_well, self.z_well - 0.078,
+    ss = 1.0 / sp / chebeve_pointsource(self, self.y_well, self.z_well, self.y_well, self.z_well - 0.078,
                                              self.y_boundary, self.z_boundary, self.alpha_rock, sp)
 
     Toutletl = (self.Tini - self.Tinj.value) / sp * np.exp(
-        -sp * ss / self.q_circulation / 24.0 / model.reserv.densitywater(
-            self.Tini) / model.reserv.heatcapacitywater(
+        -sp * ss / self.q_circulation / 24.0 / densitywater(
+            self.Tini) / heatcapacitywater(
             self.Tini) * self.Nonvertical_length.value - sp / self.velocity * self.Nonvertical_length.value)
     return Toutletl
 
 
 # ###############################Numerical Laplace transformation algorithm#########################
-def inverselaplace(self, NL, MM, model):
+def inverselaplace(self, NL, MM):
     V = np.zeros(50)
     Gi = np.zeros(50)
     H = np.zeros(25)
@@ -204,7 +205,7 @@ def inverselaplace(self, NL, MM, model):
     Toutlet = 0.0
     for k in range(1, NL + 1):
         Z = Az * k
-        Toutletl = self.laplace_solution(Z, model)
+        Toutletl = laplace_solution(self, Z)
         Toutlet += Toutletl * V[k]
     Toutlet = self.Tini - Az * Toutlet
     return Toutlet
@@ -264,11 +265,15 @@ def thetaZ(zt, ze, alpha, t):
     return y + y1
 
 
-def Chebyshev(a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
+def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     bma = 0.5 * (b - a)
     bpa = 0.5 * (b + a)
     cos_vals = [math.cos(math.pi * (k + 0.5) / n) for k in range(n)]
-    f = [func(yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa) for cos_val in cos_vals]
+    f = []
+    for cos_val in cos_vals:
+        result = func(self, yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa)
+        f.append(result)
+    #f = [func(yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa) for cos_val in cos_vals]
     fac = 2.0 / n
     pi_div_n = math.pi / n
     # c = [fac * np.sum([f[k] * math.cos(math.pi * j * (k + 0.5) / n)
@@ -299,12 +304,12 @@ def Chebyshev(a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     return y * d - dd + 0.5 * cint[0]  # Last step is different
 
 
-class AGSWellBores(WellBores.WellBores):
+class AGSWellBores(WellBores):
     """
     AGSWellBores Child class of WellBores; it is the same, but has advanced AGS closed-loop functionality
     """
 
-    def __init__(self, model: AdvModel):
+    def __init__(self, model: Model):
         """
         The __init__ function is the constructor for a class. It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
@@ -392,7 +397,7 @@ class AGSWellBores(WellBores.WellBores):
             "Closed-loop Configuration",
             value=Configuration.COAXIAL,
             DefaultValue=Configuration.COAXIAL,
-            AllowableRange=list(range(1, 2, 1)),
+            AllowableRange=[1,2],
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default closed-loop configuration is co-axial with injection in annulus (2)"
@@ -490,8 +495,6 @@ class AGSWellBores(WellBores.WellBores):
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
         )
-        self.NonverticalProducedTemperature.value = [
-                                                        0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
         self.NonverticalPressureDrop = self.OutputParameterDict[self.NonverticalPressureDrop.Name] = OutputParameter(
             Name="Nonvertical Pressure Drop",
             value=[0.0],
@@ -499,14 +502,13 @@ class AGSWellBores(WellBores.WellBores):
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
-        self.NonverticalPressureDrop.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):
         return "AGSWellBores"
 
-    def read_parameters(self, model: AdvModel) -> None:
+    def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
@@ -574,16 +576,14 @@ class AGSWellBores(WellBores.WellBores):
         # returns the total length, vertical length, and horizontal lengths, depending on the configuration
         if self.Configuration.value == Configuration.ULOOP:
             # Total drilling depth of both wells and laterals in U-loop [m]
-            return ((
-                        self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
+            return ((self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
                    2 * model.reserv.InputDepth.value * 1000.0, self.numnonverticalsections.value * self.Nonvertical_length.value
         else:
             # Total drilling depth of well and lateral in co-axial case [m]
-            return (
-                       self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
+            return (self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
                    self.Nonvertical_length.value
 
-    def initialize(self, model: AdvModel) -> None:
+    def initialize(self, model: Model) -> None:
         """
         The initialize function reads values and arrays to be in the format that CLGS model systems expects
         :param self: Access variables that belong to a class
@@ -624,11 +624,13 @@ class AGSWellBores(WellBores.WellBores):
 
         # load property data
         if self.Fluid.value == WorkingFluid.WATER:
-            self.mat = scipy.io.loadmat('D:/Work/GEOPHIRES3-master/CLG Simulator/properties_H2O.mat')
+            self.mat = scipy.io.loadmat(
+                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator/properties_H2O.mat')
         else:
-            self.mat = scipy.io.loadmat('D:/Work/GEOPHIRES3-master/CLG Simulator/properties_CO2v2.mat')
+            self.mat = scipy.io.loadmat(
+                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator/properties_CO2v2.mat')
             self.additional_mat = scipy.io.loadmat(
-                'D:/Work/GEOPHIRES3-master/CLG Simulator/additional_properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator/additional_properties_CO2v2.mat')
         self.Pvector = self.mat['Pvector'][0]
         self.Tvector = self.mat['Tvector'][0]
         self.density = self.mat['density']
@@ -643,7 +645,7 @@ class AGSWellBores(WellBores.WellBores):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def getTandP(self, model: AdvModel) -> None:
+    def getTandP(self, model: Model) -> None:
         """
         The getTandP function reads and prepares Temperature and Pressure values from the CLGS database
         :param self: Access variables that belong to a class
@@ -668,7 +670,7 @@ class AGSWellBores(WellBores.WellBores):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def verify(self, model: AdvModel) -> int:
+    def verify(self, model: Model) -> int:
         """
         The validate function checks that all values provided are within the range expected by CLGS modeling system.
          These values in within a smaller range than the value ranges available to GEOPHIRES-X
@@ -714,8 +716,8 @@ class AGSWellBores(WellBores.WellBores):
             year = math.trunc(time_operation / al)
 
             # nonvertical wellbore fluid conditions based on current temperature
-            rhowater = model.reserv.densitywater(self.NonverticalProducedTemperature.value[year])
-            muwater = model.reserv.viscositywater(self.NonverticalProducedTemperature.value[year])
+            rhowater = densitywater(self.NonverticalProducedTemperature.value[year])
+            muwater = viscositywater(self.NonverticalProducedTemperature.value[year])
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
             # assume turbulent flow.
@@ -749,7 +751,7 @@ class AGSWellBores(WellBores.WellBores):
 
         return NonverticalPressureDrop, friction
 
-    def Calculate(self, model: AdvModel) -> None:
+    def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and extracts the values from the AGS model
         :param self: Access variables that belong to a class
@@ -759,185 +761,176 @@ class AGSWellBores(WellBores.WellBores):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        # before we calculate anything, let's see if there is a suitable result already in the database
-        key = AdvGeoPHIRESUtils.CheckForExistingResult(model, self)
-        if key is None:
-            self.Tini = model.reserv.Trock.value  # initialize the temperature to be the initial temperature of the reservoir
-            if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
-                # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.
-                if self.Tini > 375.0:
-                    model.logger.warn("In AGS, but forced to use Wanju code because initial reservoir temperature \
-                    is too high for CLGS")
-                    print("In AGS, but forced to use Wanju code because initial reservoir temperature \
-                    is too high for CLGS")
+        self.Tini = model.reserv.Trock.value  # initialize the temperature to be the initial temperature of the reservoir
+        if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
+            # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.
+            if self.Tini > 375.0:
+                model.logger.warn("In AGS, but forced to use Wanju code because initial reservoir temperature \
+                is too high for CLGS")
+                print("In AGS, but forced to use Wanju code because initial reservoir temperature \
+                is too high for CLGS")
 
-                # handle special cases for the multilateral calc parameters you added
-                if self.nonverticalwellborediameter.value > 2.0:
-                    # correct the units of needed
-                    self.nonverticalwellborediameter.value = self.nonverticalwellborediameter.value * 0.0254
-                    self.nonverticalwellborediameter.CurrentUnits = LengthUnit.METERS
-                self.area = math.pi * (self.nonverticalwellborediameter.value * 0.5) * (
-                        self.nonverticalwellborediameter.value * 0.5)
-                # need to convert prodwellflowrate in l/sec to m3/hour
-                # and then split the flow equally across all the sections
-                self.q_circulation = (self.prodwellflowrate.value / 3.6) / self.numnonverticalsections.value
-                self.velocity = self.q_circulation / self.area * 24.0
-                # Wanju says it ts OK to make these numbers large - "we consider it is an infinite system"
-                self.x_boundary = self.y_boundary = self.z_boundary = 2.0e15
-                self.y_well = 0.5 * self.y_boundary  # Nonvertical wellbore in the center
-                self.z_well = 0.5 * self.z_boundary  # Nonvertical wellbore in the center
-                self.al = 365.0 / 4.0 * model.economics.timestepsperyear.value
-                self.time_max = model.surfaceplant.plantlifetime.value * 365.0
-                self.rhorock = model.reserv.rhorock.value
-                self.cprock = model.reserv.cprock.value
-                self.alpha_rock = model.reserv.krock.value / model.reserv.rhorock.value / model.reserv.cprock.value * 24.0 * 3600.0
+            # handle special cases for the multilateral calc parameters you added
+            if self.nonverticalwellborediameter.value > 2.0:
+                # correct the units of needed
+                self.nonverticalwellborediameter.value = self.nonverticalwellborediameter.value * 0.0254
+                self.nonverticalwellborediameter.CurrentUnits = LengthUnit.METERS
+            self.area = math.pi * (self.nonverticalwellborediameter.value * 0.5) * (
+                    self.nonverticalwellborediameter.value * 0.5)
+            # need to convert prodwellflowrate in l/sec to m3/hour
+            # and then split the flow equally across all the sections
+            self.q_circulation = (self.prodwellflowrate.value / 3.6) / self.numnonverticalsections.value
+            self.velocity = self.q_circulation / self.area * 24.0
+            # Wanju says it ts OK to make these numbers large - "we consider it is an infinite system"
+            self.x_boundary = self.y_boundary = self.z_boundary = 2.0e15
+            self.y_well = 0.5 * self.y_boundary  # Nonvertical wellbore in the center
+            self.z_well = 0.5 * self.z_boundary  # Nonvertical wellbore in the center
+            self.al = 365.0 / 4.0 * model.economics.timestepsperyear.value
+            self.time_max = model.surfaceplant.plantlifetime.value * 365.0
+            self.rhorock = model.reserv.rhorock.value
+            self.cprock = model.reserv.cprock.value
+            self.alpha_rock = model.reserv.krock.value / model.reserv.rhorock.value / model.reserv.cprock.value * 24.0 * 3600.0
+            # initialize the arrays
+            self.NonverticalProducedTemperature.value = [0.0] * model.surfaceplant.plantlifetime.value
+            self.NonverticalPressureDrop.value = [0.0] * model.surfaceplant.plantlifetime.value
 
-                t = self.time_operation.value
-                while self.time_operation.value <= self.time_max:
-                    # MIR figure out how to calculate year ands extract Tini from reserv Tresoutput array
-                    year = math.trunc(self.time_operation.value / self.al)
-                    self.NonverticalProducedTemperature.value[year] = inverselaplace(16, 0, model)
-                    # update alpha_fluid value based on next temperature of reservoir
-                    self.alpha_fluid = self.WaterThermalConductivity.value / model.reserv.densitywater(
-                        self.NonverticalProducedTemperature.value[year]) / model.reserv.heatcapacitywater(
-                        self.NonverticalProducedTemperature.value[year]) * 24.0 * 3600.0
-                    self.time_operation.value += self.al
+            t = self.time_operation.value
+            while self.time_operation.value <= self.time_max:
+                # MIR figure out how to calculate year ands extract Tini from reserv Tresoutput array
+                year = math.trunc(self.time_operation.value / self.al)
+                self.NonverticalProducedTemperature.value[year] = inverselaplace(self,16,0)
+                # update alpha_fluid value based on next temperature of reservoir
+                self.alpha_fluid = self.WaterThermalConductivity.value / densitywater(
+                    self.NonverticalProducedTemperature.value[year]) / heatcapacitywater(
+                    self.NonverticalProducedTemperature.value[year]) * 24.0 * 3600.0
+                self.time_operation.value += self.al
 
-                self.time_operation.value = t  # set it back for use in later loop
-                # interpolate the result to a longer array
-                self.NonverticalProducedTemperature.value = signal.resample(self.NonverticalProducedTemperature.value,
-                                                                            len(model.reserv.Tresoutput.value))
+            self.time_operation.value = t  # set it back for use in later loop
+            # interpolate the result to a longer array
+            self.NonverticalProducedTemperature.value = signal.resample(self.NonverticalProducedTemperature.value,
+                                                                        len(model.reserv.Tresoutput.value))
 
-                # Calculate the temperature drop as the fluid makes it way to the surface (or use a constant value)
-                # if not Ramey, hard code a user-supplied temperature drop.
-                self.ProdTempDrop.value = self.tempdropprod.value
-                model.reserv.cpwater.value = model.reserv.heatcapacitywater(
-                    self.NonverticalProducedTemperature.value[0])
-                if self.rameyoptionprod.value:
-                    self.ProdTempDrop.value = self.RameyCalc(model.reserv.krock.value,
-                                                             model.reserv.rhorock.value,
-                                                             model.reserv.cprock.value,
-                                                             self.prodwelldiam.value,
-                                                             model.reserv.timevector.value,
-                                                             model.surfaceplant.utilfactor.value,
-                                                             self.prodwellflowrate.value,
-                                                             model.reserv.cpwater.value,
-                                                             model.reserv.Trock.value,
-                                                             model.reserv.Tresoutput.value,
-                                                             model.reserv.averagegradient.value / 1000.0,
-                                                             model.reserv.InputDepth.value)
+            # Calculate the temperature drop as the fluid makes it way to the surface (or use a constant value)
+            # if not Ramey, hard code a user-supplied temperature drop.
+            self.ProdTempDrop.value = self.tempdropprod.value
+            model.reserv.cpwater.value = heatcapacitywater(self.NonverticalProducedTemperature.value[0])
+            if self.rameyoptionprod.value:
+                self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
+                                                         model.reserv.rhorock.value,
+                                                         model.reserv.cprock.value,
+                                                         self.prodwelldiam.value,
+                                                         model.reserv.timevector.value,
+                                                         model.surfaceplant.utilfactor.value,
+                                                         self.prodwellflowrate.value,
+                                                         model.reserv.cpwater.value,
+                                                         model.reserv.Trock.value,
+                                                         model.reserv.Tresoutput.value,
+                                                         model.reserv.averagegradient.value / 1000.0,
+                                                         model.reserv.InputDepth.value)
 
-                self.ProducedTemperature.value = self.NonverticalProducedTemperature.value - self.ProdTempDrop.value
+            self.ProducedTemperature.value = self.NonverticalProducedTemperature.value - self.ProdTempDrop.value
 
-                # Now use the parent's calculation to calculate the upgoing and downgoing pressure drops and pumping power
-                self.PumpingPower.value = [0.0] * len(self.ProducedTemperature.value)  # initialize the array
-                if self.productionwellpumping.value:
-                    self.rhowaterinj = model.reserv.densitywater(model.reserv.Tsurf.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
-                    self.rhowaterprod = model.reserv.densitywater(model.reserv.Trock.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
-                    self.DPProdWell.value, f3, vprod, self.rhowaterprod = self.WellPressureDrop(model,
-                                model.reserv.Tresoutput.value - self.ProdTempDrop.value / 4.0,
-                                self.prodwellflowrate.value,
-                                self.prodwelldiam.value,
-                                self.impedancemodelused.value,
-                                model.reserv.InputDepth.value)
-                    if self.impedancemodelused.value:  # assumed everything stays liquid throughout
-                        self.DPOverall.value, UpgoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
-                            self.ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
-                                 f3, vprod,
-                                 self.rhowaterinj, self.rhowaterprod,
-                                 self.rhowaterprod, model.reserv.depth.value, self.prodwellflowrate.value,
-                                 self.prodwelldiam.value, self.impedance.value,
-                                 self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
-                        self.DPOverall.value, DowngoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value =\
-                            self.ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
-                                f3, vprod,
-                                self.rhowaterprod, self.rhowaterinj, model.reserv.rhowater.value, model.reserv.depth.value,
-                                self.prodwellflowrate.value, self.injwelldiam.value, self.impedance.value,
-                                self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
+            # Now use the parent's calculation to calculate the upgoing and downgoing pressure drops and pumping power
+            self.PumpingPower.value = [0.0] * len(self.ProducedTemperature.value)  # initialize the array
+            if self.productionwellpumping.value:
+                self.rhowaterinj = densitywater(model.reserv.Tsurf.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
+                self.rhowaterprod = densitywater(model.reserv.Trock.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
+                self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
+                            model.reserv.Tresoutput.value - self.ProdTempDrop.value / 4.0,
+                            self.prodwellflowrate.value,
+                            self.prodwelldiam.value,
+                            self.impedancemodelused.value,
+                            model.reserv.InputDepth.value)
+                if self.impedancemodelused.value:  # assumed everything stays liquid throughout
+                    self.DPOverall.value, UpgoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
+                        ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
+                             f3, vprod,
+                             self.rhowaterinj, self.rhowaterprod,
+                             self.rhowaterprod, model.reserv.depth.value, self.prodwellflowrate.value,
+                             self.prodwelldiam.value, self.impedance.value,
+                             self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
+                    self.DPOverall.value, DowngoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value =\
+                        ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
+                            f3, vprod,
+                            self.rhowaterprod, self.rhowaterinj, model.reserv.rhowater.value, model.reserv.depth.value,
+                            self.prodwellflowrate.value, self.injwelldiam.value, self.impedance.value,
+                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
 
-                    else:  # PI is used for both the verticals
-                        UpgoingPumpingPower, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
-                            self.ProdPressureDropAndPumpingPowerUsingIndexes(
-                                model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
-                                self.usebuiltinppwellheadcorrelation,
-                                model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
-                                model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
-                                self.prodwellflowrate.value, f3, vprod,
-                                self.prodwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
-                                self.rhowaterprod)
+                else:  # PI is used for both the verticals
+                    UpgoingPumpingPower, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
+                        ProdPressureDropAndPumpingPowerUsingIndexes(
+                            model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
+                            self.usebuiltinppwellheadcorrelation,
+                            model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
+                            model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
+                            self.prodwellflowrate.value, f3, vprod,
+                            self.prodwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
+                            self.rhowaterprod)
 
-                        DowngoingPumpingPower, ppp2, dppw, ppwh = self.ProdPressureDropAndPumpingPowerUsingIndexes(
-                                model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
-                                self.usebuiltinppwellheadcorrelation,
-                                model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
-                                model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
-                                self.prodwellflowrate.value, f3, vprod,
-                                self.injwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
-                                self.rhowaterinj)
+                    DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
+                            model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
+                            self.usebuiltinppwellheadcorrelation,
+                            model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
+                            model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
+                            self.prodwellflowrate.value, f3, vprod,
+                            self.injwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
+                            self.rhowaterinj)
 
-                    # Calculate Nonvertical Pressure Drop
-                    NonverticalPumpingPower = [0.0] * len(DowngoingPumpingPower)  # initialize the array
-                    self.NonverticalPressureDrop.value, f3 = self.CalculateNonverticalPressureDrop(
-                        model,
-                        self.time_operation.value,
-                        self.time_max,
-                        self.al)
+                # Calculate Nonvertical Pressure Drop
+                NonverticalPumpingPower = [0.0] * len(DowngoingPumpingPower)  # initialize the array
+                self.NonverticalPressureDrop.value, f3 = self.CalculateNonverticalPressureDrop(
+                    model,
+                    self.time_operation.value,
+                    self.time_max,
+                    self.al)
 
-                    # calculate nonvertical well pumping power needed[MWe]
-                    NonverticalPumpingPower = self.NonverticalPressureDrop.value * self.nprod.value * \
-                                              self.prodwellflowrate.value / self.rhowaterprod / \
-                                              model.surfaceplant.pumpeff.value / 1E3  # [MWe] total pumping power for nonvertical section
-                    NonverticalPumpingPower = np.array([0. if x < 0. else x for x in NonverticalPumpingPower])  # cannot be negative so set to 0
+                # calculate nonvertical well pumping power needed[MWe]
+                NonverticalPumpingPower = self.NonverticalPressureDrop.value * self.nprod.value * \
+                                          self.prodwellflowrate.value / self.rhowaterprod / \
+                                          model.surfaceplant.pumpeff.value / 1E3  # [MWe] total pumping power for nonvertical section
+                NonverticalPumpingPower = np.array([0. if x < 0. else x for x in NonverticalPumpingPower])  # cannot be negative so set to 0
 
-                    # recalculate the pumping power by looking at the difference between the upgoing and downgoing and the nonvertical
-                    self.PumpingPower.value = DowngoingPumpingPower + NonverticalPumpingPower - UpgoingPumpingPower
-                    self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]  # cannot be negative, so set to 0
+                # recalculate the pumping power by looking at the difference between the upgoing and downgoing and the nonvertical
+                self.PumpingPower.value = DowngoingPumpingPower + NonverticalPumpingPower - UpgoingPumpingPower
+                self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]  # cannot be negative, so set to 0
 
-            else:  # do the CLGS-style calculation
-                err = self.verify(model)
-                if err > 0:
-                    model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                    print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                    sys.exit()
-                self.initialize(model)
-                self.getTandP(model)
+        else:  # do the CLGS-style calculation
+            err = self.verify(model)
+            if err > 0:
+                model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
+                print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
+                sys.exit()
+            self.initialize(model)
+            self.getTandP(model)
 
-                # Deep Copy the Arrays
-                self.InterpolatedTemperatureArray = self.Tout.copy()
-                self.InterpolatedTemperatureArray = self.InterpolatedTemperatureArray - 273.15
-                self.InterpolatedPressureArray = self.Pout.copy()
-                self.DPOverall.value = self.InterpolatedPressureArray.copy()
-                self.ProducedTemperature.value = self.InterpolatedTemperatureArray.copy()
+            # Deep Copy the Arrays
+            self.InterpolatedTemperatureArray = self.Tout.copy()
+            self.InterpolatedTemperatureArray = self.InterpolatedTemperatureArray - 273.15
+            self.InterpolatedPressureArray = self.Pout.copy()
+            self.DPOverall.value = self.InterpolatedPressureArray.copy()
+            self.ProducedTemperature.value = self.InterpolatedTemperatureArray.copy()
 
-                tot_length, vert_length, horizontal_lengths = self.calculatedrillinglengths(model)
-                model.reserv.depth.value = model.reserv.InputDepth.value * 1000.0  # in this case, reserv.depth is just the vertical drill depth
+            tot_length, vert_length, horizontal_lengths = self.calculatedrillinglengths(model)
+            model.reserv.depth.value = model.reserv.InputDepth.value * 1000.0  # in this case, reserv.depth is just the vertical drill depth
 
-                # getTandP results must be rejiggered to match wellbores expected output. Once done,
-                # the surfaceplant and economics models should just work
-                # #overall pressure drop  = previous pressure drop (as calculated from the verticals) + nonvertical section pressure drop
-                # interpolation is required because DPOverall is sampled slightly differently, and DPOverall is sampled more frequently
-                f = interp1d(np.arange(0, len(self.DPOverall.value)), self.DPOverall.value, fill_value="extrapolate")
-                self.DPOverall.value = f(np.arange(0, len(self.DPOverall.value), 1))
+            # getTandP results must be rejiggered to match wellbores expected output. Once done,
+            # the surfaceplant and economics models should just work
+            # #overall pressure drop  = previous pressure drop (as calculated from the verticals) + nonvertical section pressure drop
+            # interpolation is required because DPOverall is sampled slightly differently, and DPOverall is sampled more frequently
+            f = interp1d(np.arange(0, len(self.DPOverall.value)), self.DPOverall.value, fill_value="extrapolate")
+            self.DPOverall.value = f(np.arange(0, len(self.DPOverall.value), 1))
 
-                # calculate water values based on initial temperature
-                rhowater = model.reserv.densitywater(self.Tout[0])
-                model.reserv.cpwater.value = model.reserv.heatcapacitywater(self.Tout[0])  # Need this for surface plant output calculation
+            # calculate water values based on initial temperature
+            rhowater = densitywater(self.Tout[0])
+            model.reserv.cpwater.value = heatcapacitywater(self.Tout[0])  # Need this for surface plant output calculation
 
-                # set pumping power to zero for all times, assuming that the thermosphere wil always
-                # make pumping of working fluid unnecessary
-                self.PumpingPower.value = [0.0] * (len(self.DPOverall.value))
-                self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pumpeff.value / 1E3
-                # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity) = thermosiphon is happening!
-                self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
+            # set pumping power to zero for all times, assuming that the thermosphere wil always
+            # make pumping of working fluid unnecessary
+            self.PumpingPower.value = [0.0] * (len(self.DPOverall.value))
+            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pumpeff.value / 1E3
+            # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity) = thermosiphon is happening!
+            self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
-        # store the calculation result and associated object parameters in the database
-        resultkey = AdvGeoPHIRESUtils.store_result(model, self)
-        if resultkey.startswith("ERROR"):
-            model.logger.warn("Failed To Store " + str(__class__) + " " + os.path.abspath(__file__))
-        elif len(resultkey) == 0:
-            pass
-        else:
-            model.logger.info("stored " + str(__class__) + " " + os.path.abspath(__file__) + " as: " + resultkey)
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):

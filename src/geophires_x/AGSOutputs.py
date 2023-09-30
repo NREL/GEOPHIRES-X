@@ -4,7 +4,7 @@ import sys
 from .Parameter import ConvertUnitsBack, ConvertOutputUnits
 from .OptionList import EndUseOptions, EconomicModel
 from .Units import *
-import geophires_x.AdvModel as AdvModel
+import geophires_x.Model as Model
 import geophires_x.Outputs as Outputs
 import numpy as np
 
@@ -14,7 +14,7 @@ NL = "\n"
 class AGSOutputs(Outputs.Outputs):
     """description of class"""
 
-    def PrintOutputs(self, model: AdvModel):
+    def PrintOutputs(self, model: Model):
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back to the units that the user entered the data in
@@ -149,7 +149,7 @@ class AGSOutputs(Outputs.Outputs):
                             f.write(
                                 '  {0:2.0f}         {1:8.4f}              {2:8.2f}             {3:8.4f}          {4:8.4f}              {5:8.4f}'.format(
                                     i + 1,
-                                    model.wellbores.ProducedTemperature.value[i * model.economics.timestepsperyear.value],
+                                    model.wellbores.ProducedTemperature.value[i * model.economics.timestepsperyear.value] /\
                                     model.wellbores.ProducedTemperature.value[0],
                                     model.wellbores.ProducedTemperature.value[i],
                                     model.wellbores.PumpingPower.value[i],
@@ -163,7 +163,7 @@ class AGSOutputs(Outputs.Outputs):
                             f.write(
                                 '  {0:2.0f}         {1:8.4f}              {2:8.2f}             {3:8.4f}          {4:8.4f}'.format(
                                     i,
-                                    model.wellbores.ProducedTemperature.value[i * model.economics.timestepsperyear.value],
+                                    model.wellbores.ProducedTemperature.value[i * model.economics.timestepsperyear.value] /\
                                     model.wellbores.ProducedTemperature.value[0],
                                     model.wellbores.ProducedTemperature.value[i * model.economics.timestepsperyear.value],
                                     model.wellbores.PumpingPower.value[i],

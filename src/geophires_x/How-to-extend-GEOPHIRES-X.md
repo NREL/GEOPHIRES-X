@@ -17,7 +17,7 @@ import math
 import sys
 import numpy as np
 import numpy_financial as npf
-import AdvModel
+import Model
 import Economics
 from OptionList import EndUseOptions
 from Parameter import intParameter, floatParameter, listParameter, OutputParameter

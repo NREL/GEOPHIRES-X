@@ -1,24 +1,25 @@
 import sys
-import AdvModel
-import Outputs
+from geophires_x.Outputs import Outputs
+from geophires_x.Model import Model
 
 NL = "\n"
 
 
-class OutputsS_DAC_GT(Outputs.Outputs):
+class OutputsS_DAC_GT(Outputs):
     """description of class"""
-    def PrintOutputs(self, model:AdvModel):
+    def PrintOutputs(self, model: Model):
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         # now do S_DAC_GT output, which will append to the original output
         # write results to output file and screen
         try:
             outputfile = "HDR.out"
-            if len(sys.argv) > 2: outputfile = sys.argv[2]
-            with open(outputfile,'a', encoding='UTF-8') as f:
+            if len(sys.argv) > 2:
+                outputfile = sys.argv[2]
+            with open(outputfile, 'a', encoding='UTF-8') as f:
                 f.write(NL)
                 f.write(NL)
-                f.write("                            ***S_DAC_GT ECONOMICS***"+ NL);
+                f.write("                            ***S_DAC_GT ECONOMICS***" + NL)
                 f.write(NL)
                 f.write(NL)
                 f.write(f"      S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)" + NL)
@@ -26,7 +27,7 @@ class OutputsS_DAC_GT(Outputs.Outputs):
                 f.write(f"      Using natural gas only:            {model.sdacgteconomics.LCOD_ng.value:10.2f} " + model.sdacgteconomics.LCOD_ng.PreferredUnits.value + NL)
                 f.write(f"      Using geothermal energy only:      {model.sdacgteconomics.LCOD_geo.value:10.2f} " + model.sdacgteconomics.LCOD_geo.PreferredUnits.value + NL + NL)
                 f.write(f"      S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)" + NL)
-                f.write(f"      Using grid-based electricity only: {model.sdacgteconomics.CO2total_elec.value*100.0:10.2f}%"  + NL)
+                f.write(f"      Using grid-based electricity only: {model.sdacgteconomics.CO2total_elec.value*100.0:10.2f}%" + NL)
                 f.write(f"      Using natural gas only:            {model.sdacgteconomics.CO2total_ng.value*100:10.2f}%" + NL)
                 f.write(f"      Using geothermal energy only:      {model.sdacgteconomics.CO2total_geo.value*100:10.2f}%" + NL + NL)
                 f.write(f"      Geothermal LCOH:                     {model.sdacgteconomics.LCOH.value:10.4f} " + model.sdacgteconomics.LCOH.PreferredUnits.value + NL)
@@ -53,10 +54,10 @@ class OutputsS_DAC_GT(Outputs.Outputs):
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
-            print str(ex)
+            print(str(ex))
             print("Error: GEOPHIRES failed to Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
             model.logger.critical(str(ex))
             model.logger.critical("Error: GEOPHIRES failed to Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
             sys.exit()
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

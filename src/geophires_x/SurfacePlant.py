@@ -8,7 +8,7 @@ import geophires_x.Model as Model
 
 
 class SurfacePlant:
-    def __init__(self, model:Model):
+    def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
@@ -24,7 +24,7 @@ class SurfacePlant:
         self.Tinj = 0.0
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc) and
+        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and
         # Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that range
         # is exceeded, the ToolTip Text, and the name of teh class that created it.
         # This includes setting up temporary variables that will be available to all the class but noy read in by user,
@@ -51,8 +51,8 @@ class SurfacePlant:
             AllowableRange=[1, 2, 3, 4],
             UnitType=Units.NONE,
             ErrMessage="assume default power plant type (1: subcritical ORC)",
-            ToolTipText="Specify the type of power plant in case of electricity generation. 1: Subcritical ORC, \
-            2: Supercritical ORC, 3: Single-flash, 4: Double-flash"
+            ToolTipText="Specify the type of power plant in case of electricity generation. 1: Subcritical ORC," +
+            " 2: Supercritical ORC, 3: Single-flash, 4: Double-flash"
         )
         self.pumpeff = self.ParameterDict[self.pumpeff.Name] = floatParameter(
             "Circulation Pump Efficiency",
@@ -102,8 +102,8 @@ class SurfacePlant:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default CHP fraction (0.5)",
-            ToolTipText="Fraction of produced geofluid flow rate going to direct-use heat application in \
-            CHP parallel cycle"
+            ToolTipText="Fraction of produced geofluid flow rate going to direct-use heat application in" +
+            " CHP parallel cycle"
         )
         self.Tchpbottom = self.ParameterDict[self.Tchpbottom.Name] = floatParameter(
             "CHP Bottoming Entering Temperature",
@@ -132,7 +132,7 @@ class SurfacePlant:
         self.plantlifetime = self.ParameterDict[self.plantlifetime.Name] = intParameter(
             "Plant Lifetime",
             value=30,
-            DefaultValue=30.0,
+            DefaultValue=30,
             AllowableRange=list(range(1, 101, 1)),
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.YEAR,
@@ -174,8 +174,8 @@ class SurfacePlant:
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
             ErrMessage="assume default electricity rate ($0.07/kWh)",
-            ToolTipText="Price of electricity to calculate pumping costs in direct-use heat only mode or revenue \
-            from electricity sales in CHP mode."
+            ToolTipText="Price of electricity to calculate pumping costs in direct-use heat only mode or revenue" +
+            " from electricity sales in CHP mode."
         )
         self.heatprice = self.ParameterDict[self.heatprice.Name] = floatParameter(
             "Heat Rate",
@@ -303,7 +303,7 @@ class SurfacePlant:
             CurrentUnits=PowerUnit.MW
         )
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):
         return "SurfacePlant"
@@ -331,7 +331,7 @@ class SurfacePlant:
         # these superclass parameters in your class.
 
         if len(model.InputParameters) > 0:
-            # loop thru all the parameters that the user wishes to set, looking for parameters that match this object
+            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
             for item in self.ParameterDict.items():
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
@@ -401,33 +401,32 @@ class SurfacePlant:
                         if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100
-                                    print("Warning: Provided plant outlet pressure outside of range 0-10000. \
-                                    GEOPHIRES will assume default plant outlet pressure (100 kPa)")
-                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000. \
-                                    GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                                    print("Warning: Provided plant outlet pressure outside of range 0-10000." +
+                                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000." +
+                                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
                                 else:
                                     self.usebuiltinoutletplantcorrelation.value = True
-                                    print("Warning: Provided plant outlet pressure outside of range 0-10000 kPa. \
-                                    GEOPHIRES will calculate plant outlet pressure based on \
-                                    production wellhead pressure and surface equipment pressure drop of 10 psi")
-                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000 kPa. \
-                                    GEOPHIRES will calculate plant outlet pressure based on \
-                                    production wellhead pressure and surface equipment pressure drop of 10 psi")
+                                    print("Warning: Provided plant outlet pressure outside of range 0-10000 kPa." +
+                                    " GEOPHIRES will calculate plant outlet pressure based on" +
+                                    " production wellhead pressure and surface equipment pressure drop of 10 psi")
+                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000 kPa." +
+                                    " GEOPHIRES will calculate plant outlet pressure based on" +
+                                    " production wellhead pressure and surface equipment pressure drop of 10 psi")
             if "Plant Outlet Pressure" not in model.InputParameters:
                 if self.setinjectionpressurefixed:
                     self.usebuiltinoutletplantcorrelation.value = False
                     self.Pplantoutlet.value = 100
-                    print("Warning: No valid plant outlet pressure provided. \
-                    GEOPHIRES will assume default plant outlet pressure (100 kPa)")
-                    model.logger.warning("No valid plant outlet pressure provided. \
-                    GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                    print("Warning: No valid plant outlet pressure provided." +
+                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                    model.logger.warning("No valid plant outlet pressure provided." +
+                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
                 else:
                     self.usebuiltinoutletplantcorrelation.value = True
-                    print("Warning: No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet \
-                    pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
-                    model.logger.warning("No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet\
-                     pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
-
+                    print("Warning: No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet" +
+                    " pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
+                    model.logger.warning("No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet" +
+                     " pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
         else:
             model.logger.info("No parameters read because no content provided")
         model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)

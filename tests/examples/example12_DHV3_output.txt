@@ -1,0 +1,209 @@
+                               *****************
+                               ***CASE REPORT***
+                               *****************
+
+Simulation Metadata
+----------------------
+ GEOPHIRES Version: 3.0
+ GEOPHIRES Build Date: 2022-06-30
+ Simulation Date: 2023-09-30
+ Simulation Time:  17:51
+ Calculation Time:      0.117 sec
+
+                           ***SUMMARY OF RESULTS***
+
+      End-Use Option: District Heating
+      Annual District Heating Demand:                       242.90 GWh/year
+      Average Annual Geothermal Heat Production:            149.11 GWh/year
+      Average Annual Peaking Fuel Heat Production:           93.79 GWh/year
+      Average Direct-Use Heat Production:                    20.03 MW
+      Direct-Use heat breakeven price:                        0.00 USD/MMBTU
+      Number of production wells:                             2
+      Number of injection wells:                              2
+      Flowrate per production well:                          50.0 kg/sec
+      Well depth (or total length, if not vertical):          3.5 kilometer
+      Geothermal gradient:                                    0.0295 degC/m
+
+
+                           ***ECONOMIC PARAMETERS***
+
+      Economic Model = Standard Levelized Cost
+      Interest Rate:                                          5.00 
+      Accrued financing during construction:                  0.00 
+      Project lifetime:                                      30 yr
+      Capacity factor:                                       85.0 %
+      Project NPV:                                           0.00 MUSD
+      Project IRR:                                           0.00 %
+      Project VIR=PI=PIR:                                    1.00
+      Project MOIC:                                          0.00
+
+                          ***ENGINEERING PARAMETERS***
+
+      Number of Production Wells:                             2
+      Number of Injection Wells:                              2
+      Well depth (or total length, if not vertical):          3.5 kilometer
+      Water loss rate:                                        0.0 
+      Pump efficiency:                                       80.0 
+      Injection temperature:                                 50.0 degC
+      Production Wellbore heat transmission calculated with Ramey's model
+      Average production well temperature drop:               2.6 degC
+      Flowrate per production well:                          50.0 kg/sec
+      Injection well casing ID:                               0.004 meter
+      Production well casing ID:                              0.004 meter
+      Number of times redrilling:                             0
+
+
+                         ***RESOURCE CHARACTERISTICS***
+
+      Maximum reservoir temperature:                        400.0 degC
+      Number of segments:                                     1 
+      Geothermal gradient:                                    0.0295 degC/m
+
+
+                           ***RESERVOIR PARAMETERS***
+
+      Reservoir Model = Annual Percentage Thermal Drawdown Model
+      Annual Thermal Drawdown:                                0.300 1/year
+      Bottom-hole temperature:                              115.25 degC
+      Warning: the reservoir dimensions and thermo-physical properties 
+               listed below are default values if not provided by the user.   
+               They are only used for calculating remaining heat content.  
+      Reservoir volume provided as input
+      Reservoir volume:                               125000000 m**3
+      Reservoir hydrostatic pressure:                       100.00 kPa
+      Plant outlet pressure:                                445.96 kPa
+      Production wellhead pressure:                         514.91 kPa
+      Productivity Index:                                    10.00 kg/sec/bar
+      Injectivity Index:                                     10.00 kg/sec/bar
+      Reservoir density:                                   2700.00 kg/m**3
+      Reservoir thermal conductivity:                         3.00 watt/m/kelvin
+      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+
+
+                           ***RESERVOIR SIMULATION RESULTS***
+
+      Maximum Production Temperature:                       111.7 degC
+      Average Production Temperature:                       109.7 degC
+      Minimum Production Temperature:                       107.1 degC
+      Initial Production Temperature:                       111.3 degC
+      Average Reservoir Heat Extraction:                     25.03 MW
+      Production Wellbore Heat Transmission Model = Ramey Model
+      Average Production Well Temperature Drop:               2.6 degC
+      Average Injection Well Pump Pressure Drop:           1556.5 kPa
+      Average Production Well Pump Pressure Drop:          1592.6 kPa
+
+
+                          ***CAPITAL COSTS (M$)***
+
+         Drilling and completion costs:                      27.30 MUSD
+         Drilling and completion costs per well:              6.82 MUSD
+         Stimulation costs:                                   1.00 MUSD
+         Surface power plant costs:                          12.30 MUSD
+            of which Peaking Boiler Cost:                     3.97 MUSD
+         Field gathering system costs:                        2.53 MUSD
+         District Heating System Cost:                        4.80 MUSD
+         Total surface equipment costs:                      14.83 MUSD
+         Exploration costs:                                   0.00 MUSD
+      Total capital costs:                                   47.92 MUSD
+
+
+                ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
+
+         Wellfield maintenance costs:                         0.48 MUSD/yr
+         Power plant maintenance costs:                       0.73 MUSD/yr
+         Water costs:                                         0.00 MUSD/yr
+         Average Reservoir Pumping Cost:                      0.21 MUSD/yr
+         Annual District Heating O&M Cost:                    0.39 MUSD/yr
+         Average Annual Peaking Fuel Cost:                    3.01 MUSD/yr
+      Total operating and maintenance costs:                  1.81 MUSD/yr
+
+
+                           ***SURFACE EQUIPMENT SIMULATION RESULTS***
+
+      Annual District Heating Demand:                       242.90 GWh/year
+      Maximum Daily District Heating Demand:               1683.32 MWh/day
+      Average Daily District Heating Demand:                665.47 MWh/day
+      Minimum Daily District Heating Demand:                216.86 MWh/day
+      Maximum Geothermal Heating Production:                 20.69 MW
+      Average Geothermal Heating Production:                 17.02 MW
+      Minimum Geothermal Heating Production:                  9.04 MW
+      Maximum Peaking Boiler Heat Production:                50.94 MW
+      Average Peaking Boiler Heat Production:                10.71 MW
+      Minimum Peaking Boiler Heat Production:                 0.00 MW
+      Average Pumping Power:                                  0.41 MW
+
+                            ************************************************************
+                            *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
+                            ************************************************************
+  YEAR         THERMAL              GEOFLUID               PUMP              GEOTHERMAL
+               DRAWDOWN            TEMPERATURE             POWER            HEAT OUTPUT
+                                    (deg C)                (MWe)               (MWt)
+   0            1.0000               111.32                0.4002             20.5787
+   1            1.0025               111.60                0.4004             20.6718
+   2            1.0030               111.66                0.4008             20.6900
+   3            1.0024               111.60                0.4013             20.6699
+   4            1.0015               111.49                0.4019             20.6355
+   5            1.0004               111.37                0.4024             20.5939
+   6            0.9992               111.23                0.4030             20.5478
+   7            0.9979               111.08                0.4035             20.4987
+   8            0.9965               110.93                0.4041             20.4475
+   9            0.9951               110.78                0.4047             20.3948
+  10            0.9936               110.61                0.4052             20.3408
+  11            0.9922               110.45                0.4058             20.2859
+  12            0.9907               110.28                0.4064             20.2302
+  13            0.9892               110.12                0.4069             20.1738
+  14            0.9876               109.95                0.4075             20.1169
+  15            0.9861               109.78                0.4081             20.0595
+  16            0.9846               109.60                0.4086             20.0017
+  17            0.9830               109.43                0.4092             19.9436
+  18            0.9814               109.26                0.4098             19.8851
+  19            0.9799               109.08                0.4104             19.8264
+  20            0.9783               108.91                0.4109             19.7675
+  21            0.9767               108.73                0.4115             19.7083
+  22            0.9751               108.55                0.4121             19.6489
+  23            0.9735               108.38                0.4126             19.5893
+  24            0.9719               108.20                0.4132             19.5296
+  25            0.9703               108.02                0.4138             19.4698
+  26            0.9687               107.84                0.4143             19.4097
+  27            0.9671               107.66                0.4149             19.3496
+  28            0.9655               107.48                0.4155             19.2894
+  29            0.9639               107.30                0.4160             19.2290
+
+
+                              *******************************************************************
+                              *  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
+                              *******************************************************************
+  YEAR           GEOTHERMAL          PEAKING BOILER       RESERVOIR HEAT          RESERVOIR         PERCENTAGE OF
+              HEATING PROVIDED      HEATING PROVIDED        EXTRACTED            HEAT CONTENT     TOTAL HEAT MINED
+                 (GWh/year)            (GWh/year)           (GWh/year)            (10^15 J)              (%)
+   1               152.0                  90.9                190.01                21.34                3.11
+   2               152.3                  90.6                190.43                20.65                6.22
+   3               152.3                  90.6                190.37                19.97                9.33
+   4               152.2                  90.7                190.20                19.28               12.44
+   5               152.0                  90.9                189.96                18.60               15.55
+   6               151.8                  91.1                189.70                17.92               18.65
+   7               151.5                  91.4                189.41                17.23               21.74
+   8               151.3                  91.6                189.11                16.55               24.83
+   9               151.0                  91.9                188.80                15.87               27.92
+  10               150.8                  92.1                188.47                15.19               31.00
+  11               150.5                  92.4                188.14                14.52               34.08
+  12               150.2                  92.7                187.81                13.84               37.15
+  13               150.0                  92.9                187.46                13.17               40.21
+  14               149.7                  93.2                187.12                12.49               43.27
+  15               149.4                  93.5                186.77                11.82               46.32
+  16               149.1                  93.8                186.42                11.15               49.37
+  17               148.9                  94.0                186.06                10.48               52.41
+  18               148.6                  94.3                185.71                 9.81               55.45
+  19               148.3                  94.6                185.34                 9.14               58.48
+  20               148.0                  94.9                184.98                 8.48               61.50
+  21               147.7                  95.2                184.61                 7.81               64.52
+  22               147.4                  95.5                184.24                 7.15               67.53
+  23               147.1                  95.8                183.87                 6.49               70.54
+  24               146.8                  96.1                183.50                 5.83               73.54
+  25               146.5                  96.4                183.13                 5.17               76.53
+  26               146.2                  96.7                182.75                 4.51               79.52
+  27               145.9                  97.0                182.37                 3.85               82.50
+  28               145.6                  97.3                182.00                 3.20               85.48
+  29               145.3                  97.6                181.62                 2.54               88.45
+  30               145.0                  97.9                181.24                 1.89               91.41
+

@@ -3,13 +3,14 @@ import logging
 import time
 import logging.config
 
+from geophires_x.OptionList import EndUseOptions
 from geophires_x.Parameter import Parameter
 from geophires_x.GeoPHIRESUtils import read_input_file
-import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
 from geophires_x.WellBores import WellBores
 from geophires_x.SurfacePlant import SurfacePlant
 from geophires_x.Economics import Economics
 from geophires_x.Outputs import Outputs
+
 
 class Model(object):
     """
@@ -119,7 +120,7 @@ class Model(object):
         # if we find out we have an add-ons, we need to instantiate it, then read for the parameters
         if 'AddOn Nickname 1' in self.InputParameters:
             self.logger.info("Initiate the Add-on elements")
-            from geophires_x.EconomicsAddOns import EconomicsAddOns # do this only is user wants add-ons
+            from geophires_x.EconomicsAddOns import EconomicsAddOns  # do this only is user wants add-ons
             self.addeconomics = EconomicsAddOns(self)
             from geophires_x.OutputsAddOns import OutputsAddOns
             self.addoutputs = OutputsAddOns(self)
@@ -183,7 +184,8 @@ class Model(object):
         """
         The Calculate function is where all the calculations are made.  This is handled on a class-by-class basis.
 
-        The Calculate function does not return anything, but it does store the results in self.reserv, self.wellbores and self.surfaceplant for later use by other functions.
+        The Calculate function does not return anything, but it does store the results in self.reserv, self.wellbores
+         and self.surfaceplant for later use by other functions.
 
         :param self: Access the class variables
         :return: None
@@ -197,22 +199,25 @@ class Model(object):
         # This is handled on a class-by-class basis
         # We choose not to call calculate of the parent, but rather let the child handle the
         # call to the parent if it is needed
-        
-        #if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
-        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING:
-            self.surfaceplant.CalculateDHDemand(self) #calculate district heating demand
+
+        # if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
+        if self.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            self.surfaceplant.CalculateDHDemand(self)  # calculate district heating demand
 
         self.reserv.Calculate(self)  # model the reservoir
         self.wellbores.Calculate(self)  # model the wellbores
         self.surfaceplant.Calculate(self)  # model the surfaceplant
 
-        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING: #in case of district heating, the surface plant module may have updated the utilization factor, and therefore we need to recalculate the modules reservoir, wellbore and surface plant. 1 iteration should be sufficient.
-            self.reserv.Calculate(self) #model the reservoir
-            self.wellbores.Calculate(self) #model the wellbores
-            self.surfaceplant.Calculate(self) #model the surfaceplant
+        # in case of district heating, the surface plant module may have updated the utilization factor,
+        # and therefore we need to recalculate the modules reservoir, wellbore and surface plant.
+        # 1 iteration should be sufficient.
+        if self.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
+            self.reserv.Calculate(self)  # model the reservoir
+            self.wellbores.Calculate(self)  # model the wellbores
+            self.surfaceplant.Calculate(self)  # model the surfaceplant
 
         self.economics.Calculate(self)  # model the economics
-        
+
         # do the additional economic calculations if needed
         if self.economics.DoAddOnCalculations.value:
             self.addeconomics.Calculate(self)
@@ -220,7 +225,7 @@ class Model(object):
             self.ccuseconomics.Calculate(self)
         if self.economics.DoSDACGTCalculations.value:
             self.sdacgteconomics.Calculate(self)
-        
+
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def get_parameters_json(self) -> str:

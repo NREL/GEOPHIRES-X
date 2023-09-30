@@ -61,7 +61,7 @@ End-Use Efficiency Factor,0.8,		--- [-]
 District Heating Demand Option,1,					--- Should be 1 or 2. See manual or below for option details
 
 *Option 1: Known Heat Demand Profile***
-District Heating Demand File Name,C:\Users\koenr\PycharmProjects\python-geophires-x-nrel\tests\examples\cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
+District Heating Demand File Name,..\..\tests\examples\cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
 District Heating Demand Data Time Resolution,1,				--- 1 for hourly, 2 for daily
 District Heating Demand Data Column Number,2,				---
 

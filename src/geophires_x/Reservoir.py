@@ -789,7 +789,7 @@ class Reservoir:
 
         # specify time-stepping vectors
         self.timevector.value = np.linspace(0, model.surfaceplant.plantlifetime.value,
-                                        model.economics.timestepsperyear.value * model.surfaceplant.plantlifetime.value)
+                                        model.economics.timestepsperyear.value * model.surfaceplant.plantlifetime.value+1)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
         # calculate reservoir water properties

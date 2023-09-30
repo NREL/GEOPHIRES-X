@@ -1,0 +1,110 @@
+----------------------------------------------------------------------------------------
+GEOPHIRES v2.0 Input File
+Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example 4)
+Created by Charley Walton on 7/25/2022
+Last modified on 8/12/2022
+
+Description: This example considers Cornell's existing district heating network assesses
+the performance of a proposed geothermal well. A known heat demand profile for the district
+is processed using the district_heat.py module See Charley Walton's SULI Research Report
+"Techno-Economic Simulations of Geothermal District Heating Systems with GEOPHIRES" for
+more details on the case study.
+
+Note: The GEOPHIRES v2.0 python code scans the input file for each necessary "parameter,
+value". Therefore, the user cannot change the string before the parameter value and the
+comma is the required delimeter. Each paramater string may only appear once in this
+input file. However, the parameters can be in any order and comments can be added
+either by including extra lines or by typing it after the parameter value, separated by
+a comma (see examples below). If a necessary parameter is not provided, a default value
+is assumed, and a warning message is printed to the console.
+----------------------------------------------------------------------------------------
+
+*** Subsurface technical parameters ***
+****************************************
+Reservoir Model,4,			--- Percentage thermal drawdown model
+Drawdown Parameter,0.003, 		--- In [1/year].
+Reservoir Depth,3.5, 			--- [km]
+Number of Segments,1,			--- [-]
+Gradient 1,29.5, 			--- [deg.C/km]
+Number of Production Wells,2,		--- [-]
+Number of Injection Wells,2,		--- [-]
+Production Well Diameter,6,		--- [inch]
+Injection Well Diameter,6,		--- [inch]
+Ramey Production Wellbore Model,0,	--- Should be 0 (disable) or 1 (enable)
+Production Wellbore Temperature Drop,3,	--- [deg.C]
+Injection Wellbore Temperature Gain,0,	--- [deg.C]
+Production Flow Rate per Well,50, 	--- [kg/s]
+Maximum Temperature,400,		--- [deg.C]
+Reservoir Volume Option,4,		--- Should be 1, 2, 3, or 4. See manual for details.
+Reservoir Volume,1.25e8,		--- [m3] (required for reservoir volume option 3 and 4
+Water Loss Fraction,0.0,		--- [-] (total geofluid lost)/(total geofluid produced)
+Injectivity Index,10,			--- [kg/s/bar]
+Productivity Index,10,			--- [kg/s/bar]
+Injection Temperature,50,		--- [deg.C]
+Maximum Drawdown,1,			--- [-] Maximum allowable drawdown before redrilling (a value of 0.1 means redrilling of 10% drawdown)
+Reservoir Heat Capacity,1000,		--- [J/kg/K]
+Reservoir Density,2700,			--- [kg/m3]
+Reservoir Thermal Conductivity,3,	--- [W/m/K]
+
+
+*** Surface technical parameters ***
+************************************
+End-Use Option,8,			--- [-] District Heating
+Circulation Pump Efficiency,0.8,	--- [-]
+Utilization Factor,0.8,			--- [-]
+Surface Temperature,12,			--- [deg.C]
+Ambient Temperature,12,			--- [deg.C]
+End-Use Efficiency Factor,0.8,		--- [-]
+
+
+***District Heating System (If end-use option 8 selected)*
+District Heating Demand Option,1,					--- Should be 1 or 2. See manual or below for option details
+
+*Option 1: Known Heat Demand Profile***
+District Heating Demand File Name,C:\Users\koenr\PycharmProjects\python-geophires-x-nrel\tests\examples\cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
+District Heating Demand Data Time Resolution,1,				--- 1 for hourly, 2 for daily
+District Heating Demand Data Column Number,2,				---
+
+*Option 2: Unknown Heat Demand***
+Temperature File Name,Examples/fort_collins_co_tmy.csv,						--- [deg.C] Hourly temperature for typical year in CSV file
+Temperature Data Column Number,10,				--- column number of temperature in csv file, starting at 1
+Number of Housing Units,1000,					--- [-]
+Constant Anchor Demand,7,					--- [MW]
+US Census Division,1,						--- Should be 1-9. See manual for option details
+
+**District Heating Capital and O&M Parameters (If end use option 6 selected)*
+Peaking Fuel Cost Rate,0.0273, 					--- [$/kWh] Cost of natural gas for peak boiler use
+Peaking Boiler Efficiency,0.85,			`		--- Should be between 0 and 1, defaults to 0.85
+District Heating Piping Cost Rate,1200,					--- [$/m] used for calculating surface piping capital cost for district heat
+Total District Heating Network Cos,10, 					--- [M$] supersedes options 1 and 2 if any value is entered
+District Heating O&M Cos,2, 				--- [M$/year] supersedes options 1 and 2 if any value is entered
+
+District Cost Models
+*Option 1**
+District Heating Network Piping Lengt,7.66, 					---[km] supersedes road length or model option 2 if any value is entered
+District Heating Road Lengt,3, 				---[km] supersedes model option 2 if any value is entered
+
+*Option 2**
+District Heating Land Area,4, 						---[km^2]
+District Heating Population,240, 						---[persons] Optional if a number of household was provided
+
+*** Economic/Financial Parameters ***
+*************************************
+Plant Lifetime,30,						--- [years]
+Economic Model,2,						--- Should be 1 (FCR model), 2 (Standard LCOE/LCOH model), or 3 (Bicycle model).
+Discount Rate,0.05,
+Inflation Rate During Construction,0,				--- [-]
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	--- [-] Use built-in well cost correlation as is
+Well Drilling Cost Correlation,1,				--- [-] Use built-in well drilling cost correlation #1
+Reservoir Stimulation Capital Cost,1,				--- [M$/injection well] Reservoir stimulation capital cost per injection well
+Surface Plant Capital Cost Adjustment Factor,1,			--- [-] Use built-in surface plant cost correlation as is
+Field Gathering System Capital Cost Adjustment Factor,1,	--- [-] Use built-in pipeline distribution cost correlation as is
+Exploration Capital Cost Adjustment Factor,0,			--- [-] Use built-in exploration cost correlation as is
+Wellfield O&M Cost Adjustment Factor,1,				--- [-] Use built-in wellfield O&M cost correlation as is
+Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation as is
+Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
+
+
+*** Simulation Parameters ***
+Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
+Time steps per year,3,			--- [1/year]

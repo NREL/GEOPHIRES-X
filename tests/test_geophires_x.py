@@ -142,7 +142,7 @@ class GeophiresXTestCase(unittest.TestCase):
 
         assert result is not None
 
-        expected_price = 5.85
+        expected_price = 7.06
 
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU == expected_price
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['value'] == expected_price
@@ -154,10 +154,10 @@ class GeophiresXTestCase(unittest.TestCase):
 
         assert result is not None
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU is None
-        assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 1.22
+        assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
 
     def test_geophires_x_result_generation_profiles(self):
-        test_result_path = self._get_test_file_path('geophires-result_example-2.out')
+        test_result_path = self._get_test_file_path('geophires-result_example-3.out')
         result = GeophiresXResult(test_result_path)
 
         assert result.power_generation_profile is not None
@@ -165,24 +165,28 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.power_generation_profile[0] == [
             'YEAR',
             'THERMAL DRAWDOWN',
-            'GEOFLUID TEMPERATURE (degC)',
+            'GEOFLUID TEMPERATURE (deg C)',
             'PUMP POWER (MW)',
             'NET POWER (MW)',
+            'NET HEAT (MW)',
             'FIRST LAW EFFICIENCY (%)',
         ]
-        assert result.power_generation_profile[1] == [1, 1.0, 179.56, 0.0, 3.7597, 11.41]
+        assert result.power_generation_profile[1] == [0, 1.0, 225.24, 0.1791, 20.597, 11.6711, 16.5771]
+        assert result.power_generation_profile[19] == [18, 0.9877, 222.47, 0.1791, 20.0002, 11.3001, 16.3717]
+        assert result.power_generation_profile[35] == [34, 0.9248, 208.31, 0.1791, 17.1102, 9.2569, 15.3214]
 
         assert result.heat_electricity_extraction_generation_profile is not None
         assert len(result.heat_electricity_extraction_generation_profile) == 36
         assert result.heat_electricity_extraction_generation_profile[0] == [
             'YEAR',
+            'HEAT PROVIDED (GWh/year)',
             'ELECTRICITY PROVIDED (GWh/year)',
             'HEAT EXTRACTED (GWh/year)',
             'RESERVOIR HEAT CONTENT (10^15 J)',
             'PERCENTAGE OF TOTAL HEAT MINED (%)',
         ]
-        assert result.heat_electricity_extraction_generation_profile[1] == [1, 30.3, 262.8, 35.53, 2.59]
-        assert result.heat_electricity_extraction_generation_profile[-1] == [35, 1.7, 86.8, 16.72, 54.15]
+        assert result.heat_electricity_extraction_generation_profile[1] == [1, 93.2, 164.4, 1090.2, 80.03, 4.67]
+        assert result.heat_electricity_extraction_generation_profile[-1] == [35, 72.5, 134.2, 958.47, -48.48, 157.75]
 
     def test_geophires_examples(self):
         client = GeophiresXClient()
@@ -193,7 +197,7 @@ class GeophiresXTestCase(unittest.TestCase):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
 
         for example_file_path in example_files:
-            if example_file_path.startswith('example') and '_output' not in example_file_path:
+            if example_file_path.startswith('example') and '_' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
                     input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('examples', example_file_path)))

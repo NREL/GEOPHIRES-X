@@ -71,6 +71,8 @@ setup(
         'deepdiff',
         'mysql.connector',
         'cryptography',
+        'pandas',
+        'matplotlib'
         # Used by Adv*/AGS extensions but break tox pypy jobs
         #'h5py',
         #'scipy',

@@ -11,7 +11,6 @@ from geophires_x.SurfacePlant import SurfacePlant
 from geophires_x.Economics import Economics
 from geophires_x.Outputs import Outputs
 
-
 class Model(object):
     """
     Model is the container class of the application, giving access to everything else, including the logger
@@ -191,31 +190,37 @@ class Model(object):
         :doc-author: Malcolm Ross
         """
         self.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
+        # calculate the results
+        self.logger.info("Run calculations for the elements of the Model")
 
         # This is where all the calculations are made using all the values that have been set.
         # This is handled on a class-by-class basis
         # We choose not to call calculate of the parent, but rather let the child handle the
-        # call to the parent if it is needed.
+        # call to the parent if it is needed
+        
+        #if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
+        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING:
+            self.surfaceplant.CalculateDHDemand(self) #calculate district heating demand
 
-        # Reservoir
-        AdvGeoPHIRESUtils.SmartCalculate(self, self.reserv)
+        self.reserv.Calculate(self)  # model the reservoir
+        self.wellbores.Calculate(self)  # model the wellbores
+        self.surfaceplant.Calculate(self)  # model the surfaceplant
 
-        # WellBores
-        AdvGeoPHIRESUtils.SmartCalculate(self, self.wellbores)
+        if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING: #in case of district heating, the surface plant module may have updated the utilization factor, and therefore we need to recalculate the modules reservoir, wellbore and surface plant. 1 iteration should be sufficient.
+            self.reserv.Calculate(self) #model the reservoir
+            self.wellbores.Calculate(self) #model the wellbores
+            self.surfaceplant.Calculate(self) #model the surfaceplant
 
-        # SurfacePlant
-        AdvGeoPHIRESUtils.SmartCalculate(self, self.surfaceplant)
-
-        # Economics
-        AdvGeoPHIRESUtils.SmartCalculate(self, self.economics)
-
+        self.economics.Calculate(self)  # model the economics
+        
+        # do the additional economic calculations if needed
         if self.economics.DoAddOnCalculations.value:
-            AdvGeoPHIRESUtils.SmartCalculate(self, self.addeconomics)
+            self.addeconomics.Calculate(self)
         if self.economics.DoCCUSCalculations.value:
-            AdvGeoPHIRESUtils.SmartCalculate(self, self.ccuseconomics)
+            self.ccuseconomics.Calculate(self)
         if self.economics.DoSDACGTCalculations.value:
-            AdvGeoPHIRESUtils.SmartCalculate(self, self.sdacgteconomics)
-
+            self.sdacgteconomics.Calculate(self)
+        
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def get_parameters_json(self) -> str:

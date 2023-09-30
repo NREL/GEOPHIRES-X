@@ -193,7 +193,7 @@ class GeophiresXTestCase(unittest.TestCase):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
 
         for example_file_path in example_files:
-            if example_file_path.startswith('example') and '_output' not in example_file_path:
+            if example_file_path.startswith('example') and '_' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
                     input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('examples', example_file_path)))

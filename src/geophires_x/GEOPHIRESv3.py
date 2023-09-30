@@ -15,7 +15,7 @@ import logging.config
 import os
 import sys
 import geophires_x.Model as Model
-import OptionList
+import geophires_x.OptionList as OptionList
 
 def main(enable_geophires_logging_config=True):
     # set the starting directory to be the directory that this file is in

@@ -28,8 +28,8 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          5.00 
-      Accrued financing during construction:                  0.00 
+      Interest Rate:                                          5.00
+      Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       85.0 %
       Project NPV:                                           0.00 MUSD
@@ -42,8 +42,8 @@ Simulation Metadata
       Number of Production Wells:                             2
       Number of Injection Wells:                              2
       Well depth (or total length, if not vertical):          3.5 kilometer
-      Water loss rate:                                        0.0 
-      Pump efficiency:                                       80.0 
+      Water loss rate:                                        0.0
+      Pump efficiency:                                       80.0
       Injection temperature:                                 50.0 degC
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               2.6 degC
@@ -56,7 +56,7 @@ Simulation Metadata
                          ***RESOURCE CHARACTERISTICS***
 
       Maximum reservoir temperature:                        400.0 degC
-      Number of segments:                                     1 
+      Number of segments:                                     1
       Geothermal gradient:                                    0.0295 degC/m
 
 
@@ -65,9 +65,9 @@ Simulation Metadata
       Reservoir Model = Annual Percentage Thermal Drawdown Model
       Annual Thermal Drawdown:                                0.300 1/year
       Bottom-hole temperature:                              115.25 degC
-      Warning: the reservoir dimensions and thermo-physical properties 
-               listed below are default values if not provided by the user.   
-               They are only used for calculating remaining heat content.  
+      Warning: the reservoir dimensions and thermo-physical properties
+               listed below are default values if not provided by the user.
+               They are only used for calculating remaining heat content.
       Reservoir volume provided as input
       Reservoir volume:                               125000000 m**3
       Reservoir hydrostatic pressure:                       100.00 kPa
@@ -206,4 +206,3 @@ Simulation Metadata
   28               145.6                  97.3                182.00                 3.20               85.48
   29               145.3                  97.6                181.62                 2.54               88.45
   30               145.0                  97.9                181.24                 1.89               91.41
-

@@ -3,6 +3,7 @@ import logging
 import time
 import logging.config
 
+from geophires_x.OptionList import EndUseOptions
 from geophires_x.Parameter import Parameter
 from geophires_x.GeoPHIRESUtils import read_input_file
 import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
@@ -197,7 +198,7 @@ class Model(object):
         # This is handled on a class-by-class basis
         # We choose not to call calculate of the parent, but rather let the child handle the
         # call to the parent if it is needed
-        
+
         #if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
         if self.surfaceplant.enduseoption.value ==  EndUseOptions.DISTRICT_HEATING:
             self.surfaceplant.CalculateDHDemand(self) #calculate district heating demand
@@ -212,7 +213,7 @@ class Model(object):
             self.surfaceplant.Calculate(self) #model the surfaceplant
 
         self.economics.Calculate(self)  # model the economics
-        
+
         # do the additional economic calculations if needed
         if self.economics.DoAddOnCalculations.value:
             self.addeconomics.Calculate(self)
@@ -220,7 +221,7 @@ class Model(object):
             self.ccuseconomics.Calculate(self)
         if self.economics.DoSDACGTCalculations.value:
             self.sdacgteconomics.Calculate(self)
-        
+
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def get_parameters_json(self) -> str:

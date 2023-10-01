@@ -9,7 +9,6 @@ Created on Wed November  16 10:43:04 2017
 @author: Malcolm Ross V3
 """
 # TODO Use this video to update this function https://www.youtube.com/watch?v=fKl2JW_qrso
-# TODO Remove this line: logger.warn("space found in line " + str(result_count))
 
 import os
 import sys
@@ -20,8 +19,8 @@ import numpy as np
 import argparse
 import uuid
 import shutil
+import concurrent.futures
 import subprocess
-import multiprocessing
 
 
 def CheckAndReplaceMean(input_value, args) -> list:
@@ -51,11 +50,20 @@ def CheckAndReplaceMean(input_value, args) -> list:
         i = i + 1
     return input_value
 
-def WorkPackage(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPath: str):
+
+def WorkPackage(pass_list):
+    Inputs = pass_list[0]
+    Outputs = pass_list[1]
+    args = pass_list[2]
+    Outputfile = pass_list[3]
+    working_dir = pass_list[4]
+    PythonPath = pass_list[5]
+
     tmpoutputfile = tmpfilename = ""
-#get random values for each of the INPUTS based on the distributions and boundary values
+# get random values for each of the INPUTS based on the distributions and boundary values
     rando = 0.0
     s = ""
+    print("#", end="")
     for input_value in Inputs:
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
@@ -70,7 +78,7 @@ def WorkPackage(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPa
             rando = np.random.lognormal(float(input_value[2]), float(input_value[3]))
             s = s + input_value[0] + ", " + str(rando) + os.linesep
         if input_value[1].strip().startswith('binomial'):
-            rando = np.random.binomial(float(input_value[2]), float(input_value[3]))
+            rando = np.random.binomial(int(input_value[2]), float(input_value[3]))
             s = s + input_value[0] + ", " + str(rando) + os.linesep
 
     # make up a temporary file name that will be shared among files for this iteration
@@ -85,7 +93,8 @@ def WorkPackage(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPa
     with open(tmpfilename, "a") as f:
         f.write(s)
 
-#start GeoPHIRES/HIP-RA with that input file. Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
+    # start the passed in program name (usually GeoPHIRES or HIP-RA) with the supplied input file.
+    # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
     sprocess = subprocess.Popen([PythonPath, args.Code_File, tmpfilename, tmpoutputfile], stdout=subprocess.DEVNULL)
     sprocess.wait()
 
@@ -99,20 +108,20 @@ def WorkPackage(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPa
     # make sure a key file exists. If not, exit
     if not os.path.exists(tmpoutputfile):
         print("Timed out waiting for: " + tmpoutputfile)
-        logger.warning("Timed out waiting for: " + tmpoutputfile)
+#        logger.warning("Timed out waiting for: " + tmpoutputfile)
         exit(-33)
 
     with open(tmpoutputfile, "r") as f:
         s1=f.readline()
         i=0
-        while s1:
-            for out in localOutputs:
-                if out in s1:
-                    localOutputs.remove(out)
-                    s2 = s.split(":")
-                    s2 = s2[1].strip()
-                    s2 = s2.split(" ")
-                    s2 = s2[0]
+        while s1:  # read until the end of the file
+            for out in localOutputs:  # check for each requested output
+                if out in s1:  # If true, we found the output value that the user requested, so process it
+                    localOutputs.remove(out)  # as an optimization, drop the output from the list once we have found it
+                    s2 = s1.split(":")  # colon marks the split between the title and the data
+                    s2 = s2[1].strip()  # remove leading and trailing spaces
+                    s2 = s2.split(" ")  # split on space because there is a unit string after the value we are looking for
+                    s2 = s2[0].strip()  # we finally have the result we were looking for
                     result_s = result_s + s2 + ", "
                     i = i + 1
                     if i < (len(Outputs) - 1):
@@ -121,6 +130,10 @@ def WorkPackage(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPa
                         f.seek(0)
                     break
             s1 = f.readline()
+
+        # append the input values to the output values so the optimal input values are easy to find,
+        # the form "inputVar:Rando;nextInputVar:Rando..."
+        result_s = result_s + "(" + s.replace(os.linesep, ";", -1).replace(", ", ":", -1) + ")"
 
     # delete  temporary files
     os.remove(tmpfilename)
@@ -181,9 +194,6 @@ def main(enable_geophires_logging_config=True):
     parser.add_argument("MC_Settings_file", help="MC Settings file")
     args = parser.parse_args()
 
-    # Set up a unique Job_ID
-    Job_ID = str(uuid.uuid4())
-
     # make a list of the INPUTS, distribution functions, and the inputs for that distribution function.
     # Make a list of the OUTPUTs
     # Find the iteration value
@@ -228,27 +238,27 @@ def main(enable_geophires_logging_config=True):
     s = "".join(s.rsplit(" ", 1))  # get rid of last space
     s = "".join(s.rsplit(",", 1))  # get rid of last comma
     s = s + os.linesep
+
+    # write the header so it is easy to import and analyze in Excel
     with open(Outputfile, "w") as f:
         f.write(s)
 
-    # loop through the specified number of iterations
-    procs = []
-    print("Starting Iteration:", end='')
-    for i in range(1, Iterations + 1):
-        print(str(i), end=',')
-        proc = multiprocessing.Process(target=WorkPackage, args=(Job_ID, Inputs, Outputs, args, Outputfile, working_dir, PythonPath))
-        procs.append(proc)
-        proc.start()
+    # build the args list
+    pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
 
-    # complete the processes
-    for proc in procs:
-        proc.join()
+    args = []
+    for i in range(0, Iterations):
+        args.append(pass_list)  # we need to make Iterations number of copies of this list fr the map
+    args = tuple(args)  # convert to a tuple
 
-    print (os.linesep + "Done with calculations! Summarizing..." + os.linesep)
+    # Now run the executor with the map - that will run it Iterations number of times
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        executor.map(WorkPackage, args)
+
+    print(os.linesep + "Done with calculations! Summarizing..." + os.linesep)
     logger.info("Done with calculations! Summarizing...")
 
     # read the results into an array
-    actual_records_count = Iterations
     with open(Outputfile, "r") as f:
         s = f.readline()  # skip the first line
         all_results = f.readlines()
@@ -260,11 +270,10 @@ def main(enable_geophires_logging_config=True):
         if "-9999.0" not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
+                line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 Results.append([float(y) for y in line.split(",")])
-            else:
-                logger.warn("space found in line " + str(result_count))
         else:
-            logger.warn("-9999.0 or space found in line " + str(result_count))
+            logger.warning("-9999.0 or space found in line " + str(result_count))
 
     actual_records_count = len(Results)
 
@@ -275,7 +284,6 @@ def main(enable_geophires_logging_config=True):
     averages = np.average(Results, 0)
     means = np.nanmean(Results, 0)
     std = np.nanstd(Results, 0)
-    var = np.nanvar(Results, 0)
 
     # write them out
     with open(Outputfile, "a") as f:
@@ -283,14 +291,13 @@ def main(enable_geophires_logging_config=True):
         if Iterations != actual_records_count:
             f.write(os.linesep + os.linesep + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics" + os.linesep + os.linesep)
         for output in Outputs:
-            f.write (output + ":" + os.linesep)
-            f.write (f"     minimum: {mins[i]:,.2f}" + os.linesep)
-            f.write (f"     maximum: {maxs[i]:,.2f}" + os.linesep)
-            f.write (f"     median: {medians[i]:,.2f}" + os.linesep)
-            f.write (f"     average: {averages[i]:,.2f}" + os.linesep)
-            f.write (f"     mean: {means[i]:,.2f}" + os.linesep)
-            f.write (f"     standard deviation: {std[i]:,.2f}" + os.linesep)
-            f.write (f"     variance: {var[i]:,.2f}" + os.linesep)
+            f.write(output + ":" + os.linesep)
+            f.write(f"     minimum: {mins[i]:,.2f}" + os.linesep)
+            f.write(f"     maximum: {maxs[i]:,.2f}" + os.linesep)
+            f.write(f"     median: {medians[i]:,.2f}" + os.linesep)
+            f.write(f"     average: {averages[i]:,.2f}" + os.linesep)
+            f.write(f"     mean: {means[i]:,.2f}" + os.linesep)
+            f.write(f"     standard deviation: {std[i]:,.2f}" + os.linesep)
             i = i + 1
 
     print (" Calculation Time: "+"{0:10.3f}".format((time.time()-tic)) + " sec" + os.linesep)

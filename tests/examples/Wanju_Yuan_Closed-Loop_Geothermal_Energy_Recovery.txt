@@ -4,8 +4,8 @@ Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (
 Oringinally created by NREL on 3/26/2018 as Example 4
 Last modified on 2/26/2023
 
-Example X Description: This example problem considers a simple reservoir 
-at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown 
+Example X Description: This example problem considers a simple reservoir
+at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown
 is assumed linear at 0.5%/year. The heat is converted to electricity with a subcritical
 ORC. It is accessed by a closed loop well.
 ----------------------------------------------------------------------------------------

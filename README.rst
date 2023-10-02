@@ -40,9 +40,9 @@ Ported from https://github.com/malcolm-dsider/GEOPHIRES-X and https://github.com
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v1.3.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v/v/v1.3.0...main.svg.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/python-geophires-x/compare/v1.3.0...main
+    :target: https://github.com/NREL/python-geophires-x/compare/v3.0.0...main
 
 
 

@@ -165,10 +165,14 @@ class GeophiresXResult:
             for field in fields:
                 self.result[category][field] = self._get_result_field(field)
 
-        self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
-        self.result[
-            'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
-        ] = self._get_heat_electricity_extraction_generation_profile()
+        try:
+            self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
+            self.result[
+                'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
+            ] = self._get_heat_electricity_extraction_generation_profile()
+        except Exception as e:
+            # FIXME
+            self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')
 
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
@@ -278,10 +282,15 @@ class GeophiresXResult:
             return None
 
     def _get_end_use_option(self) -> EndUseOption:
-        end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split('End-Use Option: ')[1]
-        if 'Direct-Use Heat' in end_use_option_snippet:
-            return EndUseOption.DIRECT_USE_HEAT
-        elif 'Electricity' in end_use_option_snippet:
-            return EndUseOption.ELECTRICITY
+        try:
+            end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split('End-Use Option: ')[1]
+
+            if 'Direct-Use Heat' in end_use_option_snippet:
+                return EndUseOption.DIRECT_USE_HEAT
+            elif 'Electricity' in end_use_option_snippet:
+                return EndUseOption.ELECTRICITY
+        except IndexError:
+            # FIXME
+            self._logger.error('Failed to parse End-Use Option')
 
         return None

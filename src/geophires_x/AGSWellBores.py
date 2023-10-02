@@ -476,15 +476,15 @@ class AGSWellBores(WellBores):
         # local variable initiation
         # code from Koenraad
         # Filename of h5 database with simulation results [-]
-        self.filename = self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\clgs_results_final.h5'
+        self.filename = self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}clgs_results_final.h5'
         if self.Fluid.value == WorkingFluid.WATER:
             self.mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\properties_H2O.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}properties_H2O.mat')
         else:
             self.mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}properties_CO2v2.mat')
             self.additional_mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\additional_properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}additional_properties_CO2v2.mat')
 
         # results are stored here and in the parent ProducedTemperature array
         self.Tini = 0.0

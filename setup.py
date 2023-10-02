@@ -72,10 +72,10 @@ setup(
         'mysql.connector',
         'cryptography',
         'pandas',
-        'matplotlib'
-        # Used by Adv*/AGS extensions but break tox pypy jobs
-        #'h5py',
-        #'scipy',
+        'matplotlib',
+        # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
+        'h5py',
+        'scipy',
     ],
     extras_require={
         # eg:

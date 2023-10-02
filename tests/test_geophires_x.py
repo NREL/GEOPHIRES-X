@@ -208,7 +208,7 @@ class GeophiresXTestCase(unittest.TestCase):
         _get_logger()
 
         def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
+            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}V3_output.txt'))
 
         for example_file_path in example_files:
             if (example_file_path.startswith(('example', 'Beckers_et_al'))) and '_output' not in example_file_path:

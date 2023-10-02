@@ -156,6 +156,20 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU is None
         assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
 
+    def test_geophires_x_result_4(self):
+        test_result_path = self._get_test_file_path('geophires-result_example-4.out')
+        result = GeophiresXResult(test_result_path)
+
+        assert result is not None
+        assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['value'] == 242.90
+        assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['unit'] == 'GWh/year'
+
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['value'] == 0.39
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['unit'] == 'MUSD/yr'
+
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['value'] == 3.01
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['unit'] == 'MUSD/yr'
+
     def test_geophires_x_result_generation_profiles(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')
         result = GeophiresXResult(test_result_path)

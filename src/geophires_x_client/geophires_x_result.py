@@ -25,6 +25,13 @@ class GeophiresXResult:
                 'Flowrate per production well',
                 'Well depth',
                 'Geothermal gradient',
+                # AGS/CLGS
+                'LCOE',
+                # 'Fluid',
+                # 'Design',
+                # 'Flow rate',
+                # 'Lateral Length',
+                # 'Vertical Depth'
             ],
             'ECONOMIC PARAMETERS': [
                 'Interest Rate',  # %
@@ -89,6 +96,8 @@ class GeophiresXResult:
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Total capital costs',
+                # AGS/CLGS
+                'Total CAPEX',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
@@ -101,6 +110,8 @@ class GeophiresXResult:
                 'Average Annual Peaking Fuel Cost',
                 'Average annual pumping costs',
                 'Total operating and maintenance costs',
+                # AGS/CLGS
+                'OPEX',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [
                 'Initial geofluid availability',
@@ -136,6 +147,8 @@ class GeophiresXResult:
                 'Maximum Peaking Boiler Heat Production',
                 'Average Peaking Boiler Heat Production',
                 'Minimum Peaking Boiler Heat Production',
+                # AGS/CLGS
+                'Surface Plant Cost',
             ],
         }
     )

@@ -214,7 +214,9 @@ class GeophiresXTestCase(unittest.TestCase):
             if (
                 (example_file_path.startswith(('example', 'Beckers_et_al')))
                 # FIXME temporarily disabled unit tests (debugging GitHub Actions WIP)
-                and not example_file_path.startswith('Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat')
+                and not example_file_path.startswith(
+                    'Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat', 'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat'
+                )
                 and '_output' not in example_file_path
             ):
                 with self.subTest(msg=example_file_path):

@@ -45,7 +45,7 @@ class AGSOutputs(Outputs.Outputs):
                 import scipy
                 # Need to do some interpolating to get the arrays to be the right size for output
                 # FIXME WIP (errstate may or may not be appropriate)
-                with np.errstate(all='ignore'):
+                with np.errstate(all='warn'):
                     if len(model.wellbores.PumpingPower.value) != len(model.wellbores.ProducedTemperature.value):
                         f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                        model.wellbores.PumpingPower.value, fill_value="extrapolate")

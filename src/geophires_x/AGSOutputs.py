@@ -1,6 +1,8 @@
 import datetime
 import time
 import sys
+import traceback
+
 from .Parameter import ConvertUnitsBack, ConvertOutputUnits
 from .OptionList import EndUseOptions, EconomicModel
 from .Units import *
@@ -214,7 +216,7 @@ class AGSOutputs(Outputs.Outputs):
             model.logger.critical(str(ex))
             model.logger.critical(
                 "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            model.logger.critical(f'Traceback: {tb}')
+            traceback.print_exc()
             sys.exit()
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

@@ -214,7 +214,7 @@ class AGSOutputs(Outputs.Outputs):
             model.logger.critical(str(ex))
             model.logger.critical(
                 "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            model.logger.critical(f'Exception: {ex}')
+            model.logger.critical(f'Traceback: {tb}')
             sys.exit()
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

@@ -219,6 +219,7 @@ class GeophiresXTestCase(unittest.TestCase):
                         'Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat',
                         'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat',
                         'Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat',
+                        'Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat',
                     )
                 )
                 and '_output' not in example_file_path

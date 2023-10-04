@@ -216,7 +216,7 @@ class GeophiresXTestCase(unittest.TestCase):
                 # FIXME temporarily disabled unit tests (debugging GitHub Actions WIP)
                 and not example_file_path.startswith(
                     (
-                        'Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat',
+                        # 'Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat',
                         'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat',
                         'Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat',
                         'Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat',

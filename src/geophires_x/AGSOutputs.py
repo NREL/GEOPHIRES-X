@@ -52,7 +52,11 @@ class AGSOutputs(Outputs.Outputs):
                     f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.NetElectricityProduced.value)),
                                                    model.surfaceplant.NetElectricityProduced.value, fill_value="extrapolate")
                     aranged = np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0)
-                    model.surfaceplant.NetElectricityProduced.value = f(aranged)
+
+                    # FIXME WIP (warn errstate may or may not be appropriate)
+                    with np.errstate(divide='warn'):
+                        model.surfaceplant.NetElectricityProduced.value = f(aranged)
+
                 if len(model.surfaceplant.FirstLawEfficiency.value) != len(model.wellbores.ProducedTemperature.value):
                     f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.FirstLawEfficiency.value)),
                                                    model.surfaceplant.FirstLawEfficiency.value, fill_value="extrapolate")

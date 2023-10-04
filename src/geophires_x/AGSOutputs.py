@@ -54,7 +54,7 @@ class AGSOutputs(Outputs.Outputs):
                     aranged = np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0)
 
                     # FIXME WIP (warn errstate may or may not be appropriate)
-                    with np.errstate(divide='warn'):
+                    with np.errstate(all='ignore'):
                         model.surfaceplant.NetElectricityProduced.value = f(aranged)
 
                 if len(model.surfaceplant.FirstLawEfficiency.value) != len(model.wellbores.ProducedTemperature.value):

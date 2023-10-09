@@ -58,10 +58,11 @@ def main(enable_geophires_logging_config=True):
         JSONSDACGT = jsons.dumps(model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
         jsonMerged = {**jsonMerged, **json.loads(JSONSDACGT)}
 
-    JSONoutputfile = "HDR.out"
+    JSONoutputfile = "HDR.json"
     if len(sys.argv) > 2:
-        JSONoutputfile = sys.argv[2]
-    JSONoutputfile = JSONoutputfile.replace(".out", ".json")
+        JSONoutputfile = str(sys.argv[2])
+        segs = JSONoutputfile.split('.')
+        JSONoutputfile = segs[0] + '.json'
     with open(JSONoutputfile, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(jsonMerged))
 

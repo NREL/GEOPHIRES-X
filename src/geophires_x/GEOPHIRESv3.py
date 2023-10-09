@@ -40,6 +40,32 @@ def main(enable_geophires_logging_config=True):
     # write the outputs, if requested
     model.outputs.PrintOutputs(model)
 
+    # write the outputs as JSON
+    import jsons, json
+    jsons.suppress_warnings(True)
+    JSONresrv = jsons.dumps(model.reserv.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+    JSONwells = jsons.dumps(model.wellbores.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+    JSONsurfaceplant = jsons.dumps(model.surfaceplant.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+    JSONEconomics = jsons.dumps(model.economics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+    jsonMerged = {**json.loads(JSONresrv), **json.loads(JSONwells), **json.loads(JSONEconomics), **json.loads(JSONsurfaceplant)}
+    if model.economics.DoAddOnCalculations.value:
+        JSONAddons = jsons.dumps(model.addeconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+        jsonMerged = {**jsonMerged, **json.loads(JSONAddons)}
+    if model.economics.DoCCUSCalculations.value:
+        JSONCCUS = jsons.dumps(model.ccuseconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+        jsonMerged = {**jsonMerged, **json.loads(JSONCCUS)}
+    if model.economics.DoSDACGTCalculations.value:
+        JSONSDACGT = jsons.dumps(model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
+        jsonMerged = {**jsonMerged, **json.loads(JSONSDACGT)}
+
+    JSONoutputfile = "HDR.json"
+    if len(sys.argv) > 2:
+        JSONoutputfile = str(sys.argv[2])
+        segs = JSONoutputfile.split('.')
+        JSONoutputfile = segs[0] + '.json'
+    with open(JSONoutputfile, 'w', encoding='UTF-8') as f:
+        f.write(json.dumps(jsonMerged))
+
     # if the user has asked for it, copy the output file to the screen
     if model.outputs.printoutput:
         outputfile = "HDR.out"

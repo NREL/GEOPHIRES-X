@@ -4,7 +4,9 @@ Overview
 
 GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 
-Ported from https://github.com/malcolm-dsider/GEOPHIRES-X and https://github.com/softwareengineerprogrammer/python-geophires-x using https://github.com/ionelmc/cookiecutter-pylibrary/.
+Ported from `malcolm-dsider/GEOPHIRES-X <https://github.com/malcolm-dsider/GEOPHIRES-X>`_
+and `softwareengineerprogrammer/python-geophires-x <https://github.com/softwareengineerprogrammer/python-geophires-x>`_
+using `ionelmc/cookiecutter-pylibrary <https://github.com/ionelmc/cookiecutter-pylibrary/>`_.
 
 * Free software: MIT license
 
@@ -58,33 +60,36 @@ Install the in-development version with::
 
 (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
+Documentation
+=============
 
-Dev Setup
-=========
 
-1. Setup and activate virtualenv (https://virtualenv.pypa.io/en/latest/installation.html#via-pip)::
+See `test_geophires_x.py <https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py>`_ for example usage of the client
+
+    pre-commit install
+
+
+
+Development
+===========
+
+Local Setup
+-----------
+
+0. Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst>`_
+
+1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
 
     python -m venv venv
     source venv/bin/activate
 
 2. Install dependencies in setup.py::
 
-    pip install .
+    pip install -e .
 
-3. Setup pre-commit (https://pre-commit.com/)::
-
-    pre-commit install
+3. Set up `pre-commit <https://pre-commit.com/>`_::
 
 
-Documentation
-=============
-
-
-See https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py for example usage
-
-
-Development
-===========
 
 To run all the tests run::
 

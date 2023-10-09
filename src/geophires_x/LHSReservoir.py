@@ -10,6 +10,7 @@ from .Units import *
 import geophires_x.Model as Model
 from .Reservoir import Reservoir
 
+
 class LHSReservoir(Reservoir):
     """
     This class models the Linear Heat Sweep Reservoir.

@@ -47,7 +47,7 @@ Ramey Production Wellbore Model,1,       			---
 Production Wellbore Temperature Drop,.5,			---[deg.C]
 Injection Wellbore Temperature Gain,0,   			---[deg.C]
 Production Flow Rate per Well,55,       			---[kg/s]
-Fracture Shape,3,                       			---[-] 
+Fracture Shape,3,                       			---[-]
 Fracture Height,900, 						---[m]
 Reservoir Volume Option,3,              			---[-]
 Reservoir Volume,1000000000,		 			---[m^3]
@@ -75,11 +75,10 @@ Ambient Temperature,20,		 				---[deg.C]
 **************************
 Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
-Inflation Rate During Construction,0,   			---[-] 
+Inflation Rate During Construction,0,   			---[-]
 
 ***Simulation Parameters***
 ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]
-

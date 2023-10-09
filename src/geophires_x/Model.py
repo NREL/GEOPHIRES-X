@@ -203,7 +203,7 @@ class Model(object):
         # if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
         if self.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
             self.surfaceplant.CalculateDHDemand(self)  # calculate district heating demand
-
+        
         self.reserv.Calculate(self)  # model the reservoir
         self.wellbores.Calculate(self)  # model the wellbores
         self.surfaceplant.Calculate(self)  # model the surfaceplant

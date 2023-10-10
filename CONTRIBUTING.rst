@@ -38,7 +38,8 @@ Development
 To set up `python-geophires-x` for local development:
 
 1. Fork `python-geophires-x <https://github.com/NREL/python-geophires-x>`_
-   (look for the "Fork" button).
+   (look for the "Fork" button). Enable Actions on your fork.
+
 2. Clone your fork locally::
 
     git clone git@github.com:NREL/python-geophires-x.git

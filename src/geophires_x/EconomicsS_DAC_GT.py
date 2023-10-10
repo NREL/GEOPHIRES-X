@@ -2,12 +2,12 @@ import sys
 import os
 import math
 import numpy as np
-from Parameter import floatParameter, OutputParameter, ReadParameter
-from Units import *
-from OptionList import EndUseOptions
-import Model
+from .Parameter import floatParameter, OutputParameter, ReadParameter
+from .Units import *
+from .OptionList import EndUseOptions
+import geophires_x.Model as Model
 import numpy as np
-import Economics
+import geophires_x.Economics as Economics
 
 class EconomicsS_DAC_GT(Economics.Economics):
     """
@@ -25,7 +25,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
     def __init__(self, model:Model):
         """
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.  The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the object that has already been created and it's used to access variables that belong to that object.
-        
+
         :param self: Reference the class object itself
         :param model: The container class of the application, giving access to everything else, including the logger
 
@@ -39,7 +39,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         #This also includes all Parameters that are calculated and then published using the Printouts function.
         #If you choose to sublass this master class, you can do so before or after you create your own parameters.  If you do, you can also choose to call this method from you class, which will effectively add and set all these parameters to your class.
 
-        #These disctionaries contains a list of all the parameters set in this object, stored as "Parameter" and OutputParameter Objects.  This will alow us later to access them in a user interface and get that list, along with unit type, preferred units, etc. 
+        #These disctionaries contains a list of all the parameters set in this object, stored as "Parameter" and OutputParameter Objects.  This will alow us later to access them in a user interface and get that list, along with unit type, preferred units, etc.
         self.ParameterDict = {}
         self.OutputParameterDict = {}
         self.wacc = self.ParameterDict[self.wacc.Name] = floatParameter("WACC", value = 10.0, DefaultValue = 10.0, Min=0.1, Max=30.0, UnitType = Units.PERCENT, PreferredUnits = PercentUnit.PERCENT, CurrentUnits = PercentUnit.PERCENT, ErrMessage = "assume default Weighted Average Cost of Capital (10%)", ToolTipText="Weighted Average Cost of Capital (percent)")
@@ -95,7 +95,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
     def read_parameters(self, model:Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the aparmeters.  It also handles special cases that need to be handled after a value has been read in and checked.  If you choose to sublass this master class, you can also choose to override this method (or not), and if you do
-        
+
         :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
 
@@ -160,58 +160,58 @@ class EconomicsS_DAC_GT(Economics.Economics):
         if not (wacc_min <= self.wacc.value <= wacc_max):
             error_message = "S-DAC-GT ERROR: WACC should be between {}% and {}%".format(wacc_min, wacc_max)
             return(True, error_message)
-    
+
         if not (CAPEX_min <= self.CAPEX.value <= CAPEX_max):
             error_message = "S-DAC-GT ERROR: CAPEX should be between {} and {}".format(CAPEX_min, CAPEX_max)
             return(True, error_message)
-    
+
         if not (OPEX_min <= self.OPEX.value <= OPEX_max):
             error_message = "S-DAC-GT ERROR: OPEX should be between {} and {}".format(OPEX_min, OPEX_max)
             return(True, error_message)
-    
+
         if not (elec_min <= self.elec.value <= elec_max):
             error_message = "S-DAC-GT ERROR: Electrical Energy should be between {} and {}".format(elec_min, elec_max)
             return(True, error_message)
-    
+
         if not (therm_min <= self.therm.value <= therm_max):
             error_message = "S-DAC-GT ERROR: Thermal Energy should be between {} and {}".format(therm_min, therm_max)
             return(True, error_message)
-    
+
         if not (NG_price_min <= self.NG_price.value <= NG_price_max):
             error_message = "S-DAC-GT ERROR: Natural Gas Price should be between {} and {}".format(NG_price_min, NG_price_max)
             return(True, error_message)
-        
+
         if not (power_co2intensity_min <= self.power_co2intensity.value <= power_co2intensity_max):
             error_message = "S-DAC-GT ERROR: CO2 Intensity of Electricity should be between {} and {}".format(power_co2intensity_min, power_co2intensity_max)
             return(True, error_message)
-    
+
         if not (CAPEX_mult_min <= self.CAPEX_mult.value <= CAPEX_mult_max):
             error_message = "S-DAC-GT ERROR: CAPEX Multiplier should be between {} and {}".format(CAPEX_mult_min, CAPEX_mult_max)
             return(True, error_message)
-    
+
         if not (OPEX_mult_min <= self.OPEX_mult.value <= OPEX_mult_max):
             error_message = "S-DAC-GT ERROR: OPEX Multiplier should be between {} and {}".format(OPEX_mult_min, OPEX_mult_max)
             return(True, error_message)
-    
+
         if not (therm_index_min <= self.therm_index.value <= therm_index_max):
             error_message = "S-DAC-GT ERROR: S-DAC Thermal Energy Multiplier should be between {} and {}".format(therm_index_min, therm_index_max)
             return(True, error_message)
-    
+
         if not (transport_min <= self.transport.value <= transport_max):
             error_message = "S-DAC-GT ERROR: CO2 Transportation Cost should be between {} and {}".format(transport_min, transport_max)
             return(True, error_message)
-    
+
         if not (storage_min <= self.storage.value <= storage_max):
             error_message = "S-DAC-GT ERROR: CO2 Storage Cost should be between {} and {}".format(storage_min, storage_max)
             return(True, error_message)
-    
+
         return(False,"")
-    
+
     def geo_therm_cost(self, power_cost:float, CAPEX_mult:float, OPEX_mult:float, depth:float, Production_temp:float, Injection_temp:float, Flow_rate:float)->tuple:
     # Calculate Levelized cost of heat and ratio of electric power to heat power
     # LCOH calculated in USD
     # Power ratio calculated as kWh_e / kWh_th --> used for calculating CO2 footprint of geothermal energy
-    # inputs are cost of electricity, regional capex and opex multipliers, 
+    # inputs are cost of electricity, regional capex and opex multipliers,
     # depth of geothermal reservoir, Average Production Temperature, Injection Temperature, and Flow Rate
     #recoded by Malcolm Ross when integrated with GEOPHIRES - GEOPHIRES has more information, so fewer assumptions are made
         # Update NREL 2016 model for 2022
@@ -236,14 +236,14 @@ class EconomicsS_DAC_GT(Economics.Economics):
         NREL_reinjection =  127130 * Inflation               # USD
 
         # Normalize for region
-        CAPEX = NREL_CAPEX * CAPEX_mult 
+        CAPEX = NREL_CAPEX * CAPEX_mult
         CAPEX_drill = depth * NREL_drill_per_foot / Drilling_efficiency_factor
         pump_kwh = depth * NREL_pump_per_foot
         pump_cost = pump_kwh * power_cost
         inhibitor = NREL_inhibitor * OPEX_mult
         labor = NREL_labor * OPEX_mult
         reinjection = NREL_reinjection / NREL_depth * depth * OPEX_mult
-    
+
         # total costs
         CAPEX_total = CAPEX + CAPEX_drill
         OPEX_total = pump_cost + inhibitor + labor + reinjection
@@ -252,19 +252,19 @@ class EconomicsS_DAC_GT(Economics.Economics):
         Thermal_capacity = (Production_temp-Injection_temp)*Flow_rate*H2O_thermal_capacity*60*60   # kW
         Annual_op_hrs = 365*24*Capacity_factor         # hours
         Therm_total = Thermal_capacity * Annual_op_hrs # kWh
-    
+
         # Levelized cost of heat (LCOH)
         LCOH = (CAPEX_total*self.CRF + OPEX_total)/Therm_total # $/kWh_therm
-    
+
         kWh_e_per_kWh_th = pump_kwh / Therm_total
-    
+
         return (LCOH, kWh_e_per_kWh_th)
 
     def Calculate(self, model:Model)->None:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-        
+
         :param self: Access variables that belongs to the class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: Nothing, but it does make calculations and set values in the model
@@ -298,11 +298,11 @@ class EconomicsS_DAC_GT(Economics.Economics):
         co2_elec_heat = self.therm.value/1000*self.power_co2intensity.value
         co2_ng = self.therm.value/1000*self.NG_co2intensity.value
         co2_geothermal = self.therm.value*self.kWh_e_per_kWh_th.value/1000*self.power_co2intensity.value
-    
+
         self.LCOD_elec.value = CAPEX+self.OPEX.value+power_totalcost+elec_heat_totalcost+self.storage.value+self.transport.value
         self.LCOD_ng.value = CAPEX+self.OPEX.value+power_totalcost+NG_totalcost+self.storage.value+self.transport.value
         self.LCOD_geo.value = CAPEX+self.OPEX.value+power_totalcost+geothermal_totalcost+self.storage.value+self.transport.value
-    
+
         self.CO2total_elec.value = co2_power + co2_elec_heat
         self.CO2total_ng.value = co2_power + co2_ng
         self.CO2total_geo.value = co2_power + co2_geothermal
@@ -320,7 +320,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         self.CummCostPerTonne.value = [0.0] * model.surfaceplant.plantlifetime.value
         self.CarbonExtractedTotal.value = 0.0
 
-        #Figure out how much energy is being produced each year, and the amount of carbon that would have been produced if that energy had been made using the grdi average carbon production.  That then gives us the revenue, since we have a carbon price model 
+        #Figure out how much energy is being produced each year, and the amount of carbon that would have been produced if that energy had been made using the grdi average carbon production.  That then gives us the revenue, since we have a carbon price model
         #We can also get annual cash flow from it.
         for i in range(0,model.surfaceplant.plantlifetime.value,1):
             self.CarbonExtractedAnnually.value[i] = (self.EnergySplit.value * model.surfaceplant.HeatkWhExtracted.value[i]) / self.tot_heat_energy_consumed_per_tonne.value

@@ -585,4 +585,4 @@ class Outputs:
         plt.ylim([0, max(model.surfaceplant.dailyheatingdemand.value) * 1.05])
         plt.legend()
         plt.title('Geothermal district heating system with peaking boilers')
-        plt.show()
+        plt.show(block=False)

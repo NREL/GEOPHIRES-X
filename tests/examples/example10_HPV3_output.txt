@@ -25,8 +25,8 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          5.00 
-      Accrued financing during construction:                  5.00 
+      Interest Rate:                                          5.00
+      Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                           0.00 MUSD
@@ -39,8 +39,8 @@ Simulation Metadata
       Number of Production Wells:                             2
       Number of Injection Wells:                              2
       Well depth (or total length, if not vertical):          2.1 kilometer
-      Water loss rate:                                        2.0 
-      Pump efficiency:                                       80.0 
+      Water loss rate:                                        2.0
+      Pump efficiency:                                       80.0
       Injection temperature:                                 83.0 degC
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               1.2 degC
@@ -53,7 +53,7 @@ Simulation Metadata
                          ***RESOURCE CHARACTERISTICS***
 
       Maximum reservoir temperature:                        400.0 degC
-      Number of segments:                                     1 
+      Number of segments:                                     1
       Geothermal gradient:                                    0.0450 degC/m
 
 
@@ -196,4 +196,3 @@ Simulation Metadata
   28                 150.7                  107.7                59.81                 2.47                 82.37
   29                 149.8                  107.0                59.43                 2.08                 85.12
   30                 148.8                  106.3                59.06                 1.70                 87.86
-

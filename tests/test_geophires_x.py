@@ -156,6 +156,20 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU is None
         assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
 
+    def test_geophires_x_result_4(self):
+        test_result_path = self._get_test_file_path('geophires-result_example-4.out')
+        result = GeophiresXResult(test_result_path)
+
+        assert result is not None
+        assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['value'] == 242.90
+        assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['unit'] == 'GWh/year'
+
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['value'] == 0.39
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['unit'] == 'MUSD/yr'
+
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['value'] == 3.01
+        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['unit'] == 'MUSD/yr'
+
     def test_geophires_x_result_generation_profiles(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')
         result = GeophiresXResult(test_result_path)
@@ -194,10 +208,10 @@ class GeophiresXTestCase(unittest.TestCase):
         _get_logger()
 
         def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
+            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}V3_output.txt'))
 
         for example_file_path in example_files:
-            if example_file_path.startswith('example') and '_' not in example_file_path:
+            if (example_file_path.startswith(('example', 'Beckers_et_al'))) and '_output' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
                     input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('examples', example_file_path)))

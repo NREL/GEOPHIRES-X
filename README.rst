@@ -66,9 +66,11 @@ Documentation
 =============
 
 See the `GEOPHIRES v2 user manual <https://github.com/NREL/GEOPHIRES-v2/blob/master/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_
-(A GEOPHIRES-X-specific manual is pending as of 2023-10-10)
+(A GEOPHIRES-X-specific manual is pending as of 2023-10-10).
 
 See `test_geophires_x.py <https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py>`_ for example usage of the client.
+
+`How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_
 
 Development
 ===========

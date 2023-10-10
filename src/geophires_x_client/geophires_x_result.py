@@ -11,6 +11,7 @@ class GeophiresXResult:
             'SUMMARY OF RESULTS': [
                 # TODO uses colon delimiter inconsistently
                 # 'End-Use Option',
+                'End-Use',
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
@@ -27,11 +28,7 @@ class GeophiresXResult:
                 'Geothermal gradient',
                 # AGS/CLGS
                 'LCOE',
-                # 'Fluid',
-                # 'Design',
-                # 'Flow rate',
-                # 'Lateral Length',
-                # 'Vertical Depth'
+                'LCOH',
             ],
             'ECONOMIC PARAMETERS': [
                 'Interest Rate',  # %
@@ -46,12 +43,20 @@ class GeophiresXResult:
                 'Water loss rate',  # %
                 'Pump efficiency',  # %
                 'Injection temperature',
+                'Injection Temperature',
                 'Average production well temperature drop',
                 'Flowrate per production well',
                 'Injection well casing ID',
                 'Production well casing ID',  # TODO correct typo upstream
                 'Number of times redrilling',
                 # 'Power plant type', # Not a number - TODO parse non-number values without throwing exception
+                # AGS/CLGS
+                'Fluid',
+                'Design',
+                'Flow rate',
+                'Lateral Length',
+                'Vertical Depth',
+                'Wellbore Diameter',
             ],
             'RESOURCE CHARACTERISTICS': ['Maximum reservoir temperature', 'Number of segments', 'Geothermal gradient'],
             'RESERVOIR PARAMETERS': [
@@ -73,6 +78,7 @@ class GeophiresXResult:
                 'Reservoir thermal conductivity',
                 'Reservoir heat capacity',
                 'Reservoir porosity',
+                'Thermal Conductivity',
             ],
             'RESERVOIR SIMULATION RESULTS': [
                 'Maximum Production Temperature',
@@ -84,6 +90,11 @@ class GeophiresXResult:
                 'Average Production Well Temperature Drop',
                 'Average Injection Well Pump Pressure Drop',
                 'Average Production Well Pump Pressure Drop',
+                'Average Production Pressure',
+                'Average Heat Production',
+                'First Year Heat Production',
+                'Average Net Electricity Production',
+                'First Year Electricity Production',
             ],
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
@@ -98,6 +109,7 @@ class GeophiresXResult:
                 'Total capital costs',
                 # AGS/CLGS
                 'Total CAPEX',
+                'Drilling Cost',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
@@ -303,7 +315,16 @@ class GeophiresXResult:
             elif 'Electricity' in end_use_option_snippet:
                 return EndUseOption.ELECTRICITY
         except IndexError:
-            # FIXME
-            self._logger.error('Failed to parse End-Use Option')
+            # FIXME clean up
+            try:
+                end_use_option_snippet = list(filter(lambda x: 'End-Use: ' in x, self._lines))[0].split('End-Use: ')[1]
+
+                if 'Direct-Use Heat' in end_use_option_snippet:
+                    return EndUseOption.DIRECT_USE_HEAT
+                elif 'Electricity' in end_use_option_snippet:
+                    return EndUseOption.ELECTRICITY
+            except IndexError:
+                # FIXME
+                self._logger.error('Failed to parse End-Use Option')
 
         return None

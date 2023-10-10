@@ -4,11 +4,12 @@ Overview
 
 GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 
+GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`_.
 Ported from `malcolm-dsider/GEOPHIRES-X <https://github.com/malcolm-dsider/GEOPHIRES-X>`_
 and `softwareengineerprogrammer/python-geophires-x <https://github.com/softwareengineerprogrammer/python-geophires-x>`_
 using `ionelmc/cookiecutter-pylibrary <https://github.com/ionelmc/cookiecutter-pylibrary/>`_.
 
-* Free software: MIT license
+Free software: `MIT license <LICENSE>`_
 
 .. start-badges
 
@@ -19,8 +20,9 @@ using `ionelmc/cookiecutter-pylibrary <https://github.com/ionelmc/cookiecutter-p
       - | |github-actions|
         |
     * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
+      - | |commits-since|
+
+.. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
 
 .. |github-actions| image:: https://github.com/NREL/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
@@ -42,7 +44,7 @@ using `ionelmc/cookiecutter-pylibrary <https://github.com/ionelmc/cookiecutter-p
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/python-geophires-x/v3.1.2.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.1.2.svg
     :alt: Commits since latest release
     :target: https://github.com/NREL/python-geophires-x/compare/v3.1.2...main
 
@@ -88,6 +90,10 @@ Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTIN
 3. Set up `pre-commit <https://pre-commit.com/>`_::
 
     pre-commit install
+
+
+Tox tests
+---------
 
 To run all the tests run::
 

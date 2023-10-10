@@ -46,14 +46,15 @@ class AGSOutputs(Outputs.Outputs):
                     f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                    model.wellbores.PumpingPower.value, fill_value="extrapolate")
                     model.wellbores.PumpingPower.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
-                if len(model.surfaceplant.NetElectricityProduced.value) != len(model.wellbores.ProducedTemperature.value):
-                    f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.NetElectricityProduced.value)),
-                                                   model.surfaceplant.NetElectricityProduced.value, fill_value="extrapolate")
-                    model.surfaceplant.NetElectricityProduced.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
-                if len(model.surfaceplant.FirstLawEfficiency.value) != len(model.wellbores.ProducedTemperature.value):
-                    f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.FirstLawEfficiency.value)),
-                                                   model.surfaceplant.FirstLawEfficiency.value, fill_value="extrapolate")
-                    model.surfaceplant.FirstLawEfficiency.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
+                if model.surfaceplant.enduseoption.value != EndUseOptions.HEAT:
+                    if len(model.surfaceplant.NetElectricityProduced.value) != len(model.wellbores.ProducedTemperature.value):
+                        f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.NetElectricityProduced.value)),
+                                                       model.surfaceplant.NetElectricityProduced.value, fill_value="extrapolate")
+                        model.surfaceplant.NetElectricityProduced.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
+                    if len(model.surfaceplant.FirstLawEfficiency.value) != len(model.wellbores.ProducedTemperature.value):
+                        f = scipy.interpolate.interp1d(np.arange(0, len(model.surfaceplant.FirstLawEfficiency.value)),
+                                                       model.surfaceplant.FirstLawEfficiency.value, fill_value="extrapolate")
+                        model.surfaceplant.FirstLawEfficiency.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
 
             if not model.economics.econmodel.value == EconomicModel.CLGS:
                 super().PrintOutputs(model)

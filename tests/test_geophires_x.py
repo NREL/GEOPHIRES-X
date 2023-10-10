@@ -202,6 +202,38 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.heat_electricity_extraction_generation_profile[1] == [1, 93.2, 164.4, 1090.2, 80.03, 4.67]
         assert result.heat_electricity_extraction_generation_profile[-1] == [35, 72.5, 134.2, 958.47, -48.48, 157.75]
 
+    def test_ags_clgs_result_generation_profiles(self):
+        test_result_path = self._get_test_file_path('geophires-result_example-5.out')
+        result = GeophiresXResult(test_result_path)
+
+        assert result.power_generation_profile is not None
+        assert len(result.power_generation_profile) == 41
+        self.assertListEqual(
+            result.power_generation_profile[0],
+            [
+                'YEAR',
+                'THERMAL DRAWDOWN',
+                'GEOFLUID TEMPERATURE (degC)',
+                'PUMP POWER (MW)',
+                'NET POWER (MW)',
+                'FIRST LAW EFFICIENCY (%)',
+            ],
+        )
+        self.assertListEqual(result.power_generation_profile[1], [1, 1.0000, 108.39, 0.0000, 0.2930, 9.5729])
+        assert result.power_generation_profile[-1] == [40, 0.8649, 96.86, 0.0000, 0.2070, 6.7646]
+
+        assert result.heat_electricity_extraction_generation_profile is not None
+        assert len(result.heat_electricity_extraction_generation_profile) == 41
+        assert result.heat_electricity_extraction_generation_profile[0] == [
+            'YEAR',
+            'ELECTRICITY PROVIDED (GWh/year)',
+            'HEAT EXTRACTED (GWh/year)',
+            'RESERVOIR HEAT CONTENT (10^15 J)',
+            'PERCENTAGE OF TOTAL HEAT MINED (%)',
+        ]
+        assert result.heat_electricity_extraction_generation_profile[1] == [1, 2.6, 30.1, 3.68, 2.86]
+        assert result.heat_electricity_extraction_generation_profile[-1] == [40, 1.8, 22.7, 0.32, 91.57]
+
     def test_geophires_examples(self):
         client = GeophiresXClient()
         example_files = self._list_test_files_dir(test_files_dir='examples')

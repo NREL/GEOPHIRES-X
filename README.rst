@@ -63,12 +63,10 @@ Install the in-development version with::
 Documentation
 =============
 
+See the `GEOPHIRES v2 user manual <https://github.com/NREL/GEOPHIRES-v2/blob/master/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_
+(A GEOPHIRES-X-specific manual is pending as of 2023-10-10)
 
-See `test_geophires_x.py <https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py>`_ for example usage of the client
-
-    pre-commit install
-
-
+See `test_geophires_x.py <https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py>`_ for example usage of the client.
 
 Development
 ===========
@@ -76,7 +74,7 @@ Development
 Local Setup
 -----------
 
-0. Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst>`_
+Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst>`_. Then:
 
 1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
 
@@ -89,7 +87,7 @@ Local Setup
 
 3. Set up `pre-commit <https://pre-commit.com/>`_::
 
-
+    pre-commit install
 
 To run all the tests run::
 

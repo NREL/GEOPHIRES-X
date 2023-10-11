@@ -262,6 +262,19 @@ class GeophiresXTestCase(unittest.TestCase):
                         log.warning(f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual")
                         self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
 
+    def test_runtime_error_with_error_code(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(RuntimeError) as re:
+            # Note that error-code-5500.txt is expected to fail with error code 5500 as of the time of the writing
+            # of this test. If this expectation is voided by future code updates (possibly such as addressing
+            # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
+            # different input that is still expected to result in error code 5500.
+            input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('error-code-5500.txt')))
+            client.get_geophires_result(input_params)
+
+        self.assertEqual(str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]')
+
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
             {'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value, 'Gradient 1': 50, 'Maximum Temperature': 250}

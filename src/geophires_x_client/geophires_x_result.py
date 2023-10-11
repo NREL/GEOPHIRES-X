@@ -11,6 +11,7 @@ class GeophiresXResult:
             'SUMMARY OF RESULTS': [
                 # TODO uses colon delimiter inconsistently
                 # 'End-Use Option',
+                'End-Use',
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
@@ -27,11 +28,7 @@ class GeophiresXResult:
                 'Geothermal gradient',
                 # AGS/CLGS
                 'LCOE',
-                # 'Fluid',
-                # 'Design',
-                # 'Flow rate',
-                # 'Lateral Length',
-                # 'Vertical Depth'
+                'LCOH',
             ],
             'ECONOMIC PARAMETERS': [
                 'Interest Rate',  # %
@@ -46,12 +43,20 @@ class GeophiresXResult:
                 'Water loss rate',  # %
                 'Pump efficiency',  # %
                 'Injection temperature',
+                'Injection Temperature',
                 'Average production well temperature drop',
                 'Flowrate per production well',
                 'Injection well casing ID',
                 'Production well casing ID',  # TODO correct typo upstream
                 'Number of times redrilling',
                 # 'Power plant type', # Not a number - TODO parse non-number values without throwing exception
+                # AGS/CLGS
+                'Fluid',
+                'Design',
+                'Flow rate',
+                'Lateral Length',
+                'Vertical Depth',
+                'Wellbore Diameter',
             ],
             'RESOURCE CHARACTERISTICS': ['Maximum reservoir temperature', 'Number of segments', 'Geothermal gradient'],
             'RESERVOIR PARAMETERS': [
@@ -73,6 +78,7 @@ class GeophiresXResult:
                 'Reservoir thermal conductivity',
                 'Reservoir heat capacity',
                 'Reservoir porosity',
+                'Thermal Conductivity',
             ],
             'RESERVOIR SIMULATION RESULTS': [
                 'Maximum Production Temperature',
@@ -84,6 +90,11 @@ class GeophiresXResult:
                 'Average Production Well Temperature Drop',
                 'Average Injection Well Pump Pressure Drop',
                 'Average Production Well Pump Pressure Drop',
+                'Average Production Pressure',
+                'Average Heat Production',
+                'First Year Heat Production',
+                'Average Net Electricity Production',
+                'First Year Electricity Production',
             ],
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
@@ -98,6 +109,7 @@ class GeophiresXResult:
                 'Total capital costs',
                 # AGS/CLGS
                 'Total CAPEX',
+                'Drilling Cost',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
@@ -244,9 +256,15 @@ class GeophiresXResult:
         return self.result['POWER GENERATION PROFILE']
 
     def _get_power_generation_profile(self):
-        s1 = '*  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-        s2 = '***************************************************************'  # header of next profile
-        profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+        profile_lines = None
+        try:
+            s1 = '*  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
+            s2 = '***************************************************************'  # header of next profile
+            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+        except IndexError:
+            s1 = '*  POWER GENERATION PROFILE  *'
+            s2 = '***************************************************************'  # header of next profile
+            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
         return self._get_data_from_profile_lines(profile_lines)
 
     @property
@@ -254,8 +272,13 @@ class GeophiresXResult:
         return self.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE']
 
     def _get_heat_electricity_extraction_generation_profile(self):
-        s1 = '*  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-        profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+        profile_lines = None
+        try:
+            s1 = '*  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
+            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+        except IndexError:
+            s1 = '*  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *'
+            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
         return self._get_data_from_profile_lines(profile_lines)
 
     def _get_data_from_profile_lines(self, profile_lines):
@@ -303,7 +326,16 @@ class GeophiresXResult:
             elif 'Electricity' in end_use_option_snippet:
                 return EndUseOption.ELECTRICITY
         except IndexError:
-            # FIXME
-            self._logger.error('Failed to parse End-Use Option')
+            # FIXME clean up
+            try:
+                end_use_option_snippet = list(filter(lambda x: 'End-Use: ' in x, self._lines))[0].split('End-Use: ')[1]
+
+                if 'Direct-Use Heat' in end_use_option_snippet:
+                    return EndUseOption.DIRECT_USE_HEAT
+                elif 'Electricity' in end_use_option_snippet:
+                    return EndUseOption.ELECTRICITY
+            except IndexError:
+                # FIXME
+                self._logger.error('Failed to parse End-Use Option')
 
         return None

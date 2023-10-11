@@ -202,10 +202,42 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.heat_electricity_extraction_generation_profile[1] == [1, 93.2, 164.4, 1090.2, 80.03, 4.67]
         assert result.heat_electricity_extraction_generation_profile[-1] == [35, 72.5, 134.2, 958.47, -48.48, 157.75]
 
+    def test_ags_clgs_result_generation_profiles(self):
+        test_result_path = self._get_test_file_path('geophires-result_example-5.out')
+        result = GeophiresXResult(test_result_path)
+
+        assert result.power_generation_profile is not None
+        assert len(result.power_generation_profile) == 41
+        self.assertListEqual(
+            result.power_generation_profile[0],
+            [
+                'YEAR',
+                'THERMAL DRAWDOWN',
+                'GEOFLUID TEMPERATURE (degC)',
+                'PUMP POWER (MW)',
+                'NET POWER (MW)',
+                'FIRST LAW EFFICIENCY (%)',
+            ],
+        )
+        self.assertListEqual(result.power_generation_profile[1], [1, 1.0000, 108.39, 0.0000, 0.2930, 9.5729])
+        assert result.power_generation_profile[-1] == [40, 0.8649, 96.86, 0.0000, 0.2070, 6.7646]
+
+        assert result.heat_electricity_extraction_generation_profile is not None
+        assert len(result.heat_electricity_extraction_generation_profile) == 41
+        assert result.heat_electricity_extraction_generation_profile[0] == [
+            'YEAR',
+            'ELECTRICITY PROVIDED (GWh/year)',
+            'HEAT EXTRACTED (GWh/year)',
+            'RESERVOIR HEAT CONTENT (10^15 J)',
+            'PERCENTAGE OF TOTAL HEAT MINED (%)',
+        ]
+        assert result.heat_electricity_extraction_generation_profile[1] == [1, 2.6, 30.1, 3.68, 2.86]
+        assert result.heat_electricity_extraction_generation_profile[-1] == [40, 1.8, 22.7, 0.32, 91.57]
+
     def test_geophires_examples(self):
+        log = _get_logger()
         client = GeophiresXClient()
         example_files = self._list_test_files_dir(test_files_dir='examples')
-        _get_logger()
 
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}V3_output.txt'))
@@ -221,7 +253,27 @@ class GeophiresXTestCase(unittest.TestCase):
                     expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                     del expected_result.result['metadata']
 
-                    self.assertDictEqual(geophires_result.result, expected_result.result)
+                    try:
+                        self.assertDictEqual(geophires_result.result, expected_result.result)
+                    except AssertionError:
+                        # Float deviation is observed across processor architecture in some test cases -
+                        # if adding a new test case that triggers this warning, see if you can write it in a way that
+                        # avoids this fallback
+                        log.warning(f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual")
+                        self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
+
+    def test_runtime_error_with_error_code(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(RuntimeError) as re:
+            # Note that error-code-5500.txt is expected to fail with error code 5500 as of the time of the writing
+            # of this test. If this expectation is voided by future code updates (possibly such as addressing
+            # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
+            # different input that is still expected to result in error code 5500.
+            input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('error-code-5500.txt')))
+            client.get_geophires_result(input_params)
+
+        self.assertEqual(str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]')
 
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
@@ -249,3 +301,43 @@ class GeophiresXTestCase(unittest.TestCase):
 
     def _list_test_files_dir(self, test_files_dir: str):
         return os.listdir(self._get_test_file_path(test_files_dir))
+
+    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
+        """
+        https://stackoverflow.com/a/53081544/21380804
+        """
+
+        # check if both inputs are dicts
+        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
+        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
+
+        # check if both inputs have the same keys
+        self.assertEqual(d1.keys(), d2.keys())
+
+        # check each key
+        for key, value in d1.items():
+            if isinstance(value, dict):
+                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+            elif isinstance(value, list):
+                self.assertListAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+            else:
+                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
+
+    def assertListAlmostEqual(self, l1, l2, msg=None, places=7):
+        # check if both inputs are dicts
+        self.assertIsInstance(l1, list, 'First argument is not a list')
+        self.assertIsInstance(l2, list, 'Second argument is not a list')
+
+        # check if both inputs have the same keys
+        self.assertEqual(len(l1), len(l2))
+
+        # check each key
+        for i in range(len(l1)):
+            v1 = l1[i]
+            v2 = l2[i]
+            if isinstance(v1, dict):
+                self.assertDictAlmostEqual(v1, v2, msg=msg, places=places)
+            elif isinstance(v1, list):
+                self.assertListAlmostEqual(v1, v2, msg=msg, places=places)
+            else:
+                self.assertAlmostEqual(v1, v2, places=places, msg=msg)

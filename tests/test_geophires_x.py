@@ -235,9 +235,9 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.heat_electricity_extraction_generation_profile[-1] == [40, 1.8, 22.7, 0.32, 91.57]
 
     def test_geophires_examples(self):
+        log = _get_logger()
         client = GeophiresXClient()
         example_files = self._list_test_files_dir(test_files_dir='examples')
-        _get_logger()
 
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}V3_output.txt'))
@@ -253,7 +253,14 @@ class GeophiresXTestCase(unittest.TestCase):
                     expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                     del expected_result.result['metadata']
 
-                    self.assertDictEqual(geophires_result.result, expected_result.result)
+                    try:
+                        self.assertDictEqual(geophires_result.result, expected_result.result)
+                    except AssertionError:
+                        # Float deviation is observed across processor architecture in some test cases -
+                        # if adding a new test case that triggers this warning, see if you can write it in a way that
+                        # avoids this fallback
+                        log.warning(f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual")
+                        self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
 
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
@@ -281,3 +288,43 @@ class GeophiresXTestCase(unittest.TestCase):
 
     def _list_test_files_dir(self, test_files_dir: str):
         return os.listdir(self._get_test_file_path(test_files_dir))
+
+    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
+        """
+        https://stackoverflow.com/a/53081544/21380804
+        """
+
+        # check if both inputs are dicts
+        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
+        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
+
+        # check if both inputs have the same keys
+        self.assertEqual(d1.keys(), d2.keys())
+
+        # check each key
+        for key, value in d1.items():
+            if isinstance(value, dict):
+                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+            elif isinstance(value, list):
+                self.assertListAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+            else:
+                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
+
+    def assertListAlmostEqual(self, l1, l2, msg=None, places=7):
+        # check if both inputs are dicts
+        self.assertIsInstance(l1, list, 'First argument is not a list')
+        self.assertIsInstance(l2, list, 'Second argument is not a list')
+
+        # check if both inputs have the same keys
+        self.assertEqual(len(l1), len(l2))
+
+        # check each key
+        for i in range(len(l1)):
+            v1 = l1[i]
+            v2 = l2[i]
+            if isinstance(v1, dict):
+                self.assertDictAlmostEqual(v1, v2, msg=msg, places=places)
+            elif isinstance(v1, list):
+                self.assertListAlmostEqual(v1, v2, msg=msg, places=places)
+            else:
+                self.assertAlmostEqual(v1, v2, places=places, msg=msg)

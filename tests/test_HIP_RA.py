@@ -14,7 +14,9 @@ class HIP_RATestCase(unittest.TestCase):
         example_files = self._list_test_files_dir(test_files_dir='examples')
 
         def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt'))
+            return self._get_test_file_path(
+                Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt')
+            )
 
         for example_file_path in example_files:
             if example_file_path.startswith('HIPexample') and '_output' not in example_file_path:

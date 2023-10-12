@@ -20,4 +20,7 @@ include LICENSE
 include README.rst
 include How-to-extend-GEOPHIRES-X.md
 
+recursive-include References *.pdf
+recursive-include References *.txt
+
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

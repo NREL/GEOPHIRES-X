@@ -42,7 +42,7 @@ To set up `python-geophires-x` for local development:
 
 2. Clone your fork locally::
 
-    git clone git@github.com:NREL/python-geophires-x.git
+    git clone git@github.com:<your GitHub username>/python-geophires-x.git
 
 3. Create a branch for local development::
 

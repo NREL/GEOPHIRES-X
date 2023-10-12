@@ -223,7 +223,9 @@ class GeophiresXResult:
             return None
 
         if len(matching_lines) > 1:
-            self._logger.warning(f'Found multiple ({len(matching_lines)}) entries for field: {field}\n\t{matching_lines}')
+            self._logger.warning(
+                f'Found multiple ({len(matching_lines)}) entries for field: {field}\n\t{matching_lines}'
+            )
 
         matching_line = matching_lines.pop()
         val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field}:', '').replace('\n', ''))
@@ -247,7 +249,9 @@ class GeophiresXResult:
             return None
 
         if len(matching_lines) > 1:
-            self._logger.warning(f'Found multiple ({len(matching_lines)}) entries for metadata field: {metadata_field}\n\t{matching_lines}')
+            self._logger.warning(
+                f'Found multiple ({len(matching_lines)}) entries for metadata field: {metadata_field}\n\t{matching_lines}'
+            )
 
         return matching_lines.pop().split(metadata_marker)[1].replace('\n', '')
 
@@ -319,7 +323,9 @@ class GeophiresXResult:
 
     def _get_end_use_option(self) -> EndUseOption:
         try:
-            end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split('End-Use Option: ')[1]
+            end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split(
+                'End-Use Option: '
+            )[1]
 
             if 'Direct-Use Heat' in end_use_option_snippet:
                 return EndUseOption.DIRECT_USE_HEAT

@@ -164,11 +164,23 @@ class GeophiresXTestCase(unittest.TestCase):
         assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['value'] == 242.90
         assert result.result['SUMMARY OF RESULTS']['Annual District Heating Demand']['unit'] == 'GWh/year'
 
-        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['value'] == 0.39
-        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['unit'] == 'MUSD/yr'
+        assert (
+            result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['value']
+            == 0.39
+        )
+        assert (
+            result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Annual District Heating O&M Cost']['unit']
+            == 'MUSD/yr'
+        )
 
-        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['value'] == 3.01
-        assert result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['unit'] == 'MUSD/yr'
+        assert (
+            result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['value']
+            == 3.01
+        )
+        assert (
+            result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Average Annual Peaking Fuel Cost']['unit']
+            == 'MUSD/yr'
+        )
 
     def test_geophires_x_result_generation_profiles(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')
@@ -246,7 +258,9 @@ class GeophiresXTestCase(unittest.TestCase):
             if (example_file_path.startswith(('example', 'Beckers_et_al'))) and '_output' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
-                    input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('examples', example_file_path)))
+                    input_params = GeophiresInputParameters(
+                        from_file_path=self._get_test_file_path(Path('examples', example_file_path))
+                    )
                     geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
                     del geophires_result.result['metadata']
 
@@ -255,12 +269,18 @@ class GeophiresXTestCase(unittest.TestCase):
 
                     try:
                         self.assertDictEqual(geophires_result.result, expected_result.result)
-                    except AssertionError:
-                        # Float deviation is observed across processor architecture in some test cases -
-                        # if adding a new test case that triggers this warning, see if you can write it in a way that
-                        # avoids this fallback
-                        log.warning(f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual")
-                        self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
+                    except AssertionError as ae:
+                        # Float deviation is observed across processor architecture in some test cases - see example
+                        # https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/actions/runs/6475850654/job/17588523571
+                        # Adding additional test cases that require this fallback should be avoided if possible.
+                        cases_to_allow_almost_equal = ['Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt']
+                        if example_file_path in cases_to_allow_almost_equal:
+                            log.warning(
+                                f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual"
+                            )
+                            self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
+                        else:
+                            raise ae
 
     def test_runtime_error_with_error_code(self):
         client = GeophiresXClient()
@@ -270,10 +290,14 @@ class GeophiresXTestCase(unittest.TestCase):
             # of this test. If this expectation is voided by future code updates (possibly such as addressing
             # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
             # different input that is still expected to result in error code 5500.
-            input_params = GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('error-code-5500.txt')))
+            input_params = GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('error-code-5500.txt'))
+            )
             client.get_geophires_result(input_params)
 
-        self.assertEqual(str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]')
+        self.assertEqual(
+            str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]'
+        )
 
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(

@@ -76,7 +76,7 @@ Development
 Local Setup
 -----------
 
-Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst>`_. Then:
+Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_. Then:
 
 1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
 

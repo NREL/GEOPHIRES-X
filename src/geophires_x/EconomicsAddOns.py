@@ -378,9 +378,9 @@ class EconomicsAddOns(Economics.Economics):
         self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value)-1] / (self.AdjustedProjectCAPEX.value + (self.AdjustedProjectOPEX.value * model.surfaceplant.plantlifetime.value))
 
         # recalculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value = Economics.CalculateLCOELCOH(self, model)
+        self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOH(self, model)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "EconomicsAddOns"

@@ -1,15 +1,12 @@
-import os.path
 import sys
-import unittest
 from pathlib import Path
 
+from base_test_case import BaseTestCase
 from geophires_x import HIP_RA
 
 
 # noinspection PyTypeChecker
-class HIP_RATestCase(unittest.TestCase):
-    maxDiff = None
-
+class HIP_RATestCase(BaseTestCase):
     def test_HIP_RA_examples(self):
         example_files = self._list_test_files_dir(test_files_dir='examples')
 
@@ -24,13 +21,3 @@ class HIP_RATestCase(unittest.TestCase):
                     input_file_path = self._get_test_file_path(Path('examples', example_file_path))
                     sys.argv = ['', input_file_path]
                     HIP_RA.main()
-
-    def _get_test_file_path(self, test_file_name):
-        return os.path.join(os.path.abspath(os.path.dirname(__file__)), test_file_name)
-
-    def _get_test_file_content(self, test_file_name):
-        with open(self._get_test_file_path(test_file_name)) as f:
-            return f.readlines()
-
-    def _list_test_files_dir(self, test_files_dir: str):
-        return os.listdir(self._get_test_file_path(test_files_dir))

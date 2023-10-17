@@ -1,7 +1,6 @@
-import os.path
-import unittest
 from pathlib import Path
 
+from base_test_case import BaseTestCase
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
@@ -10,9 +9,7 @@ from geophires_x_client.geophires_input_parameters import GeophiresInputParamete
 
 
 # noinspection PyTypeChecker
-class GeophiresXTestCase(unittest.TestCase):
-    maxDiff = None
-
+class GeophiresXTestCase(BaseTestCase):
     def test_geophires_x_end_use_direct_use_heat(self):
         client = GeophiresXClient()
         result = client.get_geophires_result(
@@ -315,53 +312,3 @@ class GeophiresXTestCase(unittest.TestCase):
         )
 
         assert hash(input1) != hash(input3)
-
-    def _get_test_file_path(self, test_file_name):
-        return os.path.join(os.path.abspath(os.path.dirname(__file__)), test_file_name)
-
-    def _get_test_file_content(self, test_file_name):
-        with open(self._get_test_file_path(test_file_name)) as f:
-            return f.readlines()
-
-    def _list_test_files_dir(self, test_files_dir: str):
-        return os.listdir(self._get_test_file_path(test_files_dir))
-
-    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
-        """
-        https://stackoverflow.com/a/53081544/21380804
-        """
-
-        # check if both inputs are dicts
-        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
-        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
-
-        # check if both inputs have the same keys
-        self.assertEqual(d1.keys(), d2.keys())
-
-        # check each key
-        for key, value in d1.items():
-            if isinstance(value, dict):
-                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg, places=places)
-            elif isinstance(value, list):
-                self.assertListAlmostEqual(d1[key], d2[key], msg=msg, places=places)
-            else:
-                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
-
-    def assertListAlmostEqual(self, l1, l2, msg=None, places=7):
-        # check if both inputs are dicts
-        self.assertIsInstance(l1, list, 'First argument is not a list')
-        self.assertIsInstance(l2, list, 'Second argument is not a list')
-
-        # check if both inputs have the same keys
-        self.assertEqual(len(l1), len(l2))
-
-        # check each key
-        for i in range(len(l1)):
-            v1 = l1[i]
-            v2 = l2[i]
-            if isinstance(v1, dict):
-                self.assertDictAlmostEqual(v1, v2, msg=msg, places=places)
-            elif isinstance(v1, list):
-                self.assertListAlmostEqual(v1, v2, msg=msg, places=places)
-            else:
-                self.assertAlmostEqual(v1, v2, places=places, msg=msg)

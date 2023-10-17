@@ -138,10 +138,10 @@ class GeophiresXTestCase(BaseTestCase):
         example_files = self._list_test_files_dir(test_files_dir='examples')
 
         def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}V3_output.txt'))
+            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
 
         for example_file_path in example_files:
-            if (example_file_path.startswith(('example', 'Beckers_et_al'))) and '_output' not in example_file_path:
+            if (example_file_path.startswith(('example', 'Beckers_et_al'))) and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
                     input_params = GeophiresInputParameters(
@@ -159,7 +159,9 @@ class GeophiresXTestCase(BaseTestCase):
                         # Float deviation is observed across processor architecture in some test cases - see example
                         # https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/actions/runs/6475850654/job/17588523571
                         # Adding additional test cases that require this fallback should be avoided if possible.
-                        cases_to_allow_almost_equal = ['Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt']
+                        cases_to_allow_almost_equal = [
+                            'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
+                        ]
                         if example_file_path in cases_to_allow_almost_equal:
                             log.warning(
                                 f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual"

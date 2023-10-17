@@ -16,8 +16,10 @@ class HIP_RATestCase(BaseTestCase):
             )
 
         for example_file_path in example_files:
-            if example_file_path.startswith('HIPexample') and '_output' not in example_file_path:
+            if example_file_path.startswith('HIPexample') and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     input_file_path = self._get_test_file_path(Path('examples', example_file_path))
                     sys.argv = ['', input_file_path]
                     HIP_RA.main()
+
+                    # FIXME verify result matches expected output

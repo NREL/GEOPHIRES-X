@@ -154,7 +154,9 @@ class GeophiresXTestCase(BaseTestCase):
                     del expected_result.result['metadata']
 
                     try:
-                        self.assertDictEqual(geophires_result.result, expected_result.result)
+                        self.assertDictEqual(
+                            geophires_result.result, expected_result.result, msg=f'Example test: {example_file_path}'
+                        )
                     except AssertionError as ae:
                         # Float deviation is observed across processor architecture in some test cases - see example
                         # https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/actions/runs/6475850654/job/17588523571
@@ -166,7 +168,12 @@ class GeophiresXTestCase(BaseTestCase):
                             log.warning(
                                 f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual"
                             )
-                            self.assertDictAlmostEqual(geophires_result.result, expected_result.result, places=2)
+                            self.assertDictAlmostEqual(
+                                geophires_result.result,
+                                expected_result.result,
+                                places=2,
+                                msg=f'Example test: {example_file_path}',
+                            )
                         else:
                             raise ae
 

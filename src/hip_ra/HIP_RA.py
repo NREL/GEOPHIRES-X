@@ -744,10 +744,10 @@ class HIP_RA:
             if len(sys.argv) > 2:
                 outputfile = sys.argv[2]
 
-            def render_default(p: floatParameter | OutputParameter) -> str:
+            def render_default(p) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
 
-            def render_scientific(p: floatParameter | OutputParameter) -> str:
+            def render_scientific(p) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
             case_data = {

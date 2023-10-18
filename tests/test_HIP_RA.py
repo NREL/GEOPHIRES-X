@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 from base_test_case import BaseTestCase
-from geophires_x import HIP_RA
+from hip_ra import HIP_RA
 
 
 # noinspection PyTypeChecker

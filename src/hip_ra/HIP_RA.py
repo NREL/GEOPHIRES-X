@@ -727,7 +727,7 @@ class HIP_RA:
             if not param.UnitsMatch:
                 ConvertUnitsBack(param, self)
 
-        # now we need to loop through all thw output parameters to update their units to whatever
+        # now we need to loop through all the output parameters to update their units to whatever
         # units the user has specified.
         # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those from
         # whatever LENGTH unit they are to feet.
@@ -744,36 +744,49 @@ class HIP_RA:
             if len(sys.argv) > 2:
                 outputfile = sys.argv[2]
 
+            def render_default(p: floatParameter | OutputParameter) -> str:
+                return f'{p.value:10.2f} {p.CurrentUnits.value}'
+
+            def render_scientific(p: floatParameter | OutputParameter) -> str:
+                return f'{p.value:10.2e} {p.CurrentUnits.value}'
+
+            case_data = {
+                'SUMMARY OF RESULTS': {
+                    'Reservoir Temperature': render_default(self.ReservoirTemperature),
+                    'Reservoir Volume': render_default(self.V),
+                    'Stored Heat': render_scientific(self.qR),
+                    'Fluid Produced': render_scientific(self.mWH),
+                    'Enthalpy': render_default(self.e),
+                    'Wellhead Heat': render_scientific(self.qWH),
+                    'Recovery Factor': f'{(100 * self.Rg.value):10.2f} {self.Rg.CurrentUnits.value}',
+                    'Available Heat': render_scientific(self.WA),
+                    'Produceable Heat': render_scientific(self.WE),
+                    'Produceable Electricity': render_default(self.We),
+                }
+            }
+
             with open(outputfile, 'w', encoding='UTF-8') as f:
-                f.write('                               *********************' + NL)
-                f.write('                               ***HIP CASE REPORT***' + NL)
-                f.write('                               *********************' + NL)
+                f.write(f'                               *********************{NL}')
+                f.write(f'                               ***HIP CASE REPORT***{NL}')
+                f.write(f'                               *********************{NL}')
                 f.write(NL)
-                f.write('                           ***SUMMARY OF RESULTS***' + NL)
+                f.write(f'                           ***SUMMARY OF RESULTS***{NL}')
                 f.write(NL)
-                f.write(
-                    f'      Reservoir Temperature:   {self.ReservoirTemperature.value:10.2f} '
-                    + self.ReservoirTemperature.CurrentUnits.value
-                    + NL
-                )
-                f.write(f'      Reservoir Volume:        {self.V.value:10.2f} ' + self.V.CurrentUnits.value + NL)
-                f.write(f'      Stored Heat:             {self.qR.value:10.2e} ' + self.qR.CurrentUnits.value + NL)
-                f.write(f'      Fluid Produced:          {self.mWH.value:10.2e} ' + self.mWH.CurrentUnits.value + NL)
-                f.write(f'      Enthalpy:                {self.e.value:10.2f} ' + self.e.CurrentUnits.value + NL)
-                f.write(f'      Wellhead Heat:           {self.qWH.value:10.2e} ' + self.qWH.CurrentUnits.value + NL)
-                f.write(
-                    f'      Recovery Factor:         {(100 * self.Rg.value):10.2f} ' + self.Rg.CurrentUnits.value + NL
-                )
-                f.write(f'      Available Heat:          {self.WA.value:10.2e} ' + self.WA.CurrentUnits.value + NL)
-                f.write(f'      Produceable Heat:        {self.WE.value:10.2e} ' + self.WE.CurrentUnits.value + NL)
-                f.write(f'      Produceable Electricity: {self.We.value:10.2f} ' + self.We.CurrentUnits.value + NL)
+
+                for k, v in case_data['SUMMARY OF RESULTS'].items():
+                    # align space between value and units to same column
+                    kv_spaces = (34 - (len(v.split(' ')[0]) + len(k))) * ' '
+
+                    f.write(f'      {k}:{kv_spaces}{v}{NL}')
+
                 f.write(NL)
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print(str(ex))
-            print(f'Error: GEOPHIRES Failed to write the output file.  Exiting....Line {tb.tb_lineno}')
+            msg = f'Error: HIP_RA Failed to write the output file. Exiting....Line {tb.tb_lineno}'
+            print(msg)
             self.logger.critical(str(ex))
-            self.logger.critical(f'Error: GEOPHIRES Failed to write the output file.  Exiting....Line {tb.tb_lineno}')
+            self.logger.critical(msg)
             sys.exit()
 
         # copy the output file to the screen

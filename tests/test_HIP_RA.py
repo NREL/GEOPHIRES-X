@@ -1,8 +1,8 @@
-import sys
 from pathlib import Path
 
 from base_test_case import BaseTestCase
-from hip_ra import HIP_RA
+from hip_ra import HipRaClient
+from hip_ra import HipRaInputParameters
 
 
 # noinspection PyTypeChecker
@@ -10,16 +10,16 @@ class HIP_RATestCase(BaseTestCase):
     def test_HIP_RA_examples(self):
         example_files = self._list_test_files_dir(test_files_dir='examples')
 
-        def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(
-                Path('examples', f'{example_file.split(".txt")[0].capitalize()}V3_output.txt')
-            )
+        client = HipRaClient()
+
+        def get_output_file_for_example(example_file: Path):
+            return self._get_test_file_path(Path(example_file).with_suffix('.out'))
 
         for example_file_path in example_files:
             if example_file_path.startswith('HIPexample') and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     input_file_path = self._get_test_file_path(Path('examples', example_file_path))
-                    sys.argv = ['', input_file_path]
-                    HIP_RA.main()
+                    result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
 
-                    # FIXME verify result matches expected output
+                    assert result is not None
+                    self.assertFileContentsEqual(get_output_file_for_example(input_file_path), result.output_file_path)

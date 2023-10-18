@@ -775,11 +775,10 @@ class HIP_RA:
 
                 for k, v in case_data['SUMMARY OF RESULTS'].items():
                     # align space between value and units to same column
-                    kv_spaces = (34 - (len(v.split(' ')[0]) + len(k))) * ' '
+                    kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '
 
                     f.write(f'      {k}:{kv_spaces}{v}{NL}')
 
-                f.write(NL)
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print(str(ex))

@@ -5,7 +5,7 @@ import unittest
 class BaseTestCase(unittest.TestCase):
     maxDiff = None
 
-    def _get_test_file_path(self, test_file_name):
+    def _get_test_file_path(self, test_file_name) -> str:
         return os.path.join(os.path.abspath(os.path.dirname(__file__)), test_file_name)
 
     def _get_test_file_content(self, test_file_name):
@@ -54,3 +54,10 @@ class BaseTestCase(unittest.TestCase):
                 self.assertListAlmostEqual(v1, v2, msg=msg, places=places)
             else:
                 self.assertAlmostEqual(v1, v2, places=places, msg=msg)
+
+    def assertFileContentsEqual(self, f1, f2):
+        with open(f1) as f1_o:
+            with open(f2) as f2_o:
+                f1_lines = f1_o.readlines()
+                f2_lines = f2_o.readlines()
+                self.assertListEqual(f1_lines, f2_lines)

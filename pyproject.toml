@@ -8,6 +8,10 @@ requires = [
 
 [tool.ruff]
 extend-exclude = ["static", "ci/templates", "src/geophires_x"]
+
+# Incrementally add files to this list as they are cleaned up
+extend-include=["src/geophires_x/GEOPHIRESv3.py"]
+
 ignore = [
     "RUF001", # ruff-specific rules ambiguous-unicode-character-string
     "S101", # flake8-bandit assert

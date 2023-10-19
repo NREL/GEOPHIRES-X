@@ -8,48 +8,86 @@ little bit helps, and credit will always be given.
 Development
 ===========
 
-To set up ``python-geophires-x`` for local development:
+To set up GEOPHIRES-X for local development:
 
-1. Fork `python-geophires-x <https://github.com/NREL/python-geophires-x>`_
-   (look for the "Fork" button).
+1. `Fork NREL/python-geophires-x <https://github.com/NREL/python-geophires-x/fork>`_ on GitHub
 
 2. Enable Actions on your fork.
 
-3. Clone your fork locally::
+3. Clone your fork locally in a terminal::
 
+    cd some/path/where-you-have-your-code-projects
     git clone git@github.com:<your GitHub username>/python-geophires-x.git
-
-
+    cd python-geophires-x
 
 Local Setup
 -----------
 
-Prerequisite: Follow fork & clone instructions above. Then:
+Prerequisite: Follow fork & clone instructions above.
 
-1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
+Strongly recommended: use a Python IDE such as `PyCharm <https://www.jetbrains.com/pycharm/>`_
+
+If you are using PyCharm, first open the the cloned repo by going to File → Open and selecting your ``python-geophires-x`` directory (from the previous steps).
+Run commands in a terminal with View → Tool Windows → Terminal
+
+1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_. if you don't have it already. Then set up and activate a virtual environment for the project::
 
     python -m venv venv
     source venv/bin/activate
 
-2. Install dependencies in setup.py::
+(If you are using PyCharm, it may prompt you to set up the virtual environment automatically, allowing you to skip this step on the command line)
+
+2. Install package dependencies (from ``setup.py``)::
 
     pip install -e .
 
-3. Set up `pre-commit <https://pre-commit.com/>`_::
+(PyCharm may prompt you to install dependencies, making this step unnecessary to run on the command line)
+
+3. `Download pre-commit <https://pre-commit.com/>`_ if you don't already have it. Then run the command to configure it for the project (somewhat confusingly also called ``install``)::
 
     pre-commit install
 
-4. When you're done making changes run all the checks and docs builder with one command::
+4. When you're done making changes you can run all the checks and docs builder with one command::
 
     tox
+
+In PyCharm, you can run unit tests by right-clicking the ``tests/`` folder and selecting "Run 'Python tests in tests'".
+In general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
 
 5. Commit your changes and push your branch to GitHub::
 
     git add .
     git commit -m "Your detailed description of your changes."
-    git push origin
+    git push
 
-6. Submit a pull request through the GitHub website.
+Note that ``pre-commit`` will run when you run ``git commit``. If your code does not pass automated checks you will have to
+add fixed files (or manually fix in some cases). Example::
+
+        (venv) ➜  python-geophires-x git:(main) ✗ git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
+        ruff.....................................................................Passed
+        black....................................................................Failed
+        - hook id: black
+        - files were modified by this hook
+
+        reformatted src/hip_ra/HIP_RA.py
+
+        All done! ✨ 🍰 ✨
+        1 file reformatted.
+
+        trim trailing whitespace.................................................Passed
+        fix end of files.........................................................Passed
+        debug statements (python)................................................Passed
+        (venv) ➜  python-geophires-x git:(main) ✗ git add src/hip_ra/HIP_RA.py && git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
+        ruff.....................................................................Passed
+        black....................................................................Passed
+        trim trailing whitespace.................................................Passed
+        fix end of files.........................................................Passed
+        debug statements (python)................................................Passed
+        [main 8834d58] Use __future__ annotations to allow type union syntax in HIP_RA.py
+         1 file changed, 4 insertions(+), 2 deletions(-)
+
+
+6. Submit a pull request through the GitHub website following `the guidelines <#Pull Request Guidelines>`_.
 
 Tox tests
 ---------
@@ -75,20 +113,6 @@ Note, to combine the coverage data from all the tox environments run:
 
             PYTEST_ADDOPTS=--cov-append tox
 
-Pull Request Guidelines
------------------------
-
-If you need some code review or feedback while you're developing the code just make the pull request.
-
-For merging, you should:
-
-1. Include passing tests (run ``tox``).
-2. Update documentation when there's new API, functionality etc.
-3. Add a note to ``CHANGELOG.rst`` about the changes.
-4. Add yourself to ``AUTHORS.rst``.
-
-Tips
-----
 
 To run a subset of tests::
 
@@ -97,6 +121,18 @@ To run a subset of tests::
 To run all the test environments in *parallel*::
 
     tox -p auto
+
+Pull Request Guidelines
+-----------------------
+
+If you need some code review or feedback while you're developing the code just make the pull request.
+
+For merging, you should:
+
+1. Ensure Actions are passing on your fork. (Actions will also be automatically run when you create a PR, and they will need to be passing as a requirement to merge)
+2. Update documentation when there's new API, functionality etc.
+3. Add a note to ``CHANGELOG.rst`` about the changes.
+4. Add yourself to ``AUTHORS.rst``.
 
 Bug reports
 ===========
@@ -117,4 +153,14 @@ If you are proposing a feature:
 
 * Explain in detail how it would work.
 * Keep the scope as narrow as possible, to make it easier to implement.
-* Remember that this is a volunteer-driven project, and that code contributions are welcome :)
+
+Tips
+----
+
+A working understanding of `git <https://git-scm.com/>`_ is one of the most beneficial skills you can have when working on software, even if you are not a software engineer.
+Although most modern IDEs now provide a reasonable GUI for working with git, learning and using git on the command line is often the most effective way
+to become proficient. This is not an easy skill to learn for most, and there is no one tutorial that will substitute for real-world experience.
+However the following tutorials may be a good place to start:
+
+- https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html
+- https://githubtraining.github.io/training-manual/#/04_branching_with_git

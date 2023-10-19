@@ -19,6 +19,7 @@ include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 include How-to-extend-GEOPHIRES-X.md
+include geophires-logo.png
 
 recursive-include References *.pdf
 recursive-include References *.txt

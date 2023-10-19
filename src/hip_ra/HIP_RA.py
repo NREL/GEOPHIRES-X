@@ -12,6 +12,8 @@ Created on Monday Nov 28 08:54 2022
 @author: Malcolm Ross V1
 """
 
+from __future__ import annotations
+
 import logging
 import logging.config
 import os
@@ -744,10 +746,10 @@ class HIP_RA:
             if len(sys.argv) > 2:
                 outputfile = sys.argv[2]
 
-            def render_default(p) -> str:
+            def render_default(p: floatParameter | OutputParameter) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
 
-            def render_scientific(p) -> str:
+            def render_scientific(p: floatParameter | OutputParameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
             case_data = {

@@ -2,8 +2,7 @@
 Contributing
 ============
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+Contributions are welcome, and they are greatly appreciated!
 
 Development
 ===========
@@ -82,7 +81,7 @@ add fixed files (or manually fix in some cases). Example::
 
 
 5. Verify that tests pass with your changes. In PyCharm, you can run unit tests by right-clicking the ``tests/`` folder and selecting "Run 'Python tests in tests'".
-If you want to be extra thorough you can `run tox locally <#Tox tests>`_ but in general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
+If you want to be extra thorough you can `run tox locally <#Tox-tests>`_ but in general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
 
 6. Push your changes to your fork::
 
@@ -90,7 +89,7 @@ If you want to be extra thorough you can `run tox locally <#Tox tests>`_ but in 
 
 Then, verify that Actions pass on your commit(s) on GitHub
 
-6. Submit a pull request through the GitHub website following `the guidelines <#Pull Request Guidelines>`_.
+6. Submit a pull request through the GitHub website following `the guidelines <#Pull-Request-Guidelines>`_.
 
 Pull Request Guidelines
 -----------------------

@@ -55,7 +55,6 @@ Free software: `MIT license <LICENSE>`_
 Installation
 ============
 
-
 Install the in-development version with::
 
     pip install https://github.com/NREL/python-geophires-x/archive/main.zip
@@ -73,45 +72,4 @@ Documentation
 Development
 ===========
 
-Local Setup
------------
-
-Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_. Then:
-
-1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
-
-    python -m venv venv
-    source venv/bin/activate
-
-2. Install dependencies in setup.py::
-
-    pip install -e .
-
-3. Set up `pre-commit <https://pre-commit.com/>`_::
-
-    pre-commit install
-
-
-Tox tests
----------
-
-To run all the tests run::
-
-    tox
-
-Note, to combine the coverage data from all the tox environments run:
-
-.. list-table::
-    :widths: 10 90
-    :stub-columns: 1
-
-    - - Windows
-      - ::
-
-            set PYTEST_ADDOPTS=--cov-append
-            tox
-
-    - - Other
-      - ::
-
-            PYTEST_ADDOPTS=--cov-append tox
+See `Development instructions in CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_

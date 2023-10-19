@@ -1,3 +1,8 @@
+|GEOPHIRES Logo|
+
+.. |GEOPHIRES Logo| image:: geophires-logo.png
+    :alt: GEOPHIRES Logo
+
 ========
 Overview
 ========

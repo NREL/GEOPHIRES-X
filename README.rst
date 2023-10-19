@@ -1,13 +1,15 @@
+|GEOPHIRES Logo|
+
+.. |GEOPHIRES Logo| image:: geophires-logo.png
+    :alt: GEOPHIRES Logo
+
 ========
 Overview
 ========
 
 GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 
-GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`_.
-Ported from `malcolm-dsider/GEOPHIRES-X <https://github.com/malcolm-dsider/GEOPHIRES-X>`_
-and `softwareengineerprogrammer/python-geophires-x <https://github.com/softwareengineerprogrammer/python-geophires-x>`_
-using `ionelmc/cookiecutter-pylibrary <https://github.com/ionelmc/cookiecutter-pylibrary/>`_.
+GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`_ (see `CHANGELOG <CHANGELOG.rst>`_ for more info).
 
 Free software: `MIT license <LICENSE>`_
 
@@ -48,70 +50,41 @@ Free software: `MIT license <LICENSE>`_
     :alt: Commits since latest release
     :target: https://github.com/NREL/python-geophires-x/compare/v3.2.0...main
 
-
+.. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22
 
 .. end-badges
+
+Documentation
+=============
+
+User manuals:
+
+- A GEOPHIRES-X-specific user manual `is pending <https://github.com/NREL/python-geophires-x/issues/23>`_ as of 2023-10-19. In the meantime, the `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ remains partially relevant.
+
+- `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_
+
+- `test_geophires_x.py <tests/test_geophires_x.py>`_ has examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`_ locally (i.e. if consuming GEOPHIRES-X as a pip package)
+
 
 Installation
 ============
 
+Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_ (rather than global site-packages).
 
-Install the in-development version with::
+To consume GEOPHIRES-X as a python package, install the in-development version with::
 
     pip install https://github.com/NREL/python-geophires-x/archive/main.zip
 
 (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-Documentation
-=============
+If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
 
-* `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_
-* See `test_geophires_x.py <https://github.com/NREL/python-geophires-x/blob/main/tests/test_geophires_x.py>`_ for example usage of the client.
-* `GEOPHIRES v2 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ (A GEOPHIRES-X-specific manual is pending as of 2023-10-10).
+   pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
 
+If you are interested in sharing your extensions with others (or even contributing them back to this repository),
+follow `the Development instructions <CONTRIBUTING.rst#development>`_ instead.
 
 Development
 ===========
 
-Local Setup
------------
-
-Prerequisite: Follow fork & clone instructions in `CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_. Then:
-
-1. Set up and activate `virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_::
-
-    python -m venv venv
-    source venv/bin/activate
-
-2. Install dependencies in setup.py::
-
-    pip install -e .
-
-3. Set up `pre-commit <https://pre-commit.com/>`_::
-
-    pre-commit install
-
-
-Tox tests
----------
-
-To run all the tests run::
-
-    tox
-
-Note, to combine the coverage data from all the tox environments run:
-
-.. list-table::
-    :widths: 10 90
-    :stub-columns: 1
-
-    - - Windows
-      - ::
-
-            set PYTEST_ADDOPTS=--cov-append
-            tox
-
-    - - Other
-      - ::
-
-            PYTEST_ADDOPTS=--cov-append tox
+See `Development instructions in CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_

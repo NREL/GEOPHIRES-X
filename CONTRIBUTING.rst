@@ -47,18 +47,12 @@ Run commands in a terminal with View → Tool Windows → Terminal
 
     pre-commit install
 
-4. When you're done making changes you can run all the checks and docs builder with one command::
+You're now ready to start making changes and committing them.
 
-    tox
-
-In PyCharm, you can run unit tests by right-clicking the ``tests/`` folder and selecting "Run 'Python tests in tests'".
-In general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
-
-5. Commit your changes and push your branch to GitHub::
+4. To commit changes locally::
 
     git add .
     git commit -m "Your detailed description of your changes."
-    git push
 
 Note that ``pre-commit`` will run when you run ``git commit``. If your code does not pass automated checks you will have to
 add fixed files (or manually fix in some cases). Example::
@@ -87,12 +81,34 @@ add fixed files (or manually fix in some cases). Example::
          1 file changed, 4 insertions(+), 2 deletions(-)
 
 
+5. Verify that tests pass with your changes. In PyCharm, you can run unit tests by right-clicking the ``tests/`` folder and selecting "Run 'Python tests in tests'".
+If you want to be extra thorough you can `run tox locally <#Tox tests>`_ but in general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
+
+6. Push your changes to your fork::
+
+    git push
+
+Then, verify that Actions pass on your commit(s) on GitHub
+
 6. Submit a pull request through the GitHub website following `the guidelines <#Pull Request Guidelines>`_.
+
+Pull Request Guidelines
+-----------------------
+
+If you need some code review or feedback while you're developing the code just make the pull request.
+
+For merging, you should:
+
+1. Ensure Actions are passing on your fork. (Actions will also be automatically run when you create a PR, and they will need to be passing as a requirement to merge)
+2. Add unit test coverage
+3. Write clean, self-documenting code. Update documentation which cannot be adequately self-documented.
+4. Add yourself to ``AUTHORS.rst``.
+5. Major changes may merit a mention in `CHANGELOG <CHANGELOG.rst>`_
 
 Tox tests
 ---------
 
-To run all the tests run::
+To run all the ``tox`` tests locally::
 
     tox
 
@@ -122,17 +138,6 @@ To run all the test environments in *parallel*::
 
     tox -p auto
 
-Pull Request Guidelines
------------------------
-
-If you need some code review or feedback while you're developing the code just make the pull request.
-
-For merging, you should:
-
-1. Ensure Actions are passing on your fork. (Actions will also be automatically run when you create a PR, and they will need to be passing as a requirement to merge)
-2. Update documentation when there's new API, functionality etc.
-3. Add a note to ``CHANGELOG.rst`` about the changes.
-4. Add yourself to ``AUTHORS.rst``.
 
 Bug reports
 ===========

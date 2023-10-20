@@ -67,7 +67,7 @@ Manuals & Usage:
 
 References:
 
-- Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/blob/5e2833bdc215ed6b55bcd0b84d43d2a4289b9a26/References/Beckers%202019%20GEOPHIRES%20v2.pdf>`_
+- Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`_
 - Additional materials in `/References </References>`_
 
 Installation
@@ -81,7 +81,7 @@ To consume GEOPHIRES-X as a python package, install the in-development version w
 
 (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
+If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
 
    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
 

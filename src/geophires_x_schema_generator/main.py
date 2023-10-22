@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -36,7 +37,15 @@ def get_json_schema() -> dict:
 
 
 if __name__ == '__main__':
-    build_dir = Path(Path(__file__).parent.parent.parent, 'build')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--build-in-src', required=False, choices=[True, False], default=True)
+    args = parser.parse_args()
+    build_in_src = args.build_in_src
+
+    build_dir = Path(Path(__file__).parent)
+    if not args.build_in_src:
+        build_dir = Path(Path(__file__).parent.parent.parent, 'build')
+
     build_dir.mkdir(exist_ok=True)
 
     build_path = Path(build_dir, 'geophires-request.json')

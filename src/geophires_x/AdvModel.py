@@ -56,7 +56,7 @@ class AdvModel(Model, AdvGeoPHIRESUtils):
             # that have AGS functionality.
             # that means importing them, initializing them, then reading their parameters
             self.logger.info("Initiate the AGS elements")
-            import CylindricalReservoir  # use the simple cylindrical reservoir for all AGS systems.
+            from geophires_x import CylindricalReservoir
             del self.reserv  # delete the original object so we can replace it
             self.reserv = CylindricalReservoir.CylindricalReservoir(self)
             import AGSWellBores

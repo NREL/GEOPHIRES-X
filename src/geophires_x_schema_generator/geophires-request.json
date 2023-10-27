@@ -31,7 +31,7 @@
   ],
   "properties": {
     "Reservoir Model": {
-      "description": "1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  3: m/a single fracture drawdown model, 4: Linear thermal drawdown model, 5: Generic user-provided temperature profile, 6: TOUGH2",
+      "description": "1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2",
       "type": "integer",
       "units": null,
       "category": "Reservoir"
@@ -43,7 +43,7 @@
       "category": "Reservoir"
     },
     "Maximum Temperature": {
-      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
+      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints).             GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
       "type": "number",
       "units": "degC",
       "category": "Reservoir"
@@ -115,13 +115,13 @@
       "category": "Reservoir"
     },
     "Reservoir Volume Option": {
-      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, 3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only (sufficient for reservoir models 3, 4, 5 and 6)",
+      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2)             are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The             fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2:             Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation,             3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only             (sufficient for reservoir models 3, 4, 5 and 6)",
       "type": "integer",
       "units": null,
       "category": "Reservoir"
     },
     "Fracture Shape": {
-      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir: 1: Circular fracture with known area, 2: Circular fracture with known diameter, 3: Square fracture, 4: Rectangular fracture",
+      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir:             1: Circular fracture with known area, 2: Circular fracture with known diameter,             3: Square fracture, 4: Rectangular fracture",
       "type": "integer",
       "units": null,
       "category": "Reservoir"
@@ -151,7 +151,7 @@
       "category": "Reservoir"
     },
     "Fracture Separation": {
-      "description": "Separation of identical parallel fractures with uniform spatial distribution in EGS fracture-based reservoir",
+      "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",
       "type": "number",
       "units": "meter",
       "category": "Reservoir"
@@ -199,7 +199,7 @@
       "category": "Reservoir"
     },
     "Surface Temperature": {
-      "description": "Surface temperature used for calculating bottom-hole temperature (with geothermal gradient and reservoir depth)",
+      "description": "Surface temperature used for calculating bottom-hole temperature             (with geothermal gradient and reservoir depth)",
       "type": "number",
       "units": "degC",
       "category": "Reservoir"
@@ -223,19 +223,19 @@
       "category": "Well Bores"
     },
     "Production Well Diameter": {
-      "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate frictional pressure drop and wellbore heat transmission with Rameys model",
+      "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",
       "units": "in",
       "category": "Well Bores"
     },
     "Injection Well Diameter": {
-      "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate frictional pressure drop and wellbore heat transmission with Rameys model",
+      "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",
       "units": "in",
       "category": "Well Bores"
     },
     "Ramey Production Wellbore Model": {
-      "description": "Select whether to use Rameys model to estimate the geofluid temperature drop in the production wells",
+      "description": "Select whether to use Rameys model to estimate the geofluid temperature drop in the             production wells",
       "type": "boolean",
       "units": null,
       "category": "Well Bores"
@@ -259,7 +259,7 @@
       "category": "Well Bores"
     },
     "Reservoir Impedance": {
-      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well is in hydraulic communication with the production well, this parameter specifies the overall pressure drop in the reservoir between injection well and production well (see docs)",
+      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well             is in hydraulic communication with the production well, this parameter specifies the overall pressure drop             in the reservoir between injection well and production well (see docs)",
       "type": "number",
       "units": "GPa.s/m**3",
       "category": "Well Bores"
@@ -277,7 +277,7 @@
       "category": "Well Bores"
     },
     "Reservoir Hydrostatic Pressure": {
-      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified Xie-Bloomfield-Shook equation (DOE, 2016).",
+      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
       "type": "number",
       "units": "kPa",
       "category": "Well Bores"
@@ -289,19 +289,19 @@
       "category": "Well Bores"
     },
     "Injectivity Index": {
-      "description": "Injectivity index defined as ratio of injection well flow rate over injection well outflow pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure).",
+      "description": "Injectivity index defined as ratio of injection well flow rate over injection well outflow             pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure).",
       "type": "number",
       "units": "kg/sec/bar",
       "category": "Well Bores"
     },
     "Productivity Index": {
-      "description": "Productivity index defined as ratio of production well flow rate over production well inflow pressure drop (see docs)",
+      "description": "Productivity index defined as ratio of production well flow rate over production well inflow             pressure drop (see docs)",
       "type": "number",
       "units": "kg/sec/bar",
       "category": "Well Bores"
     },
     "Maximum Drawdown": {
-      "description": "Maximum allowable thermal drawdown before redrilling of all wells into new reservoir (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of its initial temperature",
+      "description": "Maximum allowable thermal drawdown before redrilling of all wells into new reservoir             (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that             all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of             its initial temperature",
       "type": "number",
       "units": "",
       "category": "Well Bores"
@@ -388,6 +388,78 @@
       "description": "Price of heat to calculate revenue from heat sales in CHP mode.",
       "type": "number",
       "units": "USD/kWh",
+      "category": "Surface Plant"
+    },
+    "Construction Years": {
+      "description": "Number of years spent in construction (assumes whole years, no fractions)",
+      "type": "integer",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "Absorption Chiller COP": {
+      "description": "Specify the coefficient of performance (COP) of the absorption chiller",
+      "type": "number",
+      "units": "",
+      "category": "Surface Plant"
+    },
+    "Heat Pump COP": {
+      "description": "Specify the coefficient of performance (COP) of the heat pump",
+      "type": "number",
+      "units": "",
+      "category": "Surface Plant"
+    },
+    "District Heating Demand Option": {
+      "description": "Select the method to provide the district heating demand to GEOPHIRES",
+      "type": "integer",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "District Heating Demand File Name": {
+      "description": "Provide district heating demand in csv file in MW or MWh per day (if district heating demand option is set to 1)",
+      "type": "string",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "District Heating Demand Data Time Resolution": {
+      "description": "Provide time interval for thermal demand data: 1 = hourly (data provided as MW = MWh' 2 = daily (data provided as MWh/day) (if district heating demand option is set to 1)",
+      "type": "integer",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "District Heating Demand Data Column Number": {
+      "description": "Select the column number of the hourly or daily data in the district heating demand csv file (if district heating demand option is set to 1)",
+      "type": "integer",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "Temperature File Name": {
+      "description": "Provide filename of tempeature file with hourly temperature to calculate district heating demand (if district heating demand option is set to 2)",
+      "type": "string",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "Temperature Data Column Number": {
+      "description": "Select the column number of the hourly temperature data in the temperature csv file (if district heating demand option is set to 2)",
+      "type": "integer",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "Number of Housing Units": {
+      "description": "Specify the number of housing units to calculate district heating demand (if district heating demand option is set to 2)",
+      "type": "number",
+      "units": null,
+      "category": "Surface Plant"
+    },
+    "Constant Anchor Demand": {
+      "description": "Specify the constant anchor demand to calculate the district heating demand (if district heating demand option is set to 2)",
+      "type": "number",
+      "units": "MW",
+      "category": "Surface Plant"
+    },
+    "US Census Division": {
+      "description": "Select the U.S. census division to calculate district heating demand (if district heating demand option is set to 2)",
+      "type": "integer",
+      "units": null,
       "category": "Surface Plant"
     },
     "Economic Model": {
@@ -594,6 +666,12 @@
       "units": null,
       "category": "Economics"
     },
+    "Do S-DAC-GT Calculations": {
+      "description": "Set to true if you want the S-DAC-GT economics calculations to be made",
+      "type": "boolean",
+      "units": null,
+      "category": "Economics"
+    },
     "All-in Vertical Drilling Costs": {
       "description": "Set user specified all-in cost per meter of vertical drilling, including drilling, casing, cement, insulated insert",
       "type": "number",
@@ -604,6 +682,162 @@
       "description": "Set user specified all-in cost per meter of non-vertical drilling, including drilling, casing, cement, insulated insert",
       "type": "number",
       "units": "USD/m",
+      "category": "Economics"
+    },
+    "Absorption Chiller Capital Cost": {
+      "description": "Absorption chiller capital cost",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "Absorption Chiller O&M Cost": {
+      "description": "Absorption chiller O&M cost",
+      "type": "number",
+      "units": "MUSD/yr",
+      "category": "Economics"
+    },
+    "Heat Pump Capital Cost": {
+      "description": "Heat pump capital cost",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "Peaking Fuel Cost Rate": {
+      "description": "Price of peaking fuel for peaking boilers",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Peaking Boiler Efficiency": {
+      "description": "Peaking boiler efficiency",
+      "type": "number",
+      "units": "",
+      "category": "Economics"
+    },
+    "District Heating Piping Cost Rate": {
+      "description": "District heating piping cost rate ($/m)",
+      "type": "number",
+      "units": "USD/m",
+      "category": "Economics"
+    },
+    "Total District Heating Network Cost": {
+      "description": "Total district heating network cost ($M)",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "District Heating O&M Cost": {
+      "description": "Total annual district heating O&M cost ($M/year)",
+      "type": "number",
+      "units": "MUSD/yr",
+      "category": "Economics"
+    },
+    "District Heating Network Piping Length": {
+      "description": "District heating network piping length (km)",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Economics"
+    },
+    "District Heating Road Length": {
+      "description": "District heating road length (km)",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Economics"
+    },
+    "District Heating Land Area": {
+      "description": "District heating land area (km2)",
+      "type": "number",
+      "units": "km**2",
+      "category": "Economics"
+    },
+    "District Heating Population": {
+      "description": "Specify the population in the district heating network",
+      "type": "number",
+      "units": null,
+      "category": "Economics"
+    },
+    "Starting Heat Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Ending Heat Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Heat Escalation Start Year": {
+      "description": "Number of years after start of project before start of escalation",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "Heat Escalation Rate Per Year": {
+      "description": "additional cost per year of price after escalation starts",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Starting Electricity Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Ending Electricity Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Electricity Escalation Start Year": {
+      "description": "Number of years after start of project before start of escalation",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "Electricity Escalation Rate Per Year": {
+      "description": "additional cost per year of price after escalation starts",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Annual License Fees Etc": {
+      "description": "",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "One-time Flat License Fees Etc": {
+      "description": "",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "Other Incentives": {
+      "description": "",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "Tax Relief Per Year": {
+      "description": "Fixed percent reduction in annual tax rate",
+      "type": "number",
+      "units": "%",
+      "category": "Economics"
+    },
+    "One-time Grants Etc": {
+      "description": "",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "Fixed Internal Rate": {
+      "description": "Fixed Internal Rate (used in NPV calculation)",
+      "type": "number",
+      "units": "%",
       "category": "Economics"
     }
   }

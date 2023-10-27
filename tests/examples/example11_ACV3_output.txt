@@ -26,8 +26,8 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          5.00 
-      Accrued financing during construction:                  5.00 
+      Interest Rate:                                          5.00
+      Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                           0.00 MUSD
@@ -40,8 +40,8 @@ Simulation Metadata
       Number of Production Wells:                             2
       Number of Injection Wells:                              2
       Well depth (or total length, if not vertical):          2.1 kilometer
-      Water loss rate:                                        2.0 
-      Pump efficiency:                                       80.0 
+      Water loss rate:                                        2.0
+      Pump efficiency:                                       80.0
       Injection temperature:                                 83.0 degC
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               1.6 degC
@@ -54,7 +54,7 @@ Simulation Metadata
                          ***RESOURCE CHARACTERISTICS***
 
       Maximum reservoir temperature:                        400.0 degC
-      Number of segments:                                     1 
+      Number of segments:                                     1
       Geothermal gradient:                                    0.0450 degC/m
 
 
@@ -201,4 +201,3 @@ Simulation Metadata
   28                  49.0                   75.6                  5.91                  57.73
   29                  48.7                   75.1                  5.64                  59.67
   30                  48.3                   74.6                  5.38                  61.58
-

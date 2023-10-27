@@ -15,11 +15,23 @@ class GeophiresXResult:
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
                 'Direct-Use heat breakeven price',
+                'Annual District Heating Demand',
+                'Average Cooling Production',
+                'Average Annual Geothermal Heat Production',
+                'Average Annual Peaking Fuel Heat Production',
+                'Direct-Use Cooling Breakeven Price',
                 'Number of production wells',
                 'Number of injection wells',
                 'Flowrate per production well',
                 'Well depth',
                 'Geothermal gradient',
+                # AGS/CLGS
+                'LCOE',
+                # 'Fluid',
+                # 'Design',
+                # 'Flow rate',
+                # 'Lateral Length',
+                # 'Vertical Depth'
             ],
             'ECONOMIC PARAMETERS': [
                 'Interest Rate',  # %
@@ -78,17 +90,28 @@ class GeophiresXResult:
                 'Drilling and completion costs per well',
                 'Stimulation costs',
                 'Surface power plant costs',
+                # TODO 'of which [...] costs'
+                'District Heating System Cost',
                 'Field gathering system costs',
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Total capital costs',
+                # AGS/CLGS
+                'Total CAPEX',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
                 'Power plant maintenance costs',
                 'Water costs',
+                'Average Reservoir Pumping Cost',
+                'Absorption Chiller O&M Cost',
+                'Average Heat Pump Electricity Cost',
+                'Annual District Heating O&M Cost',
+                'Average Annual Peaking Fuel Cost',
                 'Average annual pumping costs',
                 'Total operating and maintenance costs',
+                # AGS/CLGS
+                'OPEX',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [
                 'Initial geofluid availability',
@@ -108,6 +131,24 @@ class GeophiresXResult:
                 'Initial Net Heat Production',
                 'Average Annual Heat Production',
                 'Average Pumping Power',
+                'Average Annual Heat Pump Electricity Use',
+                'Maximum Cooling Production',
+                'Average Cooling Production',
+                'Minimum Cooling Production',
+                'Initial Cooling Production',
+                'Average Annual Cooling Production',
+                'Annual District Heating Demand',
+                'Maximum Daily District Heating Demand',
+                'Average Daily District Heating Demand',
+                'Minimum Daily District Heating Demand',
+                'Maximum Geothermal Heating Production',
+                'Average Geothermal Heating Production',
+                'Minimum Geothermal Heating Production',
+                'Maximum Peaking Boiler Heat Production',
+                'Average Peaking Boiler Heat Production',
+                'Minimum Peaking Boiler Heat Production',
+                # AGS/CLGS
+                'Surface Plant Cost',
             ],
         }
     )
@@ -137,10 +178,14 @@ class GeophiresXResult:
             for field in fields:
                 self.result[category][field] = self._get_result_field(field)
 
-        self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
-        self.result[
-            'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
-        ] = self._get_heat_electricity_extraction_generation_profile()
+        try:
+            self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
+            self.result[
+                'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
+            ] = self._get_heat_electricity_extraction_generation_profile()
+        except Exception as e:
+            # FIXME
+            self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')
 
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
@@ -250,10 +295,15 @@ class GeophiresXResult:
             return None
 
     def _get_end_use_option(self) -> EndUseOption:
-        end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split('End-Use Option: ')[1]
-        if 'Direct-Use Heat' in end_use_option_snippet:
-            return EndUseOption.DIRECT_USE_HEAT
-        elif 'Electricity' in end_use_option_snippet:
-            return EndUseOption.ELECTRICITY
+        try:
+            end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split('End-Use Option: ')[1]
+
+            if 'Direct-Use Heat' in end_use_option_snippet:
+                return EndUseOption.DIRECT_USE_HEAT
+            elif 'Electricity' in end_use_option_snippet:
+                return EndUseOption.ELECTRICITY
+        except IndexError:
+            # FIXME
+            self._logger.error('Failed to parse End-Use Option')
 
         return None

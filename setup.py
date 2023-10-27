@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='1.3.0',
+    version='3.1.2',
     license='MIT',
     description='Distributable python package version of https://github.com/malcolm-dsider/GEOPHIRES-X',
     long_description='{}\n{}'.format(
@@ -72,10 +72,10 @@ setup(
         'mysql.connector',
         'cryptography',
         'pandas',
-        'matplotlib'
-        # Used by Adv*/AGS extensions but break tox pypy jobs
-        #'h5py',
-        #'scipy',
+        'matplotlib',
+        # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
+        'h5py',
+        'scipy',
     ],
     extras_require={
         # eg:

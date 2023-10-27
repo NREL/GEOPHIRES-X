@@ -2,7 +2,7 @@
 Overview
 ========
 
-Distributable python package version of GEOPHIRES-X.
+GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 
 Ported from https://github.com/malcolm-dsider/GEOPHIRES-X and https://github.com/softwareengineerprogrammer/python-geophires-x using https://github.com/ionelmc/cookiecutter-pylibrary/.
 
@@ -40,9 +40,9 @@ Ported from https://github.com/malcolm-dsider/GEOPHIRES-X and https://github.com
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v1.3.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/python-geophires-x/v3.1.2.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/python-geophires-x/compare/v1.3.0...main
+    :target: https://github.com/NREL/python-geophires-x/compare/v3.1.2...main
 
 
 

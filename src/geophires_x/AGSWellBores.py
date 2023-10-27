@@ -28,8 +28,23 @@ esp2 = 10.0e-10
 
 
 class data:
-    def __init__(self, fname, case, fluid):
+    _cache = {}
 
+    @staticmethod
+    def _get_cache_key(fname, case, fluid):
+        return f'{fname}/{case},{fluid}'
+
+    @staticmethod
+    def get(fname, case, fluid):
+        cache_key = data._get_cache_key(fname,case,fluid)
+        if cache_key in data._cache:
+            return data._cache[cache_key]
+        else:
+            d = data(fname,case,fluid)
+            data._cache[cache_key] = d
+            return d
+
+    def __init__(self, fname, case, fluid):
         self.fluid = fluid
         self.case = case
 
@@ -476,15 +491,15 @@ class AGSWellBores(WellBores):
         # local variable initiation
         # code from Koenraad
         # Filename of h5 database with simulation results [-]
-        self.filename = self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\clgs_results_final.h5'
+        self.filename = self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}clgs_results_final.h5'
         if self.Fluid.value == WorkingFluid.WATER:
             self.mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\properties_H2O.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}properties_H2O.mat')
         else:
             self.mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}properties_CO2v2.mat')
             self.additional_mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + 'CLG Simulator\\additional_properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}additional_properties_CO2v2.mat')
 
         # results are stored here and in the parent ProducedTemperature array
         self.Tini = 0.0
@@ -595,9 +610,9 @@ class AGSWellBores(WellBores):
 
         if self.Fluid.value == WorkingFluid.WATER:
             if self.Configuration.value == Configuration.ULOOP:
-                self.u_H2O = data(self.filename, Configuration.ULOOP.value, "H2O")
+                self.u_H2O = data.get(self.filename, Configuration.ULOOP.value, "H2O")
             elif self.Configuration.value == Configuration.COAXIAL:
-                self.u_H2O = data(self.filename, Configuration.COAXIAL.value, "H2O")
+                self.u_H2O = data.get(self.filename, Configuration.COAXIAL.value, "H2O")
             self.timearray = self.u_H2O.time
             self.FlowRateVector = self.u_H2O.mdot  # length of 26
             self.HorizontalLengthVector = self.u_H2O.L2  # length of 20
@@ -609,9 +624,9 @@ class AGSWellBores(WellBores):
             self.Fluid_name = 'Water'
         elif self.Fluid.value == WorkingFluid.SCO2:
             if self.Configuration.value == Configuration.ULOOP:
-                self.u_sCO2 = data(self.filename, Configuration.ULOOP.value, "sCO2")
+                self.u_sCO2 = data.get(self.filename, Configuration.ULOOP.value, "sCO2")
             elif self.Configuration.value == Configuration.COAXIAL:
-                self.u_sCO2 = data(self.filename, Configuration.COAXIAL.value, "sCO2")
+                self.u_sCO2 = data.get(self.filename, Configuration.COAXIAL.value, "sCO2")
             self.timearray = self.u_sCO2.time
             self.FlowRateVector = self.u_sCO2.mdot  # length of 26
             self.HorizontalLengthVector = self.u_sCO2.L2  # length of 20

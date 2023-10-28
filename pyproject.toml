@@ -22,6 +22,7 @@ ignore = [
     "PTH120",
     "PTH123",
     "PT009",
+    "PT027", #  "Use `pytest.raises` instead of unittest-style `assertRaises`"...meh
 ]
 line-length = 120
 select = [

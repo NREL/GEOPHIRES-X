@@ -323,7 +323,7 @@ class GeophiresXResult:
 
     def _get_end_use_option(self) -> EndUseOption:
         try:
-            end_use_option_snippet = list(filter(lambda x: 'End-Use Option: ' in x, self._lines))[0].split(
+            end_use_option_snippet = next(filter(lambda x: 'End-Use Option: ' in x, self._lines)).split(
                 'End-Use Option: '
             )[1]
 
@@ -334,7 +334,7 @@ class GeophiresXResult:
         except IndexError:
             # FIXME clean up
             try:
-                end_use_option_snippet = list(filter(lambda x: 'End-Use: ' in x, self._lines))[0].split('End-Use: ')[1]
+                end_use_option_snippet = next(filter(lambda x: 'End-Use: ' in x, self._lines)).split('End-Use: ')[1]
 
                 if 'Direct-Use Heat' in end_use_option_snippet:
                     return EndUseOption.DIRECT_USE_HEAT

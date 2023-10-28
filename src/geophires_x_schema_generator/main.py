@@ -17,7 +17,7 @@ def get_json_schema() -> dict:
         properties[param_name] = {
             'description': param['ToolTipText'],
             'type': param['json_parameter_type'],
-            'units': param['CurrentUnits'] if type(param['CurrentUnits']) == str else None,
+            'units': param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None,
             'category': param['parameter_category'],
         }
 

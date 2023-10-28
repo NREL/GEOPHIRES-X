@@ -18,6 +18,13 @@ Free software: `MIT license <LICENSE>`_
 .. list-table::
     :stub-columns: 1
 
+     * - docs
+       - |docs|
+     * - tests
+       - | |github-actions|
+         |
+     * - package
+       - | |commits-since|
     * - tests
       - | |github-actions|
         |
@@ -49,6 +56,10 @@ Free software: `MIT license <LICENSE>`_
 .. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.0.svg
     :alt: Commits since latest release
     :target: https://github.com/NREL/python-geophires-x/compare/v3.2.0...main
+
+.. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
+    :target: https://python-geophires-x.readthedocs.io/
+    :alt: Documentation Status
 
 .. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22
 

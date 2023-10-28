@@ -18,20 +18,14 @@ Free software: `MIT license <LICENSE>`_
 .. list-table::
     :stub-columns: 1
 
-     * - docs
-       - |docs|
-     * - tests
-       - | |github-actions|
-         |
-     * - package
-       - | |commits-since|
     * - tests
       - | |github-actions|
-        |
     * - package
       - | |commits-since|
-
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
+..    * - docs
+..      - | |docs|
+
 
 .. |github-actions| image:: https://github.com/NREL/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status

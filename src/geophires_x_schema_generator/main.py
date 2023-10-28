@@ -5,24 +5,54 @@ from pathlib import Path
 from geophires_x.Model import Model
 
 
-def get_json_schema() -> dict:
+def generate_schema() -> dict:
     params = json.loads(Model(enable_geophires_logging_config=False).get_parameters_json())
 
     properties = {}
     required = []
+    rst = """Parameters
+==========
+    .. list-table:: Input Parameters
+       :widths: 25 50 10 10 10 10 25
+       :header-rows: 1
+
+       * - Name
+         - Description
+         - Default Value Type
+         - Default Value
+         - Min
+         - Max
+         - Preferred Units
+    """
 
     for param_name in params:
         param = params[param_name]
 
+        unitsVal = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
         properties[param_name] = {
             'description': param['ToolTipText'],
             'type': param['json_parameter_type'],
-            'units': param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None,
+            'units': unitsVal,
             'category': param['parameter_category'],
         }
 
         if param['Required']:
             required.append(param_name)
+
+        def get_key(k):
+            if k in param:  # noqa
+                return param[k]  # noqa
+            else:
+                return ''
+
+        rst += f"""\n       * - {param['Name']}
+         - {get_key('ToolTipText')}
+         - {get_key('json_parameter_type')}
+         - {get_key('DefaultValue')}
+         - {get_key('Min')}
+         - {get_key('Max')}
+         - {get_key('PreferredUnits')}
+        """
 
     schema = {
         'definitions': {},
@@ -33,7 +63,7 @@ def get_json_schema() -> dict:
         'properties': properties,
     }
 
-    return schema
+    return schema, rst
 
 
 if __name__ == '__main__':
@@ -49,7 +79,13 @@ if __name__ == '__main__':
     build_dir.mkdir(exist_ok=True)
 
     build_path = Path(build_dir, 'geophires-request.json')
-    with open(build_path, 'w') as f:
-        f.write(json.dumps(get_json_schema(), indent=2))
 
-    print(f'Wrote schema file to {build_path}.')
+    schema_json, rst = generate_schema()
+
+    with open(build_path, 'w') as f:
+        f.write(json.dumps(schema_json, indent=2))
+        print(f'Wrote schema file to {build_path}.')
+
+    build_path_rst = Path(build_dir, 'parameters.rst')
+    with open(build_path_rst, 'w') as f:
+        f.write(rst)

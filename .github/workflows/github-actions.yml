@@ -131,18 +131,40 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
-        run: |
-          chmod -c -R +rX "_site/" | while read line; do
-            echo "::warning title=Invalid file permissions automatically fixed::$line"
-          done
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        architecture: 'x64'
+    - name: install dependencies
+      run: |
+        python -mpip install --upgrade pip
+        python -mpip install --progress-bar=off -r ci/requirements.txt
+        virtualenv --version
+        pip --version
+        tox --version
+        pip list --format=freeze
 
-      - name: Generate github-pages artifact # https://github.com/actions/upload-pages-artifact#artifact-validation
-        run: |
-          pwd
-          ls
-          tar -czvf github-pages dist/docs
+    - name: tox docs
+      env:
+        TOXPYTHON: '3.11'
+      run: >
+        tox -e docs -v
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+    - name: Fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
+      run: |
+        chmod -c -R +rX "_site/" | while read line; do
+          echo "::warning title=Invalid file permissions automatically fixed::$line"
+        done
+
+    - name: Generate github-pages artifact # https://github.com/actions/upload-pages-artifact#artifact-validation
+      run: |
+        pwd
+        ls
+        tar -czvf github-pages dist/docs
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

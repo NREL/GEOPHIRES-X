@@ -26,57 +26,54 @@ jobs:
             toxpython: 'python3.11'
             tox_env: 'docs'
             os: 'ubuntu-latest'
-
-# FIXME TEMP WIP
-#          - name: 'py38 (ubuntu)'
-#            python: '3.8'
-#            toxpython: 'python3.8'
-#            python_arch: 'x64'
-#            tox_env: 'py38'
-#            os: 'ubuntu-latest'
-#          - name: 'py38 (macos)'
-#            python: '3.8'
-#            toxpython: 'python3.8'
-#            python_arch: 'x64'
-#            tox_env: 'py38'
-#            os: 'macos-latest'
-#          - name: 'py39 (ubuntu)'
-#            python: '3.9'
-#            toxpython: 'python3.9'
-#            python_arch: 'x64'
-#            tox_env: 'py39'
-#            os: 'ubuntu-latest'
-#          - name: 'py39 (macos)'
-#            python: '3.9'
-#            toxpython: 'python3.9'
-#            python_arch: 'x64'
-#            tox_env: 'py39'
-#            os: 'macos-latest'
-#          - name: 'py310 (ubuntu)'
-#            python: '3.10'
-#            toxpython: 'python3.10'
-#            python_arch: 'x64'
-#            tox_env: 'py310'
-#            os: 'ubuntu-latest'
-#          - name: 'py310 (macos)'
-#            python: '3.10'
-#            toxpython: 'python3.10'
-#            python_arch: 'x64'
-#            tox_env: 'py310'
-#            os: 'macos-latest'
-#          - name: 'py311 (macos)'
-#            python: '3.11'
-#            toxpython: 'python3.11'
-#            python_arch: 'x64'
-#            tox_env: 'py311'
-#            os: 'macos-latest'
-
+          - name: 'py38 (ubuntu)'
+            python: '3.8'
+            toxpython: 'python3.8'
+            python_arch: 'x64'
+            tox_env: 'py38'
+            os: 'ubuntu-latest'
+          - name: 'py38 (macos)'
+            python: '3.8'
+            toxpython: 'python3.8'
+            python_arch: 'x64'
+            tox_env: 'py38'
+            os: 'macos-latest'
+          - name: 'py39 (ubuntu)'
+            python: '3.9'
+            toxpython: 'python3.9'
+            python_arch: 'x64'
+            tox_env: 'py39'
+            os: 'ubuntu-latest'
+          - name: 'py39 (macos)'
+            python: '3.9'
+            toxpython: 'python3.9'
+            python_arch: 'x64'
+            tox_env: 'py39'
+            os: 'macos-latest'
+          - name: 'py310 (ubuntu)'
+            python: '3.10'
+            toxpython: 'python3.10'
+            python_arch: 'x64'
+            tox_env: 'py310'
+            os: 'ubuntu-latest'
+          - name: 'py310 (macos)'
+            python: '3.10'
+            toxpython: 'python3.10'
+            python_arch: 'x64'
+            tox_env: 'py310'
+            os: 'macos-latest'
           - name: 'py311 (ubuntu)'
             python: '3.11'
             toxpython: 'python3.11'
             python_arch: 'x64'
             tox_env: 'py311'
             os: 'ubuntu-latest'
+          - name: 'py311 (macos)'
+            python: '3.11'
+            toxpython: 'python3.11'
+            python_arch: 'x64'
+            tox_env: 'py311'
+            os: 'macos-latest'
 
 #          - name: 'pypy38 (ubuntu)'
 #            python: 'pypy-3.8'
@@ -102,6 +99,7 @@ jobs:
 #            python_arch: 'x64'
 #            tox_env: 'pypy39'
 #            os: 'macos-latest'
+
     steps:
     - uses: actions/checkout@v3
       with:
@@ -112,6 +110,7 @@ jobs:
         architecture: ${{ matrix.python_arch }}
     - name: install dependencies
       run: |
+        python -mpip install --upgrade pip
         python -mpip install --progress-bar=off -r ci/requirements.txt
         virtualenv --version
         pip --version
@@ -155,15 +154,15 @@ jobs:
         ls -l dist/docs
         cp -r dist/docs _site/
 
-    - name: Fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
+    - name: fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
       run: |
         chmod -c -R +rX "_site/" | while read line; do
           echo "::warning title=Invalid file permissions automatically fixed::$line"
         done
 
-    - name: Upload artifact
+    - name: upload artifact
       uses: actions/upload-pages-artifact@v2
 
-    - name: Deploy to GitHub Pages
+    - name: deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v2

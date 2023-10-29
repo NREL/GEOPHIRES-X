@@ -6,14 +6,14 @@ from geophires_x.Model import Model
 
 
 def generate_schema() -> dict:
-    params = json.loads(Model(enable_geophires_logging_config=False).get_parameters_json())
+    input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
+    input_params = json.loads(input_params_json)
 
     properties = {}
     required = []
-    rst = """Parameters
-==========
+    input_rst = """
     .. list-table:: Input Parameters
-       :widths: 25 50 10 10 10 10 25
+       :widths: 25 50 10 10 10 10 10
        :header-rows: 1
 
        * - Name
@@ -24,8 +24,8 @@ def generate_schema() -> dict:
          - Min
          - Max"""
 
-    for param_name in params:
-        param = params[param_name]
+    for param_name in input_params:
+        param = input_params[param_name]
 
         units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
         properties[param_name] = {
@@ -52,7 +52,7 @@ def generate_schema() -> dict:
             min_val = min(param['AllowableRange'])
             max_val = max(param['AllowableRange'])
 
-        rst += f"""\n       * - {param['Name']}
+        input_rst += f"""\n       * - {param['Name']}
          - {get_key('ToolTipText')}
          - {get_key('PreferredUnits')}
          - {get_key('json_parameter_type')}
@@ -69,7 +69,43 @@ def generate_schema() -> dict:
         'properties': properties,
     }
 
+    output_rst = get_output_params_table_rst(output_params_json)
+
+    rst = f"""Parameters
+==========
+{input_rst}
+
+{output_rst}
+    """
+
     return schema, rst
+
+
+def get_output_params_table_rst(output_params_json):
+    output_params = json.loads(output_params_json)
+
+    output_rst = """
+    .. list-table:: Output Parameters
+       :header-rows: 1
+
+       * - Name
+         - Preferred Units
+         - Default Value Type"""
+
+    for param_name in output_params:
+        param = output_params[param_name]
+
+        def get_key(k):
+            if k in param and str(param[k]) != '':  # noqa
+                return param[k]  # noqa
+            else:
+                return ''
+
+        output_rst += f"""\n       * - {param['Name']}
+         - {get_key('PreferredUnits')}
+         - {get_key('json_parameter_type')}"""
+
+    return output_rst
 
 
 if __name__ == '__main__':

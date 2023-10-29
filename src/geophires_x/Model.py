@@ -228,10 +228,10 @@ class Model(object):
 
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def get_parameters_json(self) -> str:
+    def get_parameters_json(self) -> tuple[str,str]:
         from geophires_x.GeoPHIRESUtils import json_dumpse
 
-        all_params = {}
+        input_params = {}
 
         def with_category(param_dict: dict, category: str):
             def _with_cat(p: Parameter, cat: str):
@@ -240,9 +240,16 @@ class Model(object):
 
             return {k: _with_cat(v, category) for k, v in param_dict.items()}
 
-        all_params.update(with_category(self.reserv.ParameterDict, 'Reservoir'))
-        all_params.update(with_category(self.wellbores.ParameterDict, 'Well Bores'))
-        all_params.update(with_category(self.surfaceplant.ParameterDict, 'Surface Plant'))
-        all_params.update(with_category(self.economics.ParameterDict, 'Economics'))
+        input_params.update(with_category(self.reserv.ParameterDict, 'Reservoir'))
+        input_params.update(with_category(self.wellbores.ParameterDict, 'Well Bores'))
+        input_params.update(with_category(self.surfaceplant.ParameterDict, 'Surface Plant'))
+        input_params.update(with_category(self.economics.ParameterDict, 'Economics'))
 
-        return json_dumpse(all_params)
+        output_params = {}
+        output_params.update(with_category(self.reserv.OutputParameterDict, 'Reservoir'))
+        output_params.update(with_category(self.wellbores.OutputParameterDict, 'Well Bores'))
+        output_params.update(with_category(self.surfaceplant.OutputParameterDict, 'Surface Plant'))
+        output_params.update(with_category(self.economics.OutputParameterDict, 'Economics'))
+
+
+        return json_dumpse(input_params), json_dumpse(output_params)

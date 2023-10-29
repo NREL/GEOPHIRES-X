@@ -74,6 +74,7 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py311'
             os: 'macos-latest'
+
 #          - name: 'pypy38 (ubuntu)'
 #            python: 'pypy-3.8'
 #            toxpython: 'pypy3.8'
@@ -127,8 +128,16 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - name: Fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
+        run: |
+          chmod -c -R +rX "_site/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+
+      - name: Generate github-pages artifact # https://github.com/actions/upload-pages-artifact#artifact-validation
+        run: |
+          tar -czvf github-pages dist/docs
+
       - name: Deploy to GitHub Pages
         id: deployment
-        # FIXME WIP TODO
-        # uses: actions/deploy-pages@v2
-        uses: actions/checkout@v3
+        uses: actions/deploy-pages@v2

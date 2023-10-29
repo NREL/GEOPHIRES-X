@@ -150,7 +150,7 @@ jobs:
     - name: generate docs
       env:
         TOXPYTHON: '3.11'
-      run: >
+      run: |
         tox -e docs -v
         ls -l dist/docs
         cp -r dist/docs _site/

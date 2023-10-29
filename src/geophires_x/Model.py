@@ -203,7 +203,7 @@ class Model(object):
         # if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
         if self.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
             self.surfaceplant.CalculateDHDemand(self)  # calculate district heating demand
-        
+
         self.reserv.Calculate(self)  # model the reservoir
         self.wellbores.Calculate(self)  # model the wellbores
         self.surfaceplant.Calculate(self)  # model the surfaceplant
@@ -241,11 +241,8 @@ class Model(object):
             return {k: _with_cat(v, category) for k, v in param_dict.items()}
 
         all_params.update(with_category(self.reserv.ParameterDict, 'Reservoir'))
-
         all_params.update(with_category(self.wellbores.ParameterDict, 'Well Bores'))
-
         all_params.update(with_category(self.surfaceplant.ParameterDict, 'Surface Plant'))
-
         all_params.update(with_category(self.economics.ParameterDict, 'Economics'))
 
         return json_dumpse(all_params)

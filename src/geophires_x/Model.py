@@ -2,6 +2,7 @@ import sys
 import logging
 import time
 import logging.config
+from typing import Tuple
 
 from geophires_x.OptionList import EndUseOptions
 from geophires_x.Parameter import Parameter
@@ -228,7 +229,7 @@ class Model(object):
 
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def get_parameters_json(self) -> tuple[str,str]:
+    def get_parameters_json(self) -> Tuple[str,str]:
         from geophires_x.GeoPHIRESUtils import json_dumpse
 
         input_params = {}

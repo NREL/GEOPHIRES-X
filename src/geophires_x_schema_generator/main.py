@@ -13,7 +13,6 @@ def generate_schema() -> dict:
     required = []
     input_rst = """
     .. list-table:: Input Parameters
-       :widths: 25 50 10 10 10 10 10
        :header-rows: 1
 
        * - Name

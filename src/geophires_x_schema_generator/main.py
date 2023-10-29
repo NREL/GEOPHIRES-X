@@ -18,21 +18,20 @@ def generate_schema() -> dict:
 
        * - Name
          - Description
+         - Preferred Units
          - Default Value Type
          - Default Value
          - Min
-         - Max
-         - Preferred Units
-    """
+         - Max"""
 
     for param_name in params:
         param = params[param_name]
 
-        unitsVal = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
+        units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
         properties[param_name] = {
             'description': param['ToolTipText'],
             'type': param['json_parameter_type'],
-            'units': unitsVal,
+            'units': units_val,
             'category': param['parameter_category'],
         }
 
@@ -40,19 +39,26 @@ def generate_schema() -> dict:
             required.append(param_name)
 
         def get_key(k):
-            if k in param:  # noqa
+            if k in param and str(param[k]) != '':  # noqa
                 return param[k]  # noqa
             else:
                 return ''
 
+        min_val = get_key('Min')
+        max_val = get_key('Max')
+
+        if 'AllowableRange' in param:
+            # TODO warn if min/max are defined and at odds with allowable range
+            min_val = min(param['AllowableRange'])
+            max_val = max(param['AllowableRange'])
+
         rst += f"""\n       * - {param['Name']}
          - {get_key('ToolTipText')}
+         - {get_key('PreferredUnits')}
          - {get_key('json_parameter_type')}
          - {get_key('DefaultValue')}
-         - {get_key('Min')}
-         - {get_key('Max')}
-         - {get_key('PreferredUnits')}
-        """
+         - {min_val}
+         - {max_val}"""
 
     schema = {
         'definitions': {},

@@ -147,7 +147,7 @@ jobs:
         tox --version
         pip list --format=freeze
 
-    - name: tox docs
+    - name: generate docs
       env:
         TOXPYTHON: '3.11'
       run: >
@@ -155,15 +155,18 @@ jobs:
 
     - name: Fix permissions # https://github.com/actions/upload-pages-artifact#file-permissions
       run: |
-        chmod -c -R +rX "_site/" | while read line; do
+        chmod -c -R +rX "dist/docs/" | while read line; do
           echo "::warning title=Invalid file permissions automatically fixed::$line"
         done
 
     - name: Generate github-pages artifact # https://github.com/actions/upload-pages-artifact#artifact-validation
       run: |
-        pwd
-        ls
+        ls -l dist/docs
         tar -czvf github-pages dist/docs
+        ls
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
 
     - name: Deploy to GitHub Pages
       id: deployment

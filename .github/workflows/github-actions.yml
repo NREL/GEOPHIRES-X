@@ -136,6 +136,8 @@ jobs:
 
       - name: Generate github-pages artifact # https://github.com/actions/upload-pages-artifact#artifact-validation
         run: |
+          pwd
+          ls
           tar -czvf github-pages dist/docs
 
       - name: Deploy to GitHub Pages

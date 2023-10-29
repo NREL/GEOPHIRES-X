@@ -56,7 +56,7 @@ setup(
     project_urls={
         'Changelog': 'https://github.com/NREL/python-geophires-x/blob/master/CHANGELOG.rst',
         'Issue Tracker': 'https://github.com/NREL/python-geophires-x/issues',
-        'Documentation': 'https://python-geophires-x.readthedocs.io/',
+        'Documentation': 'https://nrel.github.io/python-geophires-x-nrel/',
     },
     keywords=[
         # eg: "keyword1", "keyword2", "keyword3",

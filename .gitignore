@@ -69,8 +69,10 @@ nosetests.xml
 output/*.html
 output/*/index.html
 
-# Sphinx
+# Sphinx/docs
 docs/_build
+docs/reference/geophires-request.json
+docs/reference/parameters.rst
 
 # Mypy Cache
 .mypy_cache/

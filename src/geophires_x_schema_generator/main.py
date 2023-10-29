@@ -69,12 +69,16 @@ def generate_schema() -> dict:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--build-in-src', required=False, choices=[True, False], default=True)
+    parser.add_argument('--build-path', required=False)
     args = parser.parse_args()
     build_in_src = args.build_in_src
 
     build_dir = Path(Path(__file__).parent)
     if not args.build_in_src:
         build_dir = Path(Path(__file__).parent.parent.parent, 'build')
+
+    if args.build_path:
+        build_dir = Path(args.build_path)
 
     build_dir.mkdir(exist_ok=True)
 

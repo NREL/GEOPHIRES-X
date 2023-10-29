@@ -6,3 +6,4 @@ Reference
 
     geophires_x
     geophires_x_client
+    parameters

@@ -5,10 +5,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   readme
-   installation
+   overview
    usage
    reference/index
+   reference/parameters
    How-to-extend-GEOPHIRES-X
 
 Indices and tables

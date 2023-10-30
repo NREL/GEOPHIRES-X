@@ -63,12 +63,12 @@ Getting Started
 ===============
 
 Web Interface
-#############
+-------------
 
 A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geophires>`__
 
 Usage
-#####
+-----
 
 Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_ (rather than global site-packages).
 
@@ -81,7 +81,7 @@ To consume GEOPHIRES-X as a python package, install the in-development version w
 `test_geophires_x.py <tests/test_geophires_x.py>`_ has examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`_ locally (i.e. if consuming GEOPHIRES-X as a pip package)
 
 Extending
-#########
+---------
 
 If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
 

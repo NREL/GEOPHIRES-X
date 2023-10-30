@@ -10,8 +10,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'm2r2',
 ]
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 master_doc = 'index'
 project = 'geophires-x'
 year = '2023'

@@ -4,6 +4,6 @@ Reference
 .. toctree::
     :glob:
 
-    geophires_x
-    geophires_x_client
     parameters
+    geophires_x_client
+    geophires_x

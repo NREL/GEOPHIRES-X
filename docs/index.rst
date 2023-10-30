@@ -9,9 +9,7 @@ Contents
    installation
    usage
    reference/index
-   contributing
-   authors
-   changelog
+   How-to-extend-GEOPHIRES-X
 
 Indices and tables
 ==================

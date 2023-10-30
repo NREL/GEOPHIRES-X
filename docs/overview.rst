@@ -1,8 +1,8 @@
-==========================
-GEOPHIRES-X User Reference
-==========================
+============================
+GEOPHIRES-X Reference Manual
+============================
 
-This reference is a supplement to the README in the GitHub repository.
+This reference manual is a supplement to the README in the GitHub repository.
 
 + :doc:`parameters`
 

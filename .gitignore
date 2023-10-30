@@ -73,6 +73,8 @@ output/*/index.html
 docs/_build
 docs/reference/geophires-request.json
 docs/reference/parameters.rst
+docs/geophires-request.json
+docs/parameters.rst
 _site/
 
 # Mypy Cache

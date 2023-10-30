@@ -72,8 +72,13 @@ def generate_schema() -> dict:
 
     rst = f"""Parameters
 ==========
+
+Input Parameters
+################
 {input_rst}
 
+Output Parameters
+#################
 {output_rst}
     """
 

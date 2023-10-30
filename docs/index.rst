@@ -6,10 +6,9 @@ Contents
    :maxdepth: 2
 
    overview
-   usage
-   reference/index
-   reference/parameters
+   parameters
    How-to-extend-GEOPHIRES-X
+..   reference/index
 
 Indices and tables
 ==================

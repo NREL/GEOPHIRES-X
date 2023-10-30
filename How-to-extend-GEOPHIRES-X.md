@@ -24,18 +24,18 @@ from Parameter import intParameter, floatParameter, listParameter, OutputParamet
 from Units import *
 
 class EconomicsAddOns(Economics.Economics):
-def __init__(self, model):
-model.logger.info("Init " + str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
+    def __init__(self, model):
+        model.logger.info("Init " + str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 
-#Set up all the Parameters that will be predefined by this class using
-#the different types of parameter classes.
-pass
+        #Set up all the Parameters that will be predefined by this class using
+        #the different types of parameter classes.
+        # [...]
 
-#local variables that need initialization
-pass
+        #local variables that need initialization
+        # [...]
 
-#results
-pass
+        #results
+        # [...]
 
         model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 
@@ -45,17 +45,17 @@ pass
     def read_parameters(self, model) -> None:
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 
-#Deal with all the parameter values that the user has provided.
-pass
+        #Deal with all the parameter values that the user has provided.
+        # [...]
 
         model.logger.info("complete "+ str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 
     def Calculate(self, reserv, wellbores, surfaceplant, model) -> None:
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 
-#This is where all the calculations are made using all the values that
-#have been set.
-pass
+        #This is where all the calculations are made using all the values that
+        #have been set.
+        # [...]
 
         model.logger.info("complete "+ str(__class__) + ": " + sys._getframe(  ).f_code.co_name)
 

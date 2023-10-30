@@ -66,7 +66,7 @@ Manuals & Usage:
 
 - A GEOPHIRES-X-specific user manual `is pending <https://github.com/NREL/python-geophires-x/issues/23>`_ as of 2023-10-19. In the meantime, the `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ remains partially relevant.
 
-- `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`__ user guide
+- `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
 
 - `test_geophires_x.py <tests/test_geophires_x.py>`_ has examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`_ locally (i.e. if consuming GEOPHIRES-X as a pip package)
 

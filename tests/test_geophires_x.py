@@ -6,7 +6,6 @@ from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
-
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 
 
@@ -197,4 +196,4 @@ class GeophiresXTestCase(BaseTestCase):
         )
 
     def test_RTES_name(self):
-       self.assertEqual(EndUseOptions.RTES.value,"Reservoir Thermal Energy Storage")
+        self.assertEqual(EndUseOptions.RTES.value, 'Reservoir Thermal Energy Storage')

@@ -140,7 +140,7 @@ A variety of examples input ``.txt`` files are available in the `tests/examples 
 Documentation
 =============
 
-* `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html/>`__
+* `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html>`__
 * `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
 
 The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.

@@ -5,23 +5,12 @@ from pathlib import Path
 from geophires_x.Model import Model
 
 
-def generate_schema() -> dict:
+def generate_json_schema() -> dict:
     input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
     input_params = json.loads(input_params_json)
 
     properties = {}
     required = []
-    input_rst = """
-    .. list-table:: Input Parameters
-       :header-rows: 1
-
-       * - Name
-         - Description
-         - Preferred Units
-         - Default Value Type
-         - Default Value
-         - Min
-         - Max"""
 
     for param_name in input_params:
         param = input_params[param_name]
@@ -37,6 +26,40 @@ def generate_schema() -> dict:
         if param['Required']:
             required.append(param_name)
 
+    schema = {
+        'definitions': {},
+        '$schema': 'http://json-schema.org/draft-04/schema#',
+        'type': 'object',
+        'title': 'GEOPHIRES Schema',
+        'required': required,
+        'properties': properties,
+    }
+
+    return schema
+
+
+def generate_parameters_reference_rst() -> str:
+    input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
+    input_params = json.loads(input_params_json)
+
+    input_rst = """
+    .. list-table:: Input Parameters
+       :header-rows: 1
+
+       * - Name
+         - Description
+         - Preferred Units
+         - Default Value Type
+         - Default Value
+         - Min
+         - Max"""
+
+    for param_name in input_params:
+        param = input_params[param_name]
+
+        # if param['Required']:
+        #     TODO designate required params
+
         def get_key(k):
             if k in param and str(param[k]) != '':  # noqa
                 return param[k]  # noqa
@@ -51,6 +74,8 @@ def generate_schema() -> dict:
             min_val = min(param['AllowableRange'])
             max_val = max(param['AllowableRange'])
 
+            # TODO include full AllowableRange in reference (or fully describe if possible using min/max/increment)
+
         input_rst += f"""\n       * - {param['Name']}
          - {get_key('ToolTipText')}
          - {get_key('PreferredUnits')}
@@ -58,15 +83,6 @@ def generate_schema() -> dict:
          - {get_key('DefaultValue')}
          - {min_val}
          - {max_val}"""
-
-    schema = {
-        'definitions': {},
-        '$schema': 'http://json-schema.org/draft-04/schema#',
-        'type': 'object',
-        'title': 'GEOPHIRES Schema',
-        'required': required,
-        'properties': properties,
-    }
 
     output_rst = get_output_params_table_rst(output_params_json)
 
@@ -82,7 +98,7 @@ Output Parameters
 {output_rst}
     """
 
-    return schema, rst
+    return rst
 
 
 def get_output_params_table_rst(output_params_json):
@@ -130,11 +146,13 @@ if __name__ == '__main__':
 
     build_path = Path(build_dir, 'geophires-request.json')
 
-    schema_json, rst = generate_schema()
+    schema_json = generate_json_schema()
 
     with open(build_path, 'w') as f:
         f.write(json.dumps(schema_json, indent=2))
         print(f'Wrote schema file to {build_path}.')
+
+    rst = generate_parameters_reference_rst()
 
     build_path_rst = Path(build_dir, 'parameters.rst')
     with open(build_path_rst, 'w') as f:

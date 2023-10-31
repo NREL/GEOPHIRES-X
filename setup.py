@@ -58,9 +58,7 @@ setup(
         'Issue Tracker': 'https://github.com/NREL/python-geophires-x/issues',
         'Documentation': 'https://nrel.github.io/python-geophires-x-nrel/',
     },
-    keywords=[
-        # eg: "keyword1", "keyword2", "keyword3",
-    ],
+    keywords=['geothermal'],
     python_requires='>=3.7',
     install_requires=[
         'numpy',

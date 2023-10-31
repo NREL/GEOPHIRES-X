@@ -138,6 +138,35 @@ To run all the test environments in *parallel*::
     tox -p auto
 
 
+Test Configuration in VS Code
+-----------------------------
+
+``.vscode/settings.json``:
+
+.. code-block::
+
+ {
+    "python.defaultInterpreterPath": ".tox/py311/bin/python",
+    "python.testing.unittestEnabled": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-c",
+        "pytest.ini",
+        "--no-cov"
+    ],
+    "python.analysis.enablePytestExtra": true,
+    "python.languageServer": "Pylance",
+   }
+
+
+
+
 Bug reports
 ===========
 

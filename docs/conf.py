@@ -40,10 +40,6 @@ html_sidebars = {
 }
 html_short_title = f'{project}-{version}'
 
-html_js_files = [
-    'js/custom.js',
-]
-
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False

@@ -3,6 +3,10 @@
 {%- block extrahead %}
 <script type="text/javascript">
     console.debug('Referrer:', document.referrer)
-    // TODO redirect to corresponding docs for GitHub referrer
+
+    /* Redirect links from forks' docs to NREL's */
+    if(document.referrer === "https://github.com/NREL/python-geophires-x"){
+        location.href = "https://NREL.github.io/python-geophires-x/"
+    }
 </script>
 {% endblock %}

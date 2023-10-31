@@ -52,7 +52,7 @@ Free software: `MIT license <LICENSE>`_
     :target: https://github.com/NREL/python-geophires-x/compare/v3.2.0...main
 
 .. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
-    :target: https://python-geophires-x.readthedocs.io/
+    :target: https://softwareengineerprogrammer.github.io/python-geophires-x-nrel
     :alt: Documentation Status
 
 .. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22

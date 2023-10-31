@@ -21,7 +21,7 @@ copyright = f'{year}, {author}'
 version = release = '3.2.0'
 
 pygments_style = 'trac'
-templates_path = ['.']
+templates_path = ['./templates']
 extlinks = {
     'issue': ('https://github.com/NREL/python-geophires-x/issues/%s', '#'),
     'pr': ('https://github.com/NREL/python-geophires-x/pull/%s', 'PR #'),
@@ -39,6 +39,10 @@ html_sidebars = {
     '**': ['searchbox.html', 'globaltoc.html', 'sourcelink.html'],
 }
 html_short_title = f'{project}-{version}'
+
+html_js_files = [
+    'js/custom.js',
+]
 
 napoleon_use_ivar = True
 napoleon_use_rtype = False

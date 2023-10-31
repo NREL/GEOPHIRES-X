@@ -67,8 +67,8 @@ Web Interface
 
 A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geophires>`__
 
-Usage
------
+Installation
+------------
 
 Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_ (rather than global site-packages).
 
@@ -78,27 +78,72 @@ To consume GEOPHIRES-X as a python package, install the in-development version w
 
 .. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-`test_geophires_x.py <tests/test_geophires_x.py>`_ has examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`_ locally (i.e. if consuming GEOPHIRES-X as a pip package)
-
-Extending
----------
-
-If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
+If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
 
    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
 
 If you are interested in sharing your extensions with others (or even contributing them back to this repository),
 follow `the Development instructions <CONTRIBUTING.rst#development>`_ instead.
 
+Usage
+-----
+Example usage:
+
+.. code:: python
+
+    from geophires_x_client import GeophiresXClient
+    from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+
+    client = GeophiresXClient()
+    result = client.get_geophires_result(
+                GeophiresInputParameters(
+                    {
+                        'End-Use Option': 2,
+                        'Reservoir Model': 1,
+                        'Time steps per year': 1,
+                        'Reservoir Depth': 3,
+                        'Gradient 1': 50,
+                        'Maximum Temperature': 250,
+                    }
+                )
+            )
+
+    with open(result.output_file_path,'r') as f:
+        print(f.read())
+
+Available parameters are documented in the `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html/>`__.
+
+You may also pass parameters as a text file:
+
+.. code:: python
+
+    from pathlib import Path
+    from geophires_x_client import GeophiresXClient
+    from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+
+    # https://github.com/NREL/python-geophires-x/blob/main/tests/examples/example1.txt
+    example_file_path = Path('tests/examples/example1.txt').absolute()
+
+    client = GeophiresXClient()
+    result = client.get_geophires_result(
+                GeophiresInputParameters(from_file_path=example_file_path)
+            )
+
+    with open(result.output_file_path,'r') as f:
+        print(f.read())
+
+
+A variety of examples are available in the `tests/examples directory of the repository <tests/examples>`__.
+
+`test_geophires_x.py <tests/test_geophires_x.py>`_ has additional examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`__.
 
 Documentation
 =============
 
-Manuals & guides:
+* `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html/>`__
+* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
 
-- `GEOPHIRES-X Reference Manual <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/>`__
-- `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
-- The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ describes GEOPHIRES's high-level software architecture.
+The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ describes GEOPHIRES's high-level software architecture.
 
 Other Documentation:
 

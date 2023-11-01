@@ -44,8 +44,9 @@ Run commands in a terminal with View → Tool Windows → Terminal
 
 (PyCharm may prompt you to install dependencies, making this step unnecessary to run on the command line)
 
-3. `Download pre-commit <https://pre-commit.com/>`_ if you don't already have it. Then run the command to configure it for the project (somewhat confusingly also called ``install``)::
+3. Install `pre-commit <https://pre-commit.com/>`__ and run the command to configure it for the project (somewhat confusingly also called ``install``)::
 
+    pip install pre-commit
     pre-commit install
 
 You're now ready to start making changes and committing them.

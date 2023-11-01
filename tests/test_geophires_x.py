@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from geophires_x.OptionList import EndUseOptions
+
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
@@ -193,3 +195,6 @@ class GeophiresXTestCase(BaseTestCase):
         self.assertEqual(
             str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]'
         )
+
+    def test_RTES_name(self):
+        self.assertEqual(EndUseOptions.RTES.value, 'Reservoir Thermal Energy Storage')

@@ -1,6 +1,10 @@
 import json
 from typing import Tuple
 
+from geophires_x.AGSEconomics import AGSEconomics
+from geophires_x.AGSSurfacePlant import AGSSurfacePlant
+from geophires_x.AGSWellBores import AGSWellBores
+from geophires_x.CylindricalReservoir import CylindricalReservoir
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
 
@@ -24,26 +28,42 @@ class GeophiresXSchemaGenerator:
 
             return {k: _with_cat(v, category) for k, v in param_dict.items()}
 
-        # tdp_reservoir = TDPReservoir(dummy_model)
-        # well_bores = WellBores(dummy_model)
-        # surface_plant = SurfacePlant(dummy_model)
-        # economics = Economics(dummy_model)
-
         reservoir = dummy_model.reserv
+        cylindrical_reservoir = CylindricalReservoir(dummy_model)
+
         well_bores = dummy_model.wellbores
+        ags_well_bores = AGSWellBores(dummy_model)
+
         surface_plant = dummy_model.surfaceplant
+        ags_surface_plant = AGSSurfacePlant(dummy_model)
+
         economics = dummy_model.economics
+        ags_economics = AGSEconomics(dummy_model)
 
         input_params.update(with_category(reservoir.ParameterDict, 'Reservoir'))
+        input_params.update(with_category(cylindrical_reservoir.ParameterDict, 'Reservoir'))
+
         input_params.update(with_category(well_bores.ParameterDict, 'Well Bores'))
+        input_params.update(with_category(ags_well_bores.ParameterDict, 'Well Bores'))
+
         input_params.update(with_category(surface_plant.ParameterDict, 'Surface Plant'))
+        input_params.update(with_category(ags_surface_plant.ParameterDict, 'Surface Plant'))
+
         input_params.update(with_category(economics.ParameterDict, 'Economics'))
+        input_params.update(with_category(ags_economics.ParameterDict, 'Economics'))
 
         output_params = {}
         output_params.update(with_category(reservoir.OutputParameterDict, 'Reservoir'))
+        output_params.update(with_category(cylindrical_reservoir.OutputParameterDict, 'Reservoir'))
+
         output_params.update(with_category(well_bores.OutputParameterDict, 'Well Bores'))
+        output_params.update(with_category(ags_well_bores.OutputParameterDict, 'Well Bores'))
+
         output_params.update(with_category(surface_plant.OutputParameterDict, 'Surface Plant'))
+        output_params.update(with_category(ags_surface_plant.OutputParameterDict, 'Surface Plant'))
+
         output_params.update(with_category(economics.OutputParameterDict, 'Economics'))
+        output_params.update(with_category(ags_economics.OutputParameterDict, 'Economics'))
 
         return json_dumpse(input_params), json_dumpse(output_params)
 

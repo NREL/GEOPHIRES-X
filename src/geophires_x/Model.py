@@ -56,6 +56,7 @@ class Model(object):
         self.sdacgteconomics = None
         self.addoutputs = None
         self.addeconomics = None
+
         # these are database operation we aren't doing yet
         # model_elements = self.RunStoredProcedure("model_elements", [1])
         # model_connections = self.RunStoredProcedure("model_connections", [1])
@@ -228,29 +229,3 @@ class Model(object):
             self.sdacgteconomics.Calculate(self)
 
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
-
-    def get_parameters_json(self) -> Tuple[str,str]:
-        from geophires_x.GeoPHIRESUtils import json_dumpse
-
-        input_params = {}
-
-        def with_category(param_dict: dict, category: str):
-            def _with_cat(p: Parameter, cat: str):
-                p.parameter_category = cat
-                return p
-
-            return {k: _with_cat(v, category) for k, v in param_dict.items()}
-
-        input_params.update(with_category(self.reserv.ParameterDict, 'Reservoir'))
-        input_params.update(with_category(self.wellbores.ParameterDict, 'Well Bores'))
-        input_params.update(with_category(self.surfaceplant.ParameterDict, 'Surface Plant'))
-        input_params.update(with_category(self.economics.ParameterDict, 'Economics'))
-
-        output_params = {}
-        output_params.update(with_category(self.reserv.OutputParameterDict, 'Reservoir'))
-        output_params.update(with_category(self.wellbores.OutputParameterDict, 'Well Bores'))
-        output_params.update(with_category(self.surfaceplant.OutputParameterDict, 'Surface Plant'))
-        output_params.update(with_category(self.economics.OutputParameterDict, 'Economics'))
-
-
-        return json_dumpse(input_params), json_dumpse(output_params)

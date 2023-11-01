@@ -1,14 +1,54 @@
 import json
+from typing import Tuple
 
 from geophires_x.Model import Model
+from geophires_x.Parameter import Parameter
 
 
 class GeophiresXSchemaGenerator:
     def __init__(self):
         pass
 
+    def get_parameters_json(self) -> Tuple[str, str]:
+        # return Model(enable_geophires_logging_config=False).get_parameters_json()
+        dummy_model = Model(enable_geophires_logging_config=False)
+
+        from geophires_x.GeoPHIRESUtils import json_dumpse
+
+        input_params = {}
+
+        def with_category(param_dict: dict, category: str):
+            def _with_cat(p: Parameter, cat: str):
+                p.parameter_category = cat
+                return p
+
+            return {k: _with_cat(v, category) for k, v in param_dict.items()}
+
+        # tdp_reservoir = TDPReservoir(dummy_model)
+        # well_bores = WellBores(dummy_model)
+        # surface_plant = SurfacePlant(dummy_model)
+        # economics = Economics(dummy_model)
+
+        reservoir = dummy_model.reserv
+        well_bores = dummy_model.wellbores
+        surface_plant = dummy_model.surfaceplant
+        economics = dummy_model.economics
+
+        input_params.update(with_category(reservoir.ParameterDict, 'Reservoir'))
+        input_params.update(with_category(well_bores.ParameterDict, 'Well Bores'))
+        input_params.update(with_category(surface_plant.ParameterDict, 'Surface Plant'))
+        input_params.update(with_category(economics.ParameterDict, 'Economics'))
+
+        output_params = {}
+        output_params.update(with_category(reservoir.OutputParameterDict, 'Reservoir'))
+        output_params.update(with_category(well_bores.OutputParameterDict, 'Well Bores'))
+        output_params.update(with_category(surface_plant.OutputParameterDict, 'Surface Plant'))
+        output_params.update(with_category(economics.OutputParameterDict, 'Economics'))
+
+        return json_dumpse(input_params), json_dumpse(output_params)
+
     def generate_json_schema(self) -> dict:
-        input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
+        input_params_json, output_params_json = self.get_parameters_json()
         input_params = json.loads(input_params_json)
 
         properties = {}
@@ -40,7 +80,7 @@ class GeophiresXSchemaGenerator:
         return schema
 
     def generate_parameters_reference_rst(self) -> str:
-        input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
+        input_params_json, output_params_json = self.get_parameters_json()
         input_params: dict = json.loads(input_params_json)
 
         input_params_by_category: dict = {}

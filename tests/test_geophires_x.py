@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from geophires_x.OptionList import EndUseOptions
-
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger

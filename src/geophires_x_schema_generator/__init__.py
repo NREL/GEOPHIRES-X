@@ -5,6 +5,7 @@ from geophires_x.AGSEconomics import AGSEconomics
 from geophires_x.AGSSurfacePlant import AGSSurfacePlant
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
+from geophires_x.GeoPHIRESUtils import json_dumpse
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
 
@@ -14,12 +15,7 @@ class GeophiresXSchemaGenerator:
         pass
 
     def get_parameters_json(self) -> Tuple[str, str]:
-        # return Model(enable_geophires_logging_config=False).get_parameters_json()
         dummy_model = Model(enable_geophires_logging_config=False)
-
-        from geophires_x.GeoPHIRESUtils import json_dumpse
-
-        input_params = {}
 
         def with_category(param_dict: dict, category: str):
             def _with_cat(p: Parameter, cat: str):
@@ -28,42 +24,22 @@ class GeophiresXSchemaGenerator:
 
             return {k: _with_cat(v, category) for k, v in param_dict.items()}
 
-        reservoir = dummy_model.reserv
-        cylindrical_reservoir = CylindricalReservoir(dummy_model)
-
-        well_bores = dummy_model.wellbores
-        ags_well_bores = AGSWellBores(dummy_model)
-
-        surface_plant = dummy_model.surfaceplant
-        ags_surface_plant = AGSSurfacePlant(dummy_model)
-
-        economics = dummy_model.economics
-        ags_economics = AGSEconomics(dummy_model)
-
-        input_params.update(with_category(reservoir.ParameterDict, 'Reservoir'))
-        input_params.update(with_category(cylindrical_reservoir.ParameterDict, 'Reservoir'))
-
-        input_params.update(with_category(well_bores.ParameterDict, 'Well Bores'))
-        input_params.update(with_category(ags_well_bores.ParameterDict, 'Well Bores'))
-
-        input_params.update(with_category(surface_plant.ParameterDict, 'Surface Plant'))
-        input_params.update(with_category(ags_surface_plant.ParameterDict, 'Surface Plant'))
-
-        input_params.update(with_category(economics.ParameterDict, 'Economics'))
-        input_params.update(with_category(ags_economics.ParameterDict, 'Economics'))
+        parameter_sources = [
+            (dummy_model.reserv, 'Reservoir'),
+            (CylindricalReservoir(dummy_model), 'Reservoir'),
+            (dummy_model.wellbores, 'Well Bores'),
+            (AGSWellBores(dummy_model), 'Well Bores'),
+            (dummy_model.surfaceplant, 'Surface Plant'),
+            (AGSSurfacePlant(dummy_model), 'Surface Plant'),
+            (dummy_model.economics, 'Economics'),
+            (AGSEconomics(dummy_model), 'Economics'),
+        ]
 
         output_params = {}
-        output_params.update(with_category(reservoir.OutputParameterDict, 'Reservoir'))
-        output_params.update(with_category(cylindrical_reservoir.OutputParameterDict, 'Reservoir'))
-
-        output_params.update(with_category(well_bores.OutputParameterDict, 'Well Bores'))
-        output_params.update(with_category(ags_well_bores.OutputParameterDict, 'Well Bores'))
-
-        output_params.update(with_category(surface_plant.OutputParameterDict, 'Surface Plant'))
-        output_params.update(with_category(ags_surface_plant.OutputParameterDict, 'Surface Plant'))
-
-        output_params.update(with_category(economics.OutputParameterDict, 'Economics'))
-        output_params.update(with_category(ags_economics.OutputParameterDict, 'Economics'))
+        input_params = {}
+        for param_source in parameter_sources:
+            input_params.update(with_category(param_source[0].ParameterDict, param_source[1]))
+            output_params.update(with_category(param_source[0].OutputParameterDict, param_source[1]))
 
         return json_dumpse(input_params), json_dumpse(output_params)
 

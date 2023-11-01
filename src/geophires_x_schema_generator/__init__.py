@@ -41,11 +41,21 @@ class GeophiresXSchemaGenerator:
 
     def generate_parameters_reference_rst(self) -> str:
         input_params_json, output_params_json = Model(enable_geophires_logging_config=False).get_parameters_json()
-        input_params = json.loads(input_params_json)
+        input_params: dict = json.loads(input_params_json)
 
-        def get_input_params_table(category_params, category_name='Input Parameters') -> str:
+        input_params_by_category: dict = {}
+        for input_param_name, input_param in input_params.items():
+            category: str = input_param['parameter_category']
+            if category not in input_params_by_category:
+                input_params_by_category[category] = {}  # []
+
+            input_params_by_category[category][input_param_name] = input_param
+
+        def get_input_params_table(category_params, category_name) -> str:
             input_rst = f"""
-    .. list-table:: {category_name}
+{category_name}
+{'-' * len(category_name)}
+    .. list-table:: {category_name} Parameters
        :header-rows: 1
 
        * - Name
@@ -88,11 +98,16 @@ class GeophiresXSchemaGenerator:
 
             return input_rst
 
-        input_rst = get_input_params_table(input_params, 'Input Parameters')
+        input_rst = ''
+        for category, category_params in input_params_by_category.items():
+            input_rst += get_input_params_table(category_params, category)
+
         output_rst = self.get_output_params_table_rst(output_params_json)
 
         rst = f"""Parameters
 ==========
+
+.. contents::
 
 Input Parameters
 ################

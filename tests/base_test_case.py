@@ -56,8 +56,8 @@ class BaseTestCase(unittest.TestCase):
                 self.assertAlmostEqual(v1, v2, places=places, msg=msg)
 
     def assertFileContentsEqual(self, f1, f2):
-        with open(f1) as f1_o:
-            with open(f2) as f2_o:
+        with open(f1, newline=None) as f1_o:  # newline=None enables universal line endings which is required by Windows
+            with open(f2, newline=None) as f2_o:
                 f1_lines = f1_o.readlines()
                 f2_lines = f2_o.readlines()
                 self.assertListEqual(f1_lines, f2_lines)

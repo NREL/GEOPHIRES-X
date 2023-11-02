@@ -74,6 +74,12 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py311'
             os: 'macos-latest'
+          - name: 'py311 (windows)'
+            python: '3.11'
+            toxpython: 'python3.11'
+            python_arch: 'x64'
+            tox_env: 'py311'
+            os: 'windows-latest'
 
 #          - name: 'pypy38 (ubuntu)'
 #            python: 'pypy-3.8'

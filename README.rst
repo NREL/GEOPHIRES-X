@@ -52,7 +52,7 @@ Free software: `MIT license <LICENSE>`_
     :target: https://github.com/NREL/python-geophires-x/compare/v3.2.0...main
 
 .. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
-    :target: https://softwareengineerprogrammer.github.io/python-geophires-x-nrel
+    :target: https://nrel.github.io/python-geophires-x
     :alt: Documentation Status
 
 .. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22
@@ -111,7 +111,7 @@ Example usage:
     with open(result.output_file_path,'r') as f:
         print(f.read())
 
-Available parameters are documented in the `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html>`__.
+Available parameters are documented in the `Parameters Reference <https://nrel.github.io/python-geophires-x/parameters.html>`__.
 
 You may also pass parameters as a text file:
 
@@ -140,7 +140,7 @@ A variety of examples input ``.txt`` files are available in the `tests/examples 
 Documentation
 =============
 
-* `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html>`__
+* `Parameters Reference <https://nrel.github.io/python-geophires-x/parameters.html>`__
 * `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
 
 The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.

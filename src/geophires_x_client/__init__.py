@@ -29,7 +29,7 @@ class GeophiresXClient:
         try:
             geophires.main(enable_geophires_logging_config=False)
         except Exception as e:
-            raise RuntimeError('GEOPHIRES encountered an exception') from e
+            raise RuntimeError(f'GEOPHIRES encountered an exception: {e!s}') from e
         except SystemExit:
             raise RuntimeError('GEOPHIRES exited without giving a reason') from None
 

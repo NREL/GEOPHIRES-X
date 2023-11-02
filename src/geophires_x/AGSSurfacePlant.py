@@ -138,7 +138,8 @@ class AGSSurfacePlant(SurfacePlant):
         )
 
         # Input data for electricity generation with CO2
-        self.Turbine_isentropic_efficiency = self.ParameterDict[self.Turbine_isentropic_efficiency.Name] = floatParameter(
+        self.Turbine_isentropic_efficiency = self.ParameterDict[
+            self.Turbine_isentropic_efficiency.Name] = floatParameter(
             "Isentropic Efficiency for CO2 Turbine",
             value=0.9,
             DefaultValue=0.9,
@@ -162,7 +163,8 @@ class AGSSurfacePlant(SurfacePlant):
             Required=False,
             ErrMessage="assume default Conversion efficiency from mechanical turbine work to electricity (0.98)"
         )
-        self.Compressor_isentropic_efficiency = self.ParameterDict[self.Compressor_isentropic_efficiency.Name] = floatParameter(
+        self.Compressor_isentropic_efficiency = self.ParameterDict[
+            self.Compressor_isentropic_efficiency.Name] = floatParameter(
             "Isentropic Efficiency for CO2 Compressor",
             value=0.9,
             DefaultValue=0.9,
@@ -240,14 +242,16 @@ class AGSSurfacePlant(SurfacePlant):
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
-        self.FirstYearElectricityProduction = self.OutputParameterDict[self.FirstYearElectricityProduction.Name] = OutputParameter(
+        self.FirstYearElectricityProduction = self.OutputParameterDict[
+            self.FirstYearElectricityProduction.Name] = OutputParameter(
             Name="Electricity Produced in the First Year",
             value=-999.0,
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
-        self.AveInstNetElectricityProduction = self.OutputParameterDict[self.AveInstNetElectricityProduction.Name] = OutputParameter(
+        self.AveInstNetElectricityProduction = self.OutputParameterDict[
+            self.AveInstNetElectricityProduction.Name] = OutputParameter(
             Name="Average Net Daily Electricity Production",
             value=-999.0,
             UnitType=Units.POWER,
@@ -343,103 +347,89 @@ class AGSSurfacePlant(SurfacePlant):
         :return: 0 if all OK, 1 if error.
         :doc-author: Koenraad Beckers
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         self.error = 0
-        if self.T0 < 278.15 or self.T0 > 303.15:
-            print("Error: CLGS model database imposes additional range restrictions: Dead-state temperature must be \
-                between 278.15 and 303.15 K. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Dead-state temperature must be \
-                between 278.15 and 303.15 K. Simulation terminated.")
-            self.error = 1
-        if self.P0.value < 0.8e5 or self.P0.value > 1.1e5:
-            print("Error: CLGS model database imposes additional range restrictions: Dead state pressure must be \
-                between 0.8e5 and 1.1e5 Pa. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Dead state pressure must be \
-                between 0.8e5 and 1.1e5 Pa. Simulation terminated.")
-            self.error = 1
-        if self.Pump_efficiency < 0.5 or self.Pump_efficiency > 1:
-            print("Error: CLGS model database imposes additional range restrictions: Pump efficiency must be \
-                between 0.5 and 1. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Pump efficiency must be \
-                between 0.5 and 1. Simulation terminated.")
-            self.error = 1
-        if self.Lifetime < 5 or self.Lifetime > 40:
-            print("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
-                between 5 and 40 years. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
-                between 5 and 40 years. Simulation terminated.")
-            self.error = 1
-        if not isinstance(self.Lifetime, int):
-            print("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
-                an integer. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
-                an integer. Simulation terminated.")
-            self.error = 1
-        if self.Turbine_isentropic_efficiency.value < 0.8 or self.Turbine_isentropic_efficiency.value > 1:
-            print("Error: CLGS model database imposes additional range restrictions: Turbine isentropic efficiency must \
-                be between 0.8 and 1. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Turbine isentropic efficiency must \
-                be between 0.8 and 1. Simulation terminated.")
-            self.error = 1
-        if self.Generator_efficiency.value < 0.8 or self.Generator_efficiency.value > 1:
-            print("Error: CLGS model database imposes additional range restrictions: Generator efficiency must be \
-                between 0.8 and 1. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Generator efficiency must be \
-                between 0.8 and 1. Simulation terminated.")
-            self.error = 1
-        if self.Compressor_isentropic_efficiency.value < 0.8 or self.Compressor_isentropic_efficiency.value > 1:
-            print("Error: CLGS model database imposes additional range restrictions: Compressor isentropic efficiency \
-                must be between 0.8 and 1. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Compressor isentropic efficiency \
-                must be between 0.8 and 1. Simulation terminated.")
-            self.error = 1
-        if self.Pre_Cooling_Delta_T.value < 0 or self.Pre_Cooling_Delta_T.value > 15:
-            print("Error: CLGS model database imposes additional range restrictions: CO2 temperature decline after turbine \
-                and before compressor must be between 0 and 15 degrees C. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: CO2 temperature decline after turbine \
-                and before compressor must be between 0 and 15 degrees C. Simulation terminated.")
-            self.error = 1
-        if self.Turbine_outlet_pressure.value < 75 or self.Turbine_outlet_pressure.value > 200:
-            print("Error: CLGS model database imposes additional range restrictions: Turbine outlet pressure must be \
-                between 75 and 200 bar. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Turbine outlet pressure must be \
-                between 75 and 200 bar. Simulation terminated.")
+        errors = []
+
+        def on_invalid_parameter_value(err_msg):
+            errors.append(err_msg)
+            print(err_msg)
+            model.logger.fatal(err_msg)
             self.error = 1
 
+        if self.T0 < 278.15 or self.T0 > 303.15:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Dead-state temperature must be \
+                between 278.15 and 303.15 K. Simulation terminated.")
+        if self.P0.value < 0.8e5 or self.P0.value > 1.1e5:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Dead state pressure must be \
+                between 0.8e5 and 1.1e5 Pa. Simulation terminated.")
+        if self.Pump_efficiency < 0.5 or self.Pump_efficiency > 1:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Pump efficiency must be \
+                between 0.5 and 1. Simulation terminated.")
+        if self.Lifetime < 5 or self.Lifetime > 40:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
+                between 5 and 40 years. Simulation terminated.")
+        if not isinstance(self.Lifetime, int):
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: System lifetime must be \
+                an integer. Simulation terminated.")
+        if self.Turbine_isentropic_efficiency.value < 0.8 or self.Turbine_isentropic_efficiency.value > 1:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Turbine isentropic efficiency must \
+                be between 0.8 and 1. Simulation terminated.")
+        if self.Generator_efficiency.value < 0.8 or self.Generator_efficiency.value > 1:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Generator efficiency must be \
+                between 0.8 and 1. Simulation terminated.")
+        if self.Compressor_isentropic_efficiency.value < 0.8 or self.Compressor_isentropic_efficiency.value > 1:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Compressor isentropic efficiency \
+                must be between 0.8 and 1. Simulation terminated.")
+        if self.Pre_Cooling_Delta_T.value < 0 or self.Pre_Cooling_Delta_T.value > 15:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: CO2 temperature decline after turbine \
+                and before compressor must be between 0 and 15 degrees C. Simulation terminated.")
+        if self.Turbine_outlet_pressure.value < 75 or self.Turbine_outlet_pressure.value > 200:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Turbine outlet pressure must be \
+                between 75 and 200 bar. Simulation terminated.")
+
         if self.error > 0:
-            print("Error: GEOPHIRES failed to Failed to validate CLGS surfaceplant input value.  Exiting....")
-            sys.exit()
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+            subErrors = '\n'.join(errors)
+            msg = f'Error: GEOPHIRES failed to validate CLGS surfaceplant input value(s):\n{subErrors}'
+            print(msg)
+            raise RuntimeError(msg)
+
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
         return self.error
 
     def calculatepumpingpower(self, model):
         # Calculate pumping power
-        self.PumpingPower = (self.P_in - self.Linear_production_pressure) * model.wellbores.prodwellflowrate.value / self.Average_fluid_density / self.Pump_efficiency / 1e3  # Pumping power [kW]
+        self.PumpingPower = (
+                                    self.P_in - self.Linear_production_pressure) * model.wellbores.prodwellflowrate.value / self.Average_fluid_density / self.Pump_efficiency / 1e3  # Pumping power [kW]
 
         # Set negative values to zero (if the production pressure is above the injection pressure, we throttle the fluid)
         self.PumpingPower[self.PumpingPower < 0] = 0
-        self.Annual_pumping_power = 8760 / 5 * (self.PumpingPower[0::4][0:-1] + self.PumpingPower[1::4] + self.PumpingPower[2::4] + self.PumpingPower[3::4] + self.PumpingPower[4::4])  # kWh
+        self.Annual_pumping_power = 8760 / 5 * (
+                self.PumpingPower[0::4][0:-1] + self.PumpingPower[1::4] + self.PumpingPower[2::4] + self.PumpingPower[
+                                                                                                    3::4] + self.PumpingPower[
+                                                                                                            4::4])  # kWh
 
     def calculateheatproduction(self, model):
         # Calculate instantaneous heat production
         self.Average_fluid_density = interpn((model.wellbores.Pvector, model.wellbores.Tvector),
-                                             model.wellbores.density, np.dstack((0.5 * self.P_in + 0.5 * self.Linear_production_pressure,
-                                                                                 0.5 * model.wellbores.Tinj.value + 0.5 *
-                                                                                 self.Linear_production_temperature + 273.15))[0])
+                                             model.wellbores.density,
+                                             np.dstack((0.5 * self.P_in + 0.5 * self.Linear_production_pressure,
+                                                        0.5 * model.wellbores.Tinj.value + 0.5 *
+                                                        self.Linear_production_temperature + 273.15))[0])
         self.hprod = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.enthalpy,
                              np.dstack((self.Linear_production_pressure, self.Linear_production_temperature + 273.15))[
                                  0])
         self.hinj = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.enthalpy,
                             np.array([self.P_in, model.wellbores.Tinj.value + 273.15]))
         self.Instantaneous_heat_production = model.wellbores.prodwellflowrate.value * (
-                self.hprod - self.hinj) / 1000  # Heat production based on produced minus injected enthalpy [kW]
+            self.hprod - self.hinj) / 1000  # Heat production based on produced minus injected enthalpy [kW]
 
         # Calculate annual heat production (kWh)
         self.Annual_heat_production = 8760 / 5 * (self.Instantaneous_heat_production[0::4][0:-1] +
-                self.Instantaneous_heat_production[1::4] +
-                self.Instantaneous_heat_production[2::4] +
-                self.Instantaneous_heat_production[3::4] +
-                self.Instantaneous_heat_production[4::4])
+                                                  self.Instantaneous_heat_production[1::4] +
+                                                  self.Instantaneous_heat_production[2::4] +
+                                                  self.Instantaneous_heat_production[3::4] +
+                                                  self.Instantaneous_heat_production[4::4])
 
         # Calculate average heat production
         self.AveAnnualHeatProduction = np.average(self.Annual_heat_production)  # kWh
@@ -459,20 +449,22 @@ class AGSSurfacePlant(SurfacePlant):
         self.h_inj = self.hinj  # injected enthalpy [J/kg]
         # produced entropy [J/kg/K]
         self.s_prod = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.entropy,
-                              np.dstack((self.Linear_production_pressure, self.Linear_production_temperature + 273.15))[0])
+                              np.dstack((self.Linear_production_pressure, self.Linear_production_temperature + 273.15))[
+                                  0])
         self.s_inj = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.entropy,
                              np.array([self.P_in, model.wellbores.Tinj.value + 273.15]))  # injected entropy [J/kg/K]
 
         self.Instantaneous_exergy_production = (model.wellbores.prodwellflowrate.value * (
-                self.h_prod - self.h_0 - model.surfaceplant.T0 * (self.s_prod - self.s_0))) / 1000  # [kW]
+            self.h_prod - self.h_0 - model.surfaceplant.T0 * (self.s_prod - self.s_0))) / 1000  # [kW]
         self.Instantaneous_exergy_extraction = (model.wellbores.prodwellflowrate.value * (
-                self.h_prod - self.h_inj - model.surfaceplant.T0 * (self.s_prod - self.s_inj))) / 1000  # [kW]
+            self.h_prod - self.h_inj - model.surfaceplant.T0 * (self.s_prod - self.s_inj))) / 1000  # [kW]
 
         self.AverageInstNetExergyProduction = np.average(self.Instantaneous_exergy_production)  # [kW]
         self.AverageInstNetExergyExtraction = np.average(self.Instantaneous_exergy_extraction)  # [kW]
 
         if model.wellbores.Fluid.value == WorkingFluid.WATER:
-            if model.wellbores.Tinj.value >= 50 and min(self.Linear_production_temperature) >= 100 and max(self.Linear_production_temperature) <= 385:
+            if model.wellbores.Tinj.value >= 50 and min(self.Linear_production_temperature) >= 100 and max(
+                self.Linear_production_temperature) <= 385:
                 # Utilization efficiency based on conversion of produced exergy to electricity
                 self.Instantaneous_utilization_efficiency_method_1 = np.interp(self.Linear_production_temperature,
                                                                                self.Utilization_efficiency_correlation_temperatures,
@@ -494,11 +486,12 @@ class AGSSurfacePlant(SurfacePlant):
                 self.Instantaneous_electricity_production_method_3 = np.zeros(len(self.Time_array))
 
             # based on method 1 for now (could be 50-50)
-            self.Annual_electricity_production = 8760 / 5 * (self.Instantaneous_electricity_production_method_1[0::4][0:-1] +
-                                                             self.Instantaneous_electricity_production_method_1[1::4] +
-                                                             self.Instantaneous_electricity_production_method_1[2::4] +
-                                                             self.Instantaneous_electricity_production_method_1[3::4] +
-                                                             self.Instantaneous_electricity_production_method_1[4::4])
+            self.Annual_electricity_production = 8760 / 5 * (
+                    self.Instantaneous_electricity_production_method_1[0::4][0:-1] +
+                    self.Instantaneous_electricity_production_method_1[1::4] +
+                    self.Instantaneous_electricity_production_method_1[2::4] +
+                    self.Instantaneous_electricity_production_method_1[3::4] +
+                    self.Instantaneous_electricity_production_method_1[4::4])
             self.Inst_electricity_production = self.Instantaneous_electricity_production_method_1  # kW
             self.AveInstElectricityProduction = np.average(self.Instantaneous_electricity_production_method_1)  # kW
 
@@ -510,7 +503,7 @@ class AGSSurfacePlant(SurfacePlant):
                                           np.dstack((np.ones(self.TNOP) * self.Turbine_outlet_pressure.value * 1e5,
                                                      self.s_prod))[0])
             self.Instantaneous_turbine_power = model.wellbores.prodwellflowrate.value * (
-                    self.h_prod - h_turbine_out_ideal) * self.Turbine_isentropic_efficiency.value / 1000  # Turbine output [kW]
+                self.h_prod - h_turbine_out_ideal) * self.Turbine_isentropic_efficiency.value / 1000  # Turbine output [kW]
             h_turbine_out_actual = self.h_prod - self.Instantaneous_turbine_power / model.wellbores.prodwellflowrate.value * 1000  # Actual fluid enthalpy at turbine outlet [J/kg]
             self.T_turbine_out_actual = interpn((model.wellbores.Pvector_ap, model.wellbores.hvector_ap),
                                                 model.wellbores.TPh, np.dstack(
@@ -527,7 +520,8 @@ class AGSSurfacePlant(SurfacePlant):
                             [self.Turbine_outlet_pressure.value * 1e5, self.Pre_cooling_temperature + 273.15]))
 
                     # Pre-compressor cooling [kWth]
-                    Pre_cooling = model.wellbores.prodwellflowrate.value * (h_turbine_out_actual - Pre_compressor_h) / 1e3
+                    Pre_cooling = model.wellbores.prodwellflowrate.value * (
+                            h_turbine_out_actual - Pre_compressor_h) / 1e3
                     Pre_compressor_s = interpn((model.wellbores.Pvector, model.wellbores.Tvector),
                                                model.wellbores.entropy, np.array(
                             [self.Turbine_outlet_pressure.value * 1e5, self.Pre_cooling_temperature + 273.15]))
@@ -535,13 +529,16 @@ class AGSSurfacePlant(SurfacePlant):
                     Post_compressor_h_ideal = interpn((model.wellbores.Pvector_ap, model.wellbores.svector_ap),
                                                       model.wellbores.hPs, np.array([self.P_in, Pre_compressor_s[0]]))
                     # Actual fluid enthalpy at compressor outlet [J/kg]
-                    Post_compressor_h_actual = Pre_compressor_h + (Post_compressor_h_ideal - Pre_compressor_h) / self.Compressor_isentropic_efficiency.value
+                    Post_compressor_h_actual = Pre_compressor_h + (
+                            Post_compressor_h_ideal - Pre_compressor_h) / self.Compressor_isentropic_efficiency.value
                     self.Post_compressor_T_actual = interpn((model.wellbores.Pvector_ap, model.wellbores.hvector_ap),
                                                             model.wellbores.TPh,
                                                             np.array([self.P_in, Post_compressor_h_actual[0]])) - 273.15
-                    Compressor_Work = model.wellbores.prodwellflowrate.value * (Post_compressor_h_actual - Pre_compressor_h) / 1e3  # kWe
+                    Compressor_Work = model.wellbores.prodwellflowrate.value * (
+                            Post_compressor_h_actual - Pre_compressor_h) / 1e3  # kWe
                     # Fluid cooling after compression [kWth]
-                    Post_cooling = model.wellbores.prodwellflowrate.value * (Post_compressor_h_actual - self.h_inj) / 1e3
+                    Post_cooling = model.wellbores.prodwellflowrate.value * (
+                            Post_compressor_h_actual - self.h_inj) / 1e3
 
                     if lastrun == 0:
                         if self.Pre_cooling_temperature < 32:
@@ -569,7 +566,8 @@ class AGSSurfacePlant(SurfacePlant):
                 # Air outlet temperature in pre-cooler [deg.C]
                 T_air_out_pre_cooler = (self.T_turbine_out_actual + self.Pre_cooling_temperature) / 2
                 # Air specific heat capacity in pre-cooler [J/kg/K]
-                cp_air = np.interp(0.5 * T_air_in_pre_cooler + 0.5 * T_air_out_pre_cooler, self.Tair_for_cp_array, self.cp_air_array)
+                cp_air = np.interp(0.5 * T_air_in_pre_cooler + 0.5 * T_air_out_pre_cooler, self.Tair_for_cp_array,
+                                   self.cp_air_array)
                 # Air flow rate in pre-cooler [kg/s]
                 m_air_pre_cooler = Pre_cooling * 1000 / (cp_air * (T_air_out_pre_cooler - T_air_in_pre_cooler))
 
@@ -591,15 +589,16 @@ class AGSSurfacePlant(SurfacePlant):
                                                                      Air_cooling_power - ResistiveHeating
                 self.Inst_electricity_production = self.Instantaneous_electricity_production_method_4  # [kW]
                 self.Annual_electricity_production = 8760 / 5 * (
-                        self.Instantaneous_electricity_production_method_4[0::4][0:-1] +
-                        self.Instantaneous_electricity_production_method_4[1::4] +
-                        self.Instantaneous_electricity_production_method_4[2::4] +
-                        self.Instantaneous_electricity_production_method_4[3::4] +
-                        self.Instantaneous_electricity_production_method_4[4::4])
+                    self.Instantaneous_electricity_production_method_4[0::4][0:-1] +
+                    self.Instantaneous_electricity_production_method_4[1::4] +
+                    self.Instantaneous_electricity_production_method_4[2::4] +
+                    self.Instantaneous_electricity_production_method_4[3::4] +
+                    self.Instantaneous_electricity_production_method_4[4::4])
                 self.AveInstElectricityProduction = np.average(self.Instantaneous_electricity_production_method_4)  # kW
                 # check if negative
                 if min(self.Instantaneous_electricity_production_method_4) < 0:
-                    self.error_codes = np.append(self.error_codes, 5500)  # Calculated electricity generation is negative
+                    self.error_codes = np.append(self.error_codes,
+                                                 5500)  # Calculated electricity generation is negative
                     self.Annual_electricity_production = np.zeros(self.Lifetime)
                     self.Inst_electricity_production = np.zeros(self.TNOP)
                     self.AveInstElectricityProduction = 0
@@ -617,10 +616,12 @@ class AGSSurfacePlant(SurfacePlant):
 
         self.Average_electricity_production = np.average(self.Annual_electricity_production) / 8760  # [kW]
         self.AveAnnualElectricityProduction = np.average(self.Annual_electricity_production)  # [kWh]
-        self.AveInstNetElectricityProduction.value = self.AveInstElectricityProduction - np.average(self.PumpingPower)  # [kW]
+        self.AveInstNetElectricityProduction.value = self.AveInstElectricityProduction - np.average(
+            self.PumpingPower)  # [kW]
         if self.AveInstNetElectricityProduction.value < 0:
             self.AveInstNetElectricityProduction.value = 0
-        self.AveAnnualNetElectricityProduction = self.AveAnnualElectricityProduction - np.average(self.Annual_pumping_power)  # kWh
+        self.AveAnnualNetElectricityProduction = self.AveAnnualElectricityProduction - np.average(
+            self.Annual_pumping_power)  # kWh
         self.FirstYearElectricityProduction.value = self.Annual_electricity_production[0]  # kWh
         self.Inst_Net_Electricity_production = self.Inst_electricity_production - self.PumpingPower  # [kW]
 
@@ -689,9 +690,11 @@ class AGSSurfacePlant(SurfacePlant):
         # Calculate dead-state enthalpy and entropy in case of electricity production
         if self.End_use == EndUseOptions.ELECTRICITY:
             self.h_0 = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.enthalpy,
-                               np.array([model.surfaceplant.P0.value, model.surfaceplant.T0]))[0]  # dead-state enthalpy [J/kg]
+                               np.array([model.surfaceplant.P0.value, model.surfaceplant.T0]))[
+                0]  # dead-state enthalpy [J/kg]
             self.s_0 = interpn((model.wellbores.Pvector, model.wellbores.Tvector), model.wellbores.entropy,
-                               np.array([model.surfaceplant.P0.value, model.surfaceplant.T0]))[0]  # dead-state entropy [J/kg/K]
+                               np.array([model.surfaceplant.P0.value, model.surfaceplant.T0]))[
+                0]  # dead-state entropy [J/kg/K]
 
         # Pre-populate specific heat capacity of air in case of electricity production
         if self.End_use == EndUseOptions.ELECTRICITY:
@@ -748,10 +751,14 @@ class AGSSurfacePlant(SurfacePlant):
             # useful direct-use heat provided to application [MWth]
             self.HeatProduced.value = self.HeatExtracted.value * self.enduseefficiencyfactor.value
             for i in range(0, self.plantlifetime.value):
-                self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[(i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1],
-                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
-                self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[(i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1],
-                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
+                                                          (i * model.economics.timestepsperyear.value):((
+                                                                                                                i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
+                                                    (i * model.economics.timestepsperyear.value):((
+                                                                                                          i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
 
             self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
                 self.HeatkWhExtracted.value) * 3600 * 1E3 / 1E15
@@ -759,36 +766,43 @@ class AGSSurfacePlant(SurfacePlant):
             if self.End_use != EndUseOptions.ELECTRICITY:
                 self.HeatkWhProduced.value = np.zeros(self.plantlifetime.value)
                 for i in range(0, self.plantlifetime.value):
-                    self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[(0 + i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1],
-                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                    self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
+                                                             (0 + i * model.economics.timestepsperyear.value):((
+                                                                                                                       i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                             dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
             else:
                 # copy some arrays so we have a GEOPHIRES equivalent
                 self.TotalkWhProduced.value = self.Annual_electricity_production.copy()
                 self.ElectricityProduced.value = self.Annual_electricity_production.copy() / 8760.0 / 1000.0
-                f = interp1d(np.arange(0, len(self.ElectricityProduced.value)), self.ElectricityProduced.value, fill_value="extrapolate")
+                f = interp1d(np.arange(0, len(self.ElectricityProduced.value)), self.ElectricityProduced.value,
+                             fill_value="extrapolate")
                 self.ElectricityProduced.value = f(np.arange(0, 40, 1.0))
                 self.NetElectricityProduced.value = self.Inst_Net_Electricity_production.copy()
                 # covert to MW, which is what GEOPHIRES expects
                 self.NetElectricityProduced.value = self.NetElectricityProduced.value / 1000.0
-                f = interp1d(np.arange(0, len(self.NetElectricityProduced.value)), self.NetElectricityProduced.value, fill_value="extrapolate")
+                f = interp1d(np.arange(0, len(self.NetElectricityProduced.value)), self.NetElectricityProduced.value,
+                             fill_value="extrapolate")
                 self.NetElectricityProduced.value = f(np.arange(0, 40, 1.0))
                 self.NetkWhProduced.value = (self.NetElectricityProduced.value * 1000.0) * 8760.0
 
-                self.FirstLawEfficiency.value = (self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
+                self.FirstLawEfficiency.value = (
+                                                        self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
 
         # handle errors
         if len(self.error_codes) > 0:
-            model.logger.fatal("failed with the following error codes: " + str(self.error_codes[0:]) + " in " + str(__class__) + " " + os.path.abspath(__file__))
-            print("Error: failed with the following error codes" + str(self.error_codes[0:]) + " in " + str(__class__) + " " + os.path.abspath(__file__) + ".  Exiting....")
-            sys.exit()
+            base_msg = f'failed with the following error codes: {str(self.error_codes[0:])}'
+            class_file_info_msg = f'{base_msg} in {str(__class__)} {os.path.abspath(__file__)}'
+            model.logger.fatal(class_file_info_msg)
+            print(f'Error: {class_file_info_msg}. Exiting....')
+            raise RuntimeError(base_msg)
         # store the calculation result and associated object parameters in the database
         resultkey = AdvGeoPHIRESUtils.store_result(model, self)
         if resultkey.startswith("ERROR"):
-            model.logger.warn("Failed To Store " + str(__class__) + " " + os.path.abspath(__file__))
+            model.logger.warn(f"Failed To Store {str(__class__)} {os.path.abspath(__file__)}")
         elif len(resultkey) == 0:
             pass
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
 
     def __str__(self):
         return "AGSSurfacePlant"

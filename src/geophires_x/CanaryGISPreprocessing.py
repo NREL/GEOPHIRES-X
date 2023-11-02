@@ -20,7 +20,7 @@ date_time = now.strftime("%Y%m%d%H%M%S")
 #result=arcpy.management.RemoveJoin("r"D:\Work\ProjectCanary\GISData.gdb\PlantFootPrints", '')
 
 #Calculate the area in sq km
-result=arcpy.management.CalculateGeometryAttributes("r"D:\Work\ProjectCanary\GISData.gdb\PlantFootPrints", "Shape_Area_km2 AREA_GEODESIC", '', "SQUARE_KILOMETERS", 'PROJCS["World_Cylindrical_Equal_Area",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Cylindrical_Equal_Area"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],UNIT["Meter",1.0]]', "SAME_AS_INPUT")
+result=arcpy.management.CalculateGeometryAttributes("rD:\Work\ProjectCanary\GISData.gdb\PlantFootPrints", "Shape_Area_km2 AREA_GEODESIC", '', "SQUARE_KILOMETERS", 'PROJCS["World_Cylindrical_Equal_Area",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Cylindrical_Equal_Area"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],UNIT["Meter",1.0]]', "SAME_AS_INPUT")
 
 #use the temperature point data set to assign the average, min, and max temperature for the plant footprints
 result=arcpy.analysis.SpatialJoin(r"D:\Work\ProjectCanary\GISData.gdb\PlantFootPrints", r"D:\Work\ProjectCanary\GISData.gdb\temperatures_2022_pt", r"D:\Work\ProjectCanary\GISData.gdb\PlantFootPrints_SpatialJoin", join_operation="JOIN_ONE_TO_ONE", join_type="KEEP_ALL", match_option="CLOSEST_GEODESIC", search_radius="10 DecimalDegrees")

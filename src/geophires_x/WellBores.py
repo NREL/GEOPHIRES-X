@@ -436,7 +436,7 @@ class WellBores:
         # these parameters to your class.
 
         # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
-        # OutputParameter Objects.  This will alow us later to access them in a user interface and get that list,
+        # OutputParameter Objects.  This will allow us later to access them in a user interface and get that list,
         # along with unit type, preferred units, etc.
         self.ParameterDict = {}
         self.OutputParameterDict = {}

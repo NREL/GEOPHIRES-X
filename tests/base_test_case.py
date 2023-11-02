@@ -58,6 +58,6 @@ class BaseTestCase(unittest.TestCase):
     def assertFileContentsEqual(self, f1, f2):
         with open(f1, newline=None) as f1_o:  # newline=None enables universal line endings which is required by Windows
             with open(f2, newline=None) as f2_o:
-                f1_lines = [line.replace('\n\n', '\n') for line in f1_o.readlines()]
-                f2_lines = [line.replace('\n\n', '\n') for line in f2_o.readlines()]
+                f1_lines = f1_o.readlines()
+                f2_lines = f2_o.readlines()
                 self.assertListEqual(f1_lines, f2_lines)

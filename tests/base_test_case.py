@@ -60,4 +60,5 @@ class BaseTestCase(unittest.TestCase):
             with open(f2, newline=None) as f2_o:
                 f1_lines = f1_o.readlines()
                 f2_lines = f2_o.readlines()
-                self.assertListEqual(f1_lines, f2_lines)
+                # self.assertListEqual(f1_lines, f2_lines)
+                self.assertEqual(''.join(f1_lines), ''.join(f2_lines))

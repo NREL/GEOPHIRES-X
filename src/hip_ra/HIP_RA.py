@@ -767,7 +767,7 @@ class HIP_RA:
             case_data = {'SUMMARY OF RESULTS': summary_of_results}
 
             with open(outputfile, 'w', encoding='UTF-8') as f:
-                nl = os.linesep
+                nl = '\n'
 
                 f.write(f'                               *********************{nl}')
                 f.write(f'                               ***HIP CASE REPORT***{nl}')

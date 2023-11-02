@@ -2,18 +2,20 @@
 Contributing
 ============
 
-Contributions are welcome, and they are greatly appreciated!
+Contributions are welcome, and they are greatly appreciated! Don't hesitate
 
 Development
 ===========
 
 To set up GEOPHIRES-X for local development:
 
-1. `Fork NREL/python-geophires-x <https://github.com/NREL/python-geophires-x/fork>`_ on GitHub
+1. Fork NREL/python-geophires-x on GitHub by going to https://github.com/NREL/python-geophires-x/fork
 
-2. Enable Actions on your fork.
+2. Enable Actions on your fork on GitHub in your fork's Actions tab
 
-3. Clone your fork locally in a terminal::
+3. Enable Pages on your fork on GitHub by going to Settings tab → Pages -> Build and deployment → Set Source to "GitHub Actions"
+
+4. Clone your fork locally in a terminal::
 
     cd some/path/where-you-have-your-code-projects
     git clone git@github.com:<your GitHub username>/python-geophires-x.git
@@ -24,12 +26,12 @@ Local Setup
 
 Prerequisite: Follow fork & clone instructions above.
 
-Strongly recommended: use a Python IDE such as `PyCharm <https://www.jetbrains.com/pycharm/>`_
+Strongly recommended: use a Python IDE such as `PyCharm <https://www.jetbrains.com/pycharm/>`__
 
 If you are using PyCharm, first open the the cloned repo by going to File → Open and selecting your ``python-geophires-x`` directory (from the previous steps).
 Run commands in a terminal with View → Tool Windows → Terminal
 
-1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_. if you don't have it already. Then set up and activate a virtual environment for the project::
+1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already. Then set up and activate a virtual environment for the project::
 
     python -m venv venv
     source venv/bin/activate
@@ -42,8 +44,9 @@ Run commands in a terminal with View → Tool Windows → Terminal
 
 (PyCharm may prompt you to install dependencies, making this step unnecessary to run on the command line)
 
-3. `Download pre-commit <https://pre-commit.com/>`_ if you don't already have it. Then run the command to configure it for the project (somewhat confusingly also called ``install``)::
+3. Install `pre-commit <https://pre-commit.com/>`__ and run the command to configure it for the project (somewhat confusingly also called ``install``)::
 
+    pip install pre-commit
     pre-commit install
 
 You're now ready to start making changes and committing them.
@@ -94,15 +97,15 @@ Then, verify that Actions pass on your commit(s) on GitHub
 Pull Request Guidelines
 -----------------------
 
-If you need some code review or feedback while you're developing the code just make the pull request.
+If you need some code review or feedback while you're developing the code you can make the pull request and set it as a draft.
 
 For merging, you should:
 
-1. Ensure Actions are passing on your fork. (Actions will also be automatically run when you create a PR, and they will need to be passing as a requirement to merge)
+1. Ensure Actions are passing on your fork. Actions will also be automatically run when you create a PR, and they will need to be passing as a requirement to merge.
 2. Add unit test coverage
-3. Write clean, self-documenting code. Update documentation which cannot be adequately self-documented.
-4. Add yourself to ``AUTHORS.rst``.
-5. Major changes may merit a mention in `CHANGELOG <CHANGELOG.rst>`_
+3. Strive to write clean, self-documenting code. Update documentation which cannot be adequately self-documented.
+4. Add yourself to `AUTHORS.rst <AUTHORS.rst>`__.
+5. Major changes may merit a mention in `CHANGELOG.rst <CHANGELOG.rst>`__
 
 Tox tests
 ---------
@@ -136,6 +139,35 @@ To run a subset of tests::
 To run all the test environments in *parallel*::
 
     tox -p auto
+
+
+Test Configuration in VS Code
+-----------------------------
+
+``.vscode/settings.json``:
+
+.. code-block::
+
+ {
+    "python.defaultInterpreterPath": ".tox/py311/bin/python",
+    "python.testing.unittestEnabled": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-c",
+        "pytest.ini",
+        "--no-cov"
+    ],
+    "python.analysis.enablePytestExtra": true,
+    "python.languageServer": "Pylance",
+   }
+
+
 
 
 Bug reports

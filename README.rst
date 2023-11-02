@@ -9,7 +9,7 @@ Overview
 
 GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 
-GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`_ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
+GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
 
 Free software: `MIT license <LICENSE>`_
 
@@ -20,11 +20,12 @@ Free software: `MIT license <LICENSE>`_
 
     * - tests
       - | |github-actions|
-        |
     * - package
       - | |commits-since|
-
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
+..    * - docs
+..      - | |docs|
+
 
 .. |github-actions| image:: https://github.com/NREL/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
@@ -50,45 +51,107 @@ Free software: `MIT license <LICENSE>`_
     :alt: Commits since latest release
     :target: https://github.com/NREL/python-geophires-x/compare/v3.2.0...main
 
+.. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
+    :target: https://softwareengineerprogrammer.github.io/python-geophires-x-nrel
+    :alt: Documentation Status
+
 .. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22
 
 .. end-badges
 
-Documentation
-=============
+Getting Started
+===============
 
-Manuals & Usage:
+Web Interface
+-------------
 
-- A GEOPHIRES-X-specific user manual `is pending <https://github.com/NREL/python-geophires-x/issues/23>`_ as of 2023-10-19. In the meantime, the `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`_ remains partially relevant.
-
-- `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`__ user guide
-
-- `test_geophires_x.py <tests/test_geophires_x.py>`_ has examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`_ locally (i.e. if consuming GEOPHIRES-X as a pip package)
-
-References:
-
-- Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/blob/5e2833bdc215ed6b55bcd0b84d43d2a4289b9a26/References/Beckers%202019%20GEOPHIRES%20v2.pdf>`_
-- Additional materials in `/References </References>`_
+A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geophires>`__
 
 Installation
-============
+------------
 
-Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`_ (rather than global site-packages).
+Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ (rather than global site-packages).
 
 To consume GEOPHIRES-X as a python package, install the in-development version with::
 
     pip install https://github.com/NREL/python-geophires-x/archive/main.zip
 
-(Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
+.. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <How-to-extend-GEOPHIRES-X.md>`_) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`_::
+If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`__::
 
    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
 
 If you are interested in sharing your extensions with others (or even contributing them back to this repository),
-follow `the Development instructions <CONTRIBUTING.rst#development>`_ instead.
+follow `the Development instructions <CONTRIBUTING.rst#development>`__ instead.
+
+Usage
+-----
+Example usage:
+
+.. code:: python
+
+    from geophires_x_client import GeophiresXClient
+    from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+
+    client = GeophiresXClient()
+    result = client.get_geophires_result(
+                GeophiresInputParameters(
+                    {
+                        'End-Use Option': 2,
+                        'Reservoir Model': 1,
+                        'Time steps per year': 1,
+                        'Reservoir Depth': 3,
+                        'Gradient 1': 50,
+                        'Maximum Temperature': 250,
+                    }
+                )
+            )
+
+    with open(result.output_file_path,'r') as f:
+        print(f.read())
+
+Available parameters are documented in the `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html>`__.
+
+You may also pass parameters as a text file:
+
+.. code:: python
+
+    from pathlib import Path
+    from geophires_x_client import GeophiresXClient
+    from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+
+    # https://github.com/NREL/python-geophires-x/blob/main/tests/examples/example1.txt
+    example_file_path = Path('tests/examples/example1.txt').absolute()
+
+    client = GeophiresXClient()
+    result = client.get_geophires_result(
+                GeophiresInputParameters(from_file_path=example_file_path)
+            )
+
+    with open(result.output_file_path,'r') as f:
+        print(f.read())
+
+
+A variety of examples input ``.txt`` files are available in the `tests/examples directory of the repository <tests/examples>`__.
+
+`test_geophires_x.py <tests/test_geophires_x.py>`__ has additional examples of how to consume and call `GeophiresXClient <src/geophires_x_client/__init__.py#L14>`__.
+
+Documentation
+=============
+
+* `Parameters Reference <https://softwareengineerprogrammer.github.io/python-geophires-x-nrel/parameters.html>`__
+* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
+
+The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.
+
+Other Documentation:
+
+- Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__
+- Additional materials in `/References </References>`__
+
 
 Development
 ===========
 
-See `Development instructions in CONTRIBUTING.rst <CONTRIBUTING.rst#development>`_
+See `Development instructions in CONTRIBUTING <CONTRIBUTING.rst#development>`__

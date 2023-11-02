@@ -44,8 +44,6 @@ from geophires_x.Units import TimeUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
 
-NL = os.linesep
-
 
 # user-defined static functions
 def DensityWater(Twater: float) -> float:
@@ -742,9 +740,7 @@ class HIP_RA:
         # write results to output file and screen
         # ---------------------------------------
         try:
-            outputfile = 'HIP.out'
-            if len(sys.argv) > 2:
-                outputfile = sys.argv[2]
+            outputfile = 'HIP.out' if len(sys.argv) <= 2 else sys.argv[2]
 
             def render_default(p: floatParameter | OutputParameter) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
@@ -752,34 +748,39 @@ class HIP_RA:
             def render_scientific(p: floatParameter | OutputParameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
-            case_data = {
-                'SUMMARY OF RESULTS': {
-                    'Reservoir Temperature': render_default(self.ReservoirTemperature),
-                    'Reservoir Volume': render_default(self.V),
-                    'Stored Heat': render_scientific(self.qR),
-                    'Fluid Produced': render_scientific(self.mWH),
-                    'Enthalpy': render_default(self.e),
-                    'Wellhead Heat': render_scientific(self.qWH),
-                    'Recovery Factor': f'{(100 * self.Rg.value):10.2f} {self.Rg.CurrentUnits.value}',
-                    'Available Heat': render_scientific(self.WA),
-                    'Produceable Heat': render_scientific(self.WE),
-                    'Produceable Electricity': render_default(self.We),
-                }
-            }
+            summary_of_results = {}
+
+            for param, render in [
+                (self.ReservoirTemperature, render_default),
+                (self.V, render_default),
+                (self.qR, render_scientific),
+                (self.mWH, render_scientific),
+                (self.e, render_default),
+                (self.qWH, render_scientific),
+                (self.Rg, lambda rg: f'{(100 * rg.value):10.2f} {rg.CurrentUnits.value}'),
+                (self.WA, render_scientific),
+                (self.WE, render_scientific),
+                (self.We, render_default),
+            ]:
+                summary_of_results[param.Name] = render(param)
+
+            case_data = {'SUMMARY OF RESULTS': summary_of_results}
 
             with open(outputfile, 'w', encoding='UTF-8') as f:
-                f.write(f'                               *********************{NL}')
-                f.write(f'                               ***HIP CASE REPORT***{NL}')
-                f.write(f'                               *********************{NL}')
-                f.write(NL)
-                f.write(f'                           ***SUMMARY OF RESULTS***{NL}')
-                f.write(NL)
+                nl = os.linesep
+
+                f.write(f'                               *********************{nl}')
+                f.write(f'                               ***HIP CASE REPORT***{nl}')
+                f.write(f'                               *********************{nl}')
+                f.write(nl)
+                f.write(f'                           ***SUMMARY OF RESULTS***{nl}')
+                f.write(nl)
 
                 for k, v in case_data['SUMMARY OF RESULTS'].items():
                     # align space between value and units to same column
                     kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '
 
-                    f.write(f'      {k}:{kv_spaces}{v}{NL}')
+                    f.write(f'      {k}:{kv_spaces}{v}{nl}')
 
         except BaseException as ex:
             tb = sys.exc_info()[2]

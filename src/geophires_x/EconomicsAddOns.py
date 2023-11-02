@@ -24,7 +24,7 @@ class EconomicsAddOns(Economics.Economics):
         :doc-author: Malcolm Ross
         """
 
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().__init__(model)   # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
@@ -217,7 +217,7 @@ class EconomicsAddOns(Economics.Economics):
         :return: None
         :doc-author: Malcolm Ross
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the parameters for the parent.
 
         # Deal with all the parameter values that the user has provided that relate to this extension.

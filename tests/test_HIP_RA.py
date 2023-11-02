@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from base_test_case import BaseTestCase
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
+from tests.base_test_case import BaseTestCase
 
 
 # noinspection PyTypeChecker

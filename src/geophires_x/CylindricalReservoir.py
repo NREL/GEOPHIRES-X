@@ -12,19 +12,78 @@ from .Reservoir import *
 class CylindricalReservoir(Reservoir):
     """
     The CylindricalReservoir class is a subclass of the Reservoir class in a straightforward conduction-only model.
-     It inherits from the primary Reservoir model but offers new parameters and calculations.
 
-     :author: Malcolm Ross
+    It inherits from the primary Reservoir model but offers new parameters and calculations.
 
-     :param float Cylindrical Reservoir Input Depth: value = 3.0, DefaultValue=3.0, Min=0.1, Max = 15, UnitType = Units.LENGTH, PreferredUnits = LengthUnit.KILOMETERS, CurrentUnits = LengthUnit.KILOMETERS, Required=True, ErrMessage = "assume default cylindrical reservoir depth (3 km)", ToolTipText="Depth of the inflow end of a cylindrical reservoir."
-     :param float Cylindrical Reservoir Output Depth: value = self.InputDepth.value, DefaultValue=self.InputDepth.value, Min=0.1, Max = 15, UnitType = Units.LENGTH, PreferredUnits = LengthUnit.KILOMETERS, CurrentUnits = LengthUnit.KILOMETERS, Required=True, ErrMessage = "assume default cylindrical reservoir input depth (3 km)", ToolTipText="Depth of the outflow end of a cylindrical reservoir."
+    .. list-table:: Input Parameters
+       :widths: 25 50 10 10 10 10 25
+       :header-rows: 1
 
-     :param float Cylindrical Reservoir Length, value = 4.0, DefaultValue=4.0, Min = 0.1, Max = 10.0, UnitType = Units.LENGTH, PreferredUnits = LengthUnit.KILOMETERS, CurrentUnits = LengthUnit.KILOMETERS, Required=True, ErrMessage = "assume default cyclindrical reservoir length (4 km)", ToolTipText="Length of cyclindrical reservoir"
+       * - Name
+         - Description
+         - Default Value Type
+         - Default Value
+         - Min
+         - Max
+         - Preferred Units
+       * - Cylindrical Reservoir Input Depth
+         - Depth of the inflow end of a cylindrical reservoir.
+         - float
+         - 3.0
+         - 0.1
+         - 15
+         - LengthUnit.KILOMETERS
+       * - Cylindrical Reservoir Output Depth
+         - Depth of the outflow end of a cylindrical reservoir
+         - float
+         - Input Depth
+         - 0.1
+         - 15
+         - LengthUnit.KILOMETERS
+       * - Reservoir Length
+         - Length of cylindrical reservoir
+         - float
+         - 4.0
+         - 0.1
+         - 10.0
+         - LengthUnit.KILOMETERS
+       * - Cylindrical Reservoir Radius of Effect
+         - The radius of effect - the distance into the rock from the center of the cylinder that will be perturbed by at least 1 C
+         - float
+         - 30.0
+         - 0
+         - 1000.0
+         - LengthUnit.METERS
+       * - Cylindrical Reservoir Radius of Effect Factor
+         - The radius of effect reduction factor accounts for the fact that we cannot extract 100% of the heat in the cylinder.
+         - float
+         - 1.0
+         - 0.0
+         - 10.0
+         - PercentUnit.TENTH
 
-     :param float Cylindrical Reservoir Radius of Effect, value = 30.0, DefaultValue=30.0, Min=0, Max=1000.0, UnitType = Units.LENGTH, PreferredUnits = LengthUnit.METERS, CurrentUnits = LengthUnit.METERS, ErrMessage="assume default cylindrical reservoir radius of the effect (30 m)", ToolTipText="The radius of effect - the distance into the rock from the center of the cylinder that will be perturbed by at least 1 C."
+    .. list-table:: Output Parameters
+       :widths: 25 20 20
+       :header-rows: 1
 
-     :param float Cylindrical Reservoir Radius of Effect Factor, value = 1.0, DefaultValue=1.0, Min=0.0, Max=10.0, UnitType = Units.PERCENT, PreferredUnits = PercentUnit.TENTH, CurrentUnits = PercentUnit.TENTH, ErrMessage="assume default cylindrical reservoir radius of effect reduction factor (0.1)", ToolTipText="The radius of effect reduction factor - to account for the fact that we cannot extract 100% of the heat in the cylinder."
+       * - Name
+         - Default Value Type
+         - Preferred Units
+       * - Cylindrical Reservoir Surface Area
+         - float
+         - METERS2
+       * - Average Gradient
+         - float
+         - dEGC/KM
+       * - Time Vector
+         - float array
+         - YEAR
+       * - Reservoir Temperature History
+         - float array
+         - CELSIUS
 
+
+    :doc-author: Malcolm Ross
     """
     def __init__(self, model:Model):
         """
@@ -38,7 +97,7 @@ class CylindricalReservoir(Reservoir):
         :return: None
         :doc-author: Malcolm Ross
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().__init__(model)   # initialize the parent parameters and variables
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -65,6 +124,7 @@ class CylindricalReservoir(Reservoir):
             ErrMessage="assume default cylindrical reservoir depth (3 km)",
             ToolTipText="Depth of the inflow end of a cylindrical reservoir"
         )
+
         self.OutputDepth = self.ParameterDict[self.OutputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Output Depth",
             value=self.InputDepth.value,
@@ -169,12 +229,12 @@ class CylindricalReservoir(Reservoir):
             CurrentUnits=TemperatureUnit.CELSIUS
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "CylindricalReservoir"
 
-    def read_parameters(self, model:Model) -> None:
+    def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary created by reading the user-provided
          file and updates the parameter values for this object.
@@ -188,7 +248,7 @@ class CylindricalReservoir(Reservoir):
         :return: None
         :doc-author: Malcolm Ross
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
         super().read_parameters(model)
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
         # for the variables in this class
@@ -218,13 +278,14 @@ class CylindricalReservoir(Reservoir):
                         if "Cylindrical Reservoir Output Depth" not in model.InputParameters:
                             self.OutputDepth.value = self.InputDepth.value
         else:
-            model.logger.info("No parameters read becuase no content provided")
-            model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+            model.logger.info("No parameters read because no content provided")
+            model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
 
     @lru_cache(maxsize=1024)
     def Calculate(self, model:Model) -> None:
         """
         The Calculate function is where all the calculations are done.
+
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
 
         :param self: Access variables that belongs to the class
@@ -232,7 +293,7 @@ class CylindricalReservoir(Reservoir):
         :return: Nothing, but it does make calculations and set values in the model
         :doc-author: Malcolm Ross
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -266,4 +327,4 @@ class CylindricalReservoir(Reservoir):
         self.rhowater.value = densitywater(model.wellbores.Tinj.value*0.5 +
                                                         (self.Trock.value*0.9+model.wellbores.Tinj.value*0.1)*0.5)
 
-        model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")

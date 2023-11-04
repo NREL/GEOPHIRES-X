@@ -99,7 +99,7 @@ class Model(object):
         self.economics = Economics(self)
         self.outputs = Outputs(self)
 
-        if self.InputParameters['End-Use Option'].sValue == '9' and self.InputParameters['Reservoir Model'].sValue == '7':
+        if 'Is AGS' not in self.InputParameters and self.InputParameters['Reservoir Model'].sValue == '7':
             #if we use SUTRA output for simulating reservoir thermal energy storage, we use a special wellbore object that can handle SUTRA data
             del self.wellbores
             from geophires_x.SUTRAWellBores import SUTRAWellBores as SUTRAWellBores

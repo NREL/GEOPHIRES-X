@@ -99,6 +99,12 @@ class Model(object):
         self.economics = Economics(self)
         self.outputs = Outputs(self)
 
+        if self.InputParameters['End-Use Option'].sValue == '9' and self.InputParameters['Reservoir Model'].sValue == '7':
+            #if we use SUTRA output for simulating reservoir thermal energy storage, we use a special wellbore object that can handle SUTRA data
+            del self.wellbores
+            from geophires_x.SUTRAWellBores import SUTRAWellBores as SUTRAWellBores
+            self.wellbores = SUTRAWellBores(self)
+
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue == 'True':
                 self.logger.info("Setup the AGS elements of the Model and instantiate new attributes as needed")

@@ -4,6 +4,8 @@ from .Units import *
 import geophires_x.Model as Model
 from .Reservoir import Reservoir
 import pandas as pd
+from matplotlib import pyplot as plt
+import numpy as np
 
 
 class SUTRAReservoir(Reservoir):
@@ -172,9 +174,6 @@ class SUTRAReservoir(Reservoir):
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().Calculate(model)    # run calculations for the parent.
 
-        #overwrite timestep vector and Tresoutputvector
-        #timevector
-        #model.reserv.Tresoutput.value[0] = model.reserv.Trock.value
         # Read in SUTRA simulation output
         try:
             data = pd.read_csv(self.sutraannualheatfilename.value)
@@ -197,10 +196,53 @@ class SUTRAReservoir(Reservoir):
             print('Error: GEOPHIRES could not read SUTRA output results and will abort simulation')
             sys.exit()
 
-        # clean up SUTRA simulation output and store in GEOPHIRES reservoir and wellbore arrays
-        model.reserv.timevector.value = self.TimeProfile.value[0:-1:2]
-        model.reserv.Tresoutput.value = self.StorageWellTemperature.value[0:-1:2]
-        model.wellbores.ProducedTemperature.value = self.StorageWellTemperature.value[0:-1:2]
-        model.wellbores.Tinj.value = self.BalanceWellTemperature.value[0:-1:2]
+        # clean up SUTRA simulation output and store in GEOPHIRES reservoir arrays
+        model.reserv.timevector.value = self.TimeProfile.value[0:-1:2,0]
+        model.reserv.Tresoutput.value = self.StorageWellTemperature.value[0:-1:2,0]
+
+
+        #create plots of imported SUTRA data
+
+        plt.close('all')
+        plt.figure(1)
+        year = np.arange(1, 31, 1)  # make an array of days for plot x-axis
+        plt.plot(year, abs(self.AnnualHeatStored.value[:,0]), label='Annual Heat Stored')
+        plt.plot(year, abs(self.AnnualHeatSupplied.value[:, 0]), label='Annual Heat Supplied')
+        plt.xlabel('Year')
+        plt.ylabel('Annual Heat Balance [GWh/year]')
+        #plt.ylim([0, max(model.surfaceplant.dailyheatingdemand.value) * 1.05])
+        plt.legend()
+        plt.title('SUTRA Heat Balance')
+        plt.show(block=False)
+
+        plt.figure(2)
+        plt.plot(self.TimeProfile.value[0:-1:2,0], self.TargetHeat.value[0:-1:2,0], label='Target Heat')
+        plt.plot(self.TimeProfile.value[0:-1:2,0], self.SimulatedHeat.value[0:-1:2,0], label='Simulated Heat')
+        plt.xlabel('Hour')
+        plt.ylabel('Heat Exchange [kWh]')
+        #plt.ylim([0, max(model.surfaceplant.dailyheatingdemand.value) * 1.05])
+        plt.legend()
+        plt.title('SUTRA Target and Simulated Heat')
+        plt.show(block=False)
+
+        plt.figure(3)
+        plt.plot(self.TimeProfile.value[0:-1:2,0], self.StorageWellFlowRate.value[0:-1:2,0], label='Storage Well Flow Rate')
+        plt.plot(self.TimeProfile.value[0:-1:2,0], self.BalanceWellFlowRate.value[0:-1:2,0], label='Balance Well Flow Rate')
+        plt.xlabel('Hour')
+        plt.ylabel('Flow Rate [kg/s]')
+        #plt.ylim([0, max(model.surfaceplant.dailyheatingdemand.value) * 1.05])
+        plt.legend()
+        plt.title('SUTRA Well Flow Rates')
+        plt.show(block=False)
+
+        plt.figure(4)
+        plt.plot(self.TimeProfile.value[0:-1:2, 0], self.StorageWellTemperature.value[0:-1:2, 0], label='Storage Well Temperature')
+        plt.plot(self.TimeProfile.value[0:-1:2, 0], self.BalanceWellTemperature.value[0:-1:2, 0], label='Balance Well Temperature')
+        plt.xlabel('Hour')
+        plt.ylabel('Temperature [C]')
+        # plt.ylim([0, max(model.surfaceplant.dailyheatingdemand.value) * 1.05])
+        plt.legend()
+        plt.title('SUTRA Well Temperatures')
+        plt.show(block=False)
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

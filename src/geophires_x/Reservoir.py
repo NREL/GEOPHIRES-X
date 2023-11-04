@@ -75,12 +75,12 @@ class Reservoir:
             "Reservoir Model",
             value=ReservoirModel.ANNUAL_PERCENTAGE,
             DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
-            AllowableRange=[0, 1, 2, 3, 4, 5, 6],
+            AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
             ErrMessage="run default reservoir model (Thermal Drawdown Percentage Model)",
-            ToolTipText="1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
+            ToolTipText="0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
             3: m/a single fracture drawdown model, 4: Linear thermal drawdown model, \
-            5: Generic user-provided temperature profile, 6: TOUGH2"
+            5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA"
         )
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
@@ -469,7 +469,7 @@ class Reservoir:
         # input values.  They are required because it is a bad practice to change input values after the user
         # has assigned them.  Instead, we make new parameters that are copies of the input parameters, but then
         # modify these values - we only use and display the calculated values. This is OK because the calculated value
-        # starts a a copy of the input value and only changes if needed.
+        # starts as a copy of the input value and only changes if needed.
         self.fracsepcalc = self.OutputParameterDict[self.fracsepcalc.Name] = OutputParameter(
             "Calculated Fracture Separation",
             value=self.fracsep.value,

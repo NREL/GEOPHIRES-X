@@ -89,6 +89,9 @@ class Model(object):
             elif self.InputParameters['Reservoir Model'].sValue == '6':
                 from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir as TOUGH2Reservoir
                 self.reserv = TOUGH2Reservoir(self)  # Tough2 is called
+            elif self.InputParameters['Reservoir Model'].sValue == '7':
+                from geophires_x.SUTRAReservoir import SUTRAReservoir as SUTRAReservoir
+                self.reserv = SUTRAReservoir(self)  # SUTRA output is read
 
         # initialize the default objects
         self.wellbores = WellBores(self)

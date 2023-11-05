@@ -105,6 +105,9 @@ class Model(object):
                 del self.wellbores
                 from geophires_x.SUTRAWellBores import SUTRAWellBores as SUTRAWellBores
                 self.wellbores = SUTRAWellBores(self)
+                del self.surfaceplant
+                from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant as SUTRASurfacePlant
+                self.surfaceplant = SUTRASurfacePlant(self)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue == 'True':

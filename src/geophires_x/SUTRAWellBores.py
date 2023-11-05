@@ -259,12 +259,12 @@ class SUTRAWellBores:
             self.prodwelldiam.UnitsMatch = False
 
         # get wellbore flowrates from SUTRA data
-        prodwellflowrates = model.reserv.BalanceWellFlowRate.value[0:-1:2,0]
-        injwellflowrates = model.reserv.StorageWellFlowRate.value[0:-1:2,0]
+        prodwellflowrates = np.append(model.reserv.BalanceWellFlowRate.value[0:-1:2],model.reserv.BalanceWellFlowRate.value[-1])
+        injwellflowrates = np.append(model.reserv.StorageWellFlowRate.value[0:-1:2],model.reserv.StorageWellFlowRate.value[-1])
 
         # calculate wellbore temperature drop (not considered in SUTRA for now) (wellhead inj and prod directly comes from SUTRA)
-        self.ProducedTemperature.value = model.reserv.StorageWellTemperature.value[0:-1:2,0]
-        self.Tinj.value = model.reserv.BalanceWellTemperature.value[0:-1:2,0]
+        self.ProducedTemperature.value = np.append(model.reserv.StorageWellTemperature.value[0:-1:2],model.reserv.StorageWellTemperature.value[-1])
+        self.Tinj.value = np.append(model.reserv.BalanceWellTemperature.value[0:-1:2],model.reserv.BalanceWellTemperature.value[-1])
 
         # redrilling (not considered in SUTRA)
 

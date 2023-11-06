@@ -2053,8 +2053,8 @@ class Economics:
 
         if model.wellbores.redrill.value > 0:
             # account for well redrilling
-            model.Coam.value = model.Coam.value + \
-                (self.Cwell.value + model.reserv.Cstim.value) * model.wellbores.redrill.value / model.surfaceplant.plantlifetime.value
+            self.Coam.value = self.Coam.value + \
+                (self.Cwell.value + self.Cstim.value) * model.wellbores.redrill.value / model.surfaceplant.plantlifetime.value
 
         # The Reservoir depth measure was arbitrarily changed to meters despite being defined in the docs as kilometers.
         # For display consistency sake, we need to convert it back

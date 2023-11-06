@@ -35,6 +35,10 @@ class GeophiresXResult:
                 'Accrued financing during construction',
                 'Project lifetime',
                 'Capacity factor',
+                'Project NPV',
+                'Project IRR',
+                'Project VIR=PI=PIR',
+                'Project MOIC',
             ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',

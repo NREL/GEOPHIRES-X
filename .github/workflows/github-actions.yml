@@ -130,6 +130,7 @@ jobs:
 
   deploy_docs:
     name: Deploy docs to GitHub Pages
+    if: github.ref == 'refs/heads/main' # Prevent from running on PRs, tags
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

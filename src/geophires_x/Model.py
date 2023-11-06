@@ -108,6 +108,9 @@ class Model(object):
                 del self.surfaceplant
                 from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant as SUTRASurfacePlant
                 self.surfaceplant = SUTRASurfacePlant(self)
+                del self.economics
+                from geophires_x.SUTRAEconomics import SUTRAEconomics as SUTRAEconomics
+                self.economics = SUTRAEconomics(self)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue == 'True':

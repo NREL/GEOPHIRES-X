@@ -112,18 +112,6 @@ class SUTRASurfacePlant:
             ToolTipText="Price of electricity to calculate pumping costs in direct-use heat only mode or revenue" +
             " from electricity sales in CHP mode."
         )
-        self.heatprice = self.ParameterDict[self.heatprice.Name] = floatParameter(
-            "Heat Rate",
-            value=0.02,
-            DefaultValue=0.02,
-            Min=0.0,
-            Max=1.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
-            ErrMessage="assume default heat rate ($0.02/kWh)",
-            ToolTipText="Price of heat to calculate revenue from heat sales in CHP mode."
-        )
 
         # local variable initialization
         self.setinjectionpressurefixed = False
@@ -368,6 +356,9 @@ class SUTRASurfacePlant:
             self.AnnualAuxiliaryHeatProduced.value[i] = sum(self.AuxiliaryHeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
             self.AnnualTotalHeatProduced.value[i] = sum(self.TotalHeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
             self.PumpingkWh.value[i] = sum(model.wellbores.PumpingPower.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value*1000
+
+        #calculate maximum auxilary boiler demand
+        self.maxpeakingboilerdemand.value = max(self.AnnualAuxiliaryHeatProduced.value)
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

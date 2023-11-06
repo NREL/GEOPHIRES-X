@@ -200,9 +200,7 @@ class SUTRAReservoir(Reservoir):
         model.reserv.timevector.value = np.append(self.TimeProfile.value[0:-1:2],self.TimeProfile.value[-1])
         model.reserv.Tresoutput.value = np.append(self.StorageWellTemperature.value[0:-1:2],self.StorageWellTemperature.value[-1])
 
-
-        #create plots of imported SUTRA data
-
+        # create plots of imported SUTRA data
         plt.close('all')
         plt.figure(1)
         year = np.arange(1, 31, 1)  # make an array of days for plot x-axis

@@ -6,7 +6,6 @@
  ref Beckers, Koenraad, et al. Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based
  Technical and Economic Modeling of Heat Production and Electricity Generation. No. NREL/CP-5700-84979.
  National Renewable Energy Lab.(NREL), Golden, CO (United States), 2023.
- :doc-author: Malcolm Ross
 """
 import sys
 import os
@@ -113,7 +112,6 @@ class data:
         Interpolate the outlet states for a given point
         param: point: tuple of (mdot, L2, L1, grad, D, Tinj, k)
         :return: Tout, Pout
-        :doc-author: Malcolm Ross
         """
         points = list(itern.product(
             (point[0],),
@@ -138,8 +136,8 @@ class data:
     def interp_kWe_avg(self, point):
         """
         Interpolate the average heat extraction rate for a given point
+        :param point: tuple of (mdot, L2, L1, grad, D, Tinj, k)
         :return: kWe_avg
-        :doc-author: Malcolm Ross
         """
         ivars = self.ivars[:-1]
         return self.GWhr * interpn(ivars, self.We, point) / (1000. * self.time[-1] * 86400. * 365.)
@@ -147,8 +145,8 @@ class data:
     def interp_kWt_avg(self, point):
         """
         Interpolate the average heat extraction rate for a given point
+        :param point: tuple of (mdot, L2, L1, grad, D, Tinj, k)
         :return: kWt_avg
-        :doc-author: Malcolm Ross
         """
         ivars = self.ivars[:-1]
         return self.GWhr * interpn(ivars, self.Wt, point) / (1000. * self.time[-1] * 86400. * 365.)
@@ -159,7 +157,6 @@ class data:
 def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     """
     point source/sink solution functions
-    :param self: Reference the class object itself
     :param yy: y coordinate of the point source/sink
     :param zz: z coordinate of the point source/sink
     :param yt: y coordinate of the point source/sink
@@ -170,7 +167,6 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     :param sp: Laplace variable
     :param t: time
     :return: z
-    :doc-author: Malcolm Ross
     """
     rhorock_cprock_4 = self.rhorock * self.cprock * 4.0
     theta_yt_minus_yy = thetaY(yt - yy, ye, alpha, t)
@@ -189,7 +185,6 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
 def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     """
     Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
-    :param self: Reference the class object itself
     :param yy: y coordinate of the point source/sink
     :param zz: z coordinate of the point source/sink
     :param yt: y coordinate of the point source/sink
@@ -199,7 +194,6 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     :param alpha: thermal diffusivity
     :param sp: Laplace variable
     :return: ????
-    :doc-author: Malcolm Ross
     """
     m = 32
     t_1 = 1.0e-8
@@ -218,10 +212,8 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
 def laplace_solution(self, sp) -> float:
     """
     Duhamel convolution method for closed-loop system
-    :param self: Reference the class object itself
     :param sp: Laplace variable
     :return: Toutletl
-    :doc-author: Malcolm Ross
     """
 
     Toutletl = 0.0
@@ -239,11 +231,9 @@ def laplace_solution(self, sp) -> float:
 def inverselaplace(self, NL, MM):
     """
     Numerical Laplace transformation algorithm
-    :param self: Reference the class object itself
     :param NL: NL
     :param MM: MM
     :return: Toutlet
-    :doc-author: Malcolm Ross
     """
     V = np.zeros(50)
     Gi = np.zeros(50)
@@ -346,7 +336,6 @@ def thetaZ(zt, ze, alpha, t):
 def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     """
     Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
-    :param self: Reference the class object itself
     :param a: a
     :param b: b
     :param n: n
@@ -360,7 +349,6 @@ def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     :param sp: Laplace variable
     :param func: function
     :return: y * d - dd + 0.5 * cint[0]
-    :doc-author: Malcolm Ross
     """
     bma = 0.5 * (b - a)
     bpa = 0.5 * (b + a)
@@ -410,10 +398,8 @@ class AGSWellBores(WellBores):
         The __init__ function is the constructor for a class. It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
         object that has already been created, and it's used to access variables that belong to that object.
-        :param self: Reference the class object itself
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: Nothing, and is used to initialize the class
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -610,10 +596,8 @@ class AGSWellBores(WellBores):
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)  # read the default parameters
@@ -672,10 +656,8 @@ class AGSWellBores(WellBores):
     def calculatedrillinglengths(self, model) -> tuple:
         """
         returns the total length, vertical length, and horizontal lengths, depending on the configuration
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: total length, vertical length, and horizontal lengths
-        :doc-author: Malcolm Ross
         """
         if self.Configuration.value == Configuration.ULOOP:
             # Total drilling depth of both wells and laterals in U-loop [m]
@@ -691,10 +673,8 @@ class AGSWellBores(WellBores):
     def initialize(self, model: Model) -> None:
         """
         The initialize function reads values and arrays to be in the format that CLGS model systems expects
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -753,10 +733,8 @@ class AGSWellBores(WellBores):
     def getTandP(self, model: Model) -> None:
         """
         The getTandP function reads and prepares Temperature and Pressure values from the CLGS database
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         # code from Koenraad
@@ -779,10 +757,8 @@ class AGSWellBores(WellBores):
         """
         The verify function checks that all values provided are within the range expected by CLGS modeling system.
          These values in within a smaller range than the value ranges available to GEOPHIRES-X
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: 0 if all OK, 1 if error.
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(
             __class__) + ": " + sys._getframe().f_code.co_name)  # Verify inputs are within allowable bounds
@@ -814,13 +790,11 @@ class AGSWellBores(WellBores):
     def CalculateNonverticalPressureDrop(self, model, time_operation: float, time_max: float, al: float):
         """
         Calculate nonvertical pressure drops - it will vary as the temperature varies
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :param time_operation: time of operation
         :param time_max: maximum time of operation
         :param al: time step
         :return: NonverticalPressureDrop, friction
-        :doc-author: Koenraad Beckers
         """
         friction = 0.0
         NonverticalPressureDrop = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
@@ -866,10 +840,8 @@ class AGSWellBores(WellBores):
     def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and extracts the values from the AGS model
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
-        :doc-author: Koenraad Beckers, Malcolm Ross, and Wanju Yuan
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

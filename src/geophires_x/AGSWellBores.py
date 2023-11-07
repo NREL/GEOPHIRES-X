@@ -1,11 +1,13 @@
-# copyright, 2023, Malcolm I Ross
-# except for code from Wanju Yuan based on: "Closed-Loop Geothermal Energy Recovery from Deep High Enthalpy Systems"
-# ref: Yuan, Wanju, et al. "Closed-loop geothermal energy recovery from deep high enthalpy systems."
-# Renewable Energy 177 (2021): 976-991.
-# and CLGScode from Koenraad
-# ref Beckers, Koenraad, et al. Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based
-# Technical and Economic Modeling of Heat Production and Electricity Generation. No. NREL/CP-5700-84979.
-# National Renewable Energy Lab.(NREL), Golden, CO (United States), 2023.
+"""
+ contains code from Wanju Yuan based on: "Closed-Loop Geothermal Energy Recovery from Deep High Enthalpy Systems"
+ ref: Yuan, Wanju, et al. "Closed-loop geothermal energy recovery from deep high enthalpy systems."
+ Renewable Energy 177 (2021): 976-991.
+ and CLGScode from Koenraad
+ ref Beckers, Koenraad, et al. Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based
+ Technical and Economic Modeling of Heat Production and Electricity Generation. No. NREL/CP-5700-84979.
+ National Renewable Energy Lab.(NREL), Golden, CO (United States), 2023.
+ :doc-author: Malcolm Ross
+"""
 import sys
 import os
 import math
@@ -36,11 +38,11 @@ class data:
 
     @staticmethod
     def get(fname, case, fluid):
-        cache_key = data._get_cache_key(fname,case,fluid)
+        cache_key = data._get_cache_key(fname, case, fluid)
         if cache_key in data._cache:
             return data._cache[cache_key]
         else:
-            d = data(fname,case,fluid)
+            d = data(fname, case, fluid)
             data._cache[cache_key] = d
             return d
 
@@ -107,6 +109,12 @@ class data:
         return np.reshape(M_k_full.T, shape)
 
     def interp_outlet_states(self, point):
+        """
+        Interpolate the outlet states for a given point
+        param: point: tuple of (mdot, L2, L1, grad, D, Tinj, k)
+        :return: Tout, Pout
+        :doc-author: Malcolm Ross
+        """
         points = list(itern.product(
             (point[0],),
             (point[1],),
@@ -128,10 +136,20 @@ class data:
         return Tout, Pout
 
     def interp_kWe_avg(self, point):
+        """
+        Interpolate the average heat extraction rate for a given point
+        :return: kWe_avg
+        :doc-author: Malcolm Ross
+        """
         ivars = self.ivars[:-1]
         return self.GWhr * interpn(ivars, self.We, point) / (1000. * self.time[-1] * 86400. * 365.)
 
     def interp_kWt_avg(self, point):
+        """
+        Interpolate the average heat extraction rate for a given point
+        :return: kWt_avg
+        :doc-author: Malcolm Ross
+        """
         ivars = self.ivars[:-1]
         return self.GWhr * interpn(ivars, self.Wt, point) / (1000. * self.time[-1] * 86400. * 365.)
 
@@ -139,6 +157,21 @@ class data:
 # #############################point source/sink solution functions################################
 
 def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
+    """
+    point source/sink solution functions
+    :param self: Reference the class object itself
+    :param yy: y coordinate of the point source/sink
+    :param zz: z coordinate of the point source/sink
+    :param yt: y coordinate of the point source/sink
+    :param zt: z coordinate of the point source/sink
+    :param ye: y coordinate of the point source/sink
+    :param ze: z coordinate of the point source/sink
+    :param alpha: thermal diffusivity
+    :param sp: Laplace variable
+    :param t: time
+    :return: z
+    :doc-author: Malcolm Ross
+    """
     rhorock_cprock_4 = self.rhorock * self.cprock * 4.0
     theta_yt_minus_yy = thetaY(yt - yy, ye, alpha, t)
     theta_yt_plus_yy = thetaY(yt + yy, ye, alpha, t)
@@ -154,6 +187,20 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
 # #####Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30###################
 
 def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
+    """
+    Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
+    :param self: Reference the class object itself
+    :param yy: y coordinate of the point source/sink
+    :param zz: z coordinate of the point source/sink
+    :param yt: y coordinate of the point source/sink
+    :param zt: z coordinate of the point source/sink
+    :param ye: y coordinate of the point source/sink
+    :param ze: z coordinate of the point source/sink
+    :param alpha: thermal diffusivity
+    :param sp: Laplace variable
+    :return: ????
+    :doc-author: Malcolm Ross
+    """
     m = 32
     t_1 = 1.0e-8
     n = int(math.log10(1.0e4 / 1.0e-8) + 1)
@@ -169,9 +216,17 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
 
 # ############################Duhamerl convolution method for closed-loop system######################################
 def laplace_solution(self, sp) -> float:
+    """
+    Duhamel convolution method for closed-loop system
+    :param self: Reference the class object itself
+    :param sp: Laplace variable
+    :return: Toutletl
+    :doc-author: Malcolm Ross
+    """
+
     Toutletl = 0.0
     ss = 1.0 / sp / chebeve_pointsource(self, self.y_well, self.z_well, self.y_well, self.z_well - 0.078,
-                                             self.y_boundary, self.z_boundary, self.alpha_rock, sp)
+                                        self.y_boundary, self.z_boundary, self.alpha_rock, sp)
 
     Toutletl = (self.Tini - self.Tinj.value) / sp * np.exp(
         -sp * ss / self.q_circulation / 24.0 / densitywater(
@@ -182,6 +237,14 @@ def laplace_solution(self, sp) -> float:
 
 # ###############################Numerical Laplace transformation algorithm#########################
 def inverselaplace(self, NL, MM):
+    """
+    Numerical Laplace transformation algorithm
+    :param self: Reference the class object itself
+    :param NL: NL
+    :param MM: MM
+    :return: Toutlet
+    :doc-author: Malcolm Ross
+    """
     V = np.zeros(50)
     Gi = np.zeros(50)
     H = np.zeros(25)
@@ -281,6 +344,24 @@ def thetaZ(zt, ze, alpha, t):
 
 
 def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
+    """
+    Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
+    :param self: Reference the class object itself
+    :param a: a
+    :param b: b
+    :param n: n
+    :param yy: y coordinate of the point source/sink
+    :param zz: z coordinate of the point source/sink
+    :param yt: y coordinate of the point source/sink
+    :param zt: z coordinate of the point source/sink
+    :param ye: y coordinate of the point source/sink
+    :param ze: z coordinate of the point source/sink
+    :param alpha: thermal diffusivity
+    :param sp: Laplace variable
+    :param func: function
+    :return: y * d - dd + 0.5 * cint[0]
+    :doc-author: Malcolm Ross
+    """
     bma = 0.5 * (b - a)
     bpa = 0.5 * (b + a)
     cos_vals = [math.cos(math.pi * (k + 0.5) / n) for k in range(n)]
@@ -288,7 +369,7 @@ def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     for cos_val in cos_vals:
         result = func(self, yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa)
         f.append(result)
-    #f = [func(yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa) for cos_val in cos_vals]
+    # f = [func(yy, zz, yt, zt, ye, ze, alpha, sp, cos_val * bma + bpa) for cos_val in cos_vals]
     fac = 2.0 / n
     pi_div_n = math.pi / n
     # c = [fac * np.sum([f[k] * math.cos(math.pi * j * (k + 0.5) / n)
@@ -412,7 +493,7 @@ class AGSWellBores(WellBores):
             "Closed-loop Configuration",
             value=Configuration.COAXIAL,
             DefaultValue=Configuration.COAXIAL,
-            AllowableRange=[1,2],
+            AllowableRange=[1, 2],
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default closed-loop configuration is co-axial with injection in annulus (2)"
@@ -499,7 +580,8 @@ class AGSWellBores(WellBores):
             self.mat = scipy.io.loadmat(
                 self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}properties_CO2v2.mat')
             self.additional_mat = scipy.io.loadmat(
-                self.MyPath.replace(self.__str__() + ".py", '') + f'CLG Simulator{os.sep}additional_properties_CO2v2.mat')
+                self.MyPath.replace(self.__str__() + ".py",
+                                    '') + f'CLG Simulator{os.sep}additional_properties_CO2v2.mat')
 
         # results are stored here and in the parent ProducedTemperature array
         self.Tini = 0.0
@@ -588,15 +670,23 @@ class AGSWellBores(WellBores):
 
     # code from Koenraad
     def calculatedrillinglengths(self, model) -> tuple:
-        # returns the total length, vertical length, and horizontal lengths, depending on the configuration
+        """
+        returns the total length, vertical length, and horizontal lengths, depending on the configuration
+        :param self: Access variables that belong to a class
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :return: total length, vertical length, and horizontal lengths
+        :doc-author: Malcolm Ross
+        """
         if self.Configuration.value == Configuration.ULOOP:
             # Total drilling depth of both wells and laterals in U-loop [m]
-            return ((self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
-                   2 * model.reserv.InputDepth.value * 1000.0, self.numnonverticalsections.value * self.Nonvertical_length.value
+            return ((
+                            self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
+                2 * model.reserv.InputDepth.value * 1000.0, self.numnonverticalsections.value * self.Nonvertical_length.value
         else:
             # Total drilling depth of well and lateral in co-axial case [m]
-            return (self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
-                   self.Nonvertical_length.value
+            return (
+                    self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
+                self.Nonvertical_length.value
 
     def initialize(self, model: Model) -> None:
         """
@@ -687,44 +777,51 @@ class AGSWellBores(WellBores):
 
     def verify(self, model: Model) -> int:
         """
-        The validate function checks that all values provided are within the range expected by CLGS modeling system.
+        The verify function checks that all values provided are within the range expected by CLGS modeling system.
          These values in within a smaller range than the value ranges available to GEOPHIRES-X
         :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: 0 if all OK, 1 if error.
         :doc-author: Koenraad Beckers
         """
-        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
-
-        # Verify inputs are within allowable bounds
+        model.logger.info("Init " + str(
+            __class__) + ": " + sys._getframe().f_code.co_name)  # Verify inputs are within allowable bounds
         self.error = 0
-        errors = []
-
-        def on_invalid_parameter_value(err_msg):
-            errors.append(err_msg)
-            print(err_msg)
-            model.logger.fatal(err_msg)
+        if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
+            print("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
+            between 1,000 and 20,000 m. Simulation terminated.")
+            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
+                between 1,000 and 20,000 m. Simulation terminated.")
+            self.error = 1
+        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
+            print("Error: CLGS model database imposes additional range restrictions: Injection temperature\
+             must be between 30 and 60 C. Simulation terminated.")
+            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Injection temperature\
+             must be between 30 and 60 C. Simulation terminated.")
+            self.error = 1
+        if self.krock < 1.5 or self.krock > 4.5:
+            print("Error: CLGS model database imposes additional range restrictions: \
+            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
+            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: \
+            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
             self.error = 1
 
-        if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
-            between 1,000 and 20,000 m. Simulation terminated.")
-        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Injection temperature\
-             must be between 30 and 60 C. Simulation terminated.")
-        if self.krock < 1.5 or self.krock > 4.5:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: \
-            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
-
-        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
+        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         return self.error
 
     # Multilateral code
 
     def CalculateNonverticalPressureDrop(self, model, time_operation: float, time_max: float, al: float):
-        # ------------------------------------------
-        # Calculate nonvertical pressure drops - it will vary as the temperature varies
-        # ------------------------------------------
+        """
+        Calculate nonvertical pressure drops - it will vary as the temperature varies
+        :param self: Access variables that belong to a class
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :param time_operation: time of operation
+        :param time_max: maximum time of operation
+        :param al: time step
+        :return: NonverticalPressureDrop, friction
+        :doc-author: Koenraad Beckers
+        """
         friction = 0.0
         NonverticalPressureDrop = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
         while time_operation <= time_max:
@@ -791,7 +888,7 @@ class AGSWellBores(WellBores):
                 self.nonverticalwellborediameter.value = self.nonverticalwellborediameter.value * 0.0254
                 self.nonverticalwellborediameter.CurrentUnits = LengthUnit.METERS
             self.area = math.pi * (self.nonverticalwellborediameter.value * 0.5) * (
-                    self.nonverticalwellborediameter.value * 0.5)
+                self.nonverticalwellborediameter.value * 0.5)
             # need to convert prodwellflowrate in l/sec to m3/hour
             # and then split the flow equally across all the sections
             self.q_circulation = (self.prodwellflowrate.value / 3.6) / self.numnonverticalsections.value
@@ -813,7 +910,7 @@ class AGSWellBores(WellBores):
             while self.time_operation.value <= self.time_max:
                 # MIR figure out how to calculate year ands extract Tini from reserv Tresoutput array
                 year = math.trunc(self.time_operation.value / self.al)
-                self.NonverticalProducedTemperature.value[year] = inverselaplace(self,16,0)
+                self.NonverticalProducedTemperature.value[year] = inverselaplace(self, 16, 0)
                 # update alpha_fluid value based on next temperature of reservoir
                 self.alpha_fluid = self.WaterThermalConductivity.value / densitywater(
                     self.NonverticalProducedTemperature.value[year]) / heatcapacitywater(
@@ -831,40 +928,42 @@ class AGSWellBores(WellBores):
             model.reserv.cpwater.value = heatcapacitywater(self.NonverticalProducedTemperature.value[0])
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
-                                                         model.reserv.rhorock.value,
-                                                         model.reserv.cprock.value,
-                                                         self.prodwelldiam.value,
-                                                         model.reserv.timevector.value,
-                                                         model.surfaceplant.utilfactor.value,
-                                                         self.prodwellflowrate.value,
-                                                         model.reserv.cpwater.value,
-                                                         model.reserv.Trock.value,
-                                                         model.reserv.Tresoutput.value,
-                                                         model.reserv.averagegradient.value / 1000.0,
-                                                         model.reserv.InputDepth.value)
+                                                    model.reserv.rhorock.value,
+                                                    model.reserv.cprock.value,
+                                                    self.prodwelldiam.value,
+                                                    model.reserv.timevector.value,
+                                                    model.surfaceplant.utilfactor.value,
+                                                    self.prodwellflowrate.value,
+                                                    model.reserv.cpwater.value,
+                                                    model.reserv.Trock.value,
+                                                    model.reserv.Tresoutput.value,
+                                                    model.reserv.averagegradient.value / 1000.0,
+                                                    model.reserv.InputDepth.value)
 
             self.ProducedTemperature.value = self.NonverticalProducedTemperature.value - self.ProdTempDrop.value
 
             # Now use the parent's calculation to calculate the upgoing and downgoing pressure drops and pumping power
             self.PumpingPower.value = [0.0] * len(self.ProducedTemperature.value)  # initialize the array
             if self.productionwellpumping.value:
-                self.rhowaterinj = densitywater(model.reserv.Tsurf.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
-                self.rhowaterprod = densitywater(model.reserv.Trock.value) * np.linspace(1, 1, len(self.ProducedTemperature.value))
+                self.rhowaterinj = densitywater(model.reserv.Tsurf.value) * np.linspace(1, 1,
+                                                                                        len(self.ProducedTemperature.value))
+                self.rhowaterprod = densitywater(model.reserv.Trock.value) * np.linspace(1, 1,
+                                                                                         len(self.ProducedTemperature.value))
                 self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
-                            model.reserv.Tresoutput.value - self.ProdTempDrop.value / 4.0,
-                            self.prodwellflowrate.value,
-                            self.prodwelldiam.value,
-                            self.impedancemodelused.value,
-                            model.reserv.InputDepth.value)
+                                                                                       model.reserv.Tresoutput.value - self.ProdTempDrop.value / 4.0,
+                                                                                       self.prodwellflowrate.value,
+                                                                                       self.prodwelldiam.value,
+                                                                                       self.impedancemodelused.value,
+                                                                                       model.reserv.InputDepth.value)
                 if self.impedancemodelused.value:  # assumed everything stays liquid throughout
                     self.DPOverall.value, UpgoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                         ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
-                             f3, vprod,
-                             self.rhowaterinj, self.rhowaterprod,
-                             self.rhowaterprod, model.reserv.depth.value, self.prodwellflowrate.value,
-                             self.prodwelldiam.value, self.impedance.value,
-                             self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
-                    self.DPOverall.value, DowngoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value =\
+                            f3, vprod,
+                            self.rhowaterinj, self.rhowaterprod,
+                            self.rhowaterprod, model.reserv.depth.value, self.prodwellflowrate.value,
+                            self.prodwelldiam.value, self.impedance.value,
+                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
+                    self.DPOverall.value, DowngoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                         ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
                             f3, vprod,
                             self.rhowaterprod, self.rhowaterinj, model.reserv.rhowater.value, model.reserv.depth.value,
@@ -883,13 +982,13 @@ class AGSWellBores(WellBores):
                             self.rhowaterprod)
 
                     DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
-                            model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
-                            self.usebuiltinppwellheadcorrelation,
-                            model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
-                            model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
-                            self.prodwellflowrate.value, f3, vprod,
-                            self.injwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
-                            self.rhowaterinj)
+                        model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
+                        self.usebuiltinppwellheadcorrelation,
+                        model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
+                        model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
+                        self.prodwellflowrate.value, f3, vprod,
+                        self.injwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
+                        self.rhowaterinj)
 
                 # Calculate Nonvertical Pressure Drop
                 NonverticalPumpingPower = [0.0] * len(DowngoingPumpingPower)  # initialize the array
@@ -903,11 +1002,13 @@ class AGSWellBores(WellBores):
                 NonverticalPumpingPower = self.NonverticalPressureDrop.value * self.nprod.value * \
                                           self.prodwellflowrate.value / self.rhowaterprod / \
                                           model.surfaceplant.pumpeff.value / 1E3  # [MWe] total pumping power for nonvertical section
-                NonverticalPumpingPower = np.array([0. if x < 0. else x for x in NonverticalPumpingPower])  # cannot be negative so set to 0
+                NonverticalPumpingPower = np.array(
+                    [0. if x < 0. else x for x in NonverticalPumpingPower])  # cannot be negative so set to 0
 
                 # recalculate the pumping power by looking at the difference between the upgoing and downgoing and the nonvertical
                 self.PumpingPower.value = DowngoingPumpingPower + NonverticalPumpingPower - UpgoingPumpingPower
-                self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]  # cannot be negative, so set to 0
+                self.PumpingPower.value = [0. if x < 0. else x for x in
+                                           self.PumpingPower.value]  # cannot be negative, so set to 0
 
         else:  # do the CLGS-style calculation
             err = self.verify(model)
@@ -937,7 +1038,8 @@ class AGSWellBores(WellBores):
 
             # calculate water values based on initial temperature
             rhowater = densitywater(self.Tout[0])
-            model.reserv.cpwater.value = heatcapacitywater(self.Tout[0])  # Need this for surface plant output calculation
+            model.reserv.cpwater.value = heatcapacitywater(
+                self.Tout[0])  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary

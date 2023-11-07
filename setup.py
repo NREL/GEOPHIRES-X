@@ -13,15 +13,15 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.1.2',
+    version='3.2.1',
     license='MIT',
-    description='Distributable python package version of https://github.com/malcolm-dsider/GEOPHIRES-X',
+    description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')),
     ),
     author='NREL',
-    author_email='4056124+softwareengineerprogrammer@users.noreply.github.com',
+    author_email='Koenraad.Beckers@nrel.gov',
     url='https://github.com/NREL/python-geophires-x',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -56,10 +56,9 @@ setup(
     project_urls={
         'Changelog': 'https://github.com/NREL/python-geophires-x/blob/master/CHANGELOG.rst',
         'Issue Tracker': 'https://github.com/NREL/python-geophires-x/issues',
+        'Documentation': 'https://nrel.github.io/python-geophires-x-nrel/',
     },
-    keywords=[
-        # eg: "keyword1", "keyword2", "keyword3",
-    ],
+    keywords=['geothermal'],
     python_requires='>=3.7',
     install_requires=[
         'numpy',

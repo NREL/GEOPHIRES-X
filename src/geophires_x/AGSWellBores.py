@@ -694,29 +694,29 @@ class AGSWellBores(WellBores):
         :return: 0 if all OK, 1 if error.
         :doc-author: Koenraad Beckers
         """
-        model.logger.info("Init " + str(
-            __class__) + ": " + sys._getframe().f_code.co_name)  # Verify inputs are within allowable bounds
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+
+        # Verify inputs are within allowable bounds
         self.error = 0
-        if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
-            print("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
-            between 1,000 and 20,000 m. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
-                between 1,000 and 20,000 m. Simulation terminated.")
-            self.error = 1
-        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
-            print("Error: CLGS model database imposes additional range restrictions: Injection temperature\
-             must be between 30 and 60 C. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: Injection temperature\
-             must be between 30 and 60 C. Simulation terminated.")
-            self.error = 1
-        if self.krock < 1.5 or self.krock > 4.5:
-            print("Error: CLGS model database imposes additional range restrictions: \
-            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
-            model.logger.fatal("Error: CLGS model database imposes additional range restrictions: \
-            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
+        errors = []
+
+        def on_invalid_parameter_value(err_msg):
+            errors.append(err_msg)
+            print(err_msg)
+            model.logger.fatal(err_msg)
             self.error = 1
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
+            between 1,000 and 20,000 m. Simulation terminated.")
+        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Injection temperature\
+             must be between 30 and 60 C. Simulation terminated.")
+        if self.krock < 1.5 or self.krock > 4.5:
+            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: \
+            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
+
+        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
         return self.error
 
     # Multilateral code

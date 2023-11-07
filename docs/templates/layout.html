@@ -1,0 +1,16 @@
+{% extends "!layout.html" %}
+
+{%- block extrahead %}
+<script type="text/javascript">
+    console.debug('Referrer:', document.referrer)
+
+    if (location.href.indexOf("nrel.github.io/python-geophires-x") !== -1
+        && document.referrer.indexOf("https://github.com/softwareengineerprogrammer/python-geophires-x") !== -1) {
+        /* Redirect links from fork's GitHub docs to fork's docs deployment */
+        location.href = location.href.replace(
+            "nrel.github.io/python-geophires-x",
+            "softwareengineerprogrammer.github.io/python-geophires-x-nrel"
+        )
+    }
+</script>
+{% endblock %}

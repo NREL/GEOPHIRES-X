@@ -14,6 +14,7 @@ class EndUseOptions(str, Enum):
     ABSORPTION_CHILLER = "Absorption Chiller"  # 6
     HEAT_PUMP = "Heat Pump"  # 7
     DISTRICT_HEATING = "District Heating"  # 8
+    RTES = "Reservoir Thermal Energy Storage"  # 9
 
 
 class EconomicModel(str, Enum):

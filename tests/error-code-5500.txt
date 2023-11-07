@@ -1,0 +1,22 @@
+Is AGS, True
+Closed-loop Configuration, 1
+End-Use Option, 1
+Heat Transfer Fluid, 2
+Number of Production Wells, 1
+Number of Injection Wells, 0
+All-in Vertical Drilling Costs, 1000
+All-in Nonvertical Drilling Costs, 1000
+Production Flow Rate per Well, 40
+Gradient 1, 60
+Total Nonvertical Length, 1000
+Production Well Diameter, 8.5
+Injection Temperature, 60
+Plant Lifetime, 40
+Ambient Temperature, 20
+Electricity Rate, 0.1
+Circulation Pump Efficiency, 0.8
+CO2 Turbine Outlet Pressure, 200
+Economic Model, 4
+Reservoir Stimulation Capital Cost, 0
+Exploration Capital Cost, 0
+Print Output to Console, 1

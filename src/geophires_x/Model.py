@@ -2,6 +2,7 @@ import sys
 import logging
 import time
 import logging.config
+from typing import Tuple
 
 from geophires_x.OptionList import EndUseOptions
 from geophires_x.Parameter import Parameter
@@ -55,6 +56,7 @@ class Model(object):
         self.sdacgteconomics = None
         self.addoutputs = None
         self.addeconomics = None
+
         # these are database operation we aren't doing yet
         # model_elements = self.RunStoredProcedure("model_elements", [1])
         # model_connections = self.RunStoredProcedure("model_connections", [1])
@@ -203,7 +205,7 @@ class Model(object):
         # if end-use option is 8 (district heating), some calculations are required prior to the reservoir and wellbore simulations
         if self.surfaceplant.enduseoption.value == EndUseOptions.DISTRICT_HEATING:
             self.surfaceplant.CalculateDHDemand(self)  # calculate district heating demand
-        
+
         self.reserv.Calculate(self)  # model the reservoir
         self.wellbores.Calculate(self)  # model the wellbores
         self.surfaceplant.Calculate(self)  # model the surfaceplant
@@ -227,25 +229,3 @@ class Model(object):
             self.sdacgteconomics.Calculate(self)
 
         self.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
-
-    def get_parameters_json(self) -> str:
-        from geophires_x.GeoPHIRESUtils import json_dumpse
-
-        all_params = {}
-
-        def with_category(param_dict: dict, category: str):
-            def _with_cat(p: Parameter, cat: str):
-                p.parameter_category = cat
-                return p
-
-            return {k: _with_cat(v, category) for k, v in param_dict.items()}
-
-        all_params.update(with_category(self.reserv.ParameterDict, 'Reservoir'))
-
-        all_params.update(with_category(self.wellbores.ParameterDict, 'Well Bores'))
-
-        all_params.update(with_category(self.surfaceplant.ParameterDict, 'Surface Plant'))
-
-        all_params.update(with_category(self.economics.ParameterDict, 'Economics'))
-
-        return json_dumpse(all_params)

@@ -8,6 +8,10 @@ requires = [
 
 [tool.ruff]
 extend-exclude = ["static", "ci/templates", "src/geophires_x"]
+
+# Incrementally add files to this list as they are cleaned up
+extend-include=["src/geophires_x/GEOPHIRESv3.py"]
+
 ignore = [
     "RUF001", # ruff-specific rules ambiguous-unicode-character-string
     "S101", # flake8-bandit assert
@@ -18,8 +22,9 @@ ignore = [
     "PTH120",
     "PTH123",
     "PT009",
+    "PT027", #  "Use `pytest.raises` instead of unittest-style `assertRaises`"...meh
 ]
-line-length = 140
+line-length = 120
 select = [
     "B", # flake8-bugbear
     "C4", # flake8-comprehensions
@@ -42,7 +47,7 @@ select = [
     "W", # pycodestyle warnings
 ]
 src = ["src", "tests"]
-target-version = "py37"
+target-version = "py38"
 
 [tool.ruff.flake8-pytest-style]
 fixture-parentheses = false
@@ -53,8 +58,8 @@ forced-separate = ["conftest"]
 force-single-line = true
 
 [tool.black]
-line-length = 140
-target-version = ["py37"]
+line-length = 120
+target-version = ["py38"]
 skip-string-normalization = true
 
 [tool.ruff.flake8-quotes]

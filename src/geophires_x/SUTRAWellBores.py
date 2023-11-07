@@ -159,8 +159,8 @@ class SUTRAWellBores:
             Name="PumpingPower",
             value=[0.0],
             UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW
+            PreferredUnits=PowerUnit.KW,
+            CurrentUnits=PowerUnit.KW
         )
 
         self.ProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
@@ -177,6 +177,14 @@ class SUTRAWellBores:
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
+        )
+
+        self.ProductionWellFlowRates = self.OutputParameterDict[self.ProductionWellFlowRates.Name] = OutputParameter(
+            Name="Production Well Flow Rate Profile",
+            value=[0.0],
+            UnitType=Units.FLOWRATE,
+            PreferredUnits=FlowRateUnit.KGPERSEC,
+            CurrentUnits=FlowRateUnit.KGPERSEC
         )
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -261,6 +269,7 @@ class SUTRAWellBores:
         # get wellbore flowrates from SUTRA data
         prodwellflowrates = np.append(model.reserv.BalanceWellFlowRate.value[0:-1:2],model.reserv.BalanceWellFlowRate.value[-1])
         injwellflowrates = np.append(model.reserv.StorageWellFlowRate.value[0:-1:2],model.reserv.StorageWellFlowRate.value[-1])
+        self.ProductionWellFlowRates.value = prodwellflowrates
 
         # calculate wellbore temperature drop (not considered in SUTRA for now) (wellhead inj and prod directly comes from SUTRA)
         self.ProducedTemperature.value = np.append(model.reserv.StorageWellTemperature.value[0:-1:2],model.reserv.StorageWellTemperature.value[-1])
@@ -332,7 +341,7 @@ class SUTRAWellBores:
         # Calculate overall pressure drop
         self.DPOverall.value = self.DPProdWell.value + self.DPInjWell.value + DP_buoyancy + DP_reservoir
 
-        # calculate pumping power [MWe] (approximate)
-        self.PumpingPower.value = self.DPOverall.value * abs(prodwellflowrates) / (0.5*rhowaterinj+0.5*rhowaterprod) / model.surfaceplant.pumpeff.value / 1E3
+        # calculate pumping power [kWe] (approximate)
+        self.PumpingPower.value = self.DPOverall.value * abs(prodwellflowrates) / (0.5*rhowaterinj+0.5*rhowaterprod) / model.surfaceplant.pumpeff.value
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

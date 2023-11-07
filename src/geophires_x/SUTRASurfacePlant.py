@@ -54,7 +54,7 @@ class SUTRASurfacePlant:
             Min=0.1,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             Required=True,
             ErrMessage="assume default circulation pump efficiency (0.75)",
@@ -355,7 +355,7 @@ class SUTRASurfacePlant:
             self.AnnualHeatProduced.value[i] = sum(self.HeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
             self.AnnualAuxiliaryHeatProduced.value[i] = sum(self.AuxiliaryHeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
             self.AnnualTotalHeatProduced.value[i] = sum(self.TotalHeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
-            self.PumpingkWh.value[i] = sum(model.wellbores.PumpingPower.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value*1000
+            self.PumpingkWh.value[i] = sum(model.wellbores.PumpingPower.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value
 
         #calculate maximum auxilary boiler demand
         self.maxpeakingboilerdemand.value = max(self.AnnualAuxiliaryHeatProduced.value)

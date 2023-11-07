@@ -118,7 +118,7 @@ class SUTRAEconomics:
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default discount rate (0.07)",
             ToolTipText="Discount rate used in the Standard Levelized Cost Model"
@@ -131,7 +131,7 @@ class SUTRAEconomics:
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)"
         )
@@ -250,27 +250,6 @@ class SUTRAEconomics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
-        self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
-            Name="O&M Wellfield cost",
-            value=-999.9,
-            UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
-        )
-        self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
-            Name="Surface Plant cost",
-            value=-999.9,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
-        )
-        self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",
-            value=-999.9,
-            UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
-        )
 
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
@@ -283,15 +262,15 @@ class SUTRAEconomics:
             Name="Total O&M Cost",
             value=-999.9,
             UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            PreferredUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR
         )
         self.annualpumpingcosts = self.OutputParameterDict[self.annualpumpingcosts.Name] = OutputParameter(
             Name="Annual Pumping Costs",
             value=-0.0,
             UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            PreferredUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR
         )
 
         #heat pump
@@ -314,8 +293,8 @@ class SUTRAEconomics:
         self.annualngcost = self.OutputParameterDict[self.annualngcost.Name] = OutputParameter(
             Name = "Annual Peaking Fuel Cost",
             value=0, UnitType = Units.CURRENCYFREQUENCY,
-            PreferredUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits = CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            PreferredUnits = CurrencyFrequencyUnit.KDOLLARSPERYEAR,
+            CurrentUnits = CurrencyFrequencyUnit.KDOLLARSPERYEAR
         )
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -426,7 +405,7 @@ class SUTRAEconomics:
         self.peakingboilercost.value = 65*model.surfaceplant.maxpeakingboilerdemand.value/self.peakingboilerefficiency.value/1000 #add 65$/KW for peaking boiler
 
         # Circulation Pump
-        pumphp = np.max(model.wellbores.PumpingPower.value)*1341
+        pumphp = np.max(model.wellbores.PumpingPower.value)*1.341
         numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
         if numberofpumps == 0:
             self.Cpumps = 0.0
@@ -439,14 +418,14 @@ class SUTRAEconomics:
 
         # OPEX
         # Pumping
-        self.annualpumpingcosts.value = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1e6
+        self.annualpumpingcosts.value = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1e3
 
         # Natural Gas
-        self.annualngcost.value = model.surfaceplant.AnnualAuxiliaryHeatProduced.value*self.ngprice.value/self.peakingboilerefficiency.value
+        self.annualngcost.value = model.surfaceplant.AnnualAuxiliaryHeatProduced.value*self.ngprice.value/self.peakingboilerefficiency.value*1e3
 
         # Price for the heat injected currently not considered
 
-        # Total O&M cost ($M/year)
+        # Total O&M cost ($K/year)
         self.Coam.value = self.annualpumpingcosts.value + self.annualngcost.value
 
         # LCOH

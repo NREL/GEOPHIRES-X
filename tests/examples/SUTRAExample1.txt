@@ -1,0 +1,56 @@
+GEOPHIRES v3.0 Input File
+Created on 11/3/2023
+Last modified on 11/3/2023
+Reservoir thermal energy storage simulated with SUTRA
+
+This example reads in a SUTRA simulation result and calculate techno-economics of seasonal reservoir thermal energy storage.
+
+
+***Subsurface technical parameters***
+*************************************
+Reservoir Model,7,                        			---Reads in SUTRA result for seasonal reservoir thermal energy storage
+SUTRA Annual Heat File Name,Examples/annual_heat.csv,			---SUTRA file with heat stored, heat supplied and efficiency for each year
+SUTRA Heat Budget File Name,Examples/heat_budget.csv,			---SUTRA file with target heat and simulated heat for each SUTRA time step over lifetime
+SUTRA Balance and Storage Well Output File Name,Examples/balance_and_storage_well_output.csv,	---SUTRA file with well flow rate and temperature for each SUTRA time step over lifetime
+Number of Production Wells,1,            			---[-]
+Number of Injection Wells,1,            			---[-]
+Reservoir Depth,0.6,                   				---[km]
+Number of Segments,1,                  				---[-]
+Surface Temperature,10,						---[deg.C]
+Gradient 1,0.01,                          			---[deg.C/km]
+Production Well Diameter,7.8,		     			---[inch]
+Injection Well Diameter,7.8,					---[inch]
+Ramey Production Wellbore Model,0,       			---0 if disabled  1 if enabled
+Production Wellbore Temperature Drop,0,				---[deg.C]
+Injection Wellbore Temperature Gain,0,   			---[deg.C]
+Reservoir Impedance,0.2,					---[GPa*s/m3]
+
+***SURFACE TECHNICAL PARAMETERS***
+**********************************
+End-Use Option,9,			  			---[-] Reservoir Thermal Energy Storage
+Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
+
+***FINANCIAL PARAMETERS***
+**************************
+Plant Lifetime,30,			  			---[years]
+Economic Model,2,			  			---[-] Standard Levelized Cost Model
+Fixed Charge Rate,.05,			 			---[-] between 0 and 1
+Inflation Rate During Construction,0,   			---[-]
+End-Use Efficiency Factor,1,					---[-] End-Use Efficiency
+
+***CAPITAL AND O&M COST PARAMETERS***
+*************************************
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
+Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
+Surface Plant Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Field Gathering System Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Exploration Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Wellfield O&M Cost Adjustment Factor,1,				---[-] Use built-in correlations
+Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
+
+
+***Simulation Parameters***
+***************************
+Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)

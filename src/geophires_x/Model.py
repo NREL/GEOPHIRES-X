@@ -89,12 +89,31 @@ class Model(object):
             elif self.InputParameters['Reservoir Model'].sValue == '6':
                 from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir as TOUGH2Reservoir
                 self.reserv = TOUGH2Reservoir(self)  # Tough2 is called
+            elif self.InputParameters['Reservoir Model'].sValue == '7':
+                from geophires_x.SUTRAReservoir import SUTRAReservoir as SUTRAReservoir
+                self.reserv = SUTRAReservoir(self)  # SUTRA output is read
 
         # initialize the default objects
         self.wellbores = WellBores(self)
         self.surfaceplant = SurfacePlant(self)
         self.economics = Economics(self)
         self.outputs = Outputs(self)
+
+        if 'Reservoir Model' in self.InputParameters:
+            if self.InputParameters['Reservoir Model'].sValue == '7':
+                #if we use SUTRA output for simulating reservoir thermal energy storage, we use a special wellbore object that can handle SUTRA data
+                del self.wellbores
+                from geophires_x.SUTRAWellBores import SUTRAWellBores as SUTRAWellBores
+                self.wellbores = SUTRAWellBores(self)
+                del self.surfaceplant
+                from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant as SUTRASurfacePlant
+                self.surfaceplant = SUTRASurfacePlant(self)
+                del self.economics
+                from geophires_x.SUTRAEconomics import SUTRAEconomics as SUTRAEconomics
+                self.economics = SUTRAEconomics(self)
+                del self.outputs
+                from geophires_x.SUTRAOutputs import SUTRAOutputs as SUTRAOutputs
+                self.outputs = SUTRAOutputs(self)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue == 'True':

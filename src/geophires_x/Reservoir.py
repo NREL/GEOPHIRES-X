@@ -75,12 +75,12 @@ class Reservoir:
             "Reservoir Model",
             value=ReservoirModel.ANNUAL_PERCENTAGE,
             DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
-            AllowableRange=[0, 1, 2, 3, 4, 5, 6],
+            AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
             ErrMessage="run default reservoir model (Thermal Drawdown Percentage Model)",
-            ToolTipText="1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
+            ToolTipText="0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
             3: m/a single fracture drawdown model, 4: Linear thermal drawdown model, \
-            5: Generic user-provided temperature profile, 6: TOUGH2"
+            5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA"
         )
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
@@ -469,7 +469,7 @@ class Reservoir:
         # input values.  They are required because it is a bad practice to change input values after the user
         # has assigned them.  Instead, we make new parameters that are copies of the input parameters, but then
         # modify these values - we only use and display the calculated values. This is OK because the calculated value
-        # starts a a copy of the input value and only changes if needed.
+        # starts as a copy of the input value and only changes if needed.
         self.fracsepcalc = self.OutputParameterDict[self.fracsepcalc.Name] = OutputParameter(
             "Calculated Fracture Separation",
             value=self.fracsep.value,
@@ -609,7 +609,10 @@ class Reservoir:
 
                     # handle special cases
                     if ParameterToModify.Name == "Reservoir Model":
-                        if ParameterReadIn.sValue == '1':
+                        if ParameterReadIn.sValue == '0':
+                            # Simply Cylindrical Model
+                            ParameterToModify.value = ReservoirModel.CYLINDRICAL
+                        elif ParameterReadIn.sValue == '1':
                             # Multiple parallel fractures model (LANL)
                             ParameterToModify.value = ReservoirModel.MULTIPLE_PARALLEL_FRACTURES
                         elif ParameterReadIn.sValue == '2':
@@ -624,9 +627,12 @@ class Reservoir:
                         elif ParameterReadIn.sValue == '5':
                             # Generic user-provided temperature profile
                             ParameterToModify.value = ReservoirModel.USER_PROVIDED_PROFILE
-                        else:
+                        elif ParameterReadIn.sValue == '6':
                             # TOUGH2 is called
                             ParameterToModify.value = ReservoirModel.TOUGH2_SIMULATOR
+                        elif ParameterReadIn.sValue == '7':
+                            # SUTRA Simulator
+                            ParameterToModify.value = ReservoirModel.SUTRA
 
                     elif ParameterToModify.Name == "Reservoir Depth":
                         ParameterToModify.value = ParameterToModify.value * 1000
@@ -792,14 +798,15 @@ class Reservoir:
                                         model.economics.timestepsperyear.value * model.surfaceplant.plantlifetime.value+1)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
-        # calculate reservoir water properties
-        self.cpwater.value = heatcapacitywater(
-            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
-        self.rhowater.value = densitywater(
-            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
+        if self.resoption.value != ReservoirModel.SUTRA:
+            # calculate reservoir water properties
+            self.cpwater.value = heatcapacitywater(
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
+            self.rhowater.value = densitywater(
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
 
-        # temperature gain in injection wells
-        model.wellbores.Tinj.value = model.wellbores.Tinj.value + model.wellbores.tempgaininj.value
+            # temperature gain in injection wells
+            model.wellbores.Tinj.value = model.wellbores.Tinj.value + model.wellbores.tempgaininj.value
 
         # calculate reservoir heat content
         self.InitialReservoirHeatContent.value = self.resvolcalc.value * self.rhorock.value * self.cprock.value * (

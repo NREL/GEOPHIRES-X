@@ -23,14 +23,14 @@ class SUTRAOutputs:
         :doc-author: Malcolm Ross
         """
 
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # Dictionary to hold the Units definitions that the user wants for outputs created by GEOPHIRES.
         # It is empty by default initially - this will expand as the user desires are read from the input file
         self.ParameterDict = {}
         self.printoutput = True
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "Outputs"
@@ -53,7 +53,7 @@ class SUTRAOutputs:
         and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
         to call this method from you class, which can effectively modify all these superclass parameters in your class.
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         if len(model.InputParameters) > 0:
             # if the user wants it, we need to know if the user wants to copy the contents of the
@@ -72,7 +72,7 @@ class SUTRAOutputs:
 
                     # handle special cases
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def PrintOutputs(self, model:Model):
         """
@@ -80,7 +80,7 @@ class SUTRAOutputs:
         Args:
             model (Model): The container class of the application, giving access to everything else, including the logger
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
@@ -108,7 +108,9 @@ class SUTRAOutputs:
 
         try:
             outputfile = "HDR.out"
-            if len(sys.argv) > 2: outputfile = sys.argv[2]
+            if len(sys.argv) > 2:
+                outputfile = sys.argv[2]
+
             with open(outputfile,'w', encoding='UTF-8') as f:
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
@@ -209,10 +211,10 @@ class SUTRAOutputs:
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
-            print (str(ex))
+            print(str(ex))
             print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
             model.logger.critical(str(ex))
             model.logger.critical("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
             sys.exit()
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

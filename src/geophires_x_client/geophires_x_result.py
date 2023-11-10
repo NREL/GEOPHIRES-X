@@ -29,6 +29,8 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'LCOE',
                 'LCOH',
+                # SUTRA
+                'Lifetime Average Well Flow Rate',
             ],
             'ECONOMIC PARAMETERS': [
                 'Interest Rate',  # %
@@ -39,6 +41,8 @@ class GeophiresXResult:
                 'Project IRR',
                 'Project VIR=PI=PIR',
                 'Project MOIC',
+                # SUTRA
+                'Fixed Charge Rate (FCR)',
             ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
@@ -61,6 +65,10 @@ class GeophiresXResult:
                 'Lateral Length',
                 'Vertical Depth',
                 'Wellbore Diameter',
+                # SUTRA
+                'Lifetime Average Well Flow Rate',
+                'Injection well casing ID',
+                'Production well casing ID',
             ],
             'RESOURCE CHARACTERISTICS': ['Maximum reservoir temperature', 'Number of segments', 'Geothermal gradient'],
             'RESERVOIR PARAMETERS': [
@@ -99,6 +107,20 @@ class GeophiresXResult:
                 'First Year Heat Production',
                 'Average Net Electricity Production',
                 'First Year Electricity Production',
+                'Maximum Storage Well Temperature',
+                'Average Storage Well Temperature',
+                'Minimum Storage Well Temperature',
+                'Maximum Balance Well Temperature',
+                'Average Balance Well Temperature',
+                'Minimum Balance Well Temperature',
+                'Maximum Annual Heat Stored',
+                'Average Annual Heat Stored',
+                'Minimum Annual Heat Stored',
+                'Maximum Annual Heat Supplied',
+                'Average Annual Heat Supplied',
+                'Minimum Annual Heat Supplied',
+                'Average Round-Trip Efficiency',
+                'Total Average Pressure Drop',
             ],
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
@@ -114,6 +136,12 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'Total CAPEX',
                 'Drilling Cost',
+                # SUTRA
+                'Drilling and Completion Costs',
+                'Drilling and Completion Costs per Well',
+                'Auxiliary Heater Cost',
+                'Pump Cost',
+                'Total Capital Costs',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
@@ -128,6 +156,10 @@ class GeophiresXResult:
                 'Total operating and maintenance costs',
                 # AGS/CLGS
                 'OPEX',
+                # SUTRA
+                'Average annual auxiliary fuel cost',
+                'Average annual pumping cost',
+                'Total average annual O&M costs',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [
                 'Initial geofluid availability',
@@ -165,6 +197,13 @@ class GeophiresXResult:
                 'Minimum Peaking Boiler Heat Production',
                 # AGS/CLGS
                 'Surface Plant Cost',
+                # SUTRA
+                'Average RTES Heating Production',
+                'Average Auxiliary Heating Production',
+                'Average Annual RTES Heating Production',
+                'Average Annual Auxiliary Heating Production',
+                'Average Annual Total Heating Production',
+                'Average Annual Electricity Use for Pumping',
             ],
         }
     )

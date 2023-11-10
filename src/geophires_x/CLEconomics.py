@@ -16,23 +16,21 @@ class CLEconomics:
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden by user input.
         The __init__ function is used to set up all the parameters in closed loop Economics.
-        :param self: Store data that will be used by the class
+        Sets up all the Parameters that will be predefined by this class using the different types of parameter classes.
+        Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
+        and Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that
+        range is exceeded, the ToolTip Text, and the name of teh class that created it.
+        This includes setting up temporary variables that will be available to all the class but noy read in by user,
+        or used for Output
+        This also includes all Parameters that are calculated and then published using the Printouts function.
+        If you choose to subclass this master class, you can do so before or after you create your own parameters.
+        If you do, you can also choose to call this method from you class, which will effectively add and set all
+        these parameters to your class.
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
-        # and Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that
-        # range is exceeded, the ToolTip Text, and the name of teh class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set all
-        # these parameters to your class.
 
         # These dictionaries contains a list of all the parameters set in this object, stored as "Parameter"
         # and "OutputParameter" Objects.  This will alow us later to access them in a user interface and get that list,
@@ -90,7 +88,8 @@ class CLEconomics:
             ToolTipText="Set user specified all-in cost per meter of vertical drilling, including \
             drilling, casing, cement, insulated insert"
         )
-        self.Nonvertical_drilling_cost_per_m = self.ParameterDict[self.Nonvertical_drilling_cost_per_m.Name] = floatParameter(
+        self.Nonvertical_drilling_cost_per_m = self.ParameterDict[
+            self.Nonvertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Nonvertical Drilling Costs",
             value=1300.0,
             DefaultValue=1300.0,
@@ -132,20 +131,20 @@ class CLEconomics:
     def read_parameters(self, model: Model) -> None:
         """
         read_parameters read and update the Economics parameters and handle the special cases
-        Args:
-            model (Model): The container class of the application, giving access to everything else, including the logger
+        Deals with all the parameter values that the user has provided.  They should really only provide values
+        that they want to change from the default values, but they can provide a value that is already set because
+        it is a default value set in __init__.  It will ignore those.
+        This also deals with all the special cases that need to be talen care of after a vlaue has been
+        read in and checked.
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.  If you do, you can
+        also choose to call this method from you class, which can effectively modify all these superclass
+        parameters in your class.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # Deal with all the parameter values that the user has provided.  They should really only provide values
-        # that they want to change from the default values, but they can provide a value that is already set because
-        # it is a default value set in __init__.  It will ignore those.
-        # This also deals with all the special cases that need to be talen care of after a vlaue has been
-        # read in and checked.
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can
-        # also choose to call this method from you class, which can effectively modify all these superclass
-        # parameters in your class.
 
         if len(model.InputParameters) > 0:
             # loop through all the parameters that the user wishes to set, looking for parameters that match this object
@@ -209,21 +208,18 @@ class CLEconomics:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
+        This is where all the calculations are made using all the values that have been set.
+        If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        but that assumes you have set all the values that are required for these calculations
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.  If you do, you can also
+        choose to call this method from you class, which can effectively run the calculations of the superclass,
+        making all the values available to your methods. but you had better have set all the parameters!
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # This is where all the calculations are made using all the values that have been set.
-        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
-        # but that assumes you have set all the values that are required for these calculations
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also
-        # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all the values available to your methods. but you had better have set all the parameters!
 
         # -------------
         # capital costs
@@ -236,13 +232,17 @@ class CLEconomics:
         else:
             # well drilling and completion cost in M$/well
             if self.horizontalwellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL:
-                self.C1well.value = (0.3021 * model.clwellbores.l_pipe.value ** 2 + 584.9112 * model.clwellbores.l_pipe.value + 751368.) * 1E-6
+                self.C1well.value = (
+                                            0.3021 * model.clwellbores.l_pipe.value ** 2 + 584.9112 * model.clwellbores.l_pipe.value + 751368.) * 1E-6
             elif self.horizontalwellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL:
-                self.C1well.value = (0.2898 * model.clwellbores.l_pipe.value ** 2 + 822.1507 * model.clwellbores.l_pipe.value + 680563.) * 1E-6
+                self.C1well.value = (
+                                            0.2898 * model.clwellbores.l_pipe.value ** 2 + 822.1507 * model.clwellbores.l_pipe.value + 680563.) * 1E-6
             elif self.horizontalwellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE:
-                self.C1well.value = (0.2818 * model.clwellbores.l_pipe.value ** 2 + 1275.5213 * model.clwellbores.l_pipe.value + 632315.) * 1E-6
+                self.C1well.value = (
+                                            0.2818 * model.clwellbores.l_pipe.value ** 2 + 1275.5213 * model.clwellbores.l_pipe.value + 632315.) * 1E-6
             elif self.horizontalwellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE:
-                self.C1well.value = (0.2553 * model.clwellbores.l_pipe.value ** 2 + 1716.7157 * model.clwellbores.l_pipe.value + 500867.) * 1E-6
+                self.C1well.value = (
+                                            0.2553 * model.clwellbores.l_pipe.value ** 2 + 1716.7157 * model.clwellbores.l_pipe.value + 500867.) * 1E-6
             else:
                 # MIR MIR MIR
                 pass

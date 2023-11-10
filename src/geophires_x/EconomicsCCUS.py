@@ -16,38 +16,35 @@ class EconomicsCCUS(Economics):
         It initializes the attributes of an object, and sets default values for certain arguments
         that can be overridden by user input.
         The __init__ function is used to set up all the parameters in the CCUS Economics.
-
-        :param self: Store data that will be used by the class
+        Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
+        Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and
+        Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that range
+        is exceeded, the ToolTip Text, and the name of teh class that created it.
+        This includes setting up temporary variables that will be available to all the class but noy read in by user,
+        or used for Output
+        This also includes all Parameters that are calculated and then published using the Printouts function.
+        If you choose to subclass this master class, you can do so before or after you create your own parameters.
+        If you do, you can also choose to call this method from you class, which will effectively add and set
+        all these parameters to your class.
+        set up the parameters using the Parameter Constructors (intParameter, floatParameter, strParameter, etc.);
+        initialize with their name, default value, and valid range (if int or float).  Optionally, you can specify:
+        Required (is it required to run? default value = False), ErrMessage (what GEOPHIRES will report if the
+        value provided is invalid, "assume default value (see manual)"), ToolTipText (when there is a GUI,
+        this is the text that the user will see, "This is ToolTip Text"),
+        UnitType (the type of units associated with this parameter (length, temperature, density, etc), Units.NONE),
+        CurrentUnits (what the units are for this parameter (meters, celcius, gm/cc, etc., Units:NONE),
+        and PreferredUnits (usually equal to CurrentUnits, but these are the units that the calculations assume
+        when running, Units.NONE
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-        super().__init__(model)   # initialize the parent parameters and variables
+        super().__init__(model)  # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
 
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and
-        # Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that range
-        # is exceeded, the ToolTip Text, and the name of teh class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set
-        # all these parameters to your class.
-
-        # set up the parameters using the Parameter Constructors (intParameter, floatParameter, strParameter, etc.);
-        # initialize with their name, default value, and valid range (if int or float).  Optionally, you can specify:
-        # Required (is it required to run? default value = False), ErrMessage (what GEOPHIRES will report if the
-        # value provided is invalid, "assume default value (see manual)"), ToolTipText (when there is a GUI,
-        # this is the text that the user will see, "This is ToolTip Text"),
-        # UnitType (the type of units associated with this parameter (length, temperature, density, etc), Units.NONE),
-        # CurrentUnits (what the units are for this parameter (meters, celcius, gm/cc, etc., Units:NONE),
-        # and PreferredUnits (usually equal to CurrentUnits, but these are the units that the calculations assume
-        # when running, Units.NONE
         self.FixedInternalRate = self.ParameterDict[self.FixedInternalRate.Name] = floatParameter(
             "Fixed Internal Rate",
             value=6.25,
@@ -79,7 +76,8 @@ class EconomicsCCUS(Economics):
             PreferredUnits=CostPerMassUnit.DOLLARSPERLB,
             CurrentUnits=CostPerMassUnit.DOLLARSPERLB
         )
-        self.CCUSEscalationStart = self.ParameterDict[self.CCUSEscalationStart.Name] = intParameter("CCUS Escalation Start Year",
+        self.CCUSEscalationStart = self.ParameterDict[self.CCUSEscalationStart.Name] = intParameter(
+            "CCUS Escalation Start Year",
             value=0,
             DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
@@ -88,7 +86,7 @@ class EconomicsCCUS(Economics):
             CurrentUnits=TimeUnit.YEAR,
             ErrMessage="assume default CCUS escalation delay time (5 years)",
             ToolTipText="Number of years after start of project before start of CCUS incentives"
-        )
+            )
         self.CCUSEscalationRate = self.ParameterDict[self.CCUSEscalationRate.Name] = floatParameter(
             "CCUS Escalation Rate Per Year",
             value=0.0,
@@ -141,7 +139,8 @@ class EconomicsCCUS(Economics):
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH
         )
-        self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name] = intParameter("Heat Escalation Start Year",
+        self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name] = intParameter(
+            "Heat Escalation Start Year",
             value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
@@ -150,7 +149,7 @@ class EconomicsCCUS(Economics):
             CurrentUnits=TimeUnit.YEAR,
             ErrMessage="assume default heat escalation delay time (5 years)",
             ToolTipText="Number of years after start of project before start of escalation"
-        )
+            )
         self.HeatEscalationRate = self.ParameterDict[self.HeatEscalationRate.Name] = floatParameter(
             "Heat Escalation Rate Per Year",
             value=0.0,
@@ -282,14 +281,16 @@ class EconomicsCCUS(Economics):
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
-        self.CarbonThatWouldHaveBeenProducedAnnually = self.OutputParameterDict[self.CarbonThatWouldHaveBeenProducedAnnually.Name] = OutputParameter(
+        self.CarbonThatWouldHaveBeenProducedAnnually = self.OutputParameterDict[
+            self.CarbonThatWouldHaveBeenProducedAnnually.Name] = OutputParameter(
             "Annual Saved Carbon Production",
             value=[0.0],
             UnitType=Units.MASS,
             PreferredUnits=MassUnit.LB,
             CurrentUnits=MassUnit.LB
         )
-        self.CarbonThatWouldHaveBeenProducedTotal = self.OutputParameterDict[self.CarbonThatWouldHaveBeenProducedTotal.Name] = OutputParameter(
+        self.CarbonThatWouldHaveBeenProducedTotal = self.OutputParameterDict[
+            self.CarbonThatWouldHaveBeenProducedTotal.Name] = OutputParameter(
             "Annual Saved Carbon Production",
             UnitType=Units.MASS,
             PreferredUnits=MassUnit.LB,
@@ -317,15 +318,12 @@ class EconomicsCCUS(Economics):
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-        super().read_parameters(model)    # read the parameters for the parent.
+        super().read_parameters(model)  # read the parameters for the parent.
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
         # for the variables in this class
         # because the call to the super.readparameters will set all the variables, including the ones that are specific
@@ -343,33 +341,36 @@ class EconomicsCCUS(Economics):
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
+        This is where all the calculations are made using all the values that have been set.
+        If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        but that assumes you have set all the values that are required for these calculations
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
+        to call this method from you class, which can effectively run the calculations of the superclass, making all
+        thr values available to your methods. but you had better have set all the parameters!
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # This is where all the calculations are made using all the values that have been set.
-        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
-        # but that assumes you have set all the values that are required for these calculations
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
-        # to call this method from you class, which can effectively run the calculations of the superclass, making all
-        # thr values available to your methods. but you had better have set all the parameters!
 
         self.CCUSRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
         self.CCUSCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
         self.CCUSCummCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
         self.CarbonThatWouldHaveBeenProducedAnnually.value = [0.0] * model.surfaceplant.plantlifetime.value
         self.CarbonThatWouldHaveBeenProducedTotal.value = 0.0
-        ProjectCapCostPerYear = model.economics.CCap.value/self.ConstructionYears.value
+        ProjectCapCostPerYear = model.economics.CCap.value / self.ConstructionYears.value
 
         # Calculate carbon price models
-        self.CCUSPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, self.CCUSEscalationStart.value, self.CCUSStartPrice.value, self.CCUSEndPrice.value, self.CCUSEscalationStart.value, self.CCUSEscalationRate.value)
-        self.CCUSOnElecPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0, self.ElecStartPrice.value, self.ElecEndPrice.value, self.ElecEscalationStart.value, self.ElecEscalationRate.value)
-        self.CCUSOnHeatPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0, self.HeatStartPrice.value, self.HeatEndPrice.value, self.HeatEscalationStart.value, self.HeatEscalationRate.value)
+        self.CCUSPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, self.CCUSEscalationStart.value,
+                                                 self.CCUSStartPrice.value, self.CCUSEndPrice.value,
+                                                 self.CCUSEscalationStart.value, self.CCUSEscalationRate.value)
+        self.CCUSOnElecPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0,
+                                                       self.ElecStartPrice.value, self.ElecEndPrice.value,
+                                                       self.ElecEscalationStart.value, self.ElecEscalationRate.value)
+        self.CCUSOnHeatPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0,
+                                                       self.HeatStartPrice.value, self.HeatEndPrice.value,
+                                                       self.HeatEscalationStart.value, self.HeatEscalationRate.value)
 
         # Figure out how much energy is being produced each year, and the amount of carbon that would have been
         # produced if that energy had been made using the grid average carbon production.
@@ -397,10 +398,15 @@ class EconomicsCCUS(Economics):
 
             dBothEnergy = dElectricalEnergy + dHeatEnergy
             self.CarbonThatWouldHaveBeenProducedAnnually.value[i] = dBothEnergy * self.CCUSGridCO2.value
-            self.CarbonThatWouldHaveBeenProducedTotal.value = self.CarbonThatWouldHaveBeenProducedTotal.value + self.CarbonThatWouldHaveBeenProducedAnnually.value[i]
-            self.CCUSRevenue.value[i] = (self.CarbonThatWouldHaveBeenProducedAnnually.value[i] * self.CCUSPrice.value[i]) / 1_000_000.0    # CCUS (from both heat and elec) based on total, not net energy; in $M
+            self.CarbonThatWouldHaveBeenProducedTotal.value = self.CarbonThatWouldHaveBeenProducedTotal.value + \
+                                                              self.CarbonThatWouldHaveBeenProducedAnnually.value[i]
+            self.CCUSRevenue.value[i] = (self.CarbonThatWouldHaveBeenProducedAnnually.value[i] * self.CCUSPrice.value[
+                i]) / 1_000_000.0  # CCUS (from both heat and elec) based on total, not net energy; in $M
             self.CCUSCashFlow.value[i] = self.CCUSRevenue.value[i]
-            self.ProjectCashFlow.value[i] = self.CCUSRevenue.value[i] + (((ProjectElectricalEnergy * self.CCUSOnElecPrice.value[i]) + (ProjectHeatEnergy * self.CCUSOnHeatPrice.value[i])) / 1_000_000.0) - model.economics.Coam.value  # MUSD
+            self.ProjectCashFlow.value[i] = (self.CCUSRevenue.value[i] + (((ProjectElectricalEnergy *
+                                            self.CCUSOnElecPrice.value[i]) +
+                                            (ProjectHeatEnergy * self.CCUSOnHeatPrice.value[i])) / 1_000_000.0) -
+                                             model.economics.Coam.value)  # MUSD
 
         # Calculate the Carbon credit cumulative cash flows
         i = 0
@@ -424,22 +430,25 @@ class EconomicsCCUS(Economics):
                 self.ProjectCummCashFlow.value[0] = val
             else:
                 self.ProjectCummCashFlow.value[i] = self.ProjectCummCashFlow.value[i - 1] + val
-                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[i - 1]:   # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
+                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[
+                    i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
                     dFullDiff = self.ProjectCummCashFlow.value[i] + math.fabs(self.ProjectCummCashFlow.value[(i - 1)])
                     dPerc = math.fabs(self.ProjectCummCashFlow.value[(i - 1)]) / dFullDiff
                     self.ProjectPaybackPeriod.value = i + dPerc
             i = i + 1
 
         # Calculate more financial values using numpy financials
-        self.ProjectNPV.value = npf.npv(self.FixedInternalRate.value/100, self.ProjectCashFlow.value)
+        self.ProjectNPV.value = npf.npv(self.FixedInternalRate.value / 100, self.ProjectCashFlow.value)
         self.ProjectIRR.value = npf.irr(self.ProjectCashFlow.value)
         if math.isnan(self.ProjectIRR.value):
             self.ProjectIRR.value = 0.0
-        self.ProjectVIR.value = 1.0 + (self.ProjectNPV.value/model.economics.CCap.value)
+        self.ProjectVIR.value = 1.0 + (self.ProjectNPV.value / model.economics.CCap.value)
 
         # Calculate MOIC which depends on CumCashFlow
-        self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value)-1] / (model.economics.CCap.value + (model.economics.Coam.value * model.surfaceplant.plantlifetime.value))
+        self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value) - 1] / (
+                model.economics.CCap.value + (model.economics.Coam.value * model.surfaceplant.plantlifetime.value))
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def __str__(self): return "EconomicsCCUS"
+    def __str__(self):
+        return "EconomicsCCUS"

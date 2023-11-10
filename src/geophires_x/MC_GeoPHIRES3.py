@@ -3,12 +3,9 @@
 """
 Framework for running Monte Carlo simulations using GEOPHIRES v3.0 & HIP-RA 1.0
 build date: September 2023
-
 Created on Wed November  16 10:43:04 2017
-
 @author: Malcolm Ross V3
 """
-# TODO Use this video to update this function https://www.youtube.com/watch?v=fKl2JW_qrso
 
 import os
 import sys
@@ -27,11 +24,12 @@ def CheckAndReplaceMean(input_value, args) -> list:
     """
     CheckAndReplaceMean - check to see if the user has requested that a value be replaced by a mean value by specifying
     a value as "#"
-    Args:
-        input_value: the value to check
-        args: the list of arguments passed in from the command line
-
-    Returns: a list of values that have been checked and replaced if necessary
+    :param input_value: the value to check
+    :type input_value: list
+    :param args: the list of arguments passed in from the command line
+    :type args: list
+    :return: the input_value, with the mean value replaced if necessary
+    :rtype: list
     """
     i = 0
     for inputx in input_value:
@@ -52,6 +50,12 @@ def CheckAndReplaceMean(input_value, args) -> list:
 
 
 def WorkPackage(pass_list):
+    """
+    WorkPackage - this is the function that is called by the executor. It does the work of running the simulation
+    :param pass_list: the list of arguments passed in from the command line
+    :type pass_list: list
+    :return: None
+    """
     Inputs = pass_list[0]
     Outputs = pass_list[1]
     args = pass_list[2]
@@ -60,26 +64,26 @@ def WorkPackage(pass_list):
     PythonPath = pass_list[5]
 
     tmpoutputfile = tmpfilename = ""
-# get random values for each of the INPUTS based on the distributions and boundary values
+    # get random values for each of the INPUTS based on the distributions and boundary values
     rando = 0.0
     s = ""
     print("#", end="")
     for input_value in Inputs:
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + os.linesep
+            s = s + input_value[0] + ", " + str(rando) + "\n"
         elif input_value[1].strip().startswith('uniform'):
             rando = np.random.uniform(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + os.linesep
+            s = s + input_value[0] + ", " + str(rando) + "\n"
         elif input_value[1].strip().startswith('triangular'):
             rando = np.random.triangular(float(input_value[2]), float(input_value[3]), float(input_value[4]))
-            s = s + input_value[0] + ", " + str(rando) + os.linesep
+            s = s + input_value[0] + ", " + str(rando) + "\n"
         if input_value[1].strip().startswith('lognormal'):
             rando = np.random.lognormal(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + os.linesep
+            s = s + input_value[0] + ", " + str(rando) + "\n"
         if input_value[1].strip().startswith('binomial'):
             rando = np.random.binomial(int(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + os.linesep
+            s = s + input_value[0] + ", " + str(rando) + "\n"
 
     # make up a temporary file name that will be shared among files for this iteration
     tmpfilename = working_dir + str(uuid.uuid4()) + ".txt"
@@ -90,6 +94,7 @@ def WorkPackage(pass_list):
 
     # append those values to the new input file in the format "variable name, new_random_value".
     # This will cause GeoPHIRES/HIP-RA to replace the value in the file with this random value in the calculation
+    # if it exists in that fiole already, or it will set it to the value as if it was a new value set by the user.
     with open(tmpfilename, "a") as f:
         f.write(s)
 
@@ -108,12 +113,12 @@ def WorkPackage(pass_list):
     # make sure a key file exists. If not, exit
     if not os.path.exists(tmpoutputfile):
         print("Timed out waiting for: " + tmpoutputfile)
-#        logger.warning("Timed out waiting for: " + tmpoutputfile)
+        #        logger.warning("Timed out waiting for: " + tmpoutputfile)
         exit(-33)
 
     with open(tmpoutputfile, "r") as f:
-        s1=f.readline()
-        i=0
+        s1 = f.readline()
+        i = 0
         while s1:  # read until the end of the file
             for out in localOutputs:  # check for each requested output
                 if out in s1:  # If true, we found the output value that the user requested, so process it
@@ -133,21 +138,49 @@ def WorkPackage(pass_list):
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."
-        result_s = result_s + "(" + s.replace(os.linesep, ";", -1).replace(", ", ":", -1) + ")"
+        result_s = result_s + "(" + s.replace("\n", ";", -1).replace(", ", ":", -1) + ")"
 
-    # delete  temporary files
+    # delete temporary files
     os.remove(tmpfilename)
     os.remove(tmpoutputfile)
 
     # write out the results
     result_s = result_s.strip(" ")  # get rid of last space
     result_s = result_s.strip(",")  # et rid of last comma
-    result_s = result_s + os.linesep
+    result_s = result_s + "\n"
     with open(Outputfile, "a") as f:
         f.write(result_s)
 
 
 def main(enable_geophires_logging_config=True):
+    """
+    main - this is the main function that is called when the program is run
+    It gets most of its key values from the command line:
+       0) Code_File: Python code to run
+       1) Input_file: The base model for the calculations
+       2) MC_Settings_file: The settings file for the MC run:
+            a) the input variables to change (spelling and case are IMPORTANT), their distribution functions
+            (choices = normal, uniform, triangular, lognormal, binomial - see numpy.random for documentation),
+            and the inputs for that distribution function (Comma separated; If the mean is set to "#",
+            then value from the Input_file as the mode/mean). In the form:
+                   INPUT, Maximum Temperature, normal, mean, std_dev
+                   INPUT, Utilization Factor,uniform, min, max
+                   INPUT, Ambient Temperature,triangular, left, mode, right
+            b) the output variable(s) to track (spelling and case are IMPORTANT), in the form
+            [NOTE: THIS LIST SHOULD BE IN THE ORDER THEY APPEAR IN THE OUTPUT FILE]:
+                   OUTPUT, Average Net Electricity Production
+                   OUTPUT, Electricity breakeven price
+            c) the number of iterations, in the form:
+                   ITERATIONS, 1000
+            d) the name of the output file (it will contain one column for each of the output variables to track),
+            in the form:
+                   MC_OUTPUT_FILE, "D:\Work\GEOPHIRES3-master\MC_Result.txt"
+            d) the path to the python executable, it it is not already linked to "python", in the form:
+                   PYTHON_PATH, /user/local/bin/python3
+    :param enable_geophires_logging_config: if True, use the logging.conf file to configure logging
+    :type enable_geophires_logging_config: bool
+    :return: None
+    """
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     # set up logging.
@@ -163,29 +196,6 @@ def main(enable_geophires_logging_config=True):
     working_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(working_dir)
     working_dir = working_dir + os.sep
-
-    # from the command line, read what we need to know:
-    #    0) Code_File: Python code to run
-    #    1) Input_file: The base model for the calculations
-    #    2) MC_Settings_file: The settings file for the MC run:
-    #         a) the input variables to change (spelling and case are IMPORTANT), their distribition functions
-    #         (choices = normal, uniform, triangular, lognormal, binomial - see numpy.random for documenation),
-    #         and the inputs for that distribution function (Comma seperated; If the mean is set to "#",
-    #         then value from the Input_file as the mode/mean). In the form:
-    #                INPUT, Maximum Temperature, normal, mean, std_dev
-    #                INPUT, Utilization Factor,uniform, min, max
-    #                INPUT, Ambient Temperature,triangular, left, mode, right
-    #         b) the output variable(s) to track (spelling and case are IMPORTANT), in the form
-    #         [NOTE: THIS LIST SHOULD BE IN THE ORDER THEY APPEAR IN THE OUTPUT FILE]:
-    #                OUTPUT, Average Net Electricity Production
-    #                OUTPUT, Electricity breakeven price
-    #         c) the number of iterations, in the form:
-    #                ITERATIONS, 1000
-    #         d) the name of the output file (it will contain one column for each of the output variables to track),
-    #         in the form:
-    #                MC_OUTPUT_FILE, "D:\Work\GEOPHIRES3-master\MC_Result.txt"
-    #         d) the path to the python executable, it it is not already linked to "python", in the form:
-    #                PYTHON_PATH, /user/local/bin/python3
 
     # get the values off the command line
     parser = argparse.ArgumentParser()
@@ -237,7 +247,7 @@ def main(enable_geophires_logging_config=True):
         s = s + output + ", "
     s = "".join(s.rsplit(" ", 1))  # get rid of last space
     s = "".join(s.rsplit(",", 1))  # get rid of last comma
-    s = s + os.linesep
+    s = s + "\n"
 
     # write the header so it is easy to import and analyze in Excel
     with open(Outputfile, "w") as f:
@@ -255,7 +265,7 @@ def main(enable_geophires_logging_config=True):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.map(WorkPackage, args)
 
-    print(os.linesep + "Done with calculations! Summarizing..." + os.linesep)
+    print("\n" + "Done with calculations! Summarizing..." + "\n")
     logger.info("Done with calculations! Summarizing...")
 
     # read the results into an array
@@ -287,28 +297,26 @@ def main(enable_geophires_logging_config=True):
 
     # write them out
     with open(Outputfile, "a") as f:
-        i=0
+        i = 0
         if Iterations != actual_records_count:
-            f.write(os.linesep + os.linesep + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics" + os.linesep + os.linesep)
+            f.write("\n\n" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
         for output in Outputs:
-            f.write(output + ":" + os.linesep)
-            f.write(f"     minimum: {mins[i]:,.2f}" + os.linesep)
-            f.write(f"     maximum: {maxs[i]:,.2f}" + os.linesep)
-            f.write(f"     median: {medians[i]:,.2f}" + os.linesep)
-            f.write(f"     average: {averages[i]:,.2f}" + os.linesep)
-            f.write(f"     mean: {means[i]:,.2f}" + os.linesep)
-            f.write(f"     standard deviation: {std[i]:,.2f}" + os.linesep)
+            f.write(output + ":" + "\n")
+            f.write(f"     minimum: {mins[i]:,.2f}\n")
+            f.write(f"     maximum: {maxs[i]:,.2f}\n")
+            f.write(f"     median: {medians[i]:,.2f}\n")
+            f.write(f"     average: {averages[i]:,.2f}\n")
+            f.write(f"     mean: {means[i]:,.2f}\n")
+            f.write(f"     standard deviation: {std[i]:,.2f}\n")
             i = i + 1
 
-    print (" Calculation Time: "+"{0:10.3f}".format((time.time()-tic)) + " sec" + os.linesep)
-    logger.info(" Calculation Time: "+"{0:10.3f}".format((time.time()-tic)) + " sec" + os.linesep)
-    print (" Calculation Time per iteration: "+"{0:10.3f}".format(((time.time()-tic))/actual_records_count) +" sec" + os.linesep)
-    logger.info(" Calculation Time per iteration: "+"{0:10.3f}".format(((time.time()-tic))/actual_records_count) +" sec" + os.linesep)
+    print(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
+    logger.info(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
+    print(" Calculation Time per iteration: " + "{0:10.3f}".format(((time.time() - tic)) / actual_records_count) + " sec\n")
+    logger.info(" Calculation Time per iteration: " + "{0:10.3f}".format(((time.time() - tic)) / actual_records_count) + " sec\n")
     if Iterations != actual_records_count:
-        print(os.linesep + os.linesep + "NOTE:" + str(actual_records_count) +
-              " iterations finished successfully and were used to calculate the statistics." + os.linesep + os.linesep)
-        logger.warning(os.linesep + os.linesep + "NOTE:" + str(actual_records_count) +
-              " iterations finished successfully and were used to calculate the statistics." + os.linesep + os.linesep)
+        print("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
+        logger.warning("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
 
     logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
 
@@ -317,6 +325,5 @@ if __name__ == "__main__":
     # set up logging.
     logger = logging.getLogger('root')
     logger.info("Init " + str(__name__))
-
 
     main()

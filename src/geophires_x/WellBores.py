@@ -13,9 +13,9 @@ from .OptionList import ReservoirModel
 def vaporpressurewater(Twater: float) -> float:
     """
     calculate the vapor pressure of water based on the temperature of the water
-        :param Twater: temperature of the water
-        :return: vapor pressure of the water
-        :doc-author: Malcolm Ross
+    :param Twater: temperature of the water [C] (can be a vector)
+    :type Twater: float
+    :return: vapor pressure of the water [kPa] (can be a vector)
     """
     if Twater < 100:
         A = 8.07131
@@ -37,20 +37,32 @@ def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, 
     For multiple gradients, use Ramey's model for every layer
     assume outside diameter of casing is 10% larger than inside diameter of production pipe (=prodwelldiam)
     assume borehole thermal resistance is negligible to rock thermal resistance
-        :param depth:
-        :param averagegradient:
-        :param Tresoutput:
-        :param Trock:
-        :param flowrate:
-        :param utilfactor:
-        :param tv:
-        :param welldiam:
-        :param cprock:
-        :param rhorock:
-        :param krock:
-        :param cpwater:
-        :return: temperature drop
-        :doc-author: Malcolm Ross
+        :param depth:  depth of the well [m]
+        :type: float
+        :param averagegradient: average geothermal gradient [C/km]
+        :type: float
+        :param Tresoutput: reservoir output temperature [C]
+        :type: float
+        :param Trock: rock temperature [C]
+        :type: float
+        :param flowrate: flow rate [kg/s]
+        :type: float
+        :param utilfactor: utilization factor (fraction of time the well is producing) [-]
+        :type: float
+        :param tv: time vector [years]
+        :type: float
+        :param welldiam: well diameter [m]
+        :type: float
+        :param cprock: rock heat capacity [J/kg/C]
+        :type: float
+        :param rhorock: rock density [kg/m3]
+        :type: float
+        :param krock: rock thermal conductivity [W/m/C]
+        :type: float
+        :param cpwater: water heat capacity [J/kg/C]
+        :type: float
+        :return: temperature drop along the length of the well [C]
+        :rtype: float
     """
     alen = len(tv)
     alpharock = krock / (rhorock * cprock)
@@ -68,15 +80,25 @@ def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, 
 def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldiam: float,
                      impedancemodelused: bool, depth: float) -> tuple:
     """
-    calculate the pressure drop over the length of the well due to friction or impedance
-        :param model:
-        :param depth:
-        :param impedancemodelused:
-        :param welldiam:
-        :param wellflowrate:
-        :param Taverage:
+    calculate the pressure drop over the length of the well due to friction or impedance for the production well and
+    the injection well (if applicable) using the Impedance Model or the friction model (if applicable) and the well
+    flow rate and diameter and the average temperature of the fluid in the well (which is the average of the reservoir
+    temperature and the injection temperature) and the depth of the well and the impedance of the reservoir (if
+    applicable) and the number of production wells and the number of injection wells and the water loss (if applicable)
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :param Taverage: average temperature of the fluid in the well [C]
+        :type Taverage: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param welldiam: diameter of the well [m]
+        :type welldiam: float
+        :param impedancemodelused: whether or not the impedance model is used (True or False) [-]
+        :type impedancemodelused: bool
+        :param depth: depth of the well [m]
+        :type depth: float
         :return: tuple of DPWell, f3, v, rhowater
-        :doc-author: Malcolm Ross
+        :rtype: tuple
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
@@ -110,18 +132,26 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
                               impedancemodelused: bool, depth: float, nprod: int, ninj: int, waterloss: float) -> tuple:
     """
     calculate the injection well pressure drop over the length of the well due to friction or impedance
-        :param self:
-        :param model:
-        :param depth:
-        :param impedancemodelused:
-        :param welldiam:
-        :param wellflowrate:
-        :param Taverage:
-        :param waterloss:
-        :param ninj:
-        :param nprod:
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :param Taverage: average temperature of the fluid in the well [C]
+        :type Taverage: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param welldiam: diameter of the well [m]
+        :type welldiam: float
+        :param impedancemodelused: whether or not the impedance model is used (True or False) [-]
+        :type impedancemodelused: bool
+        :param depth: depth of the well [m]
+        :type depth: float
+        :param nprod: number of production wells [-]
+        :type nprod: int
+        :param ninj: number of injection wells [-]
+        :type ninj: int
+        :param waterloss: water loss [-]
+        :type waterloss: float
         :return: tuple of DPWell, f1, v, rhowater
-        :doc-author: Malcolm Ross
+        :rtype: tuple
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
@@ -160,20 +190,32 @@ def ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3: float, vprod: float,
                                                         pumpeff: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using the Impedance Model
-        :param depth:
-        :param wellflowrate:
-        :param waterloss:
-        :param nprod:
-        :param pumpeff:
-        :param impedance:
-        :param prodwelldiam:
-        :param rhowaterreservoir:
-        :param rhowaterprod:
-        :param rhowaterinj:
-        :param vprod:
-        :param f3:
+        :param f3: friction factor [-]
+        :type f3: float
+        :param vprod: velocity of the fluid in the production well [m/s]
+        :type vprod: float
+        :param rhowaterinj: density of the water in the injection well [kg/m3]
+        :type rhowaterinj: float
+        :param rhowaterreservoir: density of the water in the reservoir [kg/m3]
+        :type rhowaterreservoir: float
+        :param rhowaterprod: density of the water in the production well [kg/m3]
+        :type rhowaterprod: float
+        :param depth: depth of the well [m]
+        :type depth: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param prodwelldiam: diameter of the well [m]
+        :type prodwelldiam: float
+        :param impedance: impedance of the reservoir [kg/s/kPa]
+        :type impedance: float
+        :param nprod: number of production wells [-]
+        :type nprod: int
+        :param waterloss: water loss [-]
+        :type waterloss: float
+        :param pumpeff: pump efficiency [-]
+        :type pumpeff: float
         :return: tuple of DPOverall, PumpingPower, DPProdWell, DPReserv, DPBouyancy
-        :doc-author: Malcolm Ross
+        :rtype: tuple
     """
     # production well pressure drops [kPa]
     DPProdWell = f3 * (rhowaterprod * vprod ** 2 / 2.) * (depth / prodwelldiam) / 1E3  # /1E3 to convert from Pa to kPa
@@ -202,18 +244,28 @@ def InjPressureDropsAndPumpingPowerUsingImpedenceModel(f1: float, vinj: float, r
                                                        waterloss: float, pumpeff: float, DPOverall) -> tuple:
     """
     Calculate Injection well Pressure Drops and Pumping Power needed for the injection well using the Impedance Model
-        :param depth:
-        :param wellflowrate:
-        :param waterloss:
-        :param rhowaterinj:
-        :param DPOverall:
-        :param pumpeff:
-        :param ninj:
-        :param injwelldiam:
-        :param vinj:
-        :param f1:
-        :return: tuple of newDPOverall, PumpingPower, DPInjWell
-        :doc-author: Malcolm Ross
+        :param f1: friction factor [-]
+        :type f1: float
+        :param vinj: velocity of the fluid in the injection well [m/s]
+        :type vinj: float
+        :param rhowaterinj: density of the water in the injection well [kg/m3]
+        :type rhowaterinj: float
+        :param depth: depth of the well [m]
+        :type depth: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param injwelldiam: diameter of the well [m]
+        :type injwelldiam: float
+        :param ninj: number of injection wells [-]
+        :type ninj: int
+        :param waterloss: water loss [-]
+        :type waterloss: float
+        :param pumpeff: pump efficiency [-]
+        :type pumpeff: float
+        :param DPOverall: overall pressure drop [kPa]
+        :type DPOverall: float
+        :return: tuple of newDPOverall, PumpingPower, DPInjWell [kPa]
+        :rtype: tuple
     """
     # Calculate Pressure Drops and Pumping Power needed for the injection well using the Impedance Model
     # injection well pressure drops [kPa]
@@ -239,25 +291,41 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
                                                 rhowaterprod: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using indexes
-        :param depth:
-        :param wellflowrate:
-        :param pumpeff:
-        :param rhowaterprod:
-        :param nprod:
-        :param prodwelldiam:
-        :param vprod:
-        :param f3:
-        :param PI:
-        :param ppwellhead:
-        :param gradient:
-        :param Tsurf:
-        :param Trock:
-        :param usebuiltinppwellheadcorrelation:
-        :param productionwellpumping:
-        :param usebuiltinhydrostaticpressurecorrelation:
-        :param model:
-        :return: tuple of PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead
-        :doc-author: Malcolm Ross
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :param usebuiltinhydrostaticpressurecorrelation: whether or not to use the built-in hydrostatic pressure correlation (True or False) [-]
+        :type usebuiltinhydrostaticpressurecorrelation: bool
+        :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
+        :type productionwellpumping: bool
+        :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
+        :type usebuiltinppwellheadcorrelation: bool
+        :param Trock: rock temperature [C]
+        :type Trock: float
+        :param Tsurf: surface temperature [C]
+        :type Tsurf: float
+        :param depth: depth of the well [m]
+        :type depth: float
+        :param gradient: geothermal gradient [C/km]
+        :param ppwellhead: production wellhead pressure [kPa]
+        :type ppwellhead: float
+        :param PI: productivity index [kg/s/bar]
+        :type PI: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param f3: friction factor [-]
+        :type f3: float
+        :param vprod: velocity of the fluid in the production well [m/s]
+        :type vprod: float
+        :param prodwelldiam: diameter of the well [m]
+        :type prodwelldiam: float
+        :param nprod: number of production wells [-]
+        :type nprod: int
+        :param pumpeff: pump efficiency [-]
+        :type pumpeff: float
+        :param rhowaterprod: density of the water in the production well [kg/m3]
+        :type rhowaterprod: float
+        :return: tuple of PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead [kPa]
+        :rtype: tuple
     """
     # initialize PumpingPower value in case it doesn't get set.
     PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod))
@@ -329,30 +397,52 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
                                                rhowaterinj: float, Pplantoutlet: float, PumpingPowerProd) -> tuple:
     """
      Calculate PressureDrops and Pumping Power needed for the injection well using indexes
-        :param depth:
-        :param wellflowrate:
-        :param pumpeff:
-        :param nprod:
-        :param ppwellhead:
-        :param gradient:
-        :param Tsurf:
-        :param Trock:
-        :param usebuiltinppwellheadcorrelation:
-        :param productionwellpumping:
+        :param depth: depth of the well [m]
+        :type depth: float
+        :param wellflowrate: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate: float
+        :param pumpeff: pump efficiency [-]
+        :type pumpeff: float
+        :param nprod: number of production wells [-]
+        :type nprod: int
+        :param ppwellhead: production wellhead pressure [kPa]
+        :type ppwellhead: float
+        :param gradient: geothermal gradient [C/km]
+        :type gradient: float
+        :param Tsurf: surface temperature [C]
+        :type Tsurf: float
+        :param Trock: rock temperature [C]
+        :type Trock: float
+        :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
+        :type usebuiltinppwellheadcorrelation: bool
+        :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
+        :type productionwellpumping: bool
         :param usebuiltinhydrostaticpressurecorrelation:
-        :param model:
-        :param Pplantoutlet:
-        :param rhowaterinj:
-        :param waterloss:
-        :param ninj:
-        :param injwelldiam:
-        :param vinj:
-        :param f1:
-        :param usebuiltinoutletplantcorrelation:
-        :param PumpingPowerProd:
-        :param II:
-        :return: tuple of PumpingPower, PumpingPowerInj, DPInjWell, Pplantoutlet, Pprodwellhead
-        :doc-author: Malcolm Ross
+        :type usebuiltinhydrostaticpressurecorrelation: bool
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :param Pplantoutlet: plant outlet pressure [kPa]
+        :type Pplantoutlet: float
+        :param rhowaterinj: density of the water in the injection well [kg/m3]
+        :type rhowaterinj: float
+        :param waterloss: water loss [-]
+        :type waterloss: float
+        :param ninj: number of injection wells [-]
+        :type ninj: int
+        :param injwelldiam: diameter of the well [m]
+        :type injwelldiam: float
+        :param vinj: velocity of the fluid in the injection well [m/s]
+        :type vinj: float
+        :param f1: friction factor [-]
+        :type f1: float
+        :param usebuiltinoutletplantcorrelation: whether or not to use the built-in outlet plant pressure correlation (True or False) [-]
+        :type usebuiltinoutletplantcorrelation: bool
+        :param PumpingPowerProd: pumping power for production wells [MWe]
+        :type PumpingPowerProd: float
+        :param II: injectivity index [kg/s/bar]
+        :type II: float
+        :return: tuple of PumpingPower, PumpingPowerInj, DPInjWell, Pplantoutlet, Pprodwellhead [kPa]
+        :rtype: tuple
     """
     PumpingPowerInj = DPInjWell = Pprodwellhead = [0.0]  # initialize value in case it doesn't get set.
 
@@ -414,12 +504,9 @@ class WellBores:
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
          object that has already been created, and it's used to access variables that belong to that object.
-
-        :param self: Reference the class object itself
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         self.rhowaterprod = self.rhowaterinj = 0.0
@@ -782,10 +869,9 @@ class WellBores:
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
           It also handles special cases that need to be handled after a value has been read in and checked.
             If you choose to subclass this master class, you can also choose to override this method (or not).
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -837,10 +923,9 @@ class WellBores:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-        :param self: Access variables that belongs to the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

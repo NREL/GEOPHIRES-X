@@ -17,38 +17,34 @@ class EconomicsAddOns(Economics.Economics):
         It initializes the attributes of an object, and sets default values for certain arguments that can be
         overridden by user input.
         The __init__ function is used to set up all the parameters in Economics AddOns.
-
-        :param self: Store data that will be used by the class
+        Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
+        Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
+        and Unit Name of that value, sets it as required (or not), sets allowable range, the error message if
+        that range is exceeded, the ToolTip Text, and the name of the class that created it.
+        This includes setting up temporary variables that will be available to all the class but noy read in by user,
+        or used for Output
+        This also includes all Parameters that are calculated and then published using the Printouts function.
+        If you choose to subclass this master class, you can do so before or after you create your own parameters.
+        If you do, you can also choose to call this method from you class, which will effectively add and
+        set all these parameters to your class.
+        set up the parameters using the Parameter Constructors (intParameter, floatParameter, strParameter, etc.);
+        initialize with their name, default value, and valid range (if int or float).  Optionally, you can specify:
+        Required (is it required to run? default value = False), ErrMessage (what GEOPHIRES will report if the value
+        provided is invalid, "assume default value (see manual)"), ToolTipText (when there is a GIU, this is the
+        text that the user will see, "This is ToolTip Text"), UnitType (the type of units associated with this
+        parameter (length, temperature, density, etc), Units.NONE), CurrentUnits (what the units are for this
+        parameter (meters, Celsius, gm/cc, etc., Units:NONE), and PreferredUnits (usually equal to CurrentUnits,
+        but these are the units that the calculations assume when running, Units.NONE
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
 
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
-        super().__init__(model)   # initialize the parent parameters and variables
+        super().__init__(model)  # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
-
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
-        # and Unit Name of that value, sets it as required (or not), sets allowable range, the error message if
-        # that range is exceeded, the ToolTip Text, and the name of the class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and
-        # set all these parameters to your class.
-
-        # set up the parameters using the Parameter Constructors (intParameter, floatParameter, strParameter, etc.);
-        # initialize with their name, default value, and valid range (if int or float).  Optionally, you can specify:
-        # Required (is it required to run? default value = False), ErrMessage (what GEOPHIRES will report if the value
-        # provided is invalid, "assume default value (see manual)"), ToolTipText (when there is a GIU, this is the
-        # text that the user will see, "This is ToolTip Text"), UnitType (the type of units associated with this
-        # parameter (length, temperature, density, etc), Units.NONE), CurrentUnits (what the units are for this
-        # parameter (meters, Celcius, gm/cc, etc., Units:NONE), and PreferredUnits (usually equal to CurrentUnits,
-        # but these are the units that the calculations assume when running, Units.NONE
 
         self.AddOnNickname = self.ParameterDict[self.AddOnNickname.Name] = listParameter(
             "AddOn Nickname",
@@ -111,19 +107,22 @@ class EconomicsAddOns(Economics.Economics):
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-        self.AddOnElecGainedTotalPerYear = self.OutputParameterDict[self.AddOnElecGainedTotalPerYear.Name] = OutputParameter(
+        self.AddOnElecGainedTotalPerYear = self.OutputParameterDict[
+            self.AddOnElecGainedTotalPerYear.Name] = OutputParameter(
             "AddOn Electricity Gained Total Per Year",
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWPERYEAR
         )
-        self.AddOnHeatGainedTotalPerYear = self.OutputParameterDict[self.AddOnHeatGainedTotalPerYear.Name] = OutputParameter(
+        self.AddOnHeatGainedTotalPerYear = self.OutputParameterDict[
+            self.AddOnHeatGainedTotalPerYear.Name] = OutputParameter(
             "AddOn Heat Gained Total Per Year",
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWPERYEAR
         )
-        self.AddOnProfitGainedTotalPerYear = self.OutputParameterDict[self.AddOnProfitGainedTotalPerYear.Name] = OutputParameter(
+        self.AddOnProfitGainedTotalPerYear = self.OutputParameterDict[
+            self.AddOnProfitGainedTotalPerYear.Name] = OutputParameter(
             "AddOn Profit Gained Total Per Year",
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
@@ -211,11 +210,9 @@ class EconomicsAddOns(Economics.Economics):
         extension.  The user can create as many or as few parameters
         as needed.  Each parameter is created by a call to the InputParameter class, which is defined below, and then
         stored in a dictionary with a name assigned to
-
-        :param self: Access the class variables
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the parameters for the parent.
@@ -257,22 +254,19 @@ class EconomicsAddOns(Economics.Economics):
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
+        This is where all the calculations are made using all the values that have been set.
+        If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        but that assumes you have set all the values that are required for these calculations
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.
+        If you do, you can also choose to call this method from you class, which can effectively run the
+        calculations of the superclass, making all thr values available to your methods.
+        but you had better have set all the parameters!
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # his is where all the calculations are made using all the values that have been set.
-        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
-        # but that assumes you have set all the values that are required for these calculations
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.
-        # If you do, you can also choose to call this method from you class, which can effectively run the
-        # calculations of the superclass, making all thr values available to your methods.
-        # but you had better have set all the parameters!
 
         # sum all the AddOn values together, so we can treat all AddOns together. If an AddOn slot is not used,
         # it has zeros for the values, so this won't create problems
@@ -297,13 +291,14 @@ class EconomicsAddOns(Economics.Economics):
                 if model.surfaceplant.enduseoption.value != EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] + self.AddOnHeatGainedTotalPerYear.value
             else:
-                model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] + self.AddOnHeatGainedTotalPerYear.value  # all the end-use option of direct-use only component
+                # all the end-use option of direct-use only components have a heat generation component
+                model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] + self.AddOnHeatGainedTotalPerYear.value
 
         # Calculate the adjusted OPEX and CAPEX
         self.AdjustedProjectCAPEX.value = model.economics.CCap.value + self.AddOnCAPEXTotal.value
         self.AdjustedProjectOPEX.value = model.economics.Coam.value + self.AddOnOPEXTotalPerYear.value
-        AddOnCapCostPerYear = self.AddOnCAPEXTotal.value/model.surfaceplant.ConstructionYears.value
-        ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value/model.surfaceplant.ConstructionYears.value
+        AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.ConstructionYears.value
+        ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.ConstructionYears.value
 
         # (re)Calculate the revenues
         self.AddOnElecRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
@@ -328,11 +323,16 @@ class EconomicsAddOns(Economics.Economics):
                 AddOnElectricalEnergy = self.AddOnElecGainedTotalPerYear.value
                 AddOnHeatEnergy = self.AddOnHeatGainedTotalPerYear.value
 
-            self.AddOnElecRevenue.value[i] = (AddOnElectricalEnergy * model.economics.ElecPrice.value[i]) / 1_000_000.0  # Electricity revenue in MUSD
-            self.AddOnHeatRevenue.value[i] = (AddOnHeatEnergy * model.economics.HeatPrice.value[i]) / 1_000_000.0  # Heat revenue in MUSD
-            self.AddOnRevenue.value[i] = self.AddOnElecRevenue.value[i] + self.AddOnHeatRevenue.value[i] + self.AddOnProfitGainedTotalPerYear.value - self.AddOnOPEXTotalPerYear.value
+            self.AddOnElecRevenue.value[i] = (AddOnElectricalEnergy * model.economics.ElecPrice.value[
+                i]) / 1_000_000.0  # Electricity revenue in MUSD
+            self.AddOnHeatRevenue.value[i] = (AddOnHeatEnergy * model.economics.HeatPrice.value[
+                i]) / 1_000_000.0  # Heat revenue in MUSD
+            self.AddOnRevenue.value[i] = self.AddOnElecRevenue.value[i] + self.AddOnHeatRevenue.value[
+                i] + self.AddOnProfitGainedTotalPerYear.value - self.AddOnOPEXTotalPerYear.value
             self.AddOnCashFlow.value[i] = self.AddOnRevenue.value[i]
-            self.ProjectCashFlow.value[i] = self.AddOnRevenue.value[i] + (((ProjectElectricalEnergy * model.economics.ElecPrice.value[i]) + (ProjectHeatEnergy * model.economics.HeatPrice.value[i])) / 1_000_000.0) - model.economics.Coam.value  # MUSD
+            self.ProjectCashFlow.value[i] = self.AddOnRevenue.value[i] + (((ProjectElectricalEnergy *
+                                            model.economics.ElecPrice.value[i]) + (ProjectHeatEnergy *
+                                            model.economics.HeatPrice.value[i])) / 1_000_000.0) - model.economics.Coam.value  # MUSD
 
         # now insert the cost of construction into the front of the array that will be used to calculate
         # NPV = the convention is that the upfront CAPEX is negative
@@ -342,11 +342,11 @@ class EconomicsAddOns(Economics.Economics):
 
         # Now calculate a new "NPV", "IRR", "VIR", "Payback Period", and "MOIC"
         # Calculate more financial values using numpy financials
-        self.ProjectNPV.value = npf.npv(self.FixedInternalRate.value/100, self.ProjectCashFlow.value)
+        self.ProjectNPV.value = npf.npv(self.FixedInternalRate.value / 100, self.ProjectCashFlow.value)
         self.ProjectIRR.value = npf.irr(self.ProjectCashFlow.value)
         if math.isnan(self.ProjectIRR.value):
             self.ProjectIRR.value = 0.0
-        self.ProjectVIR.value = 1.0 + (self.ProjectNPV.value/self.AdjustedProjectCAPEX.value)
+        self.ProjectVIR.value = 1.0 + (self.ProjectNPV.value / self.AdjustedProjectCAPEX.value)
 
         # calculate Cummcashflows and paybacks
         self.ProjectCummCashFlow.value = [0.0] * len(self.ProjectCashFlow.value)
@@ -356,7 +356,8 @@ class EconomicsAddOns(Economics.Economics):
                 self.ProjectCummCashFlow.value[i] = val
             else:
                 self.ProjectCummCashFlow.value[i] = self.ProjectCummCashFlow.value[i - 1] + val
-                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
+                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[
+                    i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
                     dFullDiff = self.ProjectCummCashFlow.value[i] + math.fabs(self.ProjectCummCashFlow.value[(i - 1)])
                     dPerc = math.fabs(self.ProjectCummCashFlow.value[(i - 1)]) / dFullDiff
                     self.ProjectPaybackPeriod.value = i + dPerc
@@ -368,14 +369,17 @@ class EconomicsAddOns(Economics.Economics):
                 self.AddOnCummCashFlow.value[0] = val
             else:
                 self.AddOnCummCashFlow.value[i] = self.AddOnCummCashFlow.value[i - 1] + val
-                if self.AddOnCummCashFlow.value[i] > 0 >= self.AddOnCummCashFlow.value[i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
+                if self.AddOnCummCashFlow.value[i] > 0 >= self.AddOnCummCashFlow.value[
+                    i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
                     dFullDiff = self.AddOnCummCashFlow.value[i] + math.fabs(self.AddOnCummCashFlow.value[(i - 1)])
                     dPerc = math.fabs(self.AddOnCummCashFlow.value[(i - 1)]) / dFullDiff
                     self.AddOnPaybackPeriod.value = i + dPerc
             i = i + 1
 
         # Calculate MOIC which depends on CumCashFlow
-        self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value)-1] / (self.AdjustedProjectCAPEX.value + (self.AdjustedProjectOPEX.value * model.surfaceplant.plantlifetime.value))
+        self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value) - 1] / (
+                self.AdjustedProjectCAPEX.value + (
+                    self.AdjustedProjectOPEX.value * model.surfaceplant.plantlifetime.value))
 
         # recalculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOH(self, model)

@@ -164,23 +164,23 @@ class data:
 def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     """
     point source/sink solution functions
-    :param yy: y coordinate of the point source/sink
+    :param yy: y coordinate of the point source/sink (m) (yy = 0) for coaxial wellbore and (yy = 0.078) for U-loop wellbore (m)
     :type yy: float
-    :param zz: z coordinate of the point source/sink
+    :param zz: z coordinate of the point source/sink (m) (zz = 0) for coaxial wellbore and (zz = 0.078) for U-loop wellbore (m)
     :type zz: float
-    :param yt: y coordinate of the point source/sink
+    :param yt: y coordinate of the point source/sink (m) (yt = 0) for coaxial wellbore and (yt = 0.078) for U-loop wellbore (m)
     :type yt: float
-    :param zt: z coordinate of the point source/sink
+    :param zt: z coordinate of the point source/sink (m) (zt = 0) for coaxial wellbore and (zt = 0.078) for U-loop wellbore (m)
     :type zt: float
-    :param ye: y coordinate of the point source/sink
+    :param ye: y coordinate of the point source/sink (m) (ye = 0) for coaxial wellbore and (ye = 0.078) for U-loop wellbore (m)
     :type ye: float
-    :param ze: z coordinate of the point source/sink
+    :param ze: z coordinate of the point source/sink (m) (ze = 0) for coaxial wellbore and (ze = 0.078) for U-loop wellbore (m)
     :type ze: float
-    :param alpha: thermal diffusivity
+    :param alpha: thermal diffusivity (m2/s)
     :type alpha: float
-    :param sp: Laplace variable
+    :param sp: Laplace variable (1/s)
     :type sp: float
-    :param t: time
+    :param t: time (s)
     :type t: float
     :return: z
     :rtype: float
@@ -202,23 +202,23 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
 def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     """
     Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
-    :param yy: y coordinate of the point source/sink
+    :param yy: y coordinate of the point source/sink (m) (yy = 0) for coaxial wellbore and (yy = 0.078) for U-loop wellbore (m)
     :type yy: float
-    :param zz: z coordinate of the point source/sink
+    :param zz: z coordinate of the point source/sink (m) (zz = 0) for coaxial wellbore and (zz = 0.078) for U-loop wellbore (m)
     :type zz: float
-    :param yt: y coordinate of the point source/sink
+    :param yt: y coordinate of the point source/sink (m) (yt = 0) for coaxial wellbore and (yt = 0.078) for U-loop wellbore (m)
     :type yt: float
-    :param zt: z coordinate of the point source/sink
+    :param zt: z coordinate of the point source/sink (m) (zt = 0) for coaxial wellbore and (zt = 0.078) for U-loop wellbore (m)
     :type zt: float
-    :param ye: y coordinate of the point source/sink
+    :param ye: y coordinate of the point source/sink (m) (ye = 0) for coaxial wellbore and (ye = 0.078) for U-loop wellbore (m)
     :type ye: float
-    :param ze: z coordinate of the point source/sink
+    :param ze: z coordinate of the point source/sink (m) (ze = 0) for coaxial wellbore and (ze = 0.078) for U-loop wellbore (m)
     :type ze: float
-    :param alpha: thermal diffusivity
+    :param alpha: thermal diffusivity (m2/s)
     :type alpha: float
-    :param sp: Laplace variable
+    :param sp: Laplace variable (1/s)
     :type sp: float
-    :return: ????
+    :return: ???? (need to check)
     :rtype: float
     """
     m = 32
@@ -238,7 +238,7 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
 def laplace_solution(self, sp) -> float:
     """
     Duhamel convolution method for closed-loop system
-    :param sp: Laplace variable
+    :param sp: Laplace variable (1/s)
     :type sp: float
     :return: Toutletl
     :rtype: float
@@ -385,11 +385,11 @@ def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     :type ye: float
     :param ze: z coordinate of the point source/sink
     :type ze: float
-    :param alpha: thermal diffusivity
+    :param alpha: thermal diffusivity (m2/s)
     :type alpha: float
-    :param sp: Laplace variable
+    :param sp: Laplace variable (1/s)
     :type sp: float
-    :param func: function
+    :param func: function to be integrated (pointsource)
     :type func: function
     :return: y * d - dd + 0.5 * cint[0]
     :rtype: float
@@ -844,13 +844,13 @@ class AGSWellBores(WellBores):
         Calculate nonvertical pressure drops - it will vary as the temperature varies
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
-        :param time_operation: time of operation
+        :param time_operation: time of operation in years (0.01)
         :type time_operation: float
-        :param time_max: maximum time of operation
+        :param time_max: maximum time of operation in years (100) - this is the time of the last year of operation
         :type time_max: float
-        :param al: time step
+        :param al: time step in years (0.01) - this is the time step of the simulation (not the time step of the CLGS model)
         :type al: float
-        :return: NonverticalPressureDrop, friction
+        :return: NonverticalPressureDrop, friction - pressure drop and friction factor for the nonvertical section of the wellbore
         :rtype: tuple
         """
         friction = 0.0

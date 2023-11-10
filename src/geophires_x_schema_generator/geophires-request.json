@@ -17,21 +17,31 @@
     "Reservoir Heat Capacity",
     "Reservoir Density",
     "Surface Temperature",
+    "Cylindrical Reservoir Input Depth",
+    "Cylindrical Reservoir Output Depth",
+    "Cylindrical Reservoir Length",
+    "Drilled length",
     "Number of Production Wells",
     "Number of Injection Wells",
     "Production Well Diameter",
     "Injection Well Diameter",
     "Ramey Production Wellbore Model",
     "Injection Temperature",
+    "Heat Transfer Fluid",
+    "Closed-loop Configuration",
+    "Total Nonvertical Length",
     "Circulation Pump Efficiency",
     "Utilization Factor",
     "Plant Lifetime",
+    "Dead-state Pressure",
     "Economic Model",
-    "Time steps per year"
+    "Time steps per year",
+    "Operation & Maintenance Cost of Surface Plant",
+    "Capital Cost for Power Plant for Electricity Generation"
   ],
   "properties": {
     "Reservoir Model": {
-      "description": "1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2",
+      "description": "0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA",
       "type": "integer",
       "units": null,
       "category": "Reservoir"
@@ -210,6 +220,60 @@
       "units": "1/year",
       "category": "Reservoir"
     },
+    "Cylindrical Reservoir Input Depth": {
+      "description": "Depth of the inflow end of a cylindrical reservoir",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Reservoir"
+    },
+    "Cylindrical Reservoir Output Depth": {
+      "description": "Depth of the outflow end of a cyclindrical reservoir",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Reservoir"
+    },
+    "Cylindrical Reservoir Length": {
+      "description": "Length of cylindrical reservoir",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Reservoir"
+    },
+    "Cylindrical Reservoir Radius of Effect": {
+      "description": "The radius of effect - the distance into the rock from the center of the cylinder that will be perturbed by at least 1 C",
+      "type": "number",
+      "units": "meter",
+      "category": "Reservoir"
+    },
+    "Cylindrical Reservoir Radius of Effect Factor": {
+      "description": "The radius of effect reduction factor - to account for the fact that we cannot extract 100% of the heat in the cylinder.",
+      "type": "number",
+      "units": "",
+      "category": "Reservoir"
+    },
+    "Drilled length": {
+      "description": "Depth of the inflow end of a cyclindrical reservoir",
+      "type": "number",
+      "units": "kilometer",
+      "category": "Reservoir"
+    },
+    "SUTRA Annual Heat File Name": {
+      "description": "SUTRA file with heat stored, heat supplied and efficiency for each year",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir"
+    },
+    "SUTRA Heat Budget File Name": {
+      "description": "SUTRA file with target heat and simulated heat for each SUTRA time step over lifetime",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir"
+    },
+    "SUTRA Balance and Storage Well Output File Name": {
+      "description": "SUTRA file with well flow rate and temperature for each SUTRA time step over lifetime",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir"
+    },
     "Number of Production Wells": {
       "description": "Number of (identical) production wells",
       "type": "integer",
@@ -308,6 +372,54 @@
     },
     "Is AGS": {
       "description": "Set to true if the model is for an Advanced Geothermal System (AGS)",
+      "type": "boolean",
+      "units": null,
+      "category": "Well Bores"
+    },
+    "Heat Transfer Fluid": {
+      "description": "",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores"
+    },
+    "Closed-loop Configuration": {
+      "description": "",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores"
+    },
+    "Total Nonvertical Length": {
+      "description": "",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores"
+    },
+    "Water Thermal Conductivity": {
+      "description": "Water Thermal Conductivity",
+      "type": "number",
+      "units": "watt/m/kelvin",
+      "category": "Well Bores"
+    },
+    "Nonvertical Wellbore Diameter": {
+      "description": "Non-vertical Wellbore Diameter",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores"
+    },
+    "Number of Multilateral Sections": {
+      "description": "Number of Nonvertical Wellbore Sections",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores"
+    },
+    "Closed Loop Calculation Start Year": {
+      "description": "Closed Loop Calculation Start Year",
+      "type": "number",
+      "units": "yr",
+      "category": "Well Bores"
+    },
+    "Multilaterals Cased": {
+      "description": "",
       "type": "boolean",
       "units": null,
       "category": "Well Bores"
@@ -460,6 +572,42 @@
       "description": "Select the U.S. census division to calculate district heating demand (if district heating demand option is set to 2)",
       "type": "integer",
       "units": null,
+      "category": "Surface Plant"
+    },
+    "Dead-state Pressure": {
+      "description": "",
+      "type": "number",
+      "units": "Pa",
+      "category": "Surface Plant"
+    },
+    "Isentropic Efficiency for CO2 Turbine": {
+      "description": "",
+      "type": "number",
+      "units": "",
+      "category": "Surface Plant"
+    },
+    "Generator Conversion Efficiency": {
+      "description": "",
+      "type": "number",
+      "units": "",
+      "category": "Surface Plant"
+    },
+    "Isentropic Efficiency for CO2 Compressor": {
+      "description": "",
+      "type": "number",
+      "units": "",
+      "category": "Surface Plant"
+    },
+    "CO2 Temperature Decline with Cooling": {
+      "description": "",
+      "type": "number",
+      "units": "degC",
+      "category": "Surface Plant"
+    },
+    "CO2 Turbine Outlet Pressure": {
+      "description": "",
+      "type": "number",
+      "units": "bar",
       "category": "Surface Plant"
     },
     "Economic Model": {
@@ -838,6 +986,24 @@
       "description": "Fixed Internal Rate (used in NPV calculation)",
       "type": "number",
       "units": "%",
+      "category": "Economics"
+    },
+    "Operation & Maintenance Cost of Surface Plant": {
+      "description": "",
+      "type": "number",
+      "units": "",
+      "category": "Economics"
+    },
+    "Capital Cost for Surface Plant for Direct-use System": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kW",
+      "category": "Economics"
+    },
+    "Capital Cost for Power Plant for Electricity Generation": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kW",
       "category": "Economics"
     }
   }

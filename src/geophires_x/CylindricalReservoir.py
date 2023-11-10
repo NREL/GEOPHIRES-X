@@ -1,115 +1,30 @@
-import sys
-import os
-import math
-from functools import lru_cache
-import numpy as np
-import geophires_x.Model as Model
-from .Parameter import floatParameter, OutputParameter
-from .Units import *
 from .Reservoir import *
 
 
 class CylindricalReservoir(Reservoir):
     """
     The CylindricalReservoir class is a subclass of the Reservoir class in a straightforward conduction-only model.
-
     It inherits from the primary Reservoir model but offers new parameters and calculations.
-
-    .. list-table:: Input Parameters
-       :widths: 25 50 10 10 10 10 25
-       :header-rows: 1
-
-       * - Name
-         - Description
-         - Default Value Type
-         - Default Value
-         - Min
-         - Max
-         - Preferred Units
-       * - Cylindrical Reservoir Input Depth
-         - Depth of the inflow end of a cylindrical reservoir.
-         - float
-         - 3.0
-         - 0.1
-         - 15
-         - LengthUnit.KILOMETERS
-       * - Cylindrical Reservoir Output Depth
-         - Depth of the outflow end of a cylindrical reservoir
-         - float
-         - Input Depth
-         - 0.1
-         - 15
-         - LengthUnit.KILOMETERS
-       * - Reservoir Length
-         - Length of cylindrical reservoir
-         - float
-         - 4.0
-         - 0.1
-         - 10.0
-         - LengthUnit.KILOMETERS
-       * - Cylindrical Reservoir Radius of Effect
-         - The radius of effect - the distance into the rock from the center of the cylinder that will be perturbed by at least 1 C
-         - float
-         - 30.0
-         - 0
-         - 1000.0
-         - LengthUnit.METERS
-       * - Cylindrical Reservoir Radius of Effect Factor
-         - The radius of effect reduction factor accounts for the fact that we cannot extract 100% of the heat in the cylinder.
-         - float
-         - 1.0
-         - 0.0
-         - 10.0
-         - PercentUnit.TENTH
-
-    .. list-table:: Output Parameters
-       :widths: 25 20 20
-       :header-rows: 1
-
-       * - Name
-         - Default Value Type
-         - Preferred Units
-       * - Cylindrical Reservoir Surface Area
-         - float
-         - METERS2
-       * - Average Gradient
-         - float
-         - dEGC/KM
-       * - Time Vector
-         - float array
-         - YEAR
-       * - Reservoir Temperature History
-         - float array
-         - CELSIUS
-
-
-    :doc-author: Malcolm Ross
     """
-    def __init__(self, model:Model):
+    def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
-        It initializes the attributes of an object, and sets default values for certain arguments that can be
-         overridden by user input.
-        The __init__ function is used to set up all the parameters in the Reservoir.
-
-        :param self: Store data that will be used by the class
+        Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
+        Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc)
+        and Unit Name of that value, sets it as required (or not), sets allowable range, the error message
+        if that range is exceeded, the ToolTip Text, and the name of teh class that created it.
+        This includes setting up temporary variables that will be available to all the class but noy read in by user,
+        or used for Output
+        This also includes all Parameters that are calculated and then published using the Printouts function.
+        If you choose to subclass this master class, you can do so before or after you create your own parameters.
+        If you do, you can also choose to call this method from you class, which will effectively add and set all
+        these parameters to your class.
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().__init__(model)   # initialize the parent parameters and variables
-
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc)
-        # and Unit Name of that value, sets it as required (or not), sets allowable range, the error message
-        # if that range is exceeded, the ToolTip Text, and the name of teh class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set all
-        # these parameters to your class.
 
         self.InputDepth = self.ParameterDict[self.InputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Input Depth",
@@ -238,15 +153,12 @@ class CylindricalReservoir(Reservoir):
         """
         The read_parameters function reads in the parameters from a dictionary created by reading the user-provided
          file and updates the parameter values for this object.
-
         The function reads in all the parameters that relate to this object, including those that are inherited
         from other objects. It then updates any of these parameter values that have been changed by the user.
         It also handles any special cases.
-
-        :param self: Reference the class instance (such as it is) from within the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
         super().read_parameters(model)
@@ -285,24 +197,20 @@ class CylindricalReservoir(Reservoir):
     def Calculate(self, model:Model) -> None:
         """
         The Calculate function is where all the calculations are done.
-
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
+        This is where all the calculations are made using all the values that have been set.
+        If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        but that assumes you have set all the values that are required for these calculations
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.
+        If you do, you can also choose to call this method from you class, which can effectively
+        run the calculations of the superclass, making all the values available to your methods. but you had
+        better have set all the parameters!
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
-
-        # This is where all the calculations are made using all the values that have been set.
-        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
-        # but that assumes you have set all the values that are required for these calculations
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.
-        # If you do, you can also choose to call this method from you class, which can effectively
-        # run the calculations of the superclass, making all the values available to your methods. but you had
-        # better have set all the parameters!
 
         # specify time-stepping vectors
         self.timevector.value = np.linspace(0, model.surfaceplant.plantlifetime.value,

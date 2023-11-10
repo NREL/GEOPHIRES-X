@@ -183,17 +183,16 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     """
     ReadParameter: A method to take a single ParameterEntry object and use it to update the associated Parameter.
     Does validation as well as Unit and Currency conversion
-
-    Args:
-        ParameterReadIn (ParameterEntry): The value the user wants to change
-        ParamToModify (Parameter): The Parameter that will be modified (assuming it passes validation and conversion)
-        model (Model):  The container class of the application, giving access to everything else, including the logger
-
-    Returns:
-        None
-
-    Yields:
-        None
+    :param ParameterEntry: The value the user wants to change and the value they want to change it to (as a string)
+     and  any comment they provided with it (as a string) - all in one object (ParameterEntry) that is passed in
+      to this method as a parameter itself (ParameterReadIn) - see ParameterEntry class for details on the fields in it
+    :type ParameterEntry: :class:`~geophires_x.Parameter.ParameterEntry`
+    :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
+      the object that will be modified by this method - see Parameter class for details on the fields in it
+    :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
+    :param model: The container class of the application, giving access to everything else, including the logger
+    :type model: :class:`~geophires_x.Model.Model`
+    :return: None
     """
     model.logger.info("Init " + str(__name__) + ": " + sys._getframe().f_code.co_name + " for " + ParamToModify.Name)
     # these Parameter Types don't have units so don't do anything fancy, and ignore it if the user has supplied units
@@ -335,13 +334,17 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
 def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
     """
     ConvertUnits gets called if a unit version is needed: either currency or standard units like F to C or m to ft
-    Args:
-        ParamToModify (Parameter): The Parameter that will be modified (assuming it passes validation and conversion)
-        strUnit (str): A string containing the value to be converted along with the units it is current in.
+    :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
+        the object that will be modified by this method - see Parameter class for details on the fields in it - this
+        is the object that will be modified by this method - see Parameter class for details on the fields in it
+    :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
+    :param strUnit: A string containing the value to be converted along with the units it is current in.
         The units to convert to are set by the PreferredUnits of ParamToModify
-        model (Model):  The container class of the application, giving access to everything else, including the logger
-    Returns:
-        str: The new value as a string (without the units, because they are already held in PreferredUnits of ParamToModify)
+    :type strUnit: str
+    :param model: The container class of the application, giving access to everything else, including the logger
+    :type model: :class:`~geophires_x.Model.Model`
+    :return: The new value as a string (without the units, because they are already held in PreferredUnits of ParamToModify)
+    :rtype: str
     """
     model.logger.info("Init " + str(__name__) + ": " + sys._getframe().f_code.co_name + " for " + ParamToModify.Name)
 
@@ -504,9 +507,12 @@ def ConvertUnitsBack(ParamToModify, model):
     """
     CovertUnitsBack: Converts units back to what the user specified they as.  It does this so that the user can see them
     in the report as the units they specified.  We know that because CurrentUnits contains the desired units
-    Args:
-        ParamToModify (Parameter): The Parameter that will be modified.
-        model (Model):  The container class of the application, giving access to everything else, including the logger
+    :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
+        the object that will be modified by this method - see Parameter class for details on the fields in it
+    :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
+    :param model: The container class of the application, giving access to everything else, including the logger
+    :type model: :class:`~geophires_x.Model.Model`
+    :return: None
     """
     model.logger.info("Init " + str(__name__) + ": " + sys._getframe().f_code.co_name + " for " + ParamToModify.Name)
 
@@ -653,10 +659,12 @@ def LookupUnits(sUnitText: str):
     """
     LookupUnits Given a unit class and a text string, this will return the value from the Enumeration if it is there
     (or return nothing if it is not)
-    Args:
-        sUnitText (str): The units desired to be checked (e.g., "ft", "degF")
-    Returns:
-        Enum: The Enumerated value and the Unit class Enumeration
+    :param sUnitText: The text string to look for in the Enumeration of units (like "m" or "feet") - this is the text
+        that the user provides in the input file or the GUI to specify the units they want to use for a parameter or
+        output value (like "m" or "feet")
+    :type sUnitText: str (text)
+    :return: The Enumerated value and the Unit class Enumeration
+    :rtype: tuple
     """
     # look through all unit types and names for a match with my units
     for uType in Units:
@@ -741,14 +749,20 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     """
     ConvertOutputUnits Given an output parameter, convert the value(s) from what they contain
     (as calculated by GEOPHIRES) to what the user specified as what they want for outputs.  Conversion happens inline.
-    Args:
-        oparam (OutputParameter): The parameter you want to be converted (value or list of values).
-               Because Parameters know the PreferredUnits and CurrentUnits, this routine knows what to do.
-        newUnit (Units): The new units you want to convert value to
-        model (Model):  The container class of the application, giving access to everything else, including the logger
-
-    Returns:
-        None
+    :param oparam: The parameter you want to be converted (value or list of values).  Because Parameters know the
+        PreferredUnits and CurrentUnits, this routine knows what to do. It will convert the value(s) in the parameter
+        to the new units, and then reset the CurrentUnits to the new units. This is done so that the user can see the units
+        they specified in the output report. The value(s) in the parameter are converted back to the original units after
+        the report is generated. This is done so that the calculations are done in the units that GEOPHIRES expects. If
+        the user wants to see the output in different units, they can specify that in the input file or the GUI.
+    :type oparam: :class:`~geophires_x.Parameter.Parameter`
+    :param newUnit: The new units you want to convert value to (like "m" or "feet") - this is the text that the user
+        provides in the input file or the GUI to specify the units they want to use for a parameter or output value
+        (like "m" or "feet")
+    :type newUnit: str (text)
+    :param model: The container class of the application, giving access to everything else, including the logger
+    :type model: :class:`~geophires_x.Model.Model`
+    :return: None
     """
     if isinstance(oparam.value, str):
         return  # strings have no units

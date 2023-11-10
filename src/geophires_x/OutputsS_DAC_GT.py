@@ -6,8 +6,16 @@ NL = "\n"
 
 
 class OutputsS_DAC_GT(Outputs):
-    """description of class"""
+    """
+    Class to handles output of the SDAC_GT values
+    """
     def PrintOutputs(self, model: Model):
+        """
+        The PrintOutputs function prints the results of the SDAC_GT to a text file and to the screen.
+        :param model: Model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: Nothing
+        """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         # now do S_DAC_GT output, which will append to the original output

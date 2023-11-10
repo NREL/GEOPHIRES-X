@@ -1,7 +1,3 @@
-import math
-import sys
-import os
-import numpy as np
 from scipy.interpolate import interpn, interp1d
 import geophires_x.Model as Model
 from geophires_x.WellBores import *

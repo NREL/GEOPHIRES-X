@@ -6,8 +6,15 @@ NL = "\n"
 
 
 class CLOutputs(Outputs):
-    """description of class"""
+    """Handles thr closed-loop specific outputs"""
     def PrintOutputs(self, model: Model):
+        """
+        Prints the closed-loop specific outputs
+        :param model: The model object
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
+
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         # now do CL output, which will append to the original output

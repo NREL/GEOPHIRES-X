@@ -15,10 +15,9 @@ class TDPReservoir(Reservoir):
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
          by user input.
-        :param self: Store data that will be used by the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().__init__(model)  # initialize the parent parameters and variables
@@ -60,10 +59,9 @@ class TDPReservoir(Reservoir):
         The function reads in all the parameters that relate to this object, including those that are inherited from
         other objects. It then updates any of these parameter values that have been changed by the user.
         It also handles any special cases.
-        :param self: Reference the class instance (such as it is) from within the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)  # read the parameters for the parent.
@@ -75,6 +73,12 @@ class TDPReservoir(Reservoir):
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def Calculate(self, model: Model):
+        """
+        The Calculate function calculates the values of all the parameters that are calculated by this object.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().Calculate(model)  # run calculation for the parent.
 

@@ -11,6 +11,13 @@ import geophires_x.Model as Model
 
 # user-defined functions
 def densitywater(Twater) -> float:
+    """
+    This function calculates the density of water as a function of temperature.
+    :param Twater: The temperature of the water in Celsius degrees (°C)
+    :type Twater: float
+    :return: The density of the water in kg/m3
+    :rtype: float
+    """
     T = Twater + 273.15
     # water density correlation as used in Geophires v1.2 [kg/m3]
     rhowater = (.7983223 + (1.50896E-3 - 2.9104E-6 * T) * T) * 1E3
@@ -18,12 +25,26 @@ def densitywater(Twater) -> float:
 
 
 def viscositywater(Twater) -> float:
+    """
+    This function calculates the viscosity of water as a function of temperature.
+    :param Twater: The temperature of the water in Celsius degrees (°C)
+    :type Twater: float
+    :return: The viscosity of the water in Ns/m2
+    :rtype: float
+    """
     # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
     muwater = 2.414E-5 * np.power(10, 247.8 / (Twater + 273.15 - 140))
     return muwater
 
 
 def heatcapacitywater(Twater) -> float:
+    """
+    This function calculates the heat capacity of water as a function of temperature.
+    :param Twater: The temperature of the water in Celsius degrees (°C)
+    :type Twater: float
+    :return: The heat capacity of the water in J/kg/K
+    :rtype: float
+    """
     # J/kg/K (based on TARB in Geophires v1.2)
     Twater = (Twater + 273.15) / 1000
     A = -203.6060
@@ -46,11 +67,9 @@ class Reservoir:
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden by user input.
         The __init__ function is used to set up all the parameters in the Reservoir.
-
-        :param self: Store data that will be used by the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
@@ -574,14 +593,12 @@ class Reservoir:
         """
         The read_parameters function reads in the parameters from a dictionary created by reading the user-provided file
         and updates the parameter values for this object.
-
         The function reads in all the parameters that relate to this object, including those that are inherited from
         other objects. It then updates any of these parameter values that have been changed by the user.
         It also handles any special cases.
-        :param self: Reference the class instance (such as it is) from within the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -712,11 +729,9 @@ class Reservoir:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

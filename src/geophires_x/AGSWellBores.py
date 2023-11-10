@@ -46,6 +46,13 @@ class data:
             return d
 
     def __init__(self, fname, case, fluid):
+        """
+        Initialize the data structures for a given case and fluid
+        :param fname: h5 file name
+        :param case: case name
+        :param fluid: fluid name
+        :return: None
+        """
         self.fluid = fluid
         self.case = case
 
@@ -158,15 +165,25 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     """
     point source/sink solution functions
     :param yy: y coordinate of the point source/sink
+    :type yy: float
     :param zz: z coordinate of the point source/sink
+    :type zz: float
     :param yt: y coordinate of the point source/sink
+    :type yt: float
     :param zt: z coordinate of the point source/sink
+    :type zt: float
     :param ye: y coordinate of the point source/sink
+    :type ye: float
     :param ze: z coordinate of the point source/sink
+    :type ze: float
     :param alpha: thermal diffusivity
+    :type alpha: float
     :param sp: Laplace variable
+    :type sp: float
     :param t: time
+    :type t: float
     :return: z
+    :rtype: float
     """
     rhorock_cprock_4 = self.rhorock * self.cprock * 4.0
     theta_yt_minus_yy = thetaY(yt - yy, ye, alpha, t)
@@ -186,14 +203,23 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     """
     Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
     :param yy: y coordinate of the point source/sink
+    :type yy: float
     :param zz: z coordinate of the point source/sink
+    :type zz: float
     :param yt: y coordinate of the point source/sink
+    :type yt: float
     :param zt: z coordinate of the point source/sink
+    :type zt: float
     :param ye: y coordinate of the point source/sink
+    :type ye: float
     :param ze: z coordinate of the point source/sink
+    :type ze: float
     :param alpha: thermal diffusivity
+    :type alpha: float
     :param sp: Laplace variable
+    :type sp: float
     :return: ????
+    :rtype: float
     """
     m = 32
     t_1 = 1.0e-8
@@ -213,7 +239,9 @@ def laplace_solution(self, sp) -> float:
     """
     Duhamel convolution method for closed-loop system
     :param sp: Laplace variable
+    :type sp: float
     :return: Toutletl
+    :rtype: float
     """
 
     Toutletl = 0.0
@@ -232,8 +260,11 @@ def inverselaplace(self, NL, MM):
     """
     Numerical Laplace transformation algorithm
     :param NL: NL
+    :type NL: int
     :param MM: MM
+    :type MM: int
     :return: Toutlet
+    :rtype: float
     """
     V = np.zeros(50)
     Gi = np.zeros(50)
@@ -337,18 +368,31 @@ def Chebyshev(self, a, b, n, yy, zz, yt, zt, ye, ze, alpha, sp, func):
     """
     Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30
     :param a: a
+    :type a: float
     :param b: b
+    :type b: float
     :param n: n
+    :type n: int
     :param yy: y coordinate of the point source/sink
+    :type yy: float
     :param zz: z coordinate of the point source/sink
+    :type zz: float
     :param yt: y coordinate of the point source/sink
+    :type yt: float
     :param zt: z coordinate of the point source/sink
+    :type zt: float
     :param ye: y coordinate of the point source/sink
+    :type ye: float
     :param ze: z coordinate of the point source/sink
+    :type ze: float
     :param alpha: thermal diffusivity
+    :type alpha: float
     :param sp: Laplace variable
+    :type sp: float
     :param func: function
+    :type func: function
     :return: y * d - dd + 0.5 * cint[0]
+    :rtype: float
     """
     bma = 0.5 * (b - a)
     bpa = 0.5 * (b + a)
@@ -399,6 +443,7 @@ class AGSWellBores(WellBores):
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
         object that has already been created, and it's used to access variables that belong to that object.
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -597,6 +642,7 @@ class AGSWellBores(WellBores):
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -657,23 +703,26 @@ class AGSWellBores(WellBores):
         """
         returns the total length, vertical length, and horizontal lengths, depending on the configuration
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: total length, vertical length, and horizontal lengths
+        :rtype: tuple
         """
         if self.Configuration.value == Configuration.ULOOP:
             # Total drilling depth of both wells and laterals in U-loop [m]
             return ((
-                            self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
+                        self.numnonverticalsections.value * self.Nonvertical_length.value) + 2 * model.reserv.InputDepth.value * 1000.0), \
                 2 * model.reserv.InputDepth.value * 1000.0, self.numnonverticalsections.value * self.Nonvertical_length.value
         else:
             # Total drilling depth of well and lateral in co-axial case [m]
             return (
-                    self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
+                self.Nonvertical_length.value + model.reserv.InputDepth.value * 1000.0), model.reserv.InputDepth.value * 1000.0, \
                 self.Nonvertical_length.value
 
     def initialize(self, model: Model) -> None:
         """
         The initialize function reads values and arrays to be in the format that CLGS model systems expects
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -734,6 +783,7 @@ class AGSWellBores(WellBores):
         """
         The getTandP function reads and prepares Temperature and Pressure values from the CLGS database
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -758,7 +808,9 @@ class AGSWellBores(WellBores):
         The verify function checks that all values provided are within the range expected by CLGS modeling system.
          These values in within a smaller range than the value ranges available to GEOPHIRES-X
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: 0 if all OK, 1 if error.
+        :rtype: int
         """
         model.logger.info("Init " + str(
             __class__) + ": " + sys._getframe().f_code.co_name)  # Verify inputs are within allowable bounds
@@ -791,10 +843,15 @@ class AGSWellBores(WellBores):
         """
         Calculate nonvertical pressure drops - it will vary as the temperature varies
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :param time_operation: time of operation
+        :type time_operation: float
         :param time_max: maximum time of operation
+        :type time_max: float
         :param al: time step
+        :type al: float
         :return: NonverticalPressureDrop, friction
+        :rtype: tuple
         """
         friction = 0.0
         NonverticalPressureDrop = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
@@ -841,6 +898,7 @@ class AGSWellBores(WellBores):
         """
         The calculate function verifies, initializes, and extracts the values from the AGS model
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)

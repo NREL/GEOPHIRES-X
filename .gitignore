@@ -76,6 +76,19 @@ docs/reference/parameters.rst
 docs/geophires-request.json
 docs/parameters.rst
 _site/
+/docs/geophires_x.rstx
+/docs/temperature.txt
+/geophires_x.rst
+/modules.rst
+/Useful sites for Sphinx docstrings.txt
+/.github/workflows/workflows.7z
 
 # Mypy Cache
 .mypy_cache/
+
+#CLG Simulator
+/src/geophires_x/CLG Simulator/clg_tea_module_laptop_auto.py
+/src/geophires_x/CLG Simulator/clg_tea_v3.py
+/src/geophires_x/CLG Simulator/clg_tea_v3_coaxial_water_elec.py
+/src/geophires_x/CLG Simulator/clg_tea_v3_SCO2_elec.py
+/src/geophires_x/CLG Simulator/clgs_v2.py

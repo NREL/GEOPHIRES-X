@@ -14,13 +14,23 @@ NL = "\n"
 
 
 class AGSOutputs(Outputs.Outputs):
-    """description of class"""
+    """
+    Handles the display of AGS data
+    """
 
     def PrintOutputs(self, model: Model):
+        """
+        Print the outputs to the screen and to the output file
+        :param model: the model object
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         # Deal with converting Units back to PreferredUnits, if required.
-        # before we write the outputs, we go thru all the parameters for all of the objects and set the values back to the units that the user entered the data in
-        # We do this because the value may be displayed in the output, and we want the user to recognize their value, not some converted value
+        # before we write the outputs, we go thru all the parameters for all of the objects and set the values
+        # back to the units that the user entered the data in
+        # We do this because the value may be displayed in the output, and we want the user to recognize their value,
+        # not some converted value
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.ParameterDict:
                 param = obj.ParameterDict[key]
@@ -28,7 +38,8 @@ class AGSOutputs(Outputs.Outputs):
                     ConvertUnitsBack(param, model)
 
         # now we need to loop thru all thw output parameters to update their units to whatever units the user has specified.
-        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those from whatever LENGTH unit they are to feet.
+        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert
+        # those from whatever LENGTH unit they are to feet.
         # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
 
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:

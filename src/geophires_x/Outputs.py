@@ -10,17 +10,20 @@ from .Units import *
 
 NL="\n"
 
+
 class Outputs:
+    """
+    This class handles all the outputs for the GEOPHIRESv3 model.
+    """
     def __init__(self, model:Model):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be
         overridden by user input.
         The __init__ function is used to set up all the parameters in the Outputs.
-        :param self: Store data that will be used by the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
 
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -40,18 +43,17 @@ class Outputs:
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-        :param self: Access variables that belong to a class
-        :param model: The container class of the application, giving access to everything else, including the logger
-        :return: None
-        :doc-author: Malcolm Ross
-        #Deal with all the parameter values that the user has provided.  They should really only provide values that
+        Deal with all the parameter values that the user has provided.  They should really only provide values that
         they want to change from the default values, but they can provide a value that is already set because it is a
         default value set in __init__.  It will ignore those.
-        #This also deals with all the special cases that need to be taken care of after a value has been read in
+        This also deals with all the special cases that need to be taken care of after a value has been read in
         and checked.
-        #If you choose to subclass this master class, you can also choose to override this method (or not),
+        If you choose to subclass this master class, you can also choose to override this method (or not),
         and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
         to call this method from you class, which can effectively modify all these superclass parameters in your class.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -74,11 +76,12 @@ class Outputs:
 
         model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def PrintOutputs(self, model:Model):
+    def PrintOutputs(self, model: Model):
         """
         PrintOutputs writes the standard outputs to the output file.
-        Args:
-            model (Model): The container class of the application, giving access to everything else, including the logger
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -555,12 +558,8 @@ class Outputs:
                                                                                                     model.surfaceplant.HeatkWhExtracted.value[i]/1E6,
                                                                                                                             model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                                                 (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
-
-
-
                 f.write(NL)
 
-            # MIR MIR if model.wellbores.HasHorizontalSection.value: model.cloutputs.PrintOutputs(model)
             if model.economics.DoAddOnCalculations.value: model.addoutputs.PrintOutputs(model)
             if model.economics.DoCCUSCalculations.value: model.ccusoutputs.PrintOutputs(model)
             if model.economics.DoSDACGTCalculations.value: model.sdacgtoutputs.PrintOutputs(model)
@@ -575,6 +574,12 @@ class Outputs:
         model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def MakeDistrictHeatingPlot(self, model: Model):
+        """
+        Make a plot of the district heating system
+        :param model: GEOPHIRES model
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         plt.close('all')
         year_day = np.arange(1, 366, 1)  # make an array of days for plot x-axis
         plt.plot(year_day, model.surfaceplant.dailyheatingdemand.value, label='District Heating Demand')

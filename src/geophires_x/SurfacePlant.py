@@ -14,10 +14,9 @@ class SurfacePlant:
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
          by user input.
         The __init__ function is used to set up all the parameters in the Surfaceplant.
-        :param self: Store data that will be used by the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
 
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
@@ -501,10 +500,8 @@ class SurfacePlant:
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -631,11 +628,9 @@ class SurfacePlant:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-
-        :param self: Access variables that belongs to the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -967,6 +962,12 @@ class SurfacePlant:
 
     # district heating routines below
     def CalculateDHDemand(self, model: Model) -> None:
+        """
+        Calculate the direct Heat demand of the district heating system based on the number of housing units and the census division
+        :param model: the model
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         # calculate heating demand for a district heating system
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -987,21 +988,19 @@ class SurfacePlant:
 
 
     def read_daily_demand(self, demand_file_name, demand_data_column, time_interval):
-        '''
-        Parameters
-        ----------
-        demand_file_name : string
-            CSV file name containing demand data, a single header row is allowed
-        demand_data_column : int
-            column number of demand data, starting from 1
-        time_interval : int
+        """
+        Read the daily demand data column from the csv file and return the daily demand in MWh/day
+        :param demand_file_name: the name of the csv file
+        :type demand_file_name: str
+        :param demand_data_column: the column number of the demand data
+        :type demand_data_column: int
+        :param time_interval: the time interval of the demand data;
             1: hourly data, units in MW or MWh (both are treated equivalent)
             2: daily data, units in MWh
-
-        Returns
-        -------
-        numpy array of daily demand in MWh/day
-        '''
+        :type time_interval: int
+        :return: numpy array of daily demand in MWh/day
+        :rtype: numpy array
+        """
 
         np.demand = []
         if time_interval == 1:  # hourly data

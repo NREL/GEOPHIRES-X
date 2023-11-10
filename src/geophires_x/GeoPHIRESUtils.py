@@ -6,6 +6,13 @@ import json
 
 
 def read_input_file(return_dict_1, logger=None):
+    """
+    Read input file and return a dictionary of parameters
+    :param return_dict_1: dictionary of parameters
+    :param logger: logger object
+    :return: dictionary of parameters
+    :rtype: dict
+    """
     logger.info(f'Init {__name__}')
 
     # Specify path of input file - it will always be the first command line argument.
@@ -78,6 +85,13 @@ def read_input_file(return_dict_1, logger=None):
 
 
 class _EnhancedJSONEncoder(json.JSONEncoder):
+    """
+    Enhanced JSON encoder that can handle dataclasses
+    :param json.JSONEncoder: JSON encoder
+    :return: JSON encoder
+    :rtype: json.JSONEncoder
+    """
+
     def default(self, o):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)

@@ -14,6 +14,9 @@ geophires_x
 .. automodule:: geophires_x.CylindricalReservoir
     :members:
 
+.. automodule:: geophires_x.SUTRAReservoir
+    :members:
+
 
 .. automodule:: geophires_x.WellBores
     :members:
@@ -21,14 +24,24 @@ geophires_x
 .. automodule:: geophires_x.AGSWellBores
     :members:
 
+.. automodule:: geophires_x.SUTRAWellBores
+    :members:
+
+
 .. automodule:: geophires_x.SurfacePlant
     :members:
 
 .. automodule:: geophires_x.AGSSurfacePlant
     :members:
 
+.. automodule:: geophires_x.SUTRASurfacePlant
+    :members:
+
 .. automodule:: geophires_x.Economics
     :members:
 
 .. automodule:: geophires_x.AGSEconomics
+    :members:
+
+.. automodule:: geophires_x.SUTRAEconomics
     :members:

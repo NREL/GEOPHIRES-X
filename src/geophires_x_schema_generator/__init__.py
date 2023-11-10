@@ -8,6 +8,10 @@ from geophires_x.CylindricalReservoir import CylindricalReservoir
 from geophires_x.GeoPHIRESUtils import json_dumpse
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
+from geophires_x.SUTRAEconomics import SUTRAEconomics
+from geophires_x.SUTRAReservoir import SUTRAReservoir
+from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant
+from geophires_x.SUTRAWellBores import SUTRAWellBores
 
 
 class GeophiresXSchemaGenerator:
@@ -27,12 +31,16 @@ class GeophiresXSchemaGenerator:
         parameter_sources = [
             (dummy_model.reserv, 'Reservoir'),
             (CylindricalReservoir(dummy_model), 'Reservoir'),
+            (SUTRAReservoir(dummy_model), 'Reservoir'),
             (dummy_model.wellbores, 'Well Bores'),
             (AGSWellBores(dummy_model), 'Well Bores'),
+            (SUTRAWellBores(dummy_model), 'Well Bores'),
             (dummy_model.surfaceplant, 'Surface Plant'),
             (AGSSurfacePlant(dummy_model), 'Surface Plant'),
+            (SUTRASurfacePlant(dummy_model), 'Surface Plant'),
             (dummy_model.economics, 'Economics'),
             (AGSEconomics(dummy_model), 'Economics'),
+            (SUTRAEconomics(dummy_model), 'Economics'),
         ]
 
         output_params = {}

@@ -1,0 +1,84 @@
+                               *****************
+                               ***CASE REPORT***
+                               *****************
+
+Simulation Metadata
+----------------------
+ GEOPHIRES Version: 3.0
+ GEOPHIRES Build Date: 2023-11-06
+ Simulation Date: 2023-11-06
+ Simulation Time:  17:26
+ Calculation Time:      1.566 sec
+
+                           ***SUMMARY OF RESULTS***
+
+      End-Use Option: Reservoir Thermal Energy Storage
+      Reservoir Model = SUTRA Model
+      Direct-Use heat breakeven price:                     1730.66 cents/kWh
+      Number of Production Wells:                             1
+      Number of Injection Wells:                              1
+      Lifetime Average Well Flow Rate:                     16.2 kg/sec
+      Well depth:                                         600.0 meter
+
+
+                           ***ECONOMIC PARAMETERS***
+
+      Economic Model = Standard Levelized Cost
+      Interest Rate:                                          7.00 %
+      Accrued financing during construction:                  0.00 %
+      Project lifetime:                                      30 yr
+
+                          ***ENGINEERING PARAMETERS***
+
+      Number of Production Wells:                             1
+      Number of Injection Wells:                              1
+      Well Depth:                                         600.0 meter
+      Pump efficiency:                                     80.0 %
+      Lifetime Average Well Flow Rate:                     16.2 kg/sec
+      Injection well casing ID:                           0.198 meter
+      Production well casing ID:                          0.198 meter
+
+
+                           ***RESERVOIR SIMULATION RESULTS***
+
+      Maximum Storage Well Temperature:                    30.1 degC
+      Average Storage Well Temperature:                     6.2 degC
+      Minimum Storage Well Temperature:                     4.0 degC
+      Maximum Balance Well Temperature:                    30.5 degC
+      Average Balance Well Temperature:                    15.3 degC
+      Minimum Balance Well Temperature:                    14.0 degC
+      Maximum Annual Heat Stored:                          -3.3 GWh
+      Average Annual Heat Stored:                          -3.4 GWh
+      Minimum Annual Heat Stored:                          -3.4 GWh
+      Maximum Annual Heat Supplied:                         2.5 GWh
+      Average Annual Heat Supplied:                         2.2 GWh
+      Minimum Annual Heat Supplied:                         0.6 GWh
+      Average Round-Trip Efficiency:                       64.4 %
+      Total Average Pressure Drop:                         35.3 kPa
+
+
+                           ***SURFACE EQUIPMENT SIMULATION RESULTS***
+
+      Average RTES Heating Production:                     0.25 MW
+      Average Auxiliary Heating Production:                0.14 MW
+      Average Annual RTES Heating Production:              2.17 GWh/year
+      Average Annual Auxiliary Heating Production:         1.21 GWh/year
+      Average Annual Total Heating Production:             3.39 GWh/year
+      Average Pumping Power:                               2.31 kW
+      Average Annual Electricity Use for Pumping:      20261.85 kWh/yr
+
+
+                          ***CAPITAL COSTS (M$)***
+
+      Drilling and Completion Costs:                       2.42 MUSD
+      Drilling and Completion Costs per Well:              1.21 MUSD
+      Auxiliary Heater Cost:                               0.21 MUSD
+      Pump Cost:                                           0.17 MUSD
+      Total Capital Costs:                                 2.81 MUSD
+
+
+                ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
+
+      Average annual auxiliary fuel cost:                 48.59 KUSD/yr
+      Average annual pumping cost:                         1.42 KUSD/yr
+      Total average annual O&M costs:                     50.01 KUSD/yr

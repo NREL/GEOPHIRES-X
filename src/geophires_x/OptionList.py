@@ -39,6 +39,7 @@ class ReservoirModel(str, Enum):
     ANNUAL_PERCENTAGE = "Annual Percentage Thermal Drawdown"
     USER_PROVIDED_PROFILE = "User-Provided Temperature Profile"
     TOUGH2_SIMULATOR = "TOUGH2 Simulator"
+    SUTRA = "SUTRA"
 
 
 class ReservoirVolume(str, Enum):

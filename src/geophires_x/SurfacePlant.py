@@ -40,7 +40,7 @@ class SurfacePlant:
         self.enduseoption = self.ParameterDict[self.enduseoption.Name] = intParameter(
             "End-Use Option",
             value=EndUseOptions.ELECTRICITY,
-            AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52, 6, 7, 8],
+            AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52, 6, 7, 8, 9],
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
             ToolTipText="Select the end-use application of the geofluid heat (see docs for details)"

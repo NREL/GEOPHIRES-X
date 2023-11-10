@@ -2,11 +2,9 @@ import sys
 import os
 import math
 import numpy as np
-from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from .Reservoir import densitywater, viscositywater
+from .Parameter import floatParameter, intParameter, OutputParameter, ReadParameter
 from .Units import *
 import geophires_x.Model as Model
-from .OptionList import ReservoirModel
 
 
 class SUTRAWellBores:
@@ -15,26 +13,22 @@ class SUTRAWellBores:
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
          object that has already been created, and it's used to access variables that belong to that object.
-
-        :param self: Reference the class object itself
+        Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
+        Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
+        and Unit Name of that value, sets it as required (or not), sets allowable range, the error message
+        if that range is exceeded, the ToolTip Text, and the name of teh class that created it.
+        This includes setting up temporary variables that will be available to all the class but noy read in by user,
+        or used for Output
+        This also includes all Parameters that are calculated and then published using the Printouts function.
+        If you choose to subclass this master class, you can do so before or after you create your own parameters.
+        If you do, you can also choose to call this method from you class, which will effectively add and set all
+        these parameters to your class.
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         self.rhowaterprod = self.rhowaterinj = 0.0
-
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
-        # and Unit Name of that value, sets it as required (or not), sets allowable range, the error message
-        # if that range is exceeded, the ToolTip Text, and the name of teh class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set all
-        # these parameters to your class.
 
         # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
         # OutputParameter Objects.  This will allow us later to access them in a user interface and get that list,
@@ -195,23 +189,21 @@ class SUTRAWellBores:
     def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
-          It also handles special cases that need to be handled after a value has been read in and checked.
-            If you choose to subclass this master class, you can also choose to override this method (or not).
-        :param self: Access variables that belong to a class
+        It also handles special cases that need to be handled after a value has been read in and checked.
+        If you choose to subclass this master class, you can also choose to override this method (or not).
+        Deal with all the parameter values that the user has provided.  They should really only provide values that
+        they want to change from the default values, but they can provide a value that is already set because it is a
+        default value set in __init__.  It will ignore those.
+        This also deals with all the special cases that need to be taken care of after a value has been
+        read in and checked.
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
+        to call this method from you class, which can modify all these superclass parameters in your class.
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # Deal with all the parameter values that the user has provided.  They should really only provide values that
-        # they want to change from the default values, but they can provide a value that is already set because it is a
-        # default value set in __init__.  It will ignore those.
-        # This also deals with all the special cases that need to be taken care of after a value has been
-        # read in and checked.
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
-        # to call this method from you class, which can modify all these superclass parameters in your class.
 
         if len(model.InputParameters) > 0:
             # loop through all the parameters that the user wishes to set, looking for parameters that match this object
@@ -240,20 +232,18 @@ class SUTRAWellBores:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-        :param self: Access variables that belongs to the class
+        This is where all the calculations are made using all the values that have been set.
+        If you subclass this class, you can choose to run these calculations before (or after) your calculations,
+        but that assumes you have set all the values that are required for these calculations
+        If you choose to subclass this master class, you can also choose to override this method (or not),
+        and if you do, do it before or after you call you own version of this method.  If you do, you can also
+        choose to call this method from you class, which can effectively run the calculations of the superclass,
+        making all thr values available to your methods. but you had better have set all the parameters!
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-        # This is where all the calculations are made using all the values that have been set.
-        # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
-        # but that assumes you have set all the values that are required for these calculations
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also
-        # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all thr values available to your methods. but you had better have set all the parameters!
 
         # special case: production and injection well diameters are input as inches and call calculations
         # assume meters! Check and change if needed, assuming anything > 2 must be talking about inches
@@ -266,7 +256,7 @@ class SUTRAWellBores:
             self.prodwelldiam.CurrentUnits = LengthUnit.METERS
             self.prodwelldiam.UnitsMatch = False
 
-        # get wellbore flowrates from SUTRA data
+        # get wellbore flow rates from SUTRA data
         prodwellflowrates = np.append(model.reserv.BalanceWellFlowRate.value[0:-1:2],model.reserv.BalanceWellFlowRate.value[-1])
         injwellflowrates = np.append(model.reserv.StorageWellFlowRate.value[0:-1:2],model.reserv.StorageWellFlowRate.value[-1])
         self.ProductionWellFlowRates.value = prodwellflowrates

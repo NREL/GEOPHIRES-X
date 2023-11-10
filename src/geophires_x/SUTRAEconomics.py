@@ -8,6 +8,7 @@ from .OptionList import Configuration, WellDrillingCostCorrelation, EconomicMode
 from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter
 from .Units import *
 
+
 class SUTRAEconomics:
     """
      Class to support the default economic calculations in GEOPHIRES
@@ -18,13 +19,10 @@ class SUTRAEconomics:
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
         by user input.
         The __init__ function is used to set up all the parameters in Economics.
-
-        :param self: Store data that will be used by the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
-
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -301,10 +299,13 @@ class SUTRAEconomics:
 
     def read_parameters(self, model: Model) -> None:
         """
-        read_parameters read and update the Economics parameters and handle the special cases
-
-        Args:
-            model (Model): The container class of the application, giving access to everything else, including the logger
+        read_parameters read and update the Economics parameters and handle the special cases that need to be taken care of after a
+        value has been read in and checked. This is called from the main Model class. It is not called from the __init__
+        function because the user may not want to read in the parameters from the input file, but may want to set them
+        in the user interface.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: Nothing, but it does make calculations and set values in the model
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -363,10 +364,9 @@ class SUTRAEconomics:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
-        :param self: Access variables that belongs to the class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

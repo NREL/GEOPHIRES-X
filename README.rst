@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.4.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.5.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/python-geophires-x/compare/v3.2.4...main
+    :target: https://github.com/NREL/python-geophires-x/compare/v3.2.5...main
 
 .. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
     :target: https://nrel.github.io/python-geophires-x

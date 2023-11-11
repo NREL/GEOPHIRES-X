@@ -28,7 +28,10 @@ class GeophiresXTestCase(BaseTestCase):
         )
 
         assert result is not None
-        assert result.result['metadata']['End-Use Option'] == 'DIRECT_USE_HEAT'
+        self.assertIsNotNone(result)
+        self.assertEqual(result.result['metadata']['End-Use Option'], 'DIRECT_USE_HEAT')
+        self.assertEqual(result.result['RESERVOIR PARAMETERS']['Reservoir Model'], 'Multiple Parallel Fractures Model')
+        self.assertEqual(result.result['ECONOMIC PARAMETERS']['Economic Model'], 'Standard Levelized Cost')
 
         result_same_input = client.get_geophires_result(
             GeophiresInputParameters(

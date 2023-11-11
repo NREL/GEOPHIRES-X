@@ -3,7 +3,6 @@ import os
 import numpy as np
 import geophires_x.Model as Model
 from geophires_x.WellBores import *
-import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
 from .Parameter import floatParameter, OutputParameter
 from .Units import *
 from .OptionList import WorkingFluid, EndUseOptions

@@ -1,8 +1,15 @@
+import json
 import re
+from pathlib import Path
 from types import MappingProxyType
 
 from .common import _get_logger
 from .geophires_input_parameters import EndUseOption
+
+
+class _EqualSignDelimitedField:
+    def __init__(self, field_name: str):
+        self.field_name: str = field_name
 
 
 class GeophiresXResult:
@@ -29,8 +36,11 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'LCOE',
                 'LCOH',
+                # SUTRA
+                'Lifetime Average Well Flow Rate',
             ],
             'ECONOMIC PARAMETERS': [
+                _EqualSignDelimitedField('Economic Model'),
                 'Interest Rate',  # %
                 'Accrued financing during construction',
                 'Project lifetime',
@@ -39,6 +49,8 @@ class GeophiresXResult:
                 'Project IRR',
                 'Project VIR=PI=PIR',
                 'Project MOIC',
+                # SUTRA
+                'Fixed Charge Rate (FCR)',
             ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
@@ -51,7 +63,7 @@ class GeophiresXResult:
                 'Average production well temperature drop',
                 'Flowrate per production well',
                 'Injection well casing ID',
-                'Production well casing ID',  # TODO correct typo upstream
+                'Production well casing ID',
                 'Number of times redrilling',
                 # 'Power plant type', # Not a number - TODO parse non-number values without throwing exception
                 # AGS/CLGS
@@ -61,11 +73,15 @@ class GeophiresXResult:
                 'Lateral Length',
                 'Vertical Depth',
                 'Wellbore Diameter',
+                # SUTRA
+                'Lifetime Average Well Flow Rate',
+                'Injection well casing ID',
+                'Production well casing ID',
             ],
             'RESOURCE CHARACTERISTICS': ['Maximum reservoir temperature', 'Number of segments', 'Geothermal gradient'],
             'RESERVOIR PARAMETERS': [
-                # TODO 'Reservoir Model = 1-D Linear Heat Sweep Model'
-                # TODO 'Fracture model = Rectangular'
+                _EqualSignDelimitedField('Reservoir Model'),
+                _EqualSignDelimitedField('Fracture model'),
                 # TODO moved to power generation profile, parse from there
                 #  'Annual Thermal Drawdown (%/year)',
                 'Bottom-hole temperature',
@@ -90,7 +106,7 @@ class GeophiresXResult:
                 'Minimum Production Temperature',
                 'Initial Production Temperature',
                 'Average Reservoir Heat Extraction',
-                # TODO 'Production Wellbore Heat Transmission Model = Ramey Model'
+                _EqualSignDelimitedField('Production Wellbore Heat Transmission Model'),
                 'Average Production Well Temperature Drop',
                 'Average Injection Well Pump Pressure Drop',
                 'Average Production Well Pump Pressure Drop',
@@ -99,6 +115,20 @@ class GeophiresXResult:
                 'First Year Heat Production',
                 'Average Net Electricity Production',
                 'First Year Electricity Production',
+                'Maximum Storage Well Temperature',
+                'Average Storage Well Temperature',
+                'Minimum Storage Well Temperature',
+                'Maximum Balance Well Temperature',
+                'Average Balance Well Temperature',
+                'Minimum Balance Well Temperature',
+                'Maximum Annual Heat Stored',
+                'Average Annual Heat Stored',
+                'Minimum Annual Heat Stored',
+                'Maximum Annual Heat Supplied',
+                'Average Annual Heat Supplied',
+                'Minimum Annual Heat Supplied',
+                'Average Round-Trip Efficiency',
+                'Total Average Pressure Drop',
             ],
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
@@ -114,6 +144,12 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'Total CAPEX',
                 'Drilling Cost',
+                # SUTRA
+                'Drilling and Completion Costs',
+                'Drilling and Completion Costs per Well',
+                'Auxiliary Heater Cost',
+                'Pump Cost',
+                'Total Capital Costs',
             ],
             'OPERATING AND MAINTENANCE COSTS (M$/yr)': [
                 'Wellfield maintenance costs',
@@ -128,6 +164,10 @@ class GeophiresXResult:
                 'Total operating and maintenance costs',
                 # AGS/CLGS
                 'OPEX',
+                # SUTRA
+                'Average annual auxiliary fuel cost',
+                'Average annual pumping cost',
+                'Total average annual O&M costs',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [
                 'Initial geofluid availability',
@@ -165,6 +205,13 @@ class GeophiresXResult:
                 'Minimum Peaking Boiler Heat Production',
                 # AGS/CLGS
                 'Surface Plant Cost',
+                # SUTRA
+                'Average RTES Heating Production',
+                'Average Auxiliary Heating Production',
+                'Average Annual RTES Heating Production',
+                'Average Annual Auxiliary Heating Production',
+                'Average Annual Total Heating Production',
+                'Average Annual Electricity Use for Pumping',
             ],
         }
     )
@@ -192,7 +239,10 @@ class GeophiresXResult:
 
             self.result[category] = {}
             for field in fields:
-                self.result[category][field] = self._get_result_field(field)
+                if isinstance(field, _EqualSignDelimitedField):
+                    self.result[category][field.field_name] = self._get_equal_sign_delimited_field(field.field_name)
+                else:
+                    self.result[category][field] = self._get_result_field(field)
 
         try:
             self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
@@ -205,7 +255,7 @@ class GeophiresXResult:
 
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
-            self.result['metadata'][metadata_field] = self._get_metadata_field(metadata_field)
+            self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
 
         if self._get_end_use_option() is not None:
             self.result['metadata']['End-Use Option'] = self._get_end_use_option().name
@@ -217,6 +267,19 @@ class GeophiresXResult:
             return summary['Direct-Use heat breakeven price']['value']
         else:
             return None
+
+    @property
+    def json_output_file_path(self) -> Path:
+        return Path(self.output_file_path).with_suffix('.json')
+
+    @property
+    def _json_fields(self) -> MappingProxyType:
+        # https://github.com/NREL/python-geophires-x/issues/9
+        try:
+            with open(self.json_output_file_path) as jf:
+                return json.loads(''.join(jf.readlines()))
+        except FileNotFoundError:
+            return {}
 
     def _get_result_field(self, field):
         # TODO make this less fragile with proper regex
@@ -244,17 +307,17 @@ class GeophiresXResult:
 
         return {'value': self._parse_number(str_val, field=f'field "{field}"'), 'unit': unit}
 
-    def _get_metadata_field(self, metadata_field):
-        metadata_marker = f'{metadata_field} = '
+    def _get_equal_sign_delimited_field(self, field_name):
+        metadata_marker = f'{field_name} = '
         matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Metadata Field not found: {metadata_field}')
+            self._logger.warning(f'Equal sign-delimited field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:
             self._logger.warning(
-                f'Found multiple ({len(matching_lines)}) entries for metadata field: {metadata_field}\n\t{matching_lines}'
+                f'Found multiple ({len(matching_lines)}) entries for equal sign-delimited field: {field_name}\n\t{matching_lines}'
             )
 
         return matching_lines.pop().split(metadata_marker)[1].replace('\n', '')

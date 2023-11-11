@@ -3,7 +3,6 @@ import os
 import numpy as np
 import geophires_x.Model as Model
 import geophires_x.Economics as Economics
-import geophires_x.AdvGeoPHIRESUtils as AdvGeoPHIRESUtils
 from .Parameter import floatParameter
 from .Units import *
 from .OptionList import WorkingFluid, EndUseOptions, EconomicModel

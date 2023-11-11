@@ -1,5 +1,7 @@
 # How to extend GEOPHIRES X
 
+## Guide
+
 Decide which object(s) (Reservoir, Wellbores, Surface Plant, and/or Economics) you are going to extend.  In this example, I will extend Economics.
 
 Make a new file named the same as the class name you will use.  In this case, I will create EcononomicsAddons.  Add it to your project if you are using a development environment like PyCharm or Visual Studio.
@@ -121,3 +123,8 @@ In the Calculate method, insert the code you need to make your calculations.  Yo
 1. Be careful how you modify the class variables.  If you modify a parent variable or parameter by referring to it using the “self.” construct, then you are modifying the local copy of it associated with it in your class, just like if you run a method of a class using the self.method_name() construction, you are running the local class copy of your method (running any changes you made as well).  If you don’t override the method, then you will run the parent method, even if you refer to it with self.  If you want to access or modify the parent variables, Parameters, or methods, you can refer to them explicitly – recall that the model class is passed into your class and its mthods, so you can access model.reserv, which would give you direct access to the parent Reservoir model, model.surfaceplant to refer to SurfacePlant, and so on.
 
 Once you are done with your Calculations, you also are likely to want to show them to your users.  This is usually accomplished by creating an OuputClass that has the sole job of writing your results to the output file.  In this case, look at the class OutputsAddOns. Note that its parent is Outputs, in which the outputs for the base classes are integrated and reported.  The method PrintOutputs open the output file (HDR.out) and uses formatted text strings to write values into the file.  Note that you can write single values, or loop thru arrays of values.  You can also access and report values from other classes and parents – especially if your Calculate modified them.  You should assume that all the outputs from the other classes were reported before you modified them.  For example, the Net Present Value (NPV) of the project is recalculated in the EconomicAddons method of my extension because my economic AddOns changes the income, expenses, and profits of the project.  I assume that the NPV value has been written to the output file value already (and it represents the NPV of the project before the AddOns).  I report the NPV again when I report the outputs of my class, and I note in the text that this is an update to Project NPV based on the AddOns.  To make sure of that logic, I have a local output parameter called NPV and I modify and report that without change the NPV output parameter in the Economics class.
+
+## Example
+
+See https://github.com/NREL/python-geophires-x/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e
+for a representative example which added the SUTRA model.

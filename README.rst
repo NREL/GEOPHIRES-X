@@ -11,7 +11,7 @@ GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHI
 
 GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
 
-Free software: `MIT license <LICENSE>`_
+Free software: `MIT license <LICENSE>`__
 
 .. start-badges
 
@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`_
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.2.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.4.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/python-geophires-x/compare/v3.2.2...main
+    :target: https://github.com/NREL/python-geophires-x/compare/v3.2.4...main
 
 .. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
     :target: https://nrel.github.io/python-geophires-x
@@ -78,7 +78,7 @@ To consume GEOPHIRES-X as a python package, install the in-development version w
 
 .. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`__::
+If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`__::
 
    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
 
@@ -141,7 +141,9 @@ Documentation
 =============
 
 * `Parameters Reference <https://nrel.github.io/python-geophires-x/parameters.html>`__
-* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md>`__ user guide
+* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
+
+  - `Extension example: SUTRA <https://github.com/NREL/python-geophires-x/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
 The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.
 

@@ -12,44 +12,16 @@ from .OptionList import WorkingFluid, EndUseOptions, EconomicModel
 class AGSEconomics(Economics.Economics):
     """
     AGSEconomics Child class of Economics; it is the same, but has advanced AGS closed-loop functionality
-    .. list-table:: **Parameters**
-        :widths: 100 25 25 50 25 25 25
-        :header-rows: 1
-        * - Name
-          - Type
-          - Default Value
-          - Units
-          - Min
-          - Max
-          - Required
-        * - Operation & Maintenance Cost of Surface Plant
-          - float
-          - 0.015
-          - PercentUnit.TENTH
-          - 0.0
-          - 0.2
-          - True
-        * - Capital Cost for Surface Plant for Direct-use System
-          - float
-          - 100.0
-          - EnergyCostUnit.DOLLARSPERKW
-          - 0.0,
-          - 10000.0
-          - False
-
     """
 
     def __init__(self, model: Model):
         """
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
-        object that has already been created, and it's used to access variables that belong to that object.&quot;
-
-        :param self: Reference the class object itself
+        object that has already been created, and it's used to access variables that belong to that object
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: Model
         :return: Nothing, and is used to initialize the class
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -92,7 +64,8 @@ class AGSEconomics(Economics.Economics):
             Required=True,
             ErrMessage="assume default Operation & Maintenance cost of surface plant expressed as fraction of total surface plant capital cost (0.015)"
         )
-        self.Direct_use_heat_cost_per_kWth = self.ParameterDict[self.Direct_use_heat_cost_per_kWth.Name] = floatParameter(
+        self.Direct_use_heat_cost_per_kWth = self.ParameterDict[
+            self.Direct_use_heat_cost_per_kWth.Name] = floatParameter(
             "Capital Cost for Surface Plant for Direct-use System",
             value=100.0,
             DefaultValue=100.0,
@@ -128,12 +101,9 @@ class AGSEconomics(Economics.Economics):
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)  # read the default parameters
@@ -152,12 +122,9 @@ class AGSEconomics(Economics.Economics):
         """
         The validate function checks that all values provided are within the range expected by AGS modeling system.
         These values in within a smaller range than the value ranges available to GEOPHIRES-X
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: 0 if all OK, 1 if error.
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -220,12 +187,9 @@ class AGSEconomics(Economics.Economics):
     def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and calculate the values for the AGS model
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -279,7 +243,7 @@ class AGSEconomics(Economics.Economics):
                     model.surfaceplant.error_codes = np.append(model.surfaceplant.error_codes, 6000)
                 else:
                     self.LCOE.value = (self.TotalCAPEX + np.sum(self.OPEX_Plant * Discount_vector)) * 1e6 / np.sum((
-                        model.surfaceplant.Annual_electricity_production - model.surfaceplant.Annual_pumping_power) / 1e3 * Discount_vector)  # $/MWh
+                                       model.surfaceplant.Annual_electricity_production - model.surfaceplant.Annual_pumping_power) / 1e3 * Discount_vector)  # $/MWh
                 if self.LCOE.value < 0:
                     self.LCOE.value = 9999
                     model.surfaceplant.error_codes = np.append(model.surfaceplant.error_codes, 7000)

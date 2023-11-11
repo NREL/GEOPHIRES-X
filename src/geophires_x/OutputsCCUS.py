@@ -7,8 +7,16 @@ NL = "\n"
 
 
 class OutputsCCUS(Outputs):
-    """description of class"""
+    """
+    Class to handles output of the CCUS values
+    """
     def PrintOutputs(self, model: Model):
+        """
+        The PrintOutputs function prints the results of the CCUS to a text file and to the screen.
+        :param model: Model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: Nothing
+        """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
         if np.sum(model.ccuseconomics.CCUSRevenue.value) == 0:

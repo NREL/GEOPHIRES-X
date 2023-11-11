@@ -10,6 +10,13 @@ import geophires_x.OptionList as OptionList
 
 
 def main(enable_geophires_logging_config=True):
+    """
+    This is the main function for the GEOPHIRESv3 model.  It is called when the user runs the model from the command
+    line.  It is also called by the GUI when the user clicks the "Run Model" button.
+    :param enable_geophires_logging_config: If True, the logging.conf file will be used to configure logging.  If False,
+    logging will be configured in the Model class.
+    :return: None
+    """
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 

@@ -24,10 +24,9 @@ class AGSSurfacePlant(SurfacePlant):
         The __init__ function is the constructor for a class.  It is called whenever an instance of the class is created.
         The __init__ function can take arguments, but self is always the first one. Self refers to the instance of the
         object that has already been created, and it's used to access variables that belong to that object;
-        :param self: Reference the class object itself
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -295,10 +294,9 @@ class AGSSurfacePlant(SurfacePlant):
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
         If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Malcolm Ross
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         super().read_parameters(model)
@@ -342,10 +340,10 @@ class AGSSurfacePlant(SurfacePlant):
         """
         The validate function checks that all values provided are within the range expected by AGS modeling system.
         These values in within a smaller range than the value ranges available to GEOPHIRES-X
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
         :return: 0 if all OK, 1 if error.
-        :doc-author: Koenraad Beckers
+        :rtype: int
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         self.error = 0
@@ -398,18 +396,30 @@ class AGSSurfacePlant(SurfacePlant):
         return self.error
 
     def calculatepumpingpower(self, model):
-        # Calculate pumping power
-        self.PumpingPower = (
-                                    self.P_in - self.Linear_production_pressure) * model.wellbores.prodwellflowrate.value / self.Average_fluid_density / self.Pump_efficiency / 1e3  # Pumping power [kW]
+        """
+        The calculatepumpingpower function calculates the pumping power needed to pump the fluid from the injection well
+        to the production well.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
+        self.PumpingPower = ((self.P_in - self.Linear_production_pressure) * model.wellbores.prodwellflowrate.value /
+                             self.Average_fluid_density / self.Pump_efficiency / 1e3)  # Pumping power [kW]
 
         # Set negative values to zero (if the production pressure is above the injection pressure, we throttle the fluid)
         self.PumpingPower[self.PumpingPower < 0] = 0
         self.Annual_pumping_power = 8760 / 5 * (
-                self.PumpingPower[0::4][0:-1] + self.PumpingPower[1::4] + self.PumpingPower[2::4] + self.PumpingPower[
-                                                                                                    3::4] + self.PumpingPower[
-                                                                                                            4::4])  # kWh
+            self.PumpingPower[0::4][0:-1] + self.PumpingPower[1::4] + self.PumpingPower[2::4] + self.PumpingPower[
+                                                                                                3::4] + self.PumpingPower[
+                                                                                                        4::4])  # kWh
 
     def calculateheatproduction(self, model):
+        """
+        The calculateheatproduction function calculates the heat production of the AGS system.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         # Calculate instantaneous heat production
         self.Average_fluid_density = interpn((model.wellbores.Pvector, model.wellbores.Tvector),
                                              model.wellbores.density,
@@ -443,7 +453,13 @@ class AGSSurfacePlant(SurfacePlant):
         self.calculatepumpingpower(model)
 
     def calculateelectricityproduction(self, model):
-        # Calculate instantaneous exergy production, exergy extraction, and electricity generation (MW) and annual electricity generation [kWh]
+        """
+        The calculateelectricityproduction function calculates instantaneous exergy production, exergy extraction,
+        and electricity generation (MW) and annual electricity generation [kWh]the electricity production of the AGS system.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
         Pre_cooling = Compressor_Work = 0.0
         self.h_prod = self.hprod  # produced enthalpy [J/kg]
         self.h_inj = self.hinj  # injected enthalpy [J/kg]
@@ -463,18 +479,18 @@ class AGSSurfacePlant(SurfacePlant):
         self.AverageInstNetExergyExtraction = np.average(self.Instantaneous_exergy_extraction)  # [kW]
 
         if model.wellbores.Fluid.value == WorkingFluid.WATER:
-            if model.wellbores.Tinj.value >= 50 and min(self.Linear_production_temperature) >= 100 and max(
-                self.Linear_production_temperature) <= 385:
+            if model.wellbores.Tinj.value >= 50 and min(self.Linear_production_temperature) >= 100 and max(self.Linear_production_temperature) <= 385:
                 # Utilization efficiency based on conversion of produced exergy to electricity
                 self.Instantaneous_utilization_efficiency_method_1 = np.interp(self.Linear_production_temperature,
                                                                                self.Utilization_efficiency_correlation_temperatures,
                                                                                self.Utilization_efficiency_correlation_conversion,
                                                                                left=0)
                 self.Instantaneous_electricity_production_method_1 = self.Instantaneous_exergy_production * self.Instantaneous_utilization_efficiency_method_1  # [kW]
+                # Utilization efficiency based on conversion of produced exergy to electricity
                 self.Instantaneous_thermal_efficiency = np.interp(self.Linear_production_temperature,
                                                                   self.Heat_to_power_efficiency_correlation_temperatures,
                                                                   self.Heat_to_power_efficiency_correlation_conversion,
-                                                                  left=0)  # Utilization efficiency based on conversion of produced exergy to electricity
+                                                                  left=0)
                 self.Instantaneous_electricity_production_method_3 = self.Instantaneous_heat_production * self.Instantaneous_thermal_efficiency  # [kW]
 
             else:
@@ -487,11 +503,11 @@ class AGSSurfacePlant(SurfacePlant):
 
             # based on method 1 for now (could be 50-50)
             self.Annual_electricity_production = 8760 / 5 * (
-                    self.Instantaneous_electricity_production_method_1[0::4][0:-1] +
-                    self.Instantaneous_electricity_production_method_1[1::4] +
-                    self.Instantaneous_electricity_production_method_1[2::4] +
-                    self.Instantaneous_electricity_production_method_1[3::4] +
-                    self.Instantaneous_electricity_production_method_1[4::4])
+                self.Instantaneous_electricity_production_method_1[0::4][0:-1] +
+                self.Instantaneous_electricity_production_method_1[1::4] +
+                self.Instantaneous_electricity_production_method_1[2::4] +
+                self.Instantaneous_electricity_production_method_1[3::4] +
+                self.Instantaneous_electricity_production_method_1[4::4])
             self.Inst_electricity_production = self.Instantaneous_electricity_production_method_1  # kW
             self.AveInstElectricityProduction = np.average(self.Instantaneous_electricity_production_method_1)  # kW
 
@@ -500,8 +516,7 @@ class AGSSurfacePlant(SurfacePlant):
             P_prod = self.Linear_production_pressure  # Production pressure [Pa]
 
             h_turbine_out_ideal = interpn((model.wellbores.Pvector_ap, model.wellbores.svector_ap), model.wellbores.hPs,
-                                          np.dstack((np.ones(self.TNOP) * self.Turbine_outlet_pressure.value * 1e5,
-                                                     self.s_prod))[0])
+                                          np.dstack((np.ones(self.TNOP) * self.Turbine_outlet_pressure.value * 1e5, self.s_prod))[0])
             self.Instantaneous_turbine_power = model.wellbores.prodwellflowrate.value * (
                 self.h_prod - h_turbine_out_ideal) * self.Turbine_isentropic_efficiency.value / 1000  # Turbine output [kW]
             h_turbine_out_actual = self.h_prod - self.Instantaneous_turbine_power / model.wellbores.prodwellflowrate.value * 1000  # Actual fluid enthalpy at turbine outlet [J/kg]
@@ -521,7 +536,7 @@ class AGSSurfacePlant(SurfacePlant):
 
                     # Pre-compressor cooling [kWth]
                     Pre_cooling = model.wellbores.prodwellflowrate.value * (
-                            h_turbine_out_actual - Pre_compressor_h) / 1e3
+                        h_turbine_out_actual - Pre_compressor_h) / 1e3
                     Pre_compressor_s = interpn((model.wellbores.Pvector, model.wellbores.Tvector),
                                                model.wellbores.entropy, np.array(
                             [self.Turbine_outlet_pressure.value * 1e5, self.Pre_cooling_temperature + 273.15]))
@@ -530,15 +545,15 @@ class AGSSurfacePlant(SurfacePlant):
                                                       model.wellbores.hPs, np.array([self.P_in, Pre_compressor_s[0]]))
                     # Actual fluid enthalpy at compressor outlet [J/kg]
                     Post_compressor_h_actual = Pre_compressor_h + (
-                            Post_compressor_h_ideal - Pre_compressor_h) / self.Compressor_isentropic_efficiency.value
+                        Post_compressor_h_ideal - Pre_compressor_h) / self.Compressor_isentropic_efficiency.value
                     self.Post_compressor_T_actual = interpn((model.wellbores.Pvector_ap, model.wellbores.hvector_ap),
                                                             model.wellbores.TPh,
                                                             np.array([self.P_in, Post_compressor_h_actual[0]])) - 273.15
                     Compressor_Work = model.wellbores.prodwellflowrate.value * (
-                            Post_compressor_h_actual - Pre_compressor_h) / 1e3  # kWe
+                        Post_compressor_h_actual - Pre_compressor_h) / 1e3  # kWe
                     # Fluid cooling after compression [kWth]
                     Post_cooling = model.wellbores.prodwellflowrate.value * (
-                            Post_compressor_h_actual - self.h_inj) / 1e3
+                        Post_compressor_h_actual - self.h_inj) / 1e3
 
                     if lastrun == 0:
                         if self.Pre_cooling_temperature < 32:
@@ -628,12 +643,9 @@ class AGSSurfacePlant(SurfacePlant):
     def initialize(self, model: Model) -> None:
         """
         The initialize function reads values and arrays to be in the format that AGS model systems expects
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -710,12 +722,9 @@ class AGSSurfacePlant(SurfacePlant):
     def Calculate(self, model: Model) -> None:
         """
         The calculate function verifies, initializes, and extracts the values from the AGS model
-
-        :param self: Access variables that belong to a class
         :param model: The container class of the application, giving access to everything else, including the logger
-
+        :type model: :class:`~geophires_x.Model.Model`
         :return: None
-        :doc-author: Koenraad Beckers
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
         if (model.wellbores.Tini > 375.0) or (model.wellbores.numnonverticalsections.value > 1):
@@ -753,11 +762,11 @@ class AGSSurfacePlant(SurfacePlant):
             for i in range(0, self.plantlifetime.value):
                 self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
                                                           (i * model.economics.timestepsperyear.value):((
-                                                                                                                i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                            i + 1) * model.economics.timestepsperyear.value) + 1],
                                                           dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
                 self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
                                                     (i * model.economics.timestepsperyear.value):((
-                                                                                                          i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                             i + 1) * model.economics.timestepsperyear.value) + 1],
                                                     dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
 
             self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
@@ -768,7 +777,7 @@ class AGSSurfacePlant(SurfacePlant):
                 for i in range(0, self.plantlifetime.value):
                     self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
                                                              (0 + i * model.economics.timestepsperyear.value):((
-                                                                                                                       i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                                  i + 1) * model.economics.timestepsperyear.value) + 1],
                                                              dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
             else:
                 # copy some arrays so we have a GEOPHIRES equivalent
@@ -785,8 +794,7 @@ class AGSSurfacePlant(SurfacePlant):
                 self.NetElectricityProduced.value = f(np.arange(0, 40, 1.0))
                 self.NetkWhProduced.value = (self.NetElectricityProduced.value * 1000.0) * 8760.0
 
-                self.FirstLawEfficiency.value = (
-                                                        self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
+                self.FirstLawEfficiency.value = (self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
 
         # handle errors
         if len(self.error_codes) > 0:
@@ -795,12 +803,6 @@ class AGSSurfacePlant(SurfacePlant):
             model.logger.fatal(class_file_info_msg)
             print(f'Error: {class_file_info_msg}. Exiting....')
             raise RuntimeError(base_msg)
-        # store the calculation result and associated object parameters in the database
-        resultkey = AdvGeoPHIRESUtils.store_result(model, self)
-        if resultkey.startswith("ERROR"):
-            model.logger.warn(f"Failed To Store {str(__class__)} {os.path.abspath(__file__)}")
-        elif len(resultkey) == 0:
-            pass
 
         model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
 

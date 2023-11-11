@@ -2,10 +2,8 @@ import sys
 import logging
 import time
 import logging.config
-from typing import Tuple
 
 from geophires_x.OptionList import EndUseOptions
-from geophires_x.Parameter import Parameter
 from geophires_x.GeoPHIRESUtils import read_input_file
 from geophires_x.WellBores import WellBores
 from geophires_x.SurfacePlant import SurfacePlant
@@ -21,13 +19,7 @@ class Model(object):
     def __init__(self, enable_geophires_logging_config=True):
         """
         The __init__ function is called automatically every time the class is being used to create a new object.
-
-        The self parameter is a Python convention. It must be included in each function definition
-        and points to the current instance of the class (the object that is being created).
-
-        :param self: Reference the class instance itself
         :return: Nothing
-        :doc-author: Malcolm Ross
         """
 
         # get logging started
@@ -42,12 +34,12 @@ class Model(object):
         # keep track of execution time
         self.tic = time.time()
 
-        # declare some dictionaries
-        self.InputParameters = {}  # dictionary to hold all the input parameter the user wants to change
-
+        # dictionary to hold all the input parameter the user wants to change
         # This should give us a dictionary with all the parameters the user wants to set.
         # Should be only those value that they want to change from the default.
         # we do this as soon as possible because what we instantiate may depend on settings in this file
+        self.InputParameters = {}
+
         read_input_file(self.InputParameters, logger=self.logger)
 
         self.ccuseconomics = None
@@ -57,19 +49,14 @@ class Model(object):
         self.addoutputs = None
         self.addeconomics = None
 
-        # these are database operation we aren't doing yet
-        # model_elements = self.RunStoredProcedure("model_elements", [1])
-        # model_connections = self.RunStoredProcedure("model_connections", [1])
-        # self.RunStoredProcedure("delete_model", [14])
-        # self.RunStoredProcedure("add_new_model", ["dummy", "new", 999])
-
         # Initiate the elements of the Model
         # this is where you can change what class get initiated - the superclass, or one of the subclasses
         self.logger.info("Initiate the elements of the Model")
         # we need to decide which reservoir to instantiate based on the user input (InputParameters),
         # which we just read above for the first time
+        # Default is Thermal drawdown percentage model (GETEM)
         from .TDPReservoir import TDPReservoir as TDPReservoir
-        self.reserv = TDPReservoir(self)  # Default is Thermal drawdown percentage model (GETEM)
+        self.reserv = TDPReservoir(self)
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '0':
                 from geophires_x.CylindricalReservoir import CylindricalReservoir as CylindricalReservoir
@@ -171,10 +158,7 @@ class Model(object):
     def read_parameters(self) -> None:
         """
         The read_parameters function reads the parameters from the input file and stores them in a dictionary.
-
-        :param self: Access the variables and other functions of the class
         :return: None
-        :doc-author: Malcolm Ross
         """
         self.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
@@ -204,13 +188,9 @@ class Model(object):
     def Calculate(self):
         """
         The Calculate function is where all the calculations are made.  This is handled on a class-by-class basis.
-
         The Calculate function does not return anything, but it does store the results in self.reserv, self.wellbores
          and self.surfaceplant for later use by other functions.
-
-        :param self: Access the class variables
         :return: None
-        :doc-author: Malcolm Ross
         """
         self.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         # calculate the results

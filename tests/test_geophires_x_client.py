@@ -59,6 +59,30 @@ class GeophiresXClientTestCase(BaseTestCase):
             == 'MUSD/yr'
         )
 
+    def test_example_multiple_gradients_result(self):
+        test_result_path = self._get_test_file_path('examples/example_multiple_gradients.out')
+        result = GeophiresXResult(test_result_path)
+
+        categories = ['SUMMARY OF RESULTS', 'RESOURCE CHARACTERISTICS']
+        for category in categories:
+            assert result.result[category]['Segment 1   Geothermal gradient']['value'] == 0.0500
+            assert result.result[category]['Segment 1   Geothermal gradient']['unit'] == 'degC/m'
+            assert result.result[category]['Segment 1   Thickness']['value'] == 1000
+            assert result.result[category]['Segment 1   Thickness']['unit'] == 'meter'
+
+            assert result.result[category]['Segment 2   Geothermal gradient']['value'] == 0.0400
+            assert result.result[category]['Segment 2   Geothermal gradient']['unit'] == 'degC/m'
+            assert result.result[category]['Segment 2   Thickness']['value'] == 1000
+            assert result.result[category]['Segment 2   Thickness']['unit'] == 'meter'
+
+            assert result.result[category]['Segment 3   Geothermal gradient']['value'] == 0.0300
+            assert result.result[category]['Segment 3   Geothermal gradient']['unit'] == 'degC/m'
+            assert result.result[category]['Segment 3   Thickness']['value'] == 1000
+            assert result.result[category]['Segment 3   Thickness']['unit'] == 'meter'
+
+            assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 0.0500
+            assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/m'
+
     def test_geophires_x_result_generation_profiles(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')
         result = GeophiresXResult(test_result_path)

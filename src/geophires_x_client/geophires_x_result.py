@@ -33,6 +33,13 @@ class GeophiresXResult:
                 'Flowrate per production well',
                 'Well depth',
                 'Geothermal gradient',
+                'Segment 1   Geothermal gradient',
+                'Segment 1   Thickness',
+                'Segment 2   Geothermal gradient',
+                'Segment 2   Thickness',
+                'Segment 3   Geothermal gradient',
+                'Segment 3   Thickness',
+                'Segment 4   Geothermal gradient',
                 # AGS/CLGS
                 'LCOE',
                 'LCOH',
@@ -78,7 +85,18 @@ class GeophiresXResult:
                 'Injection well casing ID',
                 'Production well casing ID',
             ],
-            'RESOURCE CHARACTERISTICS': ['Maximum reservoir temperature', 'Number of segments', 'Geothermal gradient'],
+            'RESOURCE CHARACTERISTICS': [
+                'Maximum reservoir temperature',
+                'Number of segments',
+                'Geothermal gradient',
+                'Segment 1   Geothermal gradient',
+                'Segment 1   Thickness',
+                'Segment 2   Geothermal gradient',
+                'Segment 2   Thickness',
+                'Segment 3   Geothermal gradient',
+                'Segment 3   Thickness',
+                'Segment 4   Geothermal gradient',
+            ],
             'RESERVOIR PARAMETERS': [
                 _EqualSignDelimitedField('Reservoir Model'),
                 _EqualSignDelimitedField('Fracture model'),
@@ -283,7 +301,7 @@ class GeophiresXResult:
 
     def _get_result_field(self, field):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'  {field}:  ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'    {field}:  ' in line, self._lines))
 
         if len(matching_lines) == 0:
             self._logger.warning(f'Field not found: {field}')

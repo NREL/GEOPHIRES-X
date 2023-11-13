@@ -301,7 +301,7 @@ class Outputs:
                         f.write("      Production Wellbore Heat Transmission Model = Ramey Model" + NL)
                         f.write(f"      Average Production Well Temperature Drop:        {np.average(model.wellbores.ProdTempDrop.value):10.1f} " + model.wellbores.ProdTempDrop.PreferredUnits.value + NL)
                     else:
-                        f.write(f" Wellbore Heat Transmission Model = Constant Temperature Drop:{model.wellbores.tempdropprod.value:10.1f} " + model.wellbores.tempdropprod.PreferredUnits.value + NL)
+                        f.write(f"      Wellbore Heat Transmission Model = Constant Temperature Drop:{model.wellbores.tempdropprod.value:10.1f} " + model.wellbores.tempdropprod.PreferredUnits.value + NL)
                     if model.wellbores.impedancemodelused.value:
                         f.write(f"      Total Average Pressure Drop:                     {np.average(model.wellbores.DPOverall.value):10.1f} " + model.wellbores.DPOverall.PreferredUnits.value + NL)
                         f.write(f"      Average Injection Well Pressure Drop:            {np.average(model.wellbores.DPInjWell.value):10.1f} " + model.wellbores.DPInjWell.PreferredUnits.value + NL)

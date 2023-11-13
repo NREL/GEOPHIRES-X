@@ -61,16 +61,9 @@ End-Use Efficiency Factor,0.8,		--- [-]
 District Heating Demand Option,1,					--- Should be 1 or 2. See manual or below for option details
 
 *Option 1: Known Heat Demand Profile***
-District Heating Demand File Name,../../tests/examples/cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
+District Heating Demand File Name,Examples/cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
 District Heating Demand Data Time Resolution,1,				--- 1 for hourly, 2 for daily
 District Heating Demand Data Column Number,2,				---
-
-*Option 2: Unknown Heat Demand***
-Temperature File Name,Examples/fort_collins_co_tmy.csv,						--- [deg.C] Hourly temperature for typical year in CSV file
-Temperature Data Column Number,10,				--- column number of temperature in csv file, starting at 1
-Number of Housing Units,1000,					--- [-]
-Constant Anchor Demand,7,					--- [MW]
-US Census Division,1,						--- Should be 1-9. See manual for option details
 
 **District Heating Capital and O&M Parameters (If end use option 6 selected)*
 Peaking Fuel Cost Rate,0.0273, 					--- [$/kWh] Cost of natural gas for peak boiler use

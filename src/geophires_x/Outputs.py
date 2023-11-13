@@ -159,9 +159,9 @@ class Outputs:
                     f.write(f"      Geothermal gradient:                                {model.reserv.gradient.value[0]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
                 else:
                     for i in range(1, model.reserv.numseg.value):
-                        f.write(f"      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4f} " + model.reserv.gradient.CurrentUnits.value +NL)
-                        f.write(f"      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} " + model.reserv.layerthickness.CurrentUnits.value + NL)
-                    f.write(f"      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
+                        f.write(f"      Segment {str(i):s}   Geothermal gradient:                      {model.reserv.gradient.value[i-1]:10.4f} " + model.reserv.gradient.CurrentUnits.value +NL)
+                        f.write(f"      Segment {str(i):s}   Thickness (km):                           {model.reserv.layerthickness.value[i-1]:10.0f} " + model.reserv.layerthickness.CurrentUnits.value + NL)
+                        f.write(f"      Segment {str(i+1):s} Geothermal gradient:                      {model.reserv.gradient.value[i]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
 
                 f.write(NL)
                 f.write(NL)
@@ -214,11 +214,9 @@ class Outputs:
                     f.write(f"      Geothermal gradient:                                {model.reserv.gradient.value[0]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
                 else:
                     for i in range(1, model.reserv.numseg.value):
-                        f.write(f"      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4f} " + model.reserv.gradient.CurrentUnits.value +NL)
-                        f.write(f"      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} " + model.reserv.layerthickness.CurrentUnits.value + NL)
-                    f.write(f"      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
-
-
+                        f.write(f"      Segment " + str(i) + " geothermal gradient:                   {model.reserv.gradient.value[i-1]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
+                        f.write(f"      Segment " + str(i) + " thickness:                           {model.reserv.layerthickness.value[i-1]:10.0f} " + model.reserv.layerthickness.CurrentUnits.value + NL)
+                        f.write(f"      Segment " + str(i+1) + " geothermal gradient:                   {model.reserv.gradient.value[i]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
 
                 f.write(NL)
                 f.write(NL)

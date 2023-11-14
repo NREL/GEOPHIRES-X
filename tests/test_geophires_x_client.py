@@ -1,3 +1,4 @@
+from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
@@ -180,3 +181,37 @@ class GeophiresXClientTestCase(BaseTestCase):
         )
 
         assert hash(input1) != hash(input3)
+
+    def test_input_with_non_default_units(self):
+        client = GeophiresXClient()
+        result_default_units = client.get_geophires_result(
+            GeophiresInputParameters(
+                {
+                    'Print Output to Console': 0,
+                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                    'Reservoir Model': 1,
+                    'Time steps per year': 1,
+                    'Reservoir Depth': 3,
+                    'Gradient 1': 50,
+                    'Maximum Temperature': 250,
+                }
+            )
+        ).result
+        del result_default_units['metadata']
+
+        result_non_default_units = client.get_geophires_result(
+            GeophiresInputParameters(
+                {
+                    'Print Output to Console': 0,
+                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                    'Reservoir Model': 1,
+                    'Time steps per year': 1,
+                    'Reservoir Depth': '3000 meter',
+                    'Gradient 1': 50,
+                    'Maximum Temperature': 250,
+                }
+            )
+        ).result
+        del result_non_default_units['metadata']
+
+        self.assertDictEqual(result_default_units, result_non_default_units)

@@ -204,5 +204,32 @@ class GeophiresXTestCase(BaseTestCase):
             str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]'
         )
 
+    def test_parameter_value_outside_of_allowable_range_error(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(RuntimeError) as re:
+            # Note that error-code-5500.txt is expected to fail with error code 5500 as of the time of the writing
+            # of this test. If this expectation is voided by future code updates (possibly such as addressing
+            # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
+            # different input that is still expected to result in error code 5500.
+            input_params = GeophiresInputParameters(
+                {
+                    'Print Output to Console': 0,
+                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                    'Reservoir Model': 1,
+                    'Time steps per year': 1,
+                    'Reservoir Depth': 3000,
+                    'Gradient 1': 50,
+                    'Maximum Temperature': 250,
+                }
+            )
+
+            client.get_geophires_result(input_params)
+
+        self.assertTrue(
+            'GEOPHIRES encountered an exception: Error: Parameter given (3000.0) for Reservoir Depth outside of valid range.'
+            in str(re.exception)
+        )
+
     def test_RTES_name(self):
         self.assertEqual(EndUseOptions.RTES.value, 'Reservoir Thermal Energy Storage')

@@ -56,30 +56,16 @@ Surface Temperature,12,			--- [deg.C]
 Ambient Temperature,12,			--- [deg.C]
 End-Use Efficiency Factor,0.8,		--- [-]
 
-
-***District Heating System (If end-use option 8 selected)*
 District Heating Demand Option,1,					--- Should be 1 or 2. See manual or below for option details
-
-*Option 1: Known Heat Demand Profile***
 District Heating Demand File Name,Examples/cornell_heat_demand.csv,		--- hourly MW thermal demand in a CSV file
 District Heating Demand Data Time Resolution,1,				--- 1 for hourly, 2 for daily
 District Heating Demand Data Column Number,2,				---
 
-**District Heating Capital and O&M Parameters (If end use option 6 selected)*
 Peaking Fuel Cost Rate,0.0273, 					--- [$/kWh] Cost of natural gas for peak boiler use
 Peaking Boiler Efficiency,0.85,			`		--- Should be between 0 and 1, defaults to 0.85
 District Heating Piping Cost Rate,1200,					--- [$/m] used for calculating surface piping capital cost for district heat
-Total District Heating Network Cos,10, 					--- [M$] supersedes options 1 and 2 if any value is entered
-District Heating O&M Cos,2, 				--- [M$/year] supersedes options 1 and 2 if any value is entered
+District Heating Road Length,3, 				---[km] supersedes model option 2 if any value is entered
 
-District Cost Models
-*Option 1**
-District Heating Network Piping Lengt,7.66, 					---[km] supersedes road length or model option 2 if any value is entered
-District Heating Road Lengt,3, 				---[km] supersedes model option 2 if any value is entered
-
-*Option 2**
-District Heating Land Area,4, 						---[km^2]
-District Heating Population,240, 						---[persons] Optional if a number of household was provided
 
 *** Economic/Financial Parameters ***
 *************************************

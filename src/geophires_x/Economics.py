@@ -231,7 +231,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.elecprice.value / 1E6 + \
                  self.annualngcost.value) * discountvector)) / np.sum(
                 model.surfaceplant.annualheatingdemand.value * discountvector) * 1E2  # cents/kWh
-            LCOH = self.LCOH.value * 2.931  # $/Million Btu
+            LCOH = LCOH * 2.931  # $/Million Btu
 
     elif self.econmodel.value == EconomicModel.BICYCLE:
         iave = self.FIB.value * self.BIR.value * (1 - self.CTR.value) + (
@@ -809,6 +809,7 @@ class Economics:
         self.chillercapex = self.ParameterDict[self.chillercapex.Name] = floatParameter(
             "Absorption Chiller Capital Cost",
             value=-1.0,
+            DefaultValue=5,
             Min=0,
             Max=100,
             UnitType=Units.CURRENCY,
@@ -821,6 +822,7 @@ class Economics:
         self.chilleropex = self.ParameterDict[self.chilleropex.Name] = floatParameter(
             "Absorption Chiller O&M Cost",
             value=-1.0,
+            DefaultValue=1,
             Min=0,
             Max=100,
             UnitType=Units.CURRENCYFREQUENCY,
@@ -835,6 +837,7 @@ class Economics:
         self.heatpumpcapex = self.ParameterDict[self.heatpumpcapex.Name] = floatParameter(
             "Heat Pump Capital Cost",
             value=-1.0,
+            DefaultValue=5,
             Min=0,
             Max=100,
             UnitType=Units.CURRENCY,
@@ -849,6 +852,7 @@ class Economics:
         self.ngprice = self.ParameterDict[self.ngprice.Name] = floatParameter(
             "Peaking Fuel Cost Rate",
             value=0.034,
+            DefaultValue =0.034,
             Min=0.0,
             Max=1.0,
             UnitType=Units.ENERGYCOST,
@@ -860,6 +864,7 @@ class Economics:
         self.peakingboilerefficiency = self.ParameterDict[self.peakingboilerefficiency.Name] = floatParameter(
             "Peaking Boiler Efficiency",
             value=0.85,
+            DefaultValue = 0.85,
             Min=0,
             Max=1,
             UnitType=Units.PERCENT,
@@ -873,6 +878,7 @@ class Economics:
         self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
             "District Heating Piping Cost Rate",
             value=1200,
+            DefaultValue=1200,
             Min=0,
             Max=10000,
             UnitType=Units.COSTPERDISTANCE,
@@ -886,6 +892,7 @@ class Economics:
         self.dhtotaldistrictnetworkcost = self.ParameterDict[self.dhtotaldistrictnetworkcost.Name] = floatParameter(
             "Total District Heating Network Cost",
             value=10,
+            DefaultValue=10,
             Min=0,
             Max=1000,
             UnitType=Units.CURRENCY,
@@ -899,6 +906,7 @@ class Economics:
         self.dhoandmcost = self.ParameterDict[self.dhoandmcost.Name] = floatParameter(
             "District Heating O&M Cost",
             value=1,
+            DefaultValue=1,
             Min=0,
             Max=100,
             UnitType=Units.CURRENCYFREQUENCY,
@@ -910,6 +918,7 @@ class Economics:
         self.dhpipinglength = self.ParameterDict[self.dhpipinglength.Name] = floatParameter(
             "District Heating Network Piping Length",
             value=10.0,
+            DefaultValue = 10.0,
             Min=0,
             Max=1000,
             UnitType=Units.LENGTH,
@@ -921,6 +930,7 @@ class Economics:
         self.dhroadlength = self.ParameterDict[self.dhroadlength.Name] = floatParameter(
             "District Heating Road Length",
             value=10.0,
+            DefaultValue = 10.0,
             Min=0,
             Max=1000,
             UnitType=Units.LENGTH,
@@ -932,6 +942,7 @@ class Economics:
         self.dhlandarea = self.ParameterDict[self.dhlandarea.Name] = floatParameter(
             "District Heating Land Area",
             value=10.0,
+            DefaultValue=10.0,
             Min=0,
             Max=1000,
             UnitType=Units.AREA,
@@ -943,6 +954,7 @@ class Economics:
         self.dhpopulation = self.ParameterDict[self.dhpopulation.Name] = floatParameter(
             "District Heating Population",
             value=200,
+            DefaultValue=200,
             Min=0,
             Max=1000000,
             UnitType=Units.NONE,

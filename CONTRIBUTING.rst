@@ -166,7 +166,7 @@ To run all the test environments in *parallel*::
 Test Configuration in VS Code
 -----------------------------
 
-``.vscode/settings.json``:
+``.vscode/settings.json`` (macos):
 
 .. code-block::
 
@@ -187,6 +187,38 @@ Test Configuration in VS Code
     ],
     "python.analysis.enablePytestExtra": true,
     "python.languageServer": "Pylance",
+   }
+
+
+``.vscode/settings.json`` (windows):
+
+.. code-block::
+
+ {
+    "workbench.colorTheme": "Default Dark Modern",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+          "source": "PowerShell",
+          "icon": "terminal-powershell",
+          "args": ["-ExecutionPolicy", "Bypass"]
+        }
+      },
+      "terminal.integrated.defaultProfile.windows": "PowerShell",
+        "python.defaultInterpreterPath": ".tox\\py310\\Scripts\\python.exe",
+        "python.testing.unittestEnabled": false,
+        "python.testing.unittestArgs": [
+            "-v",
+            "-s",
+            "-p",
+            "test_*.py"
+        ],
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": [
+            "-c",
+            "pytest.ini",
+        ],
+        "python.analysis.enablePytestExtra": true,
+        "python.languageServer": "Pylance",
    }
 
 

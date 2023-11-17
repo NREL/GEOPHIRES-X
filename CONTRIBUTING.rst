@@ -221,6 +221,7 @@ Test Configuration in VS Code
         "python.languageServer": "Pylance",
    }
 
+Example running example file from the terminal: ``python 'C:\Users\kbeckers\Desktop\NREL\GitHub\python-geophires-x-nrel\src\geophires_x\GEOPHIRESv3.py' C:\Users\kbeckers\Desktop\NREL\GitHub\python-geophires-x-nrel\tests\examples\example1.txt``
 
 Version Management
 ------------------

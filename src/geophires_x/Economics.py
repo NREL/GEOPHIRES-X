@@ -852,7 +852,7 @@ class Economics:
         self.ngprice = self.ParameterDict[self.ngprice.Name] = floatParameter(
             "Peaking Fuel Cost Rate",
             value=0.034,
-            DefaultValue =0.034,
+            DefaultValue=0.034,
             Min=0.0,
             Max=1.0,
             UnitType=Units.ENERGYCOST,
@@ -864,7 +864,7 @@ class Economics:
         self.peakingboilerefficiency = self.ParameterDict[self.peakingboilerefficiency.Name] = floatParameter(
             "Peaking Boiler Efficiency",
             value=0.85,
-            DefaultValue = 0.85,
+            DefaultValue=0.85,
             Min=0,
             Max=1,
             UnitType=Units.PERCENT,
@@ -918,7 +918,7 @@ class Economics:
         self.dhpipinglength = self.ParameterDict[self.dhpipinglength.Name] = floatParameter(
             "District Heating Network Piping Length",
             value=10.0,
-            DefaultValue = 10.0,
+            DefaultValue=10.0,
             Min=0,
             Max=1000,
             UnitType=Units.LENGTH,
@@ -930,7 +930,7 @@ class Economics:
         self.dhroadlength = self.ParameterDict[self.dhroadlength.Name] = floatParameter(
             "District Heating Road Length",
             value=10.0,
-            DefaultValue = 10.0,
+            DefaultValue=10.0,
             Min=0,
             Max=1000,
             UnitType=Units.LENGTH,

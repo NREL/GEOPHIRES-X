@@ -3,6 +3,8 @@ import time
 import sys
 import traceback
 
+import geophires_x
+
 from .Parameter import ConvertUnitsBack, ConvertOutputUnits
 from .OptionList import EndUseOptions, EconomicModel
 from .Units import *
@@ -83,7 +85,7 @@ class AGSOutputs(Outputs.Outputs):
                     f.write(NL)
                     f.write("Simulation Metadata\n")
                     f.write("----------------------\n")
-                    f.write(" GEOPHIRES Version: 3.0\n")
+                    f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
                     f.write(" GEOPHIRES Build Date: 2022-06-30\n")
                     f.write(" Simulation Date: " + datetime.datetime.now().strftime("%Y-%m-%d\n"))
                     f.write(" Simulation Time:  " + datetime.datetime.now().strftime("%H:%M\n"))

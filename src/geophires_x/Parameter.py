@@ -257,6 +257,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         New_val = float(ParameterReadIn.sValue)
         # Warning - the value read in is the same as the default value, making it superfluous - add a warning and suggestion
         if New_val == ParamToModify.DefaultValue:
+            ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:
                 print("Warning: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name +
                       " is being set by the input file to a value that is the same as the default. No change was" +
@@ -283,7 +284,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         else:  # All is good
             ParamToModify.value = New_val  # set the new value
             ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
-            ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
+            ParamToModify.Valid = True   # set Valid to true because it passed the validation tests
     elif isinstance(ParamToModify, listParameter):
         New_val = float(ParameterReadIn.sValue)
         if (New_val < float(ParamToModify.Min)) or (New_val > float(ParamToModify.Max)):

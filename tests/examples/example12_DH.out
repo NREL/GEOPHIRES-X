@@ -6,9 +6,9 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2023-11-13
- Simulation Time:  13:41
- Calculation Time:      0.172 sec
+ Simulation Date: 2023-11-16
+ Simulation Time:  18:22
+ Calculation Time:      0.105 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -17,7 +17,7 @@ Simulation Metadata
       Average Annual Geothermal Heat Production:            148.48 GWh/year
       Average Annual Peaking Fuel Heat Production:           94.42 GWh/year
       Average Direct-Use Heat Production:                    19.90 MW
-      Direct-Use heat breakeven price:                        0.00 USD/MMBTU
+      Direct-Use heat breakeven price:                        8.68 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          50.0 kg/sec
@@ -99,10 +99,10 @@ Simulation Metadata
          Surface power plant costs:                          12.40 MUSD
             of which Peaking Boiler Cost:                     3.99 MUSD
          Field gathering system costs:                        2.53 MUSD
-         District Heating System Cost:                        4.80 MUSD
+         District Heating System Cost:                        2.70 MUSD
          Total surface equipment costs:                      14.93 MUSD
          Exploration costs:                                   0.00 MUSD
-      Total capital costs:                                   48.02 MUSD
+      Total capital costs:                                   45.92 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
@@ -111,9 +111,9 @@ Simulation Metadata
          Power plant maintenance costs:                       0.74 MUSD/yr
          Water costs:                                         0.00 MUSD/yr
          Average Reservoir Pumping Cost:                      0.21 MUSD/yr
-         Annual District Heating O&M Cost:                    0.39 MUSD/yr
+         Annual District Heating O&M Cost:                    0.37 MUSD/yr
          Average Annual Peaking Fuel Cost:                    3.03 MUSD/yr
-      Total operating and maintenance costs:                  1.82 MUSD/yr
+      Total operating and maintenance costs:                  1.80 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***

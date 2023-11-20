@@ -1,0 +1,84 @@
+Starting CCUS Credit Value,0.015
+Ending CCUS Credit Value, 0.1
+CCUS Escalation Start Year, 5
+CCUS Escalation Rate Per Year, 0.01
+Current Grid CO2 production,0.82
+Starting Heat Sale Price,0.0123
+Ending Heat Sale Price,0.0359
+Heat Escalation Start Year,7
+Heat Escalation Rate Per Year,0.01
+Starting Electricity Sale Price,0.09
+Ending Electricity Sale Price,0.15
+Electricity Escalation Start Year,5
+Electricity Escalation Rate Per Year,0.012
+Annual License Etc,0
+Flat License Etc,0
+Other Incentives,2.112
+Tax Relief Per Year,2.212
+One-time Grants Etc,20.212
+AddOn Nickname 1, Desalinization
+AddOn CAPEX 1, 10
+AddOn OPEX 1, 0.1
+AddOn Electricity Gained 1, -100
+AddOn Heat Gained 1, 0.0
+AddOn Profit Gained 1, 0.05
+AddOn Nickname 2, Methane Extration
+AddOn CAPEX 2, 20
+AddOn OPEX 2, 1
+AddOn Electricity Gained 2, 26000.0
+AddOn Heat Gained 2, 0
+AddOn Profit Gained 2, 2.786
+AddOn Nickname 3, CO2 point capture from methane buring
+AddOn CAPEX 3, 40
+AddOn OPEX 3, 0.6
+AddOn Electricity Gained 3, 0.0
+AddOn Heat Gained 3, 0
+AddOn Profit Gained 3, 0
+Reservoir Model,1,                        			---Multiple Fractures reservoir model
+Reservoir Depth,3,                     				---[km]
+Number of Segments,1,                  				---[-]
+Gradient 1,50,                          			---[deg.C/km]
+Maximum Temperature,400,                  			---[deg.C]
+Number of Production Wells,2,            			---[-]
+Number of Injection Wells,2,            			---[-]
+Production Well Diameter,7,		     			---[inch]
+Injection Well Diameter,7,					---[inch]
+Ramey Production Wellbore Model,1,       			---
+Production Wellbore Temperature Drop,.5,			---[deg.C]
+Injection Wellbore Temperature Gain,0,   			---[deg.C]
+Production Flow Rate per Well,55,       			---[kg/s]
+Fracture Shape,3,                       			---[-]
+Fracture Height,900, 						---[m]
+Reservoir Volume Option,3,              			---[-]
+Reservoir Volume,1000000000,		 			---[m^3]
+Number of Fractures,20,		  				---[-]
+Water Loss Fraction,.02,					---[-]
+Productivity Index,5,						---[kg/s/bar]
+Injectivity Index,5,						---[kg/s/bar]
+Injection Temperature,50,		 			---[deg.C]
+Maximum Drawdown,1,			  			---[-] no redrilling considered
+Reservoir Heat Capacity,1000,		  			---[J/kg/K]
+Reservoir Density,2700,			  			---[kg/m^3]
+Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
+
+***SURFACE TECHNICAL PARAMETERS***
+**********************************
+End-Use Option,1,			  			---[-] Electricity
+Economic Model,1,			  			---[-] Fixed Charge Rate Model
+Power Plant Type,2,			  			---[-] Supercritcal ORC
+Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
+Utilization Factor,.9,			  			---[-] between .1 and 1
+Surface Temperature,20,		  				---[deg.C]
+Ambient Temperature,20,		 				---[deg.C]
+
+***FINANCIAL PARAMETERS***
+**************************
+Plant Lifetime,30,			  			---[years]
+Fixed Charge Rate,.05,			 			---[-] between 0 and 1
+Inflation Rate During Construction,0,   			---[-]
+
+***Simulation Parameters***
+***************************
+
+Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
+Time steps per year,6,		  				---[1/year]

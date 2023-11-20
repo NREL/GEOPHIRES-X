@@ -1,0 +1,10 @@
+INPUT, Gradient 1, uniform, 25, 60
+INPUT, Reservoir Temperature, normal, 250, 10
+INPUT, Utilization Factor,uniform, 0.7, 0.95
+INPUT, Ambient Temperature,triangular, 15, 20, 25
+OUTPUT, Average Net Electricity Production
+OUTPUT, Average Production Temperature
+OUTPUT, Average Annual Total Electricity Generation
+ITERATIONS, 250
+MC_OUTPUT_FILE, MC_GEOPHIRES_Result.txt
+PYTHON_PATH, D:\Work\python-geophires-x-nrel\venv\Scripts\python.exe

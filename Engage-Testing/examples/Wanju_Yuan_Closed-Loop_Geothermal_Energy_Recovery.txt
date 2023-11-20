@@ -1,0 +1,72 @@
+----------------------------------------------------------------------------------------
+GEOPHIRES v3.0 Input File
+Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example X) and closed loops
+Oringinally created by NREL on 3/26/2018 as Example 4
+Last modified on 2/26/2023
+
+Example X Description: This example problem considers a simple reservoir
+at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown
+is assumed linear at 0.5%/year. The heat is converted to electricity with a subcritical
+ORC. It is accessed by a closed loop well.
+----------------------------------------------------------------------------------------
+*** closed loop parameters ***
+****************************************
+Is AGS, True
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Plant Lifetime, 40, ---Years
+Water Thermal Conductivity, 0.65
+Total Nonvertical Length, 5001.0
+Nonvertical Wellbore Diameter, 0.23495, -----m
+Cylindrical Reservoir Radius of Effect Factor, 5.0
+Closed Loop Calculation Start Year, 0.1
+Number of Multilateral Sections, 3
+Well Drilling Cost Correlation,3,				--- [-] Use built-in well drilling cost correlation #3 = vertical open-hole, large diameter
+Horizontal Well Drilling Cost Correlation,1,				--- [-] Use built-in well drilling cost correlation #3 = vertical open-hole, large diameter
+Reservoir Impedance, 1E-4, ----assume a very low reservoir impedance since the working fluid is never in contact with the reservoir
+Production Flow Rate per Well, 1.666666,      -----kg/sec
+Injection Temperature, 60,      -----C
+Gradient 1,26.25,                          			---[deg.C/km]
+Reservoir Depth, 4.0,      ----km
+Cylindrical Reservoir Input Depth, 4.0, -----km
+Cylindrical Reservoir Output Depth, 4.0, ------km
+Cylindrical Reservoir Length, 5.0,     ----km
+Reservoir Model,0,                        			---simople cylinder reservoir model
+Number of Production Wells,1,            			---[-]
+Number of Injection Wells,0,            			---[-]
+
+
+
+
+*** Subsurface technical parameters ***
+****************************************
+Ramey Production Wellbore Model,0,	--- Should be 0 (disable) or 1 (enable)
+Production Wellbore Temperature Drop,0,	--- [deg.C]
+Production Flow Rate per Well,110, 	--- [kg/s]
+Maximum Temperature,375,		--- [deg.C]
+Reservoir Volume Option,4,		--- Should be 1 2 3 or 4. See manual for details.
+Reservoir Volume,1e9,			--- [m3] (required for reservoir volume option 3 and 4
+Reservoir Heat Capacity,1050,		--- [J/kg/K]
+
+
+*** Surface technical parameters ***
+************************************
+End-Use Option,1,			--- [-] Electricity
+Power Plant Type,1,			--- [1] Subcritical ORC
+Circulation Pump Efficiency,0.8,	--- [-]
+Plant Outlet Pressure, 68.95
+
+*** Economic/Financial Parameters ***
+*************************************
+Economic Model,3,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) or 3 (Bicycle model).
+Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflated Bond Interest Rate,0.07,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflated Equity Interest Rate,0.12,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflation Rate,0.025,			--- [-] Required if Bicycle model is selected. See manual for details.
+Combined Income Tax Rate,0.392,		--- [-] Required if Bicycle model is selected. See manual for details.
+Gross Revenue Tax Rate,0,		--- [-] Required if Bicycle model is selected. See manual for details.
+Reservoir Stimulation Capital Cost,0,				--- [M$/injection well] Reservoir stimulation capital cost per injection well
+
+
+*** Simulation Parameters ***
+Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)

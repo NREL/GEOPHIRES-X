@@ -1,0 +1,35 @@
+#GEOPHIRES v3.0 Input File
+#Last modified on 4/12/2023
+#Example Description: Example 1 from "Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based Technical and Economic Modeling of Heat Production and Electricity Generation"
+#Koenraad Beckers Yaroslav Vasyliv Gabriela A. Bran-Anleu Mario Martinez Chad Augustine and Mark White
+#Presented at the 48th Stanford Geothermal Workshop Stanford California February 6-8 2023
+#This configuration is water filled U-loop with 1 lateral for direct-use elec using sCO2
+#----------------------------------------------------------------------------------------
+Is AGS, True
+Closed-loop Configuration, 1, ----uloop
+End-Use Option, 1,        -----elec
+Heat Transfer Fluid, 2, ----sCO2
+Number of Production Wells, 1,      ---- 1 production well accounts for the full configuration - 1 up, one down, and a horizontal section
+Number of Injection Wells, 0,		---- No injectors in a closed uloop
+All-in Vertical Drilling Costs, 1000.0
+All-in Nonvertical Drilling Costs, 1000.0
+Production Flow Rate per Well, 40, ---- kg/s for water / 40 kg/s for sCO2
+Cylindrical Reservoir Input Depth, 3000.0 meter, -----meters
+Gradient 1, 60.0, ----deg.c/km
+Total Nonvertical Length, 9000
+Production Well Diameter,8.5,		--- [inch]
+Injection Temperature, 60.0, -----deg.C
+Plant Lifetime, 40, --- years
+Ambient Temperature, 20, ----Deg.C "Dead-state temperature"
+Electricity Rate, 0.10,     ----USD/kWh
+Circulation Pump Efficiency, 0.8, -----[-]
+CO2 Turbine Outlet Pressure, 200
+
+*** Economic/Financial Parameters ***
+*************************************
+Economic Model,4,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) 3 (Bicycle model) 4 CLGS.
+Reservoir Stimulation Capital Cost,0,				--- [M$/injection well] Reservoir stimulation capital cost per injection well
+Exploration Capital Cost, 0
+
+*** Simulation Parameters ***
+Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)

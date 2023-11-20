@@ -17,43 +17,43 @@ Gradient 1,28,                          	---[deg.C/km]
 Maximum Temperature,400,                  	---[deg.C]
 Number of Production Wells,1,            	---[-]
 Number of Injection Wells,1,            	---[-]
-Production Well Diameter,7,		     		---[inch]
-Injection Well Diameter,7,					---[inch]
+Production Well Diameter,7,		     	---[inch]
+Injection Well Diameter,7,			---[inch]
 Ramey Production Wellbore Model,1,       	---0 if disabled 1 if enabled
 Injection Wellbore Temperature Gain,0,		---[deg.C]
 Production Flow Rate per Well,40,       	---[kg/s]
 Fracture Shape,3,                       	---[-] Should be 1 2 3 or 4. See manual for details
-Fracture Height,700, 						---[m]
+Fracture Height,700, 				---[m]
 Reservoir Volume Option,1,              	---[-] Should be 1 2 3 or 4. See manual for details
-Number of Fractures,5,		  				---[-]
-Fracture Separation,100,					---[m]
-Reservoir Impedance,0.05,					---[GPa*s/m3]
-Water Loss Fraction,.02,					---[-]
-Productivity Index,5,						---[kg/s/bar]
-Injectivity Index,5,						---[kg/s/bar]
-Injection Temperature,60,		 			---[deg.C]
-Maximum Drawdown,1,			  				---[-] no redrilling considered
-Reservoir Heat Capacity,825,		  		---[J/kg/K]
-Reservoir Density,2730,			  			---[kg/m^3]
+Number of Fractures,5,		  		---[-]
+Fracture Separation,100,			---[m]
+Reservoir Impedance,0.05,			---[GPa*s/m3]
+Water Loss Fraction,.02,			---[-]
+Productivity Index,5,				---[kg/s/bar]
+Injectivity Index,5,				---[kg/s/bar]
+Injection Temperature,60,		 	---[deg.C]
+Maximum Drawdown,1,			  	---[-] no redrilling considered
+Reservoir Heat Capacity,825,		  	---[J/kg/K]
+Reservoir Density,2730,			  	---[kg/m^3]
 Reservoir Thermal Conductivity,2.83,	  	---[W/m/K]
 
 ***SURFACE TECHNICAL PARAMETERS***
 **********************************
-End-Use Option,1,			  				---[-] Direct-Use
-Power Plant Type, 1,						---[-] Subcritical ORC
-Circulation Pump Efficiency,.8,	  			---[-]
-Utilization Factor,.9,			  			---[-]
-End-Use Efficiency Factor,0.9,				---[-]
-Surface Temperature,20,		  				---[deg.C]
-Ambient Temperature,20,		 				---[deg.C]
-Electricity Rate,0.1,						---Electricity rate for pumping power [$/kWh]
+End-Use Option,1,			  	---[-] Electricity
+Power Plant Type, 1,				---[-] Subcritical ORC
+Circulation Pump Efficiency,.8,	  		---[-]
+Utilization Factor,.9,			  	---[-]
+End-Use Efficiency Factor,0.9,			---[-]
+Surface Temperature,20,		  		---[deg.C]
+Ambient Temperature,20,		 		---[deg.C]
+Electricity Rate,0.1,				---Electricity rate for pumping power [$/kWh]
 
 ***FINANCIAL PARAMETERS***
 **************************
-Plant Lifetime,30,			  			---[years]
-Economic Model,1,			  			---[-] Fixed Charge Rate Model
-Fixed Charge Rate,.05,			 			---[-] between 0 and 1
-Inflation Rate During Construction,0,   			---[-]
+Plant Lifetime,30,			  	---[years]
+Economic Model,1,			  	---[-] Fixed Charge Rate Model
+Fixed Charge Rate,.05,			 	---[-] between 0 and 1
+Inflation Rate During Construction,0,   	---[-]
 
 ***CAPITAL AND O&M COST PARAMETERS***
 *************************************

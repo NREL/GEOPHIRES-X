@@ -686,7 +686,7 @@ class SurfacePlant:
 
         else:
             if self.enduseoption.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT]:
-                self.TenteringPP.value = self.Tchpbottom.value
+                self.TenteringPP.value = self.Tchpbottom.value*np.ones(len(model.reserv.timevector.value))
             else:
                 self.TenteringPP.value = model.wellbores.ProducedTemperature.value
             # Availability water (copied from GEOPHIRES v1.0 Fortran Code)
@@ -886,8 +886,8 @@ class SurfacePlant:
                 self.ElectricityProduced.value = self.Availability.value*etau*model.wellbores.nprod.value*model.wellbores.prodwellflowrate.value
                 self.HeatExtracted.value = model.wellbores.nprod.value*model.wellbores.prodwellflowrate.value*model.reserv.cpwater.value *\
                                            (model.wellbores.ProducedTemperature.value - model.wellbores.Tinj.value)/1E6  # Heat extracted from geofluid [MWth]
-                self.valueHeatProduced.value = self.enduseefficiencyfactor.value*model.wellbores.nprod.value *\
-                                               model.wellbores.prodwellflowrate*model.reserv.cpwater.value *\
+                self.HeatProduced.value = self.enduseefficiencyfactor.value*model.wellbores.nprod.value *\
+                                               model.wellbores.prodwellflowrate.value*model.reserv.cpwater.value *\
                                                (model.wellbores.ProducedTemperature.value - self.Tchpbottom.value)/1E6  # Useful heat for direct-use application [MWth]
                 HeatExtractedTowardsElectricity = model.wellbores.nprod.value*model.wellbores.prodwellflowrate.value *\
                                                   model.reserv.cpwater.value*(self.Tchpbottom.value - model.wellbores.Tinj.value)/1E6

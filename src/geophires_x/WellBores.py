@@ -978,6 +978,9 @@ class WellBores:
                 ProducedTemperatureRepeatead = np.tile(self.ProducedTemperature.value[0:indexfirstmaxdrawdown],
                                                        self.redrill.value + 1)
                 self.ProducedTemperature.value = ProducedTemperatureRepeatead[0:len(self.ProducedTemperature.value)]
+                TResOutputRepeated = np.tile(model.reserv.Tresoutput.value[0:indexfirstmaxdrawdown],
+                                                       self.redrill.value + 1)
+                model.reserv.Tresoutput.value = TResOutputRepeated[0:len(self.ProducedTemperature.value)]
 
         # calculate pressure drops and pumping power
         self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(

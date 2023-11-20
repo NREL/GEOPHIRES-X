@@ -209,7 +209,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY,
                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY,
                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY]:  # electricity sales is additional income revenue stream
-                annualelectricityincome = model.surfaceplant.NetkWhProduced.value * self.elecprice.value / 1E6  # M$/year
+                annualelectricityincome = model.surfaceplant.NetkWhProduced.value * model.surfaceplant.elecprice.value / 1E6  # M$/year
                 LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
                     (self.Coam.value - annualelectricityincome) * discountvector)) / np.sum(
                     model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
@@ -2080,7 +2080,7 @@ class Economics:
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduseefficiencyfactor.value) * 1000.
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY]:  # enduseoption = 4: cogen bottoming cycle
-                self.Cplant = self.Cplant.value + 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.Cplant.value = self.Cplant.value + 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduseefficiencyfactor.value) * 1000.
             elif model.surfaceplant.enduseoption.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY,
                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle

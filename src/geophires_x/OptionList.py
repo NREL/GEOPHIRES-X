@@ -7,8 +7,8 @@ class EndUseOptions(str, Enum):
     HEAT = "Direct-Use Heat"  # 2
     COGENERATION_TOPPING_EXTRA_HEAT = "Cogeneration Topping Cycle, Heat sales considered as extra income"  # 31
     COGENERATION_TOPPING_EXTRA_ELECTRICTY = "Cogeneration Topping Cycle, Electricity sales considered as extra income"  # 32
-    COGENERATION_BOTTOMING_EXTRA_ELECTRICTY = "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"  # 41
-    COGENERATION_BOTTOMING_EXTRA_HEAT = "Cogeneration Bottoming Cycle, Heat sales considered as extra income"  # 42
+    COGENERATION_BOTTOMING_EXTRA_HEAT = "Cogeneration Bottoming Cycle, Heat sales considered as extra income"  # 41
+    COGENERATION_BOTTOMING_EXTRA_ELECTRICTY = "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"  # 42
     COGENERATION_PARALLEL_EXTRA_HEAT = "Cogeneration Parallel Cycle, Heat sales considered as extra income"  # 51
     COGENERATION_PARALLEL_EXTRA_ELECTRICTY = "Cogeneration Parallel Cycle, Electricity sales considered as extra income"  # 52
     ABSORPTION_CHILLER = "Absorption Chiller"  # 6

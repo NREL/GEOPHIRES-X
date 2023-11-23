@@ -165,6 +165,7 @@ A variety of example input ``.txt`` files are available in the `tests/examples d
 - `example10_HP.txt <tests/examples/example10_HP.txt>`__
 - `example11_AC.txt <tests/examples/example11_AC.txt>`__
 - `example12_DH.txt <tests/examples/example12_DH.txt>`__
+- `example13.txt <tests/examples/example13.txt>`__
 - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
 - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
 - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__

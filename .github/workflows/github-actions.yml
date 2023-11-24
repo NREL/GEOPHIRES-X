@@ -105,6 +105,11 @@ jobs:
 #            python_arch: 'x64'
 #            tox_env: 'pypy39'
 #            os: 'macos-latest'
+          - name: 'pypy311 (ubuntu)'
+            python: 'pypy-3.11'
+            toxpython: 'pypy3.11'
+            python_arch: 'x64'
+
 
     steps:
     - uses: actions/checkout@v3

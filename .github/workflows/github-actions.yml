@@ -81,6 +81,11 @@ jobs:
             tox_env: 'py311'
             os: 'windows-latest'
 
+          - name: 'pypy311 (ubuntu)'
+            python: 'pypy-3.11'
+            toxpython: 'pypy3.11'
+            python_arch: 'x64'
+            os: 'ubuntu-latest'
 #          - name: 'pypy38 (ubuntu)'
 #            python: 'pypy-3.8'
 #            toxpython: 'pypy3.8'
@@ -105,11 +110,6 @@ jobs:
 #            python_arch: 'x64'
 #            tox_env: 'pypy39'
 #            os: 'macos-latest'
-          - name: 'pypy311 (ubuntu)'
-            python: 'pypy-3.11'
-            toxpython: 'pypy3.11'
-            python_arch: 'x64'
-
 
     steps:
     - uses: actions/checkout@v3

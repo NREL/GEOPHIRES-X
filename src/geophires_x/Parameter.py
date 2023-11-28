@@ -194,6 +194,13 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     :type model: :class:`~geophires_x.Model.Model`
     :return: None
     """
+    import logging
+    # Save current logger level
+    original_log_level = model.logger.getEffectiveLevel()
+
+    # Set logger to a higher level to suppress warnings
+    model.logger.setLevel(logging.ERROR)
+    
     model.logger.info("Init " + str(__name__) + ": " + sys._getframe().f_code.co_name + " for " + ParamToModify.Name)
     # these Parameter Types don't have units so don't do anything fancy, and ignore it if the user has supplied units
     if isinstance(ParamToModify, boolParameter) or isinstance(ParamToModify, strParameter):
@@ -330,6 +337,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
 
     model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+    model.logger.setLevel(original_log_level)
 
 
 def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
@@ -501,6 +509,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             strUnit = parts[0]
 
     model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+    
     return strUnit
 
 

@@ -1,0 +1,182 @@
+Category,Field
+SUMMARY OF RESULTS,End-Use
+SUMMARY OF RESULTS,Average Net Electricity Production
+SUMMARY OF RESULTS,Electricity breakeven price
+SUMMARY OF RESULTS,Average Direct-Use Heat Production
+SUMMARY OF RESULTS,Direct-Use heat breakeven price
+SUMMARY OF RESULTS,Annual District Heating Demand
+SUMMARY OF RESULTS,Average Cooling Production
+SUMMARY OF RESULTS,Average Annual Geothermal Heat Production
+SUMMARY OF RESULTS,Average Annual Peaking Fuel Heat Production
+SUMMARY OF RESULTS,Direct-Use Cooling Breakeven Price
+SUMMARY OF RESULTS,Number of production wells
+SUMMARY OF RESULTS,Number of injection wells
+SUMMARY OF RESULTS,Flowrate per production well
+SUMMARY OF RESULTS,Well depth
+SUMMARY OF RESULTS,Geothermal gradient
+SUMMARY OF RESULTS,Segment 1 Geothermal gradient
+SUMMARY OF RESULTS,Segment 1 Thickness
+SUMMARY OF RESULTS,Segment 2 Geothermal gradient
+SUMMARY OF RESULTS,Segment 2 Thickness
+SUMMARY OF RESULTS,Segment 3 Geothermal gradient
+SUMMARY OF RESULTS,Segment 3 Thickness
+SUMMARY OF RESULTS,Segment 4 Geothermal gradient
+SUMMARY OF RESULTS,LCOE
+SUMMARY OF RESULTS,LCOH
+SUMMARY OF RESULTS,Lifetime Average Well Flow Rate
+ECONOMIC PARAMETERS,Economic Model
+ECONOMIC PARAMETERS,Interest Rate
+ECONOMIC PARAMETERS,Accrued financing during construction
+ECONOMIC PARAMETERS,Project lifetime
+ECONOMIC PARAMETERS,Capacity factor
+ECONOMIC PARAMETERS,Project NPV
+ECONOMIC PARAMETERS,Project IRR
+ECONOMIC PARAMETERS,Project VIR=PI=PIR
+ECONOMIC PARAMETERS,Project MOIC
+ECONOMIC PARAMETERS,Fixed Charge Rate (FCR)
+ENGINEERING PARAMETERS,Number of Production Wells
+ENGINEERING PARAMETERS,Number of Injection Wells
+ENGINEERING PARAMETERS,"Well depth (or total length, if not vertical)"
+ENGINEERING PARAMETERS,Water loss rate
+ENGINEERING PARAMETERS,Pump efficiency
+ENGINEERING PARAMETERS,Injection temperature
+ENGINEERING PARAMETERS,Injection Temperature
+ENGINEERING PARAMETERS,Average production well temperature drop
+ENGINEERING PARAMETERS,Flowrate per production well
+ENGINEERING PARAMETERS,Injection well casing ID
+ENGINEERING PARAMETERS,Production well casing ID
+ENGINEERING PARAMETERS,Number of times redrilling
+ENGINEERING PARAMETERS,Fluid
+ENGINEERING PARAMETERS,Design
+ENGINEERING PARAMETERS,Flow rate
+ENGINEERING PARAMETERS,Lateral Length
+ENGINEERING PARAMETERS,Vertical Depth
+ENGINEERING PARAMETERS,Wellbore Diameter
+ENGINEERING PARAMETERS,Lifetime Average Well Flow Rate
+ENGINEERING PARAMETERS,Injection well casing ID
+ENGINEERING PARAMETERS,Production well casing ID
+RESOURCE CHARACTERISTICS,Maximum reservoir temperature
+RESOURCE CHARACTERISTICS,Number of segments
+RESOURCE CHARACTERISTICS,Geothermal gradient
+RESOURCE CHARACTERISTICS,Segment 1 Geothermal gradient
+RESOURCE CHARACTERISTICS,Segment 1 Thickness
+RESOURCE CHARACTERISTICS,Segment 2 Geothermal gradient
+RESOURCE CHARACTERISTICS,Segment 2 Thickness
+RESOURCE CHARACTERISTICS,Segment 3 Geothermal gradient
+RESOURCE CHARACTERISTICS,Segment 3 Thickness
+RESOURCE CHARACTERISTICS,Segment 4 Geothermal gradient
+RESERVOIR PARAMETERS,Reservoir Model
+RESERVOIR PARAMETERS,Fracture model
+RESERVOIR PARAMETERS,Bottom-hole temperature
+RESERVOIR PARAMETERS,Well separation: fracture height
+RESERVOIR PARAMETERS,Fracture area
+RESERVOIR PARAMETERS,Fracture width
+RESERVOIR PARAMETERS,Reservoir volume
+RESERVOIR PARAMETERS,Reservoir hydrostatic pressure
+RESERVOIR PARAMETERS,Plant outlet pressure
+RESERVOIR PARAMETERS,Production wellhead pressure
+RESERVOIR PARAMETERS,Productivity Index
+RESERVOIR PARAMETERS,Injectivity Index
+RESERVOIR PARAMETERS,Reservoir density
+RESERVOIR PARAMETERS,Reservoir thermal conductivity
+RESERVOIR PARAMETERS,Reservoir heat capacity
+RESERVOIR PARAMETERS,Reservoir porosity
+RESERVOIR PARAMETERS,Thermal Conductivity
+RESERVOIR SIMULATION RESULTS,Maximum Production Temperature
+RESERVOIR SIMULATION RESULTS,Average Production Temperature
+RESERVOIR SIMULATION RESULTS,Minimum Production Temperature
+RESERVOIR SIMULATION RESULTS,Initial Production Temperature
+RESERVOIR SIMULATION RESULTS,Average Reservoir Heat Extraction
+RESERVOIR SIMULATION RESULTS,Production Wellbore Heat Transmission Model
+RESERVOIR SIMULATION RESULTS,Average Production Well Temperature Drop
+RESERVOIR SIMULATION RESULTS,Average Injection Well Pump Pressure Drop
+RESERVOIR SIMULATION RESULTS,Average Production Well Pump Pressure Drop
+RESERVOIR SIMULATION RESULTS,Average Production Pressure
+RESERVOIR SIMULATION RESULTS,Average Heat Production
+RESERVOIR SIMULATION RESULTS,First Year Heat Production
+RESERVOIR SIMULATION RESULTS,Average Net Electricity Production
+RESERVOIR SIMULATION RESULTS,First Year Electricity Production
+RESERVOIR SIMULATION RESULTS,Maximum Storage Well Temperature
+RESERVOIR SIMULATION RESULTS,Average Storage Well Temperature
+RESERVOIR SIMULATION RESULTS,Minimum Storage Well Temperature
+RESERVOIR SIMULATION RESULTS,Maximum Balance Well Temperature
+RESERVOIR SIMULATION RESULTS,Average Balance Well Temperature
+RESERVOIR SIMULATION RESULTS,Minimum Balance Well Temperature
+RESERVOIR SIMULATION RESULTS,Maximum Annual Heat Stored
+RESERVOIR SIMULATION RESULTS,Average Annual Heat Stored
+RESERVOIR SIMULATION RESULTS,Minimum Annual Heat Stored
+RESERVOIR SIMULATION RESULTS,Maximum Annual Heat Supplied
+RESERVOIR SIMULATION RESULTS,Average Annual Heat Supplied
+RESERVOIR SIMULATION RESULTS,Minimum Annual Heat Supplied
+RESERVOIR SIMULATION RESULTS,Average Round-Trip Efficiency
+RESERVOIR SIMULATION RESULTS,Total Average Pressure Drop
+CAPITAL COSTS (M$),Drilling and completion costs
+CAPITAL COSTS (M$),Drilling and completion costs per well
+CAPITAL COSTS (M$),Stimulation costs
+CAPITAL COSTS (M$),Surface power plant costs
+CAPITAL COSTS (M$),District Heating System Cost
+CAPITAL COSTS (M$),Field gathering system costs
+CAPITAL COSTS (M$),Total surface equipment costs
+CAPITAL COSTS (M$),Exploration costs
+CAPITAL COSTS (M$),Total capital costs
+CAPITAL COSTS (M$),Total CAPEX
+CAPITAL COSTS (M$),Drilling Cost
+CAPITAL COSTS (M$),Drilling and Completion Costs
+CAPITAL COSTS (M$),Drilling and Completion Costs per Well
+CAPITAL COSTS (M$),Auxiliary Heater Cost
+CAPITAL COSTS (M$),Pump Cost
+CAPITAL COSTS (M$),Total Capital Costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),Wellfield maintenance costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),Power plant maintenance costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),Water costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average Reservoir Pumping Cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Absorption Chiller O&M Cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average Heat Pump Electricity Cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Annual District Heating O&M Cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average Annual Peaking Fuel Cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average annual pumping costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),Total operating and maintenance costs
+OPERATING AND MAINTENANCE COSTS (M$/yr),OPEX
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average annual auxiliary fuel cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Average annual pumping cost
+OPERATING AND MAINTENANCE COSTS (M$/yr),Total average annual O&M costs
+SURFACE EQUIPMENT SIMULATION RESULTS,Initial geofluid availability
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Total Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Total Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Total Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Initial Total Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Net Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Net Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Net Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Initial Net Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Total Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Net Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Net Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Net Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Initial Net Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Heat Pump Electricity Use
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Cooling Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Cooling Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Cooling Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Initial Cooling Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Cooling Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Annual District Heating Demand
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Daily District Heating Demand
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Daily District Heating Demand
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Daily District Heating Demand
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Geothermal Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Geothermal Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Geothermal Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Peaking Boiler Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Peaking Boiler Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Minimum Peaking Boiler Heat Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Surface Plant Cost
+SURFACE EQUIPMENT SIMULATION RESULTS,Average RTES Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Auxiliary Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual RTES Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Auxiliary Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Total Heating Production
+SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Electricity Use for Pumping

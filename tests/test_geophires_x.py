@@ -150,7 +150,7 @@ class GeophiresXTestCase(BaseTestCase):
 
         for example_file_path in example_files:
             if (
-                example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA'))
+                example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
             ) and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')

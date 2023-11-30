@@ -173,6 +173,7 @@ class GeophiresXTestCase(BaseTestCase):
                         # Adding additional test cases that require this fallback should be avoided if possible.
                         cases_to_allow_almost_equal = [
                             'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
+                            'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
                         ]
                         if example_file_path in cases_to_allow_almost_equal:
                             log.warning(

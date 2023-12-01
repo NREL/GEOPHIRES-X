@@ -163,10 +163,10 @@ To run all the test environments in *parallel*::
     tox -p auto
 
 
-Test Configuration in VS Code
------------------------------
+VS Code
+-------
 
-``.vscode/settings.json`` (macos):
+``.vscode/settings.json`` (macOS):
 
 .. code-block::
 
@@ -190,7 +190,7 @@ Test Configuration in VS Code
    }
 
 
-``.vscode/settings.json`` (windows):
+``.vscode/settings.json`` (Windows):
 
 .. code-block::
 
@@ -221,7 +221,9 @@ Test Configuration in VS Code
         "python.languageServer": "Pylance",
    }
 
-Example running example file from the terminal: ``python 'C:\Users\kbeckers\Desktop\NREL\GitHub\python-geophires-x-nrel\src\geophires_x\GEOPHIRESv3.py' C:\Users\kbeckers\Desktop\NREL\GitHub\python-geophires-x-nrel\tests\examples\example1.txt``
+Example running example file from the terminal::
+
+   python src\geophires_x\GEOPHIRESv3.py tests\examples\example1.txt
 
 Version Management
 ------------------

@@ -150,7 +150,7 @@ class GeophiresXTestCase(BaseTestCase):
 
         for example_file_path in example_files:
             if (
-                example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA'))
+                example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
             ) and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
                     print(f'Running example test {example_file_path}')
@@ -173,6 +173,7 @@ class GeophiresXTestCase(BaseTestCase):
                         # Adding additional test cases that require this fallback should be avoided if possible.
                         cases_to_allow_almost_equal = [
                             'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
+                            'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
                         ]
                         if example_file_path in cases_to_allow_almost_equal:
                             log.warning(
@@ -202,6 +203,29 @@ class GeophiresXTestCase(BaseTestCase):
 
         self.assertEqual(
             str(re.exception), 'GEOPHIRES encountered an exception: failed with the following error codes: [5500.]'
+        )
+
+    def test_parameter_value_outside_of_allowable_range_error(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(RuntimeError) as re:
+            input_params = GeophiresInputParameters(
+                {
+                    'Print Output to Console': 0,
+                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                    'Reservoir Model': 1,
+                    'Time steps per year': 1,
+                    'Reservoir Depth': 3000,
+                    'Gradient 1': 50,
+                    'Maximum Temperature': 250,
+                }
+            )
+
+            client.get_geophires_result(input_params)
+
+        self.assertTrue(
+            'GEOPHIRES encountered an exception: Error: Parameter given (3000.0) for Reservoir Depth outside of valid range.'
+            in str(re.exception)
         )
 
     def test_RTES_name(self):

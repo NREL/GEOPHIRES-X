@@ -194,7 +194,8 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     :type model: :class:`~geophires_x.Model.Model`
     :return: None
     """
-    model.logger.info("Init " + str(__name__) + ": " + sys._getframe().f_code.co_name + " for " + ParamToModify.Name)
+    model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
+
     # these Parameter Types don't have units so don't do anything fancy, and ignore it if the user has supplied units
     if isinstance(ParamToModify, boolParameter) or isinstance(ParamToModify, strParameter):
         if isinstance(ParamToModify, boolParameter):
@@ -208,7 +209,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             ParamToModify.value = ParameterReadIn.sValue
         ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
         ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
-        model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         return
 
     # deal with the case where the value has a unit involved - that will be indicated by a space in it
@@ -223,7 +224,8 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
 
     if isinstance(ParamToModify, intParameter):
         New_val = int(float(ParameterReadIn.sValue))
-        # Warning - the value read in is the same as the default value, making it superfluous - add a warning and suggestion
+        # Warning - the value read in is the same as the default value, making it superfluous - add a warning and
+        # suggestion
         if New_val == ParamToModify.DefaultValue:
             if len(ParamToModify.ErrMessage) > 0:
                 print("Warning: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name + " is being set by" +
@@ -234,21 +236,20 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
                 " set by the input file to a value that is the same as the default. No change was made to that value." +
                 " Recommendation: remove the " + ParamToModify.Name + " from the input file unless you wish to" +
                 " change it from the default value of (" + str(ParamToModify.DefaultValue) + ")")
-            model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+            model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
-        # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+        # We have nothing to change - user provide value that was the same as the existing value (likely, the default
+        # value)
         if New_val == ParamToModify.value:
             return
         # user provided value is out of range, so announce it, leave set to whatever it was set to (default value)
         if not (New_val in ParamToModify.AllowableRange):
-            if len(ParamToModify.ErrMessage) > 0:
-                print("Error: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name +
-                      " outside of valid range. GEOPHIRES will " + ParamToModify.ErrMessage)
-                model.logger.fatal("Error: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name +
-                                   " outside of valid range. GEOPHIRES will " + ParamToModify.ErrMessage)
-            model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
-            sys.exit()
+            err_msg = f"Error: Parameter given ({New_val}) for {ParamToModify.Name} outside of valid range."
+            print(err_msg)
+            model.logger.fatal(err_msg)
+            model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
+            raise ValueError(err_msg)
         else:  # All is good
             ParamToModify.value = New_val  # set the new value
             ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
@@ -267,20 +268,18 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
                                      " is being set by the input file to a value that is the same as the default. No change was" +
                                      " made to that value. Recommendation: remove the " + ParamToModify.Name + " from the input file" +
                       " unless you wish to change it from the default value of (" + str(ParamToModify.DefaultValue) + ")")
-            model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+            model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
             # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
             return
         # user provided value is out of range, so announce it, leave set to whatever it was set to (default value)
         if (New_val < float(ParamToModify.Min)) or (New_val > float(ParamToModify.Max)):
-            if len(ParamToModify.ErrMessage) > 0:
-                print("Error: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name +
-                      " outside of valid range. GEOPHIRES will " + ParamToModify.ErrMessage)
-                model.logger.fatal("Error: Parameter given (" + str(New_val) + ") for " + ParamToModify.Name +
-                                   " outside of valid range. GEOPHIRES will " + ParamToModify.ErrMessage)
-            model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
-            sys.exit()
+            err_msg = f"Error: Parameter given ({New_val}) for {ParamToModify.Name} outside of valid range."
+            print(err_msg)
+            model.logger.fatal(err_msg)
+            model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
+            raise ValueError(err_msg)
         else:  # All is good
             ParamToModify.value = New_val  # set the new value
             ParamToModify.Provided = True  # set provided to true because we are using a user provide value now

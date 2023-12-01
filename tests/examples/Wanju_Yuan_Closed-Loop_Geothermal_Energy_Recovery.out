@@ -4,17 +4,17 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.0
+ GEOPHIRES Version: 3.2.8
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2023-09-28
- Simulation Time:  21:07
- Calculation Time:   1269.034 sec
+ Simulation Date: 2023-11-30
+ Simulation Time:  14:48
+ Calculation Time:      4.219 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     1.10 MW
-      Electricity breakeven price:                           36.74 cents/kWh
+      Electricity breakeven price:                           37.37 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              0
       Flowrate per production well:                         110.0 kg/sec
@@ -28,7 +28,7 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      40 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -36.51 MUSD
+      Project NPV:                                         -37.26 MUSD
       Project IRR:                                           0.00 %
       Project VIR=PI=PIR:                                   -0.01
       Project MOIC:                                         -0.67
@@ -41,8 +41,8 @@ Simulation Metadata
       Water loss rate:                                        0.0
       Pump efficiency:                                       80.0
       Injection temperature:                                 60.0 degC
-      Production Wellbore heat transmission calculated with Ramey's model
-      Average production well temperature drop:               0.0 degC
+      User-provided production well temperature drop
+      Constant production well temperature drop:              0.0 degC
       Flowrate per production well:                         110.0 kg/sec
       Injection well casing ID:                               8.000 in
       Production well casing ID:                              8.000 in
@@ -76,19 +76,19 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
          Drilling and completion costs:                      16.28 MUSD
          Drilling and completion costs per well:             16.28 MUSD
          Stimulation costs:                                   0.00 MUSD
-         Surface power plant costs:                           6.12 MUSD
+         Surface power plant costs:                           6.74 MUSD
          Field gathering system costs:                        0.51 MUSD
-         Total surface equipment costs:                       6.63 MUSD
+         Total surface equipment costs:                       7.24 MUSD
          Exploration costs:                                  13.27 MUSD
-      Total capital costs:                                   36.18 MUSD
+      Total capital costs:                                   36.79 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
 
          Wellfield maintenance costs:                         0.23 MUSD/yr
-         Power plant maintenance costs:                       0.29 MUSD/yr
+         Power plant maintenance costs:                       0.30 MUSD/yr
          Water costs:                                         0.00 MUSD/yr
-      Total operating and maintenance costs:                  0.52 MUSD/yr
+      Total operating and maintenance costs:                  0.53 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -107,9 +107,9 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
       Initial pumping power/net installed power:            100.00 %
       Average Pumping Power:                                  0.00 MW
 
-                                        ******************************
-                                        *  POWER GENERATION PROFILE  *
-                                        ******************************
+                            ************************************************************
+                            *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
+                            ************************************************************
   YEAR       THERMAL               GEOFLUID               PUMP               NET               FIRST LAW
              DRAWDOWN             TEMPERATURE             POWER             POWER              EFFICIENCY
                                      (degC)               (MW)              (MW)                  (%)
@@ -123,7 +123,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
    8           0.8985                107.82               0.0029            1.1409                5.1073
    9           0.8964                107.57               0.0029            1.1315                5.0918
   10           0.8946                107.35               0.0029            1.1232                5.0782
-  11           0.8930                107.15               0.0029            1.1160                5.0661
+  11           0.8930                107.15               0.0029            1.1159                5.0661
   12           0.8915                106.98               0.0029            1.1094                5.0552
   13           0.8902                106.82               0.0029            1.1035                5.0454
   14           0.8889                106.67               0.0029            1.0981                5.0364
@@ -155,9 +155,9 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
   40           0.8727                104.72               0.0029            1.0276                4.9188
 
 
-                              ***************************************************************
-                              *  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *
-                              ***************************************************************
+                              *******************************************************************
+                              *  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
+                              *******************************************************************
   YEAR             ELECTRICITY                   HEAT                RESERVOIR            PERCENTAGE OF
                     PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED
                    (GWh/year)                  (GWh/year)            (10^15 J)                 (%)

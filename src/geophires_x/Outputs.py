@@ -1,6 +1,8 @@
 import datetime
 import time
 import sys
+
+import geophires_x
 import numpy as np
 import geophires_x.Model as Model
 from .Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits
@@ -119,7 +121,7 @@ class Outputs:
                 f.write(NL)
                 f.write("Simulation Metadata\n")
                 f.write("----------------------\n")
-                f.write(" GEOPHIRES Version: 3.0\n")
+                f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
                 f.write(" GEOPHIRES Build Date: 2022-06-30\n")
                 f.write(" Simulation Date: "+ datetime.datetime.now().strftime("%Y-%m-%d\n"))
                 f.write(" Simulation Time:  "+ datetime.datetime.now().strftime("%H:%M\n"))

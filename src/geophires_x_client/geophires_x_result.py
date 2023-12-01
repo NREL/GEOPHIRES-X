@@ -1,5 +1,7 @@
+import csv
 import json
 import re
+from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
 
@@ -285,6 +287,41 @@ class GeophiresXResult:
             return summary['Direct-Use heat breakeven price']['value']
         else:
             return None
+
+    def as_csv(self) -> str:
+        f = StringIO()
+        w = csv.writer(f)
+
+        w.writerow(['Category', 'Field', 'Year', 'Value', 'Units'])
+
+        csv_entries = []
+        for category, fields in self.result.items():
+            if isinstance(fields, dict):
+                for field, value_unit in fields.items():
+
+                    class ValueUnit:
+                        def __init__(self, v_u):
+                            self.value_display = v_u
+                            self.unit_display = ''
+                            if isinstance(v_u, dict):
+                                self.value_display = v_u['value']
+                                self.unit_display = v_u['unit']
+                            # elif isinstance(v_u,str):
+                            #     return f'{v_u},'
+                            # else:
+                            #     return f'FIXME-TODO'
+
+                    if value_unit is not None:
+                        field_display = field.replace(',', r'\,')
+                        v_u = ValueUnit(value_unit)
+                        csv_entries.append([category, field_display, '', v_u.value_display, v_u.unit_display])
+            else:
+                csv_entries.append(['FIXME-TODO'])
+
+        for csv_entry in csv_entries:
+            w.writerow(csv_entry)
+
+        return f.getvalue()
 
     @property
     def json_output_file_path(self) -> Path:

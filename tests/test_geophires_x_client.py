@@ -217,20 +217,8 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertDictEqual(result_default_units, result_non_default_units)
 
     def test_csv(self):
-        client = GeophiresXClient()
-        result = client.get_geophires_result(
-            GeophiresInputParameters(
-                {
-                    'Print Output to Console': 0,
-                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
-                    'Reservoir Model': 1,
-                    'Time steps per year': 1,
-                    'Reservoir Depth': 3,
-                    'Gradient 1': 50,
-                    'Maximum Temperature': 250,
-                }
-            )
-        )
+        test_result_path = self._get_test_file_path('geophires-result_example-3.out')
+        result = GeophiresXResult(test_result_path)
 
         as_csv = result.as_csv()
         self.assertIsNotNone(as_csv)

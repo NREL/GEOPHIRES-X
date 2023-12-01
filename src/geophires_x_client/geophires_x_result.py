@@ -296,6 +296,9 @@ class GeophiresXResult:
 
         csv_entries = []
         for category, fields in self.result.items():
+            if category == 'metadata':
+                continue
+
             if isinstance(fields, dict):
                 for field, value_unit in fields.items():
 
@@ -306,17 +309,31 @@ class GeophiresXResult:
                             if isinstance(v_u, dict):
                                 self.value_display = v_u['value']
                                 self.unit_display = v_u['unit']
-                            # elif isinstance(v_u,str):
-                            #     return f'{v_u},'
-                            # else:
-                            #     return f'FIXME-TODO'
 
                     if value_unit is not None:
                         field_display = field.replace(',', r'\,')
                         v_u = ValueUnit(value_unit)
                         csv_entries.append([category, field_display, '', v_u.value_display, v_u.unit_display])
             else:
-                csv_entries.append(['FIXME-TODO'])
+                if category not in (
+                    'POWER GENERATION PROFILE',
+                    'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
+                ):
+                    raise RuntimeError('unexpected category')
+
+                field_display = field.replace(',', r'\,')
+                for i in range(len(fields[0][1:])):
+                    field_profile = fields[0][i + 1]
+                    unit_split = field_profile.split(' (')
+                    field_display = unit_split[0]
+                    unit_display = ''
+                    if len(unit_split) > 1:
+                        unit_display = unit_split[1].replace(')', '')
+                    for j in range(len(fields[1:])):
+                        year_entry = fields[j + 1]
+                        year = year_entry[0]
+                        profile_year_val = year_entry[i + 1]
+                        csv_entries.append([category, field_display, year, profile_year_val, unit_display])
 
         for csv_entry in csv_entries:
             w.writerow(csv_entry)

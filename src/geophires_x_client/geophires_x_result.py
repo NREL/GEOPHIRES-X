@@ -426,13 +426,9 @@ class GeophiresXResult:
     def _get_power_generation_profile(self):
         profile_lines = None
         try:
-            s1 = '*  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-            s2 = '***************************************************************'  # header of next profile
-            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+            profile_lines = self._get_profile_lines('HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE')
         except IndexError:
-            s1 = '*  POWER GENERATION PROFILE  *'
-            s2 = '***************************************************************'  # header of next profile
-            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+            profile_lines = self._get_profile_lines('POWER GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
     @property
@@ -442,12 +438,15 @@ class GeophiresXResult:
     def _get_heat_electricity_extraction_generation_profile(self):
         profile_lines = None
         try:
-            s1 = '*  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+            profile_lines = self._get_profile_lines('ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE')
         except IndexError:
-            s1 = '*  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *'
-            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+            profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
+
+    def _get_profile_lines(self, profile_name):
+        s1 = f'*  {profile_name}  *'
+        s2 = '\n\n'
+        return ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
 
     def _get_data_from_profile_lines(self, profile_lines):
         data_lines = profile_lines[5:]

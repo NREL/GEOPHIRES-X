@@ -5,6 +5,8 @@ from geophires_x.AGSEconomics import AGSEconomics
 from geophires_x.AGSSurfacePlant import AGSSurfacePlant
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
+from geophires_x.EconomicsAddOns import EconomicsAddOns
+from geophires_x.EconomicsCCUS import EconomicsCCUS
 from geophires_x.GeoPHIRESUtils import json_dumpse
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
@@ -41,6 +43,8 @@ class GeophiresXSchemaGenerator:
             (dummy_model.economics, 'Economics'),
             (AGSEconomics(dummy_model), 'Economics'),
             (SUTRAEconomics(dummy_model), 'Economics'),
+            (EconomicsCCUS(dummy_model), 'Economics'),
+            (EconomicsAddOns(dummy_model), 'Economics'),
         ]
 
         output_params = {}

@@ -17,7 +17,7 @@ if 'input-file' in parsed_args:
     sys.argv[1] = Path(parsed_args['input-file'][0]).absolute()
 
 if 'output-file' in parsed_args:
-    sys.argv[2] = Path(parsed_args['output-file'][0]).absolute()
+    sys.argv[2] = Path(parsed_args['output-file']).absolute()
 else:
     if len(sys.argv) < 3:
         sys.argv.append('')

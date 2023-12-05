@@ -98,13 +98,13 @@ Steps:
 
 4. Source the virtual environment:
 
-- Windows::
+   - Windows::
 
-    venv\bin\Activate.bat
+       venv\bin\Activate.bat
 
-- macOS/Linux::
+   - macOS/Linux::
 
-    source venv/bin/activate
+       source venv/bin/activate
 
 5. Install the ``geophires-x`` package::
 

@@ -343,6 +343,8 @@ class GeophiresXResult:
                 if category not in (
                     'POWER GENERATION PROFILE',
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
+                    'EXTENDED ECONOMIC PROFILE',
+                    'CCUS PROFILE',
                 ):
                     raise RuntimeError('unexpected category')
 

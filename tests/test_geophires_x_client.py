@@ -228,6 +228,6 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertIsNotNone(as_csv)
 
         result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
-        with open(result_file, 'w') as rf:
+        with open(result_file, 'w', newline='', encoding='utf-8') as rf:
             rf.write(as_csv)
             self.assertFileContentsEqual(result_file, self._get_test_file_path('geophires-result_example-3.csv'))

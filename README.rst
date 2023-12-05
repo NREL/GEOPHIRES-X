@@ -70,20 +70,70 @@ A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geop
 Installation
 ------------
 
-Strongly recommended prerequisite: always install in a `virtual environment <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ (rather than global site-packages).
+Editable Installation (Recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To consume GEOPHIRES-X as a python package, install the in-development version with::
+An editable installation is recommended for users who want to run GEOPHIRES-X locally,
+view its python files in an IDE or text editor,
+and potentially create their own extensions as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__.
+
+Prerequisites:
+
+1. Python 3.8+: You must have Python 3.8 or later installed on your machine. Python can be downloaded at `python.org/downloads <https://www.python.org/downloads/>`__.
+2. `Git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`__
+3. Virtual environment (aka ``virtualenv``): `Install virtual environment on your machine <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already
+4. On Windows, you will need Admin privileges (required to successfully activate the virtual environment)
+
+Steps:
+
+1. Open a command line (i.e. Terminal on Mac, cmd.exe or PowerShell on Windows)
+2. Create a directory for GEOPHIRES::
+
+    mkdir geophires-x
+    cd geophires-x
+
+3. Create a virtual environment::
+
+    python -m venv venv
+
+4. Source the virtual environment:
+
+  - Windows::
+
+       venv\bin\Activate.bat
+
+  - macOS/Linux::
+
+       source venv/bin/activate
+
+5. Install the ``geophires-x`` package::
+
+    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
+
+6. Run on an example file::
+
+    cd tests
+    cd examples
+    python -mgeophires_x example1.txt
+
+
+Pip Package
+^^^^^^^^^^^
+
+Alternatively, to just consume GEOPHIRES-X as a regular, non-editable python package::
 
     pip install https://github.com/NREL/python-geophires-x/archive/main.zip
 
+
 .. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
-If you wish to add your own extensions (as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__) one option is to do an `editable install <https://pip.pypa.io/en/stable/topics/local-project-installs/>`__::
+Development Instructions
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-   pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x
+If you are interested in sharing your extensions with others, or even contributing them back to this repository,
+you may want to follow `the Development instructions <CONTRIBUTING.rst#development>`__.
+(You can also create a fork after doing an editable install so don't worry about picking this method if you're unsure.)
 
-If you are interested in sharing your extensions with others (or even contributing them back to this repository),
-follow `the Development instructions <CONTRIBUTING.rst#development>`__ instead.
 
 Usage
 -----

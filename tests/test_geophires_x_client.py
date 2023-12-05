@@ -1,3 +1,7 @@
+import tempfile
+import uuid
+from pathlib import Path
+
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client.geophires_input_parameters import EndUseOption
@@ -222,3 +226,8 @@ class GeophiresXClientTestCase(BaseTestCase):
 
         as_csv = result.as_csv()
         self.assertIsNotNone(as_csv)
+
+        result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
+        with open(result_file, 'w') as rf:
+            rf.write(as_csv)
+            self.assertFileContentsEqual(result_file, self._get_test_file_path('geophires-result_example-3.csv'))

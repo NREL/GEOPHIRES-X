@@ -94,13 +94,13 @@ Steps:
 
 3. Create a virtual environment::
 
-    python -m venv venv
+    python3 -m venv venv
 
 4. Source the virtual environment:
 
    - Windows::
 
-       venv\bin\Activate.bat
+       venv\bin\activate.bat
 
    - macOS/Linux::
 
@@ -108,14 +108,14 @@ Steps:
 
 5. Install the ``geophires-x`` package::
 
-    pip install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x --src .
+    pip3 install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x --src .
 
 6. Run on an example file::
 
     cd geophires-x
     cd tests
     cd examples
-    python -mgeophires_x example1.txt
+    python3 -mgeophires_x example1.txt
 
 7. View and edit source code by opening the ``my-geophires-x/`` directory in an IDE or editor such as `PyCharm <https://www.jetbrains.com/pycharm/>`__, `Spyder <https://www.spyder-ide.org/>`__, or `Visual Studio Code <https://code.visualstudio.com/>`__. The GEOPHIRES-X source code will be located in the ``my-geophires-project/geophires-x`` directory. You can add your own python files in ``my-geophires-x/`` that use the source as a module as shown below.
 
@@ -124,7 +124,7 @@ Pip Package
 
 If you do not need to view or edit GEOPHIRES-X source code, you can consume GEOPHIRES-X as a regular, non-editable python package::
 
-    pip install https://github.com/NREL/python-geophires-x/archive/main.zip
+    pip3 install https://github.com/NREL/python-geophires-x/archive/main.zip
 
 
 .. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
@@ -201,7 +201,7 @@ Example usage in Python:
 
 If you followed the editable installation example above, put this code in ``my-geophires-project/main.py``, then run::
 
-   python main.py
+   python3 main.py
 
 You may also pass parameters as a text file:
 

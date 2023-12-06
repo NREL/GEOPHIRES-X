@@ -79,14 +79,14 @@ and create your own extensions as described in `How to extend GEOPHIRES-X <docs/
 
 Prerequisites:
 
-1. Python 3.8+: You must have Python 3.8 or later installed on your machine. Python can be downloaded at `python.org/downloads <https://www.python.org/downloads/>`__.
+1. Python 3.8+: You must have Python 3.8 or later installed on your machine. Python can be downloaded at `python.org/downloads <https://www.python.org/downloads/>`__. (On Ubuntu: ``alias python=python3`` if not aliased already.)
 2. `Git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`__
 3. Virtual environment (aka ``virtualenv``): `Install virtual environment on your machine <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already
 4. On Windows, you will need Admin privileges (required to successfully activate the virtual environment)
 
 Steps:
 
-1. Open a command line (i.e. Terminal on Mac, cmd.exe or PowerShell on Windows)
+1. Open a command line (i.e. Terminal on Mac, PowerShell on Windows)
 2. Create a directory for GEOPHIRES::
 
     mkdir my-geophires-project
@@ -94,13 +94,13 @@ Steps:
 
 3. Create a virtual environment::
 
-    python3 -m venv venv
+    python -m venv venv
 
 4. Source the virtual environment:
 
    - Windows::
 
-       venv\bin\activate.bat
+       venv\Scripts\Activate.ps1
 
    - macOS/Linux::
 
@@ -115,9 +115,9 @@ Steps:
     cd geophires-x
     cd tests
     cd examples
-    python3 -mgeophires_x example1.txt
+    python -mgeophires_x example1.txt
 
-7. View and edit source code by opening the ``my-geophires-x/`` directory in an IDE or editor such as `PyCharm <https://www.jetbrains.com/pycharm/>`__, `Spyder <https://www.spyder-ide.org/>`__, or `Visual Studio Code <https://code.visualstudio.com/>`__. The GEOPHIRES-X source code will be located in the ``my-geophires-project/geophires-x`` directory. You can add your own python files in ``my-geophires-x/`` that use the source as a module as shown below.
+7. View and edit source code by opening the ``my-geophires-project/`` directory in an IDE or editor such as `PyCharm <https://www.jetbrains.com/pycharm/>`__, `Spyder <https://www.spyder-ide.org/>`__, or `Visual Studio Code <https://code.visualstudio.com/>`__. The GEOPHIRES-X source code will be located in the ``my-geophires-project/geophires-x`` directory. You can add your own python files in ``my-geophires-x/`` that use the source as a module as shown below.
 
 Pip Package
 ^^^^^^^^^^^
@@ -201,7 +201,7 @@ Example usage in Python:
 
 If you followed the editable installation example above, put this code in ``my-geophires-project/main.py``, then run::
 
-   python3 main.py
+   python main.py
 
 You may also pass parameters as a text file:
 

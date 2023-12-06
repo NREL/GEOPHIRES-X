@@ -233,6 +233,12 @@ If you installed with pip (editable or non-), you may run GEOPHIRES from the com
 
    python -mgeophires_x my_geophires_input.txt
 
+You may also optionally pass the output file as well::
+
+   python -mgeophires_x my_geophires_input.txt my_geophires_result.out
+
+(If you do not pass an output file argument a default name will be used.)
+
 
 Documentation
 =============

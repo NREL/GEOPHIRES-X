@@ -1,5 +1,7 @@
+import csv
 import json
 import re
+from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
 
@@ -58,6 +60,31 @@ class GeophiresXResult:
                 'Project MOIC',
                 # SUTRA
                 'Fixed Charge Rate (FCR)',
+            ],
+            'EXTENDED ECONOMICS': [
+                'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',
+                'Adjusted Project LCOH (after incentives, grants, AddOns,etc)',
+                'Adjusted Project CAPEX (after incentives, grants, AddOns, etc)',
+                'Adjusted Project OPEX (after incentives, grants, AddOns, etc)',
+                'Project NPV   (including AddOns)',
+                'Project IRR   (including AddOns)',
+                'Project VIR=PI=PIR   (including AddOns)',
+                'Project MOIC  (including AddOns)',
+                'Project Payback Period       (including AddOns)',
+                'Total Add-on CAPEX',
+                'Total Add-on OPEX',
+                'Total Add-on Net Elec',
+                'Total Add-on Net Heat',
+                'Total Add-on Profit',
+                'AddOns Payback Period',
+            ],
+            'CCUS ECONOMICS': [
+                'Total Avoided Carbon Production',
+                'Project NPV            (including carbon credit)',
+                'Project IRR            (including carbon credit)',
+                'Project VIR=IR=PIR     (including carbon credit)',
+                'Project MOIC           (including carbon credit)',
+                'Project Payback Period (including carbon credit)',
             ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
@@ -286,6 +313,60 @@ class GeophiresXResult:
         else:
             return None
 
+    def as_csv(self) -> str:
+        f = StringIO()
+        w = csv.writer(f)
+
+        w.writerow(['Category', 'Field', 'Year', 'Value', 'Units'])
+
+        csv_entries = []
+        for category, fields in self.result.items():
+            if category == 'metadata':
+                continue
+
+            if isinstance(fields, dict):
+                for field, value_unit in fields.items():
+
+                    class ValueUnit:
+                        def __init__(self, v_u):
+                            self.value_display = v_u
+                            self.unit_display = ''
+                            if isinstance(v_u, dict):
+                                self.value_display = v_u['value']
+                                self.unit_display = v_u['unit']
+
+                    if value_unit is not None:
+                        field_display = field.replace(',', r'\,')
+                        v_u = ValueUnit(value_unit)
+                        csv_entries.append([category, field_display, '', v_u.value_display, v_u.unit_display])
+            else:
+                if category not in (
+                    'POWER GENERATION PROFILE',
+                    'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
+                    'EXTENDED ECONOMIC PROFILE',
+                    'CCUS PROFILE',
+                ):
+                    raise RuntimeError('unexpected category')
+
+                field_display = field.replace(',', r'\,')
+                for i in range(len(fields[0][1:])):
+                    field_profile = fields[0][i + 1]
+                    unit_split = field_profile.split(' (')
+                    field_display = unit_split[0]
+                    unit_display = ''
+                    if len(unit_split) > 1:
+                        unit_display = unit_split[1].replace(')', '')
+                    for j in range(len(fields[1:])):
+                        year_entry = fields[j + 1]
+                        year = year_entry[0]
+                        profile_year_val = year_entry[i + 1]
+                        csv_entries.append([category, field_display, year, profile_year_val, unit_display])
+
+        for csv_entry in csv_entries:
+            w.writerow(csv_entry)
+
+        return f.getvalue()
+
     @property
     def json_output_file_path(self) -> Path:
         return Path(self.output_file_path).with_suffix('.json')
@@ -347,13 +428,9 @@ class GeophiresXResult:
     def _get_power_generation_profile(self):
         profile_lines = None
         try:
-            s1 = '*  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-            s2 = '***************************************************************'  # header of next profile
-            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+            profile_lines = self._get_profile_lines('HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE')
         except IndexError:
-            s1 = '*  POWER GENERATION PROFILE  *'
-            s2 = '***************************************************************'  # header of next profile
-            profile_lines = ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
+            profile_lines = self._get_profile_lines('POWER GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
     @property
@@ -363,12 +440,15 @@ class GeophiresXResult:
     def _get_heat_electricity_extraction_generation_profile(self):
         profile_lines = None
         try:
-            s1 = '*  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *'
-            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+            profile_lines = self._get_profile_lines('ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE')
         except IndexError:
-            s1 = '*  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *'
-            profile_lines = ''.join(self._lines).split(s1)[1].split('\n')
+            profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
+
+    def _get_profile_lines(self, profile_name):
+        s1 = f'*  {profile_name}  *'
+        s2 = '\n\n'
+        return ''.join(self._lines).split(s1)[1].split(s2)[0].split('\n')  # [5:]
 
     def _get_data_from_profile_lines(self, profile_lines):
         data_lines = profile_lines[5:]

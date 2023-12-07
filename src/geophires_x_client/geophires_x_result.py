@@ -298,6 +298,10 @@ class GeophiresXResult:
             # FIXME
             self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')
 
+        eep = self._get_extended_economic_profile()
+        if eep is not None:
+            self.result['EXTENDED ECONOMIC PROFILE'] = eep
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -348,7 +352,6 @@ class GeophiresXResult:
                 ):
                     raise RuntimeError('unexpected category')
 
-                field_display = field.replace(',', r'\,')
                 for i in range(len(fields[0][1:])):
                     field_profile = fields[0][i + 1]
                     unit_split = field_profile.split(' (')
@@ -444,6 +447,50 @@ class GeophiresXResult:
         except IndexError:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
+
+    def _get_extended_economic_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Electricity Price (cents/kWh)',
+                'Electricity Revenue (MUSD/yr)',
+                'Heat Price (cents/kWh)',
+                'Heat Revenue (MUSD/yr)',
+                'Add-on Revenue (MUSD/yr)',
+                'Annual AddOn Cash Flow (MUSD/yr)',
+                'Cumm. AddOn Cash Flow (MUSD)',
+                'Annual Project Cash Flow (MUSD/yr)',
+                'Cumm. Project Cash Flow (MUSD)',
+            ]
+
+        def extract_table_data(lines: list):
+            # Skip the lines up to the header and split the rest using whitespaces
+            lines_splitted = [line.split() for line in lines[5:]]
+
+            # The number of columns is determined by the line with the most elements
+            num_of_columns = max(len(line) for line in lines_splitted)
+
+            # Initialize a new list to hold the table data
+            table_data = []
+
+            # Parse the contents of each row
+            for line in lines_splitted:
+                row_data = ['' for _ in range(num_of_columns)]
+                for i in range(len(line)):
+                    row_data[i] += (' ' if row_data[i] else '') + line[i]
+                table_data.append(row_data)
+
+            return table_data
+
+        try:
+            lines = self._get_profile_lines('EXTENDED ECONOMIC PROFILE')
+            profile = extract_table_header(lines)
+            profile.extend(extract_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get extended economic profile: {e}')
+            return None
 
     def _get_profile_lines(self, profile_name):
         s1 = f'*  {profile_name}  *'

@@ -402,7 +402,7 @@ class GeophiresXResult:
         matching_lines = set(filter(lambda line: f'    {field_name}: ' in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Field not found: {field_name}')
+            self._logger.debug(f'Field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:
@@ -430,7 +430,7 @@ class GeophiresXResult:
         matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Equal sign-delimited field not found: {field_name}')
+            self._logger.debug(f'Equal sign-delimited field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:

@@ -14,6 +14,11 @@ class _EqualSignDelimitedField:
         self.field_name: str = field_name
 
 
+class _StringValueField:
+    def __init__(self, field_name: str):
+        self.field_name: str = field_name
+
+
 class GeophiresXResult:
     _RESULT_FIELDS_BY_CATEGORY = MappingProxyType(
         {
@@ -99,7 +104,7 @@ class GeophiresXResult:
                 'Injection well casing ID',
                 'Production well casing ID',
                 'Number of times redrilling',
-                # 'Power plant type', # Not a number - TODO parse non-number values without throwing exception
+                _StringValueField('Power plant type'),
                 # AGS/CLGS
                 'Fluid',
                 'Design',
@@ -287,7 +292,11 @@ class GeophiresXResult:
                 if isinstance(field, _EqualSignDelimitedField):
                     self.result[category][field.field_name] = self._get_equal_sign_delimited_field(field.field_name)
                 else:
-                    self.result[category][field] = self._get_result_field(field)
+                    is_string_field = isinstance(field, _StringValueField)
+                    field_name = field.field_name if is_string_field else field
+                    self.result[category][field_name] = self._get_result_field(
+                        field_name, is_string_value_field=is_string_field
+                    )
 
         try:
             self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
@@ -387,31 +396,33 @@ class GeophiresXResult:
         except FileNotFoundError:
             return {}
 
-    def _get_result_field(self, field):
+    def _get_result_field(self, field_name: str, is_string_value_field: bool = False):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'    {field}:  ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'    {field_name}:  ' in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Field not found: {field}')
+            self._logger.warning(f'Field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:
             self._logger.warning(
-                f'Found multiple ({len(matching_lines)}) entries for field: {field}\n\t{matching_lines}'
+                f'Found multiple ({len(matching_lines)}) entries for field: {field_name}\n\t{matching_lines}'
             )
 
         matching_line = matching_lines.pop()
-        val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field}:', '').replace('\n', ''))
+        val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field_name}:', '').replace('\n', ''))
+        if is_string_value_field:
+            return {'value': val_and_unit_str, 'unit': None}
         val_and_unit_tuple = val_and_unit_str.strip().split(' ')
         str_val = val_and_unit_tuple[0]
 
         unit = None
         if len(val_and_unit_tuple) == 2:
             unit = val_and_unit_tuple[1]
-        elif field.startswith('Number'):
+        elif field_name.startswith('Number'):
             unit = 'count'
 
-        return {'value': self._parse_number(str_val, field=f'field "{field}"'), 'unit': unit}
+        return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
     def _get_equal_sign_delimited_field(self, field_name):
         metadata_marker = f'{field_name} = '
@@ -575,7 +586,7 @@ class GeophiresXResult:
         data.extend([self._parse_number(str_entry) for str_entry in x] for x in str_entries)
         return data
 
-    def _parse_number(self, number_str, field='string'):
+    def _parse_number(self, number_str, field='string') -> int | float:
         try:
             if '.' in number_str:
                 return float(number_str)

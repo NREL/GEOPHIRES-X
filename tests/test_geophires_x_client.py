@@ -37,6 +37,7 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result is not None
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU is None
         assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
+        assert result.result['ENGINEERING PARAMETERS']['Power plant type']['value'] == 'Supercritical ORC'
 
     def test_geophires_x_result_4(self):
         test_result_path = self._get_test_file_path('geophires-result_example-4.out')

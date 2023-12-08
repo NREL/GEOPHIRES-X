@@ -29,6 +29,7 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU == expected_price
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['value'] == expected_price
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['unit'] == 'USD/MMBTU'
+        assert result.result['SUMMARY OF RESULTS']['End-Use Option'] == 'Direct-Use Heat'
 
     def test_geophires_x_result_2(self):
         test_result_path = self._get_test_file_path('geophires-result_example-2.out')
@@ -38,6 +39,15 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result.direct_use_heat_breakeven_price_USD_per_MMBTU is None
         assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
         assert result.result['ENGINEERING PARAMETERS']['Power plant type']['value'] == 'Supercritical ORC'
+        assert result.result['SUMMARY OF RESULTS']['End-Use Option'] == 'Electricity'
+
+    def test_geophires_x_result_3(self):
+        test_result_path = self._get_test_file_path('geophires-result_example-3.out')
+        result = GeophiresXResult(test_result_path)
+        assert (
+            result.result['SUMMARY OF RESULTS']['End-Use Option']
+            == 'Cogeneration Topping Cycle, Heat sales considered as extra income'
+        )
 
     def test_geophires_x_result_4(self):
         test_result_path = self._get_test_file_path('geophires-result_example-4.out')

@@ -23,9 +23,8 @@ class GeophiresXResult:
     _RESULT_FIELDS_BY_CATEGORY = MappingProxyType(
         {
             'SUMMARY OF RESULTS': [
-                # TODO uses colon delimiter inconsistently
-                # 'End-Use Option',
-                'End-Use',
+                _StringValueField('End-Use Option'),
+                _StringValueField('End-Use'),
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
@@ -106,8 +105,8 @@ class GeophiresXResult:
                 'Number of times redrilling',
                 _StringValueField('Power plant type'),
                 # AGS/CLGS
-                'Fluid',
-                'Design',
+                _StringValueField('Fluid'),
+                _StringValueField('Design'),
                 'Flow rate',
                 'Lateral Length',
                 'Vertical Depth',
@@ -398,7 +397,7 @@ class GeophiresXResult:
 
     def _get_result_field(self, field_name: str, is_string_value_field: bool = False):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'    {field_name}:  ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'    {field_name}: ' in line, self._lines))
 
         if len(matching_lines) == 0:
             self._logger.warning(f'Field not found: {field_name}')

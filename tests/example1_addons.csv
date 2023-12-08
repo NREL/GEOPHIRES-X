@@ -1,4 +1,5 @@
 Category,Field,Year,Value,Units
+SUMMARY OF RESULTS,End-Use Option,,Electricity,
 SUMMARY OF RESULTS,Average Net Electricity Production,,5.39,MW
 SUMMARY OF RESULTS,Electricity breakeven price,,1.74,cents/kWh
 SUMMARY OF RESULTS,Number of production wells,,2,count
@@ -46,6 +47,7 @@ ENGINEERING PARAMETERS,Flowrate per production well,,55.0,kg/sec
 ENGINEERING PARAMETERS,Injection well casing ID,,0.005,meter
 ENGINEERING PARAMETERS,Production well casing ID,,0.005,meter
 ENGINEERING PARAMETERS,Number of times redrilling,,0,count
+ENGINEERING PARAMETERS,Power plant type,,Supercritical ORC,
 RESOURCE CHARACTERISTICS,Maximum reservoir temperature,,400.0,degC
 RESOURCE CHARACTERISTICS,Number of segments,,1,count
 RESOURCE CHARACTERISTICS,Geothermal gradient,,0.05,degC/m

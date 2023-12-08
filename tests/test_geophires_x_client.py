@@ -177,16 +177,18 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertListEqual(
             eep,
             [
-                'Year Since Start',
-                'Electricity Price (cents/kWh)',
-                'Electricity Revenue (MUSD/yr)',
-                'Heat Price (cents/kWh)',
-                'Heat Revenue (MUSD/yr)',
-                'Add-on Revenue (MUSD/yr)',
-                'Annual AddOn Cash Flow (MUSD/yr)',
-                'Cumm. AddOn Cash Flow (MUSD)',
-                'Annual Project Cash Flow (MUSD/yr)',
-                'Cumm. Project Cash Flow (MUSD)',
+                [
+                    'Year Since Start',
+                    'Electricity Price (cents/kWh)',
+                    'Electricity Revenue (MUSD/yr)',
+                    'Heat Price (cents/kWh)',
+                    'Heat Revenue (MUSD/yr)',
+                    'Add-on Revenue (MUSD/yr)',
+                    'Annual AddOn Cash Flow (MUSD/yr)',
+                    'Cumm. AddOn Cash Flow (MUSD)',
+                    'Annual Project Cash Flow (MUSD/yr)',
+                    'Cumm. Project Cash Flow (MUSD)',
+                ],
                 ['1', '0.090', '0.0023', '0.012', '0.0000', '1.14', '-70.00', '-70.00', '-101.08', '-101.08'],
                 ['2', '0.090', '0.0023', '0.012', '0.0000', '1.14', '1.14', '-68.86', '5.70', '-95.39'],
                 ['3', '0.090', '0.0023', '0.012', '0.0000', '1.14', '1.14', '-67.72', '5.74', '-89.65'],
@@ -272,13 +274,21 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertDictEqual(result_default_units, result_non_default_units)
 
     def test_csv(self):
-        test_result_path = self._get_test_file_path('geophires-result_example-3.out')
-        result = GeophiresXResult(test_result_path)
+        def assert_csv_equal(case_report_file_path, expected_csv_file_path):
+            test_result_path = self._get_test_file_path(case_report_file_path)
+            result = GeophiresXResult(test_result_path)
 
-        as_csv = result.as_csv()
-        self.assertIsNotNone(as_csv)
+            as_csv = result.as_csv()
+            self.assertIsNotNone(as_csv)
 
-        result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
-        with open(result_file, 'w', newline='', encoding='utf-8') as rf:
-            rf.write(as_csv)
-            self.assertFileContentsEqual(result_file, self._get_test_file_path('geophires-result_example-3.csv'))
+            result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
+            with open(result_file, 'w', newline='', encoding='utf-8') as rf:
+                rf.write(as_csv)
+                self.assertFileContentsEqual(result_file, self._get_test_file_path(expected_csv_file_path))
+
+        for case in [
+            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
+            ('examples/example1_addons.out', 'example1_addons.csv'),
+        ]:
+            with self.subTest(msg=case[0]):
+                assert_csv_equal(case[0], case[1])

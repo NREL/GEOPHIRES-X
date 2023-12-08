@@ -485,7 +485,7 @@ class GeophiresXResult:
 
         try:
             lines = self._get_profile_lines('EXTENDED ECONOMIC PROFILE')
-            profile = extract_table_header(lines)
+            profile = [extract_table_header(lines)]
             profile.extend(extract_table_data(lines))
             return profile
         except BaseException as e:

@@ -521,7 +521,6 @@ class GeophiresXResult:
         # The number of columns is determined by the line with the most elements
         num_of_columns = max(len(line) for line in lines_splitted)
 
-        # Initialize a new list to hold the table data
         table_data = []
 
         # Parse the contents of each row
@@ -534,7 +533,7 @@ class GeophiresXResult:
                 continue
 
             for i in range(len(line)):
-                row_data[i] = line[i]  # self._parse_number(line[i])
+                row_data[i] = self._parse_number(line[i])
             table_data.append(row_data)
 
         return table_data
@@ -573,11 +572,13 @@ class GeophiresXResult:
     def _parse_number(self, number_str, field='string') -> int | float:
         try:
             if '.' in number_str:
+                # TODO should probably ideally use decimal.Decimal to preserve precision,
+                #  i.e. 1.00 for USD instead of 1.0
                 return float(number_str)
             else:
                 return int(number_str)
-        except TypeError:
-            self._logger.error(f'Unable to parse {field} as number: {number_str}')
+        except BaseException:
+            self._logger.warning(f'Unable to parse {field} as number: {number_str}')
             return None
 
     def _get_end_use_option(self) -> EndUseOption:

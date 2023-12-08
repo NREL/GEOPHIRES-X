@@ -480,29 +480,10 @@ class GeophiresXResult:
                 'Cumm. Project Cash Flow (MUSD)',
             ]
 
-        def extract_table_data(lines: list):
-            # Skip the lines up to the header and split the rest using whitespaces
-            lines_splitted = [line.split() for line in lines[5:]]
-
-            # The number of columns is determined by the line with the most elements
-            num_of_columns = max(len(line) for line in lines_splitted)
-
-            # Initialize a new list to hold the table data
-            table_data = []
-
-            # Parse the contents of each row
-            for line in lines_splitted:
-                row_data = ['' for _ in range(num_of_columns)]
-                for i in range(len(line)):
-                    row_data[i] += (' ' if row_data[i] else '') + line[i]
-                table_data.append(row_data)
-
-            return table_data
-
         try:
             lines = self._get_profile_lines('EXTENDED ECONOMIC PROFILE')
             profile = [extract_table_header(lines)]
-            profile.extend(extract_table_data(lines))
+            profile.extend(self._extract_addons_style_table_data(lines))
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get extended economic profile: {e}')
@@ -522,39 +503,41 @@ class GeophiresXResult:
                 'Project Cumm. Cash Flow (MUSD)',
             ]
 
-        def extract_table_data(lines: list):
-            # Skip the lines up to the header and split the rest using whitespaces
-            lines_splitted = [line.split() for line in lines[5:]]
-
-            # The number of columns is determined by the line with the most elements
-            num_of_columns = max(len(line) for line in lines_splitted)
-
-            # Initialize a new list to hold the table data
-            table_data = []
-
-            # Parse the contents of each row
-            for line in lines_splitted:
-                row_data = ['' for _ in range(num_of_columns)]
-                while len(line) < num_of_columns:
-                    line.insert(1, '')
-
-                if not any(line):
-                    continue
-
-                for i in range(len(line)):
-                    row_data[i] = line[i]
-                table_data.append(row_data)
-
-            return table_data
-
         try:
             lines = self._get_profile_lines('CCUS PROFILE')
             profile = [extract_table_header(lines)]
-            profile.extend(extract_table_data(lines))
+            profile.extend(self._extract_addons_style_table_data(lines))
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get CCUS profile: {e}')
             return None
+
+    def _extract_addons_style_table_data(self, lines: list):
+        """TODO consolidate with _get_data_from_profile_lines"""
+
+        # Skip the lines up to the header and split the rest using whitespaces
+        lines_splitted = [line.split() for line in lines[5:]]
+
+        # The number of columns is determined by the line with the most elements
+        num_of_columns = max(len(line) for line in lines_splitted)
+
+        # Initialize a new list to hold the table data
+        table_data = []
+
+        # Parse the contents of each row
+        for line in lines_splitted:
+            row_data = ['' for _ in range(num_of_columns)]
+            while len(line) < num_of_columns:
+                line.insert(1, '')
+
+            if not any(line):
+                continue
+
+            for i in range(len(line)):
+                row_data[i] = line[i]  # self._parse_number(line[i])
+            table_data.append(row_data)
+
+        return table_data
 
     def _get_profile_lines(self, profile_name):
         s1 = f'*  {profile_name}  *'

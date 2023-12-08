@@ -302,6 +302,10 @@ class GeophiresXResult:
         if eep is not None:
             self.result['EXTENDED ECONOMIC PROFILE'] = eep
 
+        ccus_profile = self._get_ccus_profile()
+        if ccus_profile is not None:
+            self.result['CCUS PROFILE'] = ccus_profile
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -490,6 +494,54 @@ class GeophiresXResult:
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get extended economic profile: {e}')
+            return None
+
+    def _get_ccus_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Carbon Avoided (pound)',
+                'CCUS Price (USD/lb)',
+                'CCUS Revenue (MUSD/yr)',
+                'CCUS Annual Cash Flow (MUSD/yr)',
+                'CCUS Cumm. Cash Flow (MUSD)',
+                'Project Annual Cash Flow (MUSD/yr)',
+                'Project Cumm. Cash Flow (MUSD)',
+            ]
+
+        def extract_table_data(lines: list):
+            # Skip the lines up to the header and split the rest using whitespaces
+            lines_splitted = [line.split() for line in lines[5:]]
+
+            # The number of columns is determined by the line with the most elements
+            num_of_columns = max(len(line) for line in lines_splitted)
+
+            # Initialize a new list to hold the table data
+            table_data = []
+
+            # Parse the contents of each row
+            for line in lines_splitted:
+                row_data = ['' for _ in range(num_of_columns)]
+                while len(line) < num_of_columns:
+                    line.insert(1, '')
+
+                if not any(line):
+                    continue
+
+                for i in range(len(line)):
+                    row_data[i] = line[i]
+                table_data.append(row_data)
+
+            return table_data
+
+        try:
+            lines = self._get_profile_lines('CCUS PROFILE')
+            profile = [extract_table_header(lines)]
+            profile.extend(extract_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get CCUS profile: {e}')
             return None
 
     def _get_profile_lines(self, profile_name):

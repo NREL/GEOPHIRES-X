@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import csv
 import json
 import re
@@ -14,13 +16,17 @@ class _EqualSignDelimitedField:
         self.field_name: str = field_name
 
 
+class _StringValueField:
+    def __init__(self, field_name: str):
+        self.field_name: str = field_name
+
+
 class GeophiresXResult:
     _RESULT_FIELDS_BY_CATEGORY = MappingProxyType(
         {
             'SUMMARY OF RESULTS': [
-                # TODO uses colon delimiter inconsistently
-                # 'End-Use Option',
-                'End-Use',
+                _StringValueField('End-Use Option'),
+                _StringValueField('End-Use'),
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
@@ -99,10 +105,10 @@ class GeophiresXResult:
                 'Injection well casing ID',
                 'Production well casing ID',
                 'Number of times redrilling',
-                # 'Power plant type', # Not a number - TODO parse non-number values without throwing exception
+                _StringValueField('Power plant type'),
                 # AGS/CLGS
-                'Fluid',
-                'Design',
+                _StringValueField('Fluid'),
+                _StringValueField('Design'),
                 'Flow rate',
                 'Lateral Length',
                 'Vertical Depth',
@@ -287,7 +293,11 @@ class GeophiresXResult:
                 if isinstance(field, _EqualSignDelimitedField):
                     self.result[category][field.field_name] = self._get_equal_sign_delimited_field(field.field_name)
                 else:
-                    self.result[category][field] = self._get_result_field(field)
+                    is_string_field = isinstance(field, _StringValueField)
+                    field_name = field.field_name if is_string_field else field
+                    self.result[category][field_name] = self._get_result_field(
+                        field_name, is_string_value_field=is_string_field
+                    )
 
         try:
             self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
@@ -297,6 +307,14 @@ class GeophiresXResult:
         except Exception as e:
             # FIXME
             self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')
+
+        eep = self._get_extended_economic_profile()
+        if eep is not None:
+            self.result['EXTENDED ECONOMIC PROFILE'] = eep
+
+        ccus_profile = self._get_ccus_profile()
+        if ccus_profile is not None:
+            self.result['CCUS PROFILE'] = ccus_profile
 
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
@@ -348,7 +366,6 @@ class GeophiresXResult:
                 ):
                     raise RuntimeError('unexpected category')
 
-                field_display = field.replace(',', r'\,')
                 for i in range(len(fields[0][1:])):
                     field_profile = fields[0][i + 1]
                     unit_split = field_profile.split(' (')
@@ -380,38 +397,40 @@ class GeophiresXResult:
         except FileNotFoundError:
             return {}
 
-    def _get_result_field(self, field):
+    def _get_result_field(self, field_name: str, is_string_value_field: bool = False):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'    {field}:  ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'    {field_name}: ' in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Field not found: {field}')
+            self._logger.debug(f'Field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:
             self._logger.warning(
-                f'Found multiple ({len(matching_lines)}) entries for field: {field}\n\t{matching_lines}'
+                f'Found multiple ({len(matching_lines)}) entries for field: {field_name}\n\t{matching_lines}'
             )
 
         matching_line = matching_lines.pop()
-        val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field}:', '').replace('\n', ''))
+        val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field_name}:', '').replace('\n', ''))
+        if is_string_value_field:
+            return {'value': val_and_unit_str, 'unit': None}
         val_and_unit_tuple = val_and_unit_str.strip().split(' ')
         str_val = val_and_unit_tuple[0]
 
         unit = None
         if len(val_and_unit_tuple) == 2:
             unit = val_and_unit_tuple[1]
-        elif field.startswith('Number'):
+        elif field_name.startswith('Number'):
             unit = 'count'
 
-        return {'value': self._parse_number(str_val, field=f'field "{field}"'), 'unit': unit}
+        return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
     def _get_equal_sign_delimited_field(self, field_name):
         metadata_marker = f'{field_name} = '
         matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
 
         if len(matching_lines) == 0:
-            self._logger.warning(f'Equal sign-delimited field not found: {field_name}')
+            self._logger.debug(f'Equal sign-delimited field not found: {field_name}')
             return None
 
         if len(matching_lines) > 1:
@@ -445,6 +464,80 @@ class GeophiresXResult:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
+    def _get_extended_economic_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Electricity Price (cents/kWh)',
+                'Electricity Revenue (MUSD/yr)',
+                'Heat Price (cents/kWh)',
+                'Heat Revenue (MUSD/yr)',
+                'Add-on Revenue (MUSD/yr)',
+                'Annual AddOn Cash Flow (MUSD/yr)',
+                'Cumm. AddOn Cash Flow (MUSD)',
+                'Annual Project Cash Flow (MUSD/yr)',
+                'Cumm. Project Cash Flow (MUSD)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('EXTENDED ECONOMIC PROFILE')
+            profile = [extract_table_header(lines)]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get extended economic profile: {e}')
+            return None
+
+    def _get_ccus_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Carbon Avoided (pound)',
+                'CCUS Price (USD/lb)',
+                'CCUS Revenue (MUSD/yr)',
+                'CCUS Annual Cash Flow (MUSD/yr)',
+                'CCUS Cumm. Cash Flow (MUSD)',
+                'Project Annual Cash Flow (MUSD/yr)',
+                'Project Cumm. Cash Flow (MUSD)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('CCUS PROFILE')
+            profile = [extract_table_header(lines)]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get CCUS profile: {e}')
+            return None
+
+    def _extract_addons_style_table_data(self, lines: list):
+        """TODO consolidate with _get_data_from_profile_lines"""
+
+        # Skip the lines up to the header and split the rest using whitespaces
+        lines_splitted = [line.split() for line in lines[5:]]
+
+        # The number of columns is determined by the line with the most elements
+        num_of_columns = max(len(line) for line in lines_splitted)
+
+        table_data = []
+
+        # Parse the contents of each row
+        for line in lines_splitted:
+            row_data = ['' for _ in range(num_of_columns)]
+            while len(line) < num_of_columns:
+                line.insert(1, '')
+
+            if not any(line):
+                continue
+
+            for i in range(len(line)):
+                row_data[i] = self._parse_number(line[i])
+            table_data.append(row_data)
+
+        return table_data
+
     def _get_profile_lines(self, profile_name):
         s1 = f'*  {profile_name}  *'
         s2 = '\n\n'
@@ -476,14 +569,16 @@ class GeophiresXResult:
         data.extend([self._parse_number(str_entry) for str_entry in x] for x in str_entries)
         return data
 
-    def _parse_number(self, number_str, field='string'):
+    def _parse_number(self, number_str, field='string') -> int | float:
         try:
             if '.' in number_str:
+                # TODO should probably ideally use decimal.Decimal to preserve precision,
+                #  i.e. 1.00 for USD instead of 1.0
                 return float(number_str)
             else:
                 return int(number_str)
-        except TypeError:
-            self._logger.error(f'Unable to parse {field} as number: {number_str}')
+        except BaseException:
+            self._logger.warning(f'Unable to parse {field} as number: {number_str}')
             return None
 
     def _get_end_use_option(self) -> EndUseOption:

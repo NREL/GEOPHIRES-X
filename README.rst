@@ -272,7 +272,7 @@ A variety of example input ``.txt`` files are available in the `tests/examples d
 Parameters
 ----------
 
-Available parameters are documented in the `Parameters Reference <https://nrel.github.io/python-geophires-x/parameters.html>`__.
+Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
 
 
 Extending GEOPHIRES-X

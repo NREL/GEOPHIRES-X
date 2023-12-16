@@ -1,5 +1,14 @@
-#! python
+from __future__ import annotations
+import traceback
+import logging
+import logging.config
+import os
 
+from geophires_x.GeoPHIRESUtils import read_input_file, EntropyH20_func, EnthalpyH20_func, DensityWater, \
+    HeatCapacityWater, RecoverableHeat, UtilEff_func
+from geophires_x.Parameter import *
+from geophires_x.Units import *
+from geophires_x.Parameter import LookupUnits, ReadParameter
 """
 Heat in Place calculation: Muffler, P., and Raffaele Cataldi.
 "Methods for regional assessment of geothermal resources."
@@ -11,289 +20,6 @@ Created on Monday Nov 28 08:54 2022
 
 @author: Malcolm Ross V1
 """
-
-from __future__ import annotations
-
-import logging
-import logging.config
-import os
-import sys
-
-import numpy as np
-
-from geophires_x.GeoPHIRESUtils import read_input_file
-from geophires_x.Parameter import ConvertOutputUnits
-from geophires_x.Parameter import ConvertUnitsBack
-from geophires_x.Parameter import LookupUnits
-from geophires_x.Parameter import OutputParameter
-from geophires_x.Parameter import ReadParameter
-from geophires_x.Parameter import floatParameter
-from geophires_x.Parameter import intParameter
-from geophires_x.Units import AreaUnit
-from geophires_x.Units import DensityUnit
-from geophires_x.Units import EnthalpyUnit
-from geophires_x.Units import EntropyUnit
-from geophires_x.Units import HeatCapacityUnit
-from geophires_x.Units import HeatUnit
-from geophires_x.Units import LengthUnit
-from geophires_x.Units import MassUnit
-from geophires_x.Units import PercentUnit
-from geophires_x.Units import PowerUnit
-from geophires_x.Units import TemperatureUnit
-from geophires_x.Units import TimeUnit
-from geophires_x.Units import Units
-from geophires_x.Units import VolumeUnit
-
-
-# user-defined static functions
-def DensityWater(Twater: float) -> float:
-    """
-    the DensityWater function is used to calculate the density of water as a function of temperature
-
-    Args:
-    Twater: the temperature of water in degrees C
-
-    Returns:
-         density of water in kg/m3
-    """
-    T = Twater + 273.15
-    rhowater = (
-        0.7983223 + (1.50896e-3 - 2.9104e-6 * T) * T
-    ) * 1e3  # water density correlation as used in Geophires v1.2 [kg/m3]
-    return rhowater
-
-
-def ViscosityWater(Twater: float) -> float:
-    """
-    the ViscosityWater function is used to calculate the viscosity of water as a function of temperature
-    Args:
-        Twater: the temperature of water in degrees C
-
-    Returns:
-        Viscosity of water in Ns/m2
-    """
-    # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
-    muwater = 2.414e-5 * np.power(10, 247.8 / (Twater + 273.15 - 140))
-    return muwater
-
-
-def HeatCapacityWater(Twater) -> float:
-    """
-    the HeatCapacityWater function is used to calculate the specific heat capacity of water as a function of temperature
-    Args:
-        Twater: the temperature of water in degrees C
-
-    Returns:
-        The HeatCapacityWater function as a function of temperature in J/kg-K
-    """
-    Twater = (Twater + 273.15) / 1000
-    A = -203.6060
-    B = 1523.290
-    C = -3196.413
-    D = 2474.455
-    E = 3.855326
-    cpwater = (
-        (A + B * Twater + C * Twater**2 + D * Twater**3 + E / (Twater**2)) / 18.02 * 1000
-    )  # water specific heat capacity in J/kg-K
-    return cpwater
-
-
-def RecoverableHeat(DefaultRecoverableHeat, Twater) -> float:
-    """
-    the RecoverableHeat function is used to calculate the recoverable heat fraction as a function of temperature
-    Args:
-        DefaultRecoverableHeat: The default recoverable heat fraction
-        Twater: the temperature of water in degrees C
-
-    Returns:
-        the recoverable heat fraction as a function of temperature
-    """
-    # return the user parameter if it isn't -1
-    if DefaultRecoverableHeat != -1:
-        return DefaultRecoverableHeat
-    # assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs (>90, Garg and Combs (2011)
-    if Twater < 90.0:
-        return 0.43
-    if Twater > 150.0:
-        return 0.66
-    return 0.0038 * Twater + 0.085
-
-
-def VaporPressureWater(Twater) -> float:
-    """
-    the VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature
-    Args:
-        Twater: the temperature of water in degrees C
-
-    Returns: the vapor pressure of water as a function of temperature in kPa
-    """
-    if Twater < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
-    vp = 133.322 * (10 ** (A - B / (C + Twater))) / 1000  # water vapor pressure in kPa using Antione Equation
-    return vp
-
-
-# define 3 lookup functions for the enthalpy (aka "s", kJ/(kg K)) and entropy (aka "h", kJ/kg) of water
-# as a function of T (dec-c) from https://www.engineeringtoolbox.com/water-properties-d_1508.html
-T = [
-    0.01,
-    10.0,
-    20.0,
-    25.0,
-    30.0,
-    40.0,
-    50.0,
-    60.0,
-    70.0,
-    80.0,
-    90.0,
-    100.0,
-    110.0,
-    120.0,
-    140.0,
-    160.0,
-    180.0,
-    200.0,
-    220.0,
-    240.0,
-    260.0,
-    280.0,
-    300.0,
-    320.0,
-    340.0,
-    360.0,
-    373.946,
-]
-EntropyH20 = [
-    0.0,
-    0.15109,
-    0.29648,
-    0.36722,
-    0.43675,
-    0.5724,
-    0.70381,
-    0.83129,
-    0.95513,
-    1.0756,
-    1.1929,
-    1.3072,
-    1.4188,
-    1.5279,
-    1.7392,
-    1.9426,
-    2.1392,
-    2.3305,
-    2.5177,
-    2.702,
-    2.8849,
-    3.0685,
-    3.2552,
-    3.4494,
-    3.6601,
-    3.9167,
-    4.407,
-]
-EnthalpyH20 = [
-    0.000612,
-    42.021,
-    83.914,
-    104.83,
-    125.73,
-    167.53,
-    209.34,
-    251.18,
-    293.07,
-    335.01,
-    377.04,
-    419.17,
-    461.42,
-    503.81,
-    589.16,
-    675.47,
-    763.05,
-    852.27,
-    943.58,
-    1037.6,
-    1135.0,
-    1236.9,
-    1345.0,
-    1462.2,
-    1594.5,
-    1761.7,
-    2084.3,
-]
-UtilEff = [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0057,
-    0.0337,
-    0.0617,
-    0.0897,
-    0.1177,
-    0.13,
-    0.16,
-    0.19,
-    0.22,
-    0.26,
-    0.29,
-    0.32,
-    0.35,
-    0.38,
-    0.40,
-    0.4,
-    0.4,
-    0.4,
-    0.4,
-    0.4,
-    0.4,
-    0.4,
-    0.4,
-]
-
-
-def EntropyH20_func(x: float) -> float:
-    """
-    the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
-    Args:
-        x: the temperature of water in degrees C
-
-    Returns:
-        the entropy of water as a function of temperature in kJ/kg-K
-    """
-    y = np.interp(x, T, EntropyH20)
-    return y
-
-
-def EnthalpyH20_func(x: float) -> float:
-    """
-    the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
-    Args:
-        x: the temperature of water in degrees C
-
-    Returns: the enthalpy of water as a function of temperature in kJ/kg
-    """
-    y = np.interp(x, T, EnthalpyH20)
-    return y
-
-
-def UtilEff_func(x: float) -> float:
-    """
-    the UtilEff_func function is used to calculate the utilization efficiency of the system as a function of temperature
-    Args:
-        x: the temperature of water in degrees C
-
-    Returns: the utilization efficiency of the system as a function of temperature
-    """
-    y = np.interp(x, T, UtilEff)
-    return y
 
 
 class HIP_RA:
@@ -317,7 +43,7 @@ class HIP_RA:
             logging.config.fileConfig('logging.conf')
             self.logger.setLevel(logging.INFO)
 
-        self.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
 
         # Initiate the elements of the Model
         # Set up all the Parameters that will be predefined by this class using the different types of parameter
@@ -433,18 +159,6 @@ class HIP_RA:
             ErrMessage='calculate a value based on the water temperature',
             ToolTipText='Heat Capacity Of Water [4.18 kJ/kgC]',
         )
-        self.HeatCapacityOfRock = self.ParameterDict[self.HeatCapacityOfRock.Name] = floatParameter(
-            'Heat Capacity Of Rock',
-            value=1.000,
-            Min=0.0,
-            Max=10.0,
-            UnitType=Units.HEAT_CAPACITY,
-            PreferredUnits=HeatCapacityUnit.kJPERKGC,
-            CurrentUnits=HeatCapacityUnit.kJPERKGC,
-            Required=True,
-            ErrMessage='assume default Heat Capacity Of Rock (1.0 kJ/kgC)',
-            ToolTipText='Heat Capacity Of Rock [1.0 kJ/kgC]',
-        )
         self.DensityOfWater = self.ParameterDict[self.DensityOfWater.Name] = floatParameter(
             'Density Of Water',
             value=-1.0,
@@ -554,10 +268,16 @@ class HIP_RA:
             CurrentUnits=VolumeUnit.KILOMETERS3,
         )
         self.qR = self.OutputParameterDict[self.qR.Name] = OutputParameter(
-            Name='Stored Heat', UnitType=Units.HEAT, PreferredUnits=HeatUnit.KJ, CurrentUnits=HeatUnit.KJ
+            Name='Stored Heat',
+            UnitType=Units.HEAT,
+            PreferredUnits=HeatUnit.KJ,
+            CurrentUnits=HeatUnit.KJ
         )
         self.mWH = self.OutputParameterDict[self.mWH.Name] = OutputParameter(
-            Name='Fluid Produced', UnitType=Units.MASS, PreferredUnits=MassUnit.KILOGRAM, CurrentUnits=MassUnit.KILOGRAM
+            Name='Fluid Produced',
+            UnitType=Units.MASS,
+            PreferredUnits=MassUnit.KILOGRAM,
+            CurrentUnits=MassUnit.KILOGRAM
         )
         self.e = self.OutputParameterDict[self.e.Name] = OutputParameter(
             Name='Enthalpy',
@@ -566,7 +286,10 @@ class HIP_RA:
             CurrentUnits=EnthalpyUnit.KJPERKG,
         )
         self.qWH = self.OutputParameterDict[self.qWH.Name] = OutputParameter(
-            Name='Wellhead Heat', UnitType=Units.HEAT, PreferredUnits=HeatUnit.KJ, CurrentUnits=HeatUnit.KJ
+            Name='Wellhead Heat',
+            UnitType=Units.HEAT,
+            PreferredUnits=HeatUnit.KJ,
+            CurrentUnits=HeatUnit.KJ
         )
         self.Rg = self.OutputParameterDict[self.Rg.Name] = OutputParameter(
             Name='Recovery Factor',
@@ -575,16 +298,25 @@ class HIP_RA:
             CurrentUnits=PercentUnit.PERCENT,
         )
         self.WA = self.OutputParameterDict[self.WA.Name] = OutputParameter(
-            Name='Available Heat', UnitType=Units.HEAT, PreferredUnits=HeatUnit.KJ, CurrentUnits=HeatUnit.KJ
+            Name='Available Heat',
+            UnitType=Units.HEAT,
+            PreferredUnits=HeatUnit.KJ,
+            CurrentUnits=HeatUnit.KJ
         )
         self.WE = self.OutputParameterDict[self.WE.Name] = OutputParameter(
-            Name='Producible Heat', UnitType=Units.HEAT, PreferredUnits=HeatUnit.KJ, CurrentUnits=HeatUnit.KJ
+            Name='Producible Heat',
+            UnitType=Units.HEAT,
+            PreferredUnits=HeatUnit.KJ,
+            CurrentUnits=HeatUnit.KJ
         )
         self.We = self.OutputParameterDict[self.We.Name] = OutputParameter(
-            Name='Producible Electricity', UnitType=Units.POWER, PreferredUnits=PowerUnit.MW, CurrentUnits=PowerUnit.MW
+            Name='Producible Electricity',
+            UnitType=Units.POWER,
+            PreferredUnits=PowerUnit.MW,
+            CurrentUnits=PowerUnit.MW
         )
 
-        self.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'Complete {__class__.__name__!s}: {__name__}')
 
     def read_parameters(self) -> None:
         """
@@ -598,7 +330,7 @@ class HIP_RA:
         :return: None
         :doc-author: Malcolm Ross
         """
-        self.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
 
         # This should give us a dictionary with all the parameters the user wants to set.  Should be only those value
         # that they want to change from the default.
@@ -626,9 +358,7 @@ class HIP_RA:
                     # Before we change the parameter, let's assume that the unit preferences will match -
                     # if they don't, the later code will fix this.
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
-                    ReadParameter(
-                        ParameterReadIn, ParameterToModify, self
-                    )  # this should handle all the non-special cases
+                    ReadParameter(ParameterReadIn, ParameterToModify, self)  # this should handle all the non-special cases
 
                     # handle special cases
                     if ParameterToModify.Name == 'Formation Porosity':
@@ -655,8 +385,8 @@ class HIP_RA:
                     elif ParameterToModify.Name == 'Recoverable Heat':
                         value = float(ParameterReadIn.sValue)
                         if value < 0:  # if the user supplied -1 as the Recoverable Heat, they want us to calculate it.
-                            ParameterToModify.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
-                            self.HeatCapacityOfWater.value = ParameterToModify.value
+                            ParameterToModify.value = RecoverableHeat(self.RecoverableHeat.value, self.ReservoirTemperature.value)
+                            self.RecoverableHeat.value = ParameterToModify.value
         else:
             self.logger.info('No parameters read because no content provided')
 
@@ -665,12 +395,10 @@ class HIP_RA:
         # to new units
         for key in self.InputParameters.keys():
             if key.startswith('Units:'):
-                self.OutputParameterDict[key.replace('Units:', '')].CurrentUnits = LookupUnits(
-                    self.InputParameters[key].sValue
-                )[0]
+                self.OutputParameterDict[key.replace('Units:', '')].CurrentUnits = LookupUnits(self.InputParameters[key].sValue)[0]
                 self.OutputParameterDict[key.replace('Units:', '')].UnitsMatch = False
 
-        self.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'complete {__class__.__name__!s}: {__name__}')
 
     def Calculate(self):
         """
@@ -680,42 +408,56 @@ class HIP_RA:
         :return: None
         :doc-author: Malcolm Ross
         """
-        self.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'Init {__class__!s}: {__class__.__name__!s}: {__name__}')
 
-        # This is where all the calculations are made using all the values that have been set.
-        if self.DensityOfWater.value < self.DensityOfWater.Min:
-            self.DensityOfWater.value = DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
-        if self.HeatCapacityOfWater.value < self.HeatCapacityOfWater.Min:
-            self.HeatCapacityOfWater.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
-        self.V.value = self.ReservoirArea.value * self.ReservoirThickness.value
-        self.qR.value = self.V.value * (
-            self.ReservoirHeatCapacity.value * (self.ReservoirTemperature.value - self.RejectionTemperature.value)
-        )
-        self.mWH.value = (self.V.value * (self.FormationPorosity.value / 100.0)) * self.DensityOfWater.value
-        self.e.value = (EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionEnthalpy.value) - (
-            self.RejectionTemperatureK.value
-            * (EntropyH20_func(self.ReservoirTemperature.value) - self.RejectionEntropy.value)
-        )
-        self.qWH.value = self.mWH.value * (
-            EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionTemperatureK.value
-        )
-        self.Rg.value = self.qWH.value / self.qR.value
-        self.WA.value = (
-            self.mWH.value
-            * self.e.value
-            * self.Rg.value
-            * RecoverableHeat(self.RecoverableHeat.value, self.ReservoirTemperature.value)
-        )
-        self.WE.value = self.WA.value * UtilEff_func(self.ReservoirTemperature.value)
-        self.We.value = (self.WE.value / 3_600_000) / 8_760  # convert Kilojoules of heat to MWe of electricity
+        try:
+            # This is where all the calculations are made using all the values that have been set.
+            # first, make sure that density and heat capacity of water are set
+            if self.DensityOfWater.value < self.DensityOfWater.Min:
+                self.DensityOfWater.value = DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
+            if self.HeatCapacityOfWater.value < self.HeatCapacityOfWater.Min:
+                self.HeatCapacityOfWater.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
 
-        self.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
+            # now do the volume calculation
+            self.V.value = self.ReservoirArea.value * self.ReservoirThickness.value
+
+            # calculate the stored heat in the reservoir
+            self.qR.value = self.V.value * ( self.ReservoirHeatCapacity.value * (self.ReservoirTemperature.value - self.RejectionTemperature.value))
+
+            # calculate the mass of the fluid in the reservoir
+            # TODO: this is wrong, it should be the mass of the producible fluid, not the total mass of all the fluid in the reservoir
+            self.mWH.value = (self.V.value * (self.FormationPorosity.value / 100.0)) * self.DensityOfWater.value
+
+            # calculate the maximum energy out per unit of mass (equation 7 of Garg & Combs (2011))
+            self.e.value = ((EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionEnthalpy.value)
+                            - (self.RejectionTemperatureK.value
+                            * (EntropyH20_func(self.ReservoirTemperature.value) - self.RejectionEntropy.value)))
+
+            # calculate the heat recovery at the wellhead
+            self.qWH.value = self.mWH.value * (EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionTemperatureK.value)
+
+            # calculate the recovery factor
+            self.Rg.value = self.qWH.value / self.qR.value
+
+            # calculate the available heat
+            self.WA.value = (self.mWH.value * self.e.value * self.Rg.value * RecoverableHeat(self.RecoverableHeat.value, self.ReservoirTemperature.value))
+
+            # calculate the producible heat given the utilization efficiency
+            self.WE.value = self.WA.value * UtilEff_func(self.ReservoirTemperature.value)
+
+            # calculate the producible electricity
+            self.We.value = (self.WE.value / 3_600_000) / 8_760  # convert Kilojoules of heat to MWe of electricity
+
+            self.logger.info(f'Complete {__class__!s}: {__class__.__name__!s}: {__name__}')
+        except Exception as e:
+            self.logger.error(f'Error occurred during calculations: {str(e)}')
+            traceback.print_exc()
 
     def PrintOutputs(self):
         """
         PrintOutputs writes the standard outputs to the output file.
         """
-        self.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
+        self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
 
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go through all the parameters for all the objects and set the values back
@@ -760,8 +502,7 @@ class HIP_RA:
                 (self.Rg, lambda rg: f'{(100 * rg.value):10.2f} {rg.CurrentUnits.value}'),
                 (self.WA, render_scientific),
                 (self.WE, render_scientific),
-                (self.We, render_default),
-            ]:
+                (self.We, render_default),]:
                 summary_of_results[param.Name] = render(param)
 
             case_data = {'SUMMARY OF RESULTS': summary_of_results}
@@ -782,14 +523,32 @@ class HIP_RA:
 
                     f.write(f'      {k}:{kv_spaces}{v}{nl}')
 
-        except BaseException as ex:
-            tb = sys.exc_info()[2]
+        except FileNotFoundError as ex:
             print(str(ex))
-            msg = f'Error: HIP_RA Failed to write the output file. Exiting....Line {tb.tb_lineno}'
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA Failed to write the output file. Exiting....\n{traceback_str}'
             print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
-            sys.exit()
+            raise
+
+        except PermissionError as ex:
+            print(str(ex))
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA Failed to write the output file. Exiting....\n{traceback_str}'
+            print(msg)
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
+        except Exception as ex:
+            print(str(ex))
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA Failed to write the output file. Exiting....\n{traceback_str}'
+            print(msg)
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
 
         # copy the output file to the screen
         with open(outputfile, encoding='UTF-8') as f:
@@ -807,12 +566,13 @@ def main(enable_geophires_logging_config=True):
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    # set up logging.
     if enable_geophires_logging_config:
-        # set up logging.
         logging.config.fileConfig('logging.conf')
-
+    logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('root')
-    logger.info(f'Init {__name__!s}')
+
+    logger.info('Initializing the application')
 
     # initiate the HIP-RA parameters, setting them to their default values
     model = HIP_RA(enable_geophires_logging_config=enable_geophires_logging_config)
@@ -820,13 +580,19 @@ def main(enable_geophires_logging_config=True):
     # read the parameters that apply to the model
     model.read_parameters()
 
-    # Calculate the entire model
-    model.Calculate()
+    try:
+        # Calculate the entire model
+        model.Calculate()
+    except Exception as e:
+        logger.error(f'Error occurred during model calculation: {str(e)}')
 
-    # write the outputs
-    model.PrintOutputs()
+    try:
+        # write the outputs
+        model.PrintOutputs()
+    except Exception as e:
+        logger.error(f'Error occurred during output printing: {str(e)}')
 
-    logger.info(f'Complete {__name__!s}: {sys._getframe().f_code.co_name}')
+    logger.info('Application execution completed')
 
 
 if __name__ == '__main__':

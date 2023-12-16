@@ -126,5 +126,5 @@ Once you are done with your Calculations, you also are likely to want to show th
 
 ## Example
 
-See https://github.com/NREL/python-geophires-x/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e
+See https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e
 for a representative example which added the SUTRA model.

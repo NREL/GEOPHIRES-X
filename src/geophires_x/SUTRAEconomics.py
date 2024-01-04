@@ -1,12 +1,10 @@
-import math
 import sys
 import os
 import numpy as np
-import numpy_financial as npf
 import geophires_x.Model as Model
-from .OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PowerPlantType
-from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter
-from .Units import *
+from geophires_x.OptionList import WellDrillingCostCorrelation, EconomicModel
+from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter
+from geophires_x.Units import *
 
 
 class SUTRAEconomics:
@@ -402,7 +400,7 @@ class SUTRAEconomics:
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
 
         # Boiler
-        self.peakingboilercost.value = 65*model.surfaceplant.maxpeakingboilerdemand.value/self.peakingboilerefficiency.value/1000 #add 65$/KW for peaking boiler
+        self.peakingboilercost.value = 65 * model.surfaceplant.max_peaking_boiler_demand.value / self.peakingboilerefficiency.value / 1000 #add 65$/KW for peaking boiler
 
         # Circulation Pump
         pumphp = np.max(model.wellbores.PumpingPower.value)*1.341
@@ -418,7 +416,7 @@ class SUTRAEconomics:
 
         # OPEX
         # Pumping
-        self.annualpumpingcosts.value = model.surfaceplant.PumpingkWh.value*model.surfaceplant.elecprice.value/1e3
+        self.annualpumpingcosts.value = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1e3
 
         # Natural Gas
         self.annualngcost.value = model.surfaceplant.AnnualAuxiliaryHeatProduced.value*self.ngprice.value/self.peakingboilerefficiency.value*1e3
@@ -429,7 +427,7 @@ class SUTRAEconomics:
         self.Coam.value = self.annualpumpingcosts.value + self.annualngcost.value
 
         # LCOH
-        discountvector = 1. / np.power(1 + self.discountrate.value,np.linspace(0, model.surfaceplant.plantlifetime.value - 1,model.surfaceplant.plantlifetime.value))
+        discountvector = 1. / np.power(1 + self.discountrate.value, np.linspace(0, model.surfaceplant.plant_lifetime.value - 1, model.surfaceplant.plant_lifetime.value))
         self.LCOH.value = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(self.Coam.value * discountvector)) / np.sum(model.surfaceplant.AnnualTotalHeatProduced.value*1E6 * discountvector) * 1E8  # cents/kWh
 
         model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)

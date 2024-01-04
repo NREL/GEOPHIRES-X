@@ -1,0 +1,1 @@
+Gradient 1, Reservoir Temperature, Utilization Factor, Ambient Temperature, Average Net Electricity Production, Average Production Temperature, Average Annual Total Electricity Generation

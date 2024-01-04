@@ -332,6 +332,6 @@ class SUTRAWellBores:
         self.DPOverall.value = self.DPProdWell.value + self.DPInjWell.value + DP_buoyancy + DP_reservoir
 
         # calculate pumping power [kWe] (approximate)
-        self.PumpingPower.value = self.DPOverall.value * abs(prodwellflowrates) / (0.5*rhowaterinj+0.5*rhowaterprod) / model.surfaceplant.pumpeff.value
+        self.PumpingPower.value = self.DPOverall.value * abs(prodwellflowrates) / (0.5*rhowaterinj+0.5*rhowaterprod) / model.surfaceplant.pump_efficiency.value
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

@@ -37,7 +37,8 @@ Water Loss Fraction,0.02,						---[-]
 ***Surface Technical Parameters***
 **********************************
 
-End-Use Option,7,						--- centralized heat pump
+End-Use Option, 2, --- Direct use
+Power Plant Type, 6,				---[-] Heat Pump
 Circulation Pump Efficiency,.80,				---[-]
 Utilization Factor,.9,						---[-]
 End-Use Efficiency Factor,.9,					---[-]

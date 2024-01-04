@@ -441,7 +441,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         :type PumpingPowerProd: float
         :param II: injectivity index [kg/s/bar]
         :type II: float
-        :return: tuple of PumpingPower, PumpingPowerInj, DPInjWell, Pplantoutlet, Pprodwellhead [kPa]
+        :return: tuple of PumpingPower, PumpingPowerInj, DPInjWell, plant_outlet_pressure, Pprodwellhead [kPa]
         :rtype: tuple
     """
     PumpingPowerInj = DPInjWell = Pprodwellhead = [0.0]  # initialize value in case it doesn't get set.
@@ -959,7 +959,7 @@ class WellBores:
                                                 model.reserv.rhorock.value,
                                                 model.reserv.cprock.value,
                                                 self.prodwelldiam.value, model.reserv.timevector.value,
-                                                model.surfaceplant.utilfactor.value, self.prodwellflowrate.value,
+                                                model.surfaceplant.utilization_factor.value, self.prodwellflowrate.value,
                                                 model.reserv.cpwater.value, model.reserv.Trock.value,
                                                 model.reserv.Tresoutput.value, model.reserv.averagegradient.value,
                                                 d)
@@ -1000,12 +1000,12 @@ class WellBores:
                                                                     self.prodwelldiam.value,
                                                                     self.impedance.value, self.nprod.value,
                                                                     model.reserv.waterloss.value,
-                                                                    model.surfaceplant.pumpeff.value)
+                                                                    model.surfaceplant.pump_efficiency.value)
             self.DPOverall.value, self.PumpingPower.value, self.DPInjWell.value = \
                 InjPressureDropsAndPumpingPowerUsingImpedenceModel(f1, vinj, self.rhowaterinj, model.reserv.depth.value,
                                                                    self.prodwellflowrate.value, self.injwelldiam.value,
                                                                    self.ninj.value, model.reserv.waterloss.value,
-                                                                   model.surfaceplant.pumpeff.value,
+                                                                   model.surfaceplant.pump_efficiency.value,
                                                                    self.DPOverall.value)
 
         else:  # PI and II are used
@@ -1018,8 +1018,8 @@ class WellBores:
                                                             model.reserv.averagegradient.value, self.ppwellhead.value,
                                                             self.PI.value, self.prodwellflowrate.value, f3, vprod,
                                                             self.prodwelldiam.value, self.nprod.value,
-                                                            model.surfaceplant.pumpeff.value, self.rhowaterprod)
-            self.PumpingPower.value, self.PumpingPowerInj.value, self.DPInjWell.value, model.surfaceplant.Pplantoutlet.value, self.Pprodwellhead.value = \
+                                                            model.surfaceplant.pump_efficiency.value, self.rhowaterprod)
+            self.PumpingPower.value, self.PumpingPowerInj.value, self.DPInjWell.value, model.surfaceplant.plant_outlet_pressure.value, self.Pprodwellhead.value = \
                 InjPressureDropAndPumpingPowerUsingIndexes(model, self.usebuiltinhydrostaticpressurecorrelation,
                                                            self.productionwellpumping.value,
                                                            self.usebuiltinppwellheadcorrelation,
@@ -1031,8 +1031,8 @@ class WellBores:
                                                            self.prodwellflowrate.value, f1, vinj,
                                                            self.injwelldiam.value, self.nprod.value,
                                                            self.ninj.value, model.reserv.waterloss.value,
-                                                           model.surfaceplant.pumpeff.value, self.rhowaterinj,
-                                                           model.surfaceplant.Pplantoutlet.value,
+                                                           model.surfaceplant.pump_efficiency.value, self.rhowaterinj,
+                                                           model.surfaceplant.plant_outlet_pressure.value,
                                                            self.PumpingPowerProd.value)
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

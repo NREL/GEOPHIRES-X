@@ -1,15 +1,12 @@
-import sys
-import os
+from pathlib import Path
 import numpy as np
-from .OptionList import EndUseOptions, PowerPlantType
-from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter
+from .Parameter import OutputParameter
+from .SurfacePlant import SurfacePlant
 from .Units import *
 import geophires_x.Model as Model
-import pandas as pd
-from matplotlib import pyplot as plt
 
 
-class SUTRASurfacePlant:
+class surface_plant_sutra(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -28,108 +25,17 @@ class SUTRASurfacePlant:
         :return: None
         """
 
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-        self.Tinj = 0.0
+        model.logger.info(f"Init {self.__class__.__name__}: {self.__init__.__name__}")
 
         # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
         # "OutputParameter" Objects.  This will allow us later to access them in a user interface and get that list,
         # along with unit type, preferred units, etc.
-        self.ParameterDict = {}
-        self.OutputParameterDict = {}
-
-        self.enduseoption = self.ParameterDict[self.enduseoption.Name] = intParameter(
-            "End-Use Option",
-            value=EndUseOptions.ELECTRICITY,
-            AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52, 6, 7, 8, 9],
-            UnitType=Units.NONE,
-            ErrMessage="assume default end-use option (1: electricity only)",
-            ToolTipText="Select the end-use application of the geofluid heat (see docs for details)"
-        )
-
-        self.pumpeff = self.ParameterDict[self.pumpeff.Name] = floatParameter(
-            "Circulation Pump Efficiency",
-            value=0.75,
-            DefaultValue=0.75,
-            Min=0.1,
-            Max=1.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=True,
-            ErrMessage="assume default circulation pump efficiency (0.75)",
-            ToolTipText="Specify the overall efficiency of the injection and production well pumps"
-        )
-
-        self.enduseefficiencyfactor = self.ParameterDict[self.enduseefficiencyfactor.Name] = floatParameter(
-            "End-Use Efficiency Factor",
-            value=0.9,
-            DefaultValue=0.9,
-            Min=0.1,
-            Max=1.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default end-use efficiency factor (0.9)",
-            ToolTipText="Constant thermal efficiency of the direct-use application"
-        )
-
-        self.Tenv = self.ParameterDict[self.Tenv.Name] = floatParameter(
-            "Ambient Temperature",
-            value=15.0,
-            DefaultValue=15.0,
-            Min=-50,
-            Max=50,
-            UnitType=Units.TEMPERATURE,
-            PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS,
-            ErrMessage="assume default ambient temperature (15 deg.C)",
-            ToolTipText="Ambient (or dead-state) temperature used for calculating power plant utilization efficiency"
-        )
-        self.plantlifetime = self.ParameterDict[self.plantlifetime.Name] = intParameter(
-            "Plant Lifetime",
-            value=30,
-            DefaultValue=30,
-            AllowableRange=list(range(1, 101, 1)),
-            UnitType=Units.TIME,
-            PreferredUnits=TimeUnit.YEAR,
-            CurrentUnits=TimeUnit.YEAR,
-            Required=True,
-            ErrMessage="assume default plant lifetime (30 years)",
-            ToolTipText="System lifetime"
-        )
-
-        self.elecprice = self.ParameterDict[self.elecprice.Name] = floatParameter(
-            "Electricity Rate",
-            value=0.07,
-            DefaultValue=0.07,
-            Min=0.0,
-            Max=1.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
-            ErrMessage="assume default electricity rate ($0.07/kWh)",
-            ToolTipText="Price of electricity to calculate pumping costs in direct-use heat only mode or revenue" +
-            " from electricity sales in CHP mode."
-        )
+        super().__init__(model)  # Initialize all the parameters in the superclass
 
         # local variable initialization
-        self.setinjectionpressurefixed = False
-        sclass = str(__class__).replace("<class \'", "")
-        self.MyClass = sclass.replace("\'>", "")
-        self.MyPath = os.path.abspath(__file__)
-
-        #heat pump
-        self.heatpumpcop = self.ParameterDict[self.heatpumpcop.Name] = floatParameter(
-            "Heat Pump COP",
-            value = 5,
-            Min=1,
-            Max = 10,
-            UnitType = Units.PERCENT,
-            PreferredUnits = PercentUnit.TENTH,
-            CurrentUnits = PercentUnit.TENTH,
-            ErrMessage="assume default heat pump COP (5)",
-            ToolTipText="Specify the coefficient of performance (COP) of the heat pump"
-        )
+        sclass = self.__class__.__name__
+        self.MyClass = sclass
+        self.MyPath = Path(__file__).resolve()
 
         # Results - used by other objects or printed in output downstream
         self.SUTRATimeStep = self.OutputParameterDict[self.SUTRATimeStep.Name] = OutputParameter(
@@ -235,10 +141,10 @@ class SUTRASurfacePlant:
             CurrentUnits = EnergyFrequencyUnit.KWhPERYEAR
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Complete {self.__class__.__name__}: {self.__init__.__name__}")
 
     def __str__(self):
-        return "SurfacePlant"
+        return "SurfacePlantSUTRA"
 
     def read_parameters(self, model:Model) -> None:
         """
@@ -258,52 +164,9 @@ class SUTRASurfacePlant:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-
-
-        if len(model.InputParameters) > 0:
-            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
-            for item in self.ParameterDict.items():
-                ParameterToModify = item[1]
-                key = ParameterToModify.Name.strip()
-                if key in model.InputParameters:
-                    ParameterReadIn = model.InputParameters[key]
-                    # Before we change the parameter, let's assume that the unit preferences will match -
-                    # if they don't, the later code will fix this.
-                    ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
-                    # this should handle all the non-special cases
-                    ReadParameter(ParameterReadIn, ParameterToModify, model)
-
-                    # handle special cases
-                    if ParameterToModify.Name == "End-Use Option":
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = EndUseOptions.HEAT
-                        elif ParameterReadIn.sValue == str(31):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(32):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICTY
-                        elif ParameterReadIn.sValue == str(41):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(42):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICTY
-                        elif ParameterReadIn.sValue == str(51):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(52):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICTY
-                        elif ParameterReadIn.sValue == str(6):
-                            ParameterToModify.value = EndUseOptions.ABSORPTION_CHILLER
-                        elif ParameterReadIn.sValue == str(7):
-                            ParameterToModify.value = EndUseOptions.HEAT_PUMP
-                        elif ParameterReadIn.sValue == str(8):
-                            ParameterToModify.value = EndUseOptions.DISTRICT_HEATING
-                        elif ParameterReadIn.sValue == str(9):
-                            ParameterToModify.value = EndUseOptions.RTES
-
-        else:
-            model.logger.info("No parameters read because no content provided")
-        model.logger.info("complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {self.__class__.__name__}: {self.__init__.__name__}")
+        super().read_parameters(model)  # Read in all the parameters from the superclass
+        model.logger.info(f"complete {self.__class__.__name__}: {self.__init__.__name__}")
 
     def Calculate(self, model: Model) -> None:
         """
@@ -320,7 +183,7 @@ class SUTRASurfacePlant:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {self.__class__.__name__}: {self.__init__.__name__}")
 
         # calculate and instantaneous heat injected, geothermal heat supplied, auxiliary heating required and total heat produced
         TimeVector = np.append(model.reserv.TimeProfile.value[0:-1:2],model.reserv.TimeProfile.value[-1])
@@ -351,8 +214,8 @@ class SUTRASurfacePlant:
             self.AnnualTotalHeatProduced.value[i] = sum(self.TotalHeatProduced.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value/1000
             self.PumpingkWh.value[i] = sum(model.wellbores.PumpingPower.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value
 
-        #calculate maximum auxilary boiler demand
+        # calculate maximum auxiliary boiler demand
         self.maxpeakingboilerdemand.value = max(self.AnnualAuxiliaryHeatProduced.value)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"complete {self.__class__.__name__}: {self.__init__.__name__}")
 

@@ -55,15 +55,15 @@ class OutputsCCUS(Outputs):
                                              ")         ("+model.ccuseconomics.ProjectCashFlow.PreferredUnits.value +
                                              ")        ("+model.ccuseconomics.ProjectCummCashFlow.PreferredUnits.value + ")" + NL)
                 i = 0
-                for i in range(0, model.surfaceplant.ConstructionYears.value, 1):
+                for i in range(0, model.surfaceplant.construction_years.value, 1):
                     # construction years...
                     f.write(f"   {i+1:3.0f}                                                                     {model.ccuseconomics.ProjectCashFlow.value[i]:5.2f}           {model.ccuseconomics.ProjectCummCashFlow.value[i]:5.2f}" + NL)
                     i = i + 1
 
                 ii = 0
-                for ii in range(0, model.surfaceplant.plantlifetime.value, 1):
+                for ii in range(0, model.surfaceplant.plant_lifetime.value, 1):
                     # running years...
-                    f.write(f"   {ii+1+model.surfaceplant.ConstructionYears.value:3.0f}  {model.ccuseconomics.CarbonThatWouldHaveBeenProducedAnnually.value[ii]:5.3f}  {model.ccuseconomics.CCUSPrice.value[ii]:5.3f}   {model.ccuseconomics.CCUSRevenue.value[ii]:5.2f}             {model.ccuseconomics.CCUSCashFlow.value[ii]:5.2f}        {model.ccuseconomics.CCUSCummCashFlow.value[ii]:5.2f}          {model.ccuseconomics.ProjectCashFlow.value[ii+model.surfaceplant.ConstructionYears.value]:5.2f}           {model.ccuseconomics.ProjectCummCashFlow.value[ii+model.surfaceplant.ConstructionYears.value]:5.2f}" + NL)
+                    f.write(f"   {ii+1+model.surfaceplant.construction_years.value:3.0f}  {model.ccuseconomics.CarbonThatWouldHaveBeenProducedAnnually.value[ii]:5.3f}  {model.ccuseconomics.CCUSPrice.value[ii]:5.3f}   {model.ccuseconomics.CCUSRevenue.value[ii]:5.2f}             {model.ccuseconomics.CCUSCashFlow.value[ii]:5.2f}        {model.ccuseconomics.CCUSCummCashFlow.value[ii]:5.2f}          {model.ccuseconomics.ProjectCashFlow.value[ii + model.surfaceplant.construction_years.value]:5.2f}           {model.ccuseconomics.ProjectCummCashFlow.value[ii + model.surfaceplant.construction_years.value]:5.2f}" + NL)
                     ii = ii + 1
 
         except BaseException as ex:

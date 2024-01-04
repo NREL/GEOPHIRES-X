@@ -36,7 +36,7 @@ class OutputParameter:
         Name (str): The official name of that output
         value: (any): the value of this parameter - can be int, float, text, bool, list, etc...
         ToolTipText (str): Text to place in a ToolTip in a UI
-        UnitType (IntEnum): The class of units that parameter falls in (i.e., "length", "time", "area"...)
+        UnitType (IntEnum): The class of units that parameter falls in (i.reservoir_enthalpy., "length", "time", "area"...)
         PreferredUnits (Enum): The units as required by GEOPHIRES (or your algorithms)
         CurrentUnits (Enum): The units that the parameter is provided in (usually the same PreferredUnits)
         UnitsMatch (boolean): Internal flag set when units are different
@@ -68,7 +68,7 @@ class Parameter:
               by default, it is: "assuming default value (see manual)"
         InputComment (str): The optional comment that the user provided with that parameter in the text file
         ToolTipText (str): Text to place in a ToolTip in a UI
-        UnitType (IntEnum): The class of units that parameter falls in (i.e., "length", "time", "area"...)
+        UnitType (IntEnum): The class of units that parameter falls in (i.reservoir_enthalpy., "length", "time", "area"...)
         PreferredUnits (Enum): The units as required by GEOPHIRES (or your algorithms)
         CurrentUnits (Enum): The units that the parameter is provided in (usually the same PreferredUnits)
         UnitsMatch (boolean): Internal flag set when units are different
@@ -239,7 +239,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
-        # We have nothing to change - user provide value that was the same as the existing value (likely, the default
+        # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default
         # value)
         if New_val == ParamToModify.value:
             return
@@ -270,7 +270,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
                       " unless you wish to change it from the default value of (" + str(ParamToModify.DefaultValue) + ")")
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
-            # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
             return
         # user provided value is out of range, so announce it, leave set to whatever it was set to (default value)
@@ -296,7 +296,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
             return
         # All is good.  With a list, we have to use the last character of the Description to get the position.
-        # I.e., "Gradient 1" should yield a position = 0 ("1" - 1)
+        # I.reservoir_enthalpy., "Gradient 1" should yield a position = 0 ("1" - 1)
         else:
             parts = ParameterReadIn.Name.split(' ')
             position = int(parts[1]) - 1
@@ -314,7 +314,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             New_val = True
         if New_val == ParamToModify.value:
             model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
-            # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             return
         ParamToModify.value = New_val  # set the new value
         ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
@@ -322,7 +322,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     elif isinstance(ParamToModify, strParameter):
         New_val = str(ParameterReadIn.sValue)
         if New_val == ParamToModify.value:
-            # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             return
         ParamToModify.value = New_val  # set the new value
         ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
@@ -506,7 +506,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 def ConvertUnitsBack(ParamToModify, model):
     """
     CovertUnitsBack: Converts units back to what the user specified they as.  It does this so that the user can see them
-    in the report as the units they specified.  We know that because CurrentUnits contains the desired units
+    in the report as the units they specified.  reservoir_producible_electricity know that because CurrentUnits contains the desired units
     :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
         the object that will be modified by this method - see Parameter class for details on the fields in it
     :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`

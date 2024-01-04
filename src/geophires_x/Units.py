@@ -42,6 +42,8 @@ class Units(IntEnum):
     CO2PRODUCTION = auto()
     ENERGYPERCO2 = auto()
     POPDENSITY = auto()
+    HEATPERUNITAREA = auto()
+    POWERPERUNITAREA = auto()
 
 
 class TemperatureUnit(str, Enum):
@@ -297,6 +299,17 @@ class MassUnit(str, Enum):
     LB = "pound"
     OZ = "ounce"
 
+
 class PopDensityUnit(str,Enum):
     """Population Density Units"""
     perkm2 = "Population per square km"
+
+
+class HeatPerUnitAreaUnit(str,Enum):
+    """Population Density Units"""
+    KJPERSQKM = "KJ/km**2"
+
+
+class PowerPerUnitAreaUnit(str,Enum):
+    """Population Density Units"""
+    MWPERSQKM = "MW/km**2"

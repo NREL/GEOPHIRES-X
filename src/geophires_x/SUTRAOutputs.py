@@ -84,7 +84,7 @@ class SUTRAOutputs:
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
         # to the units that the user entered the data in
-        # We do this because the value may be displayed in the output, and we want the user to recginze their value,
+        # reservoir_producible_electricity do this because the value may be displayed in the output, and we want the user to recginze their value,
         # not some converted value
         #for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
         #    for key in obj.ParameterDict:
@@ -93,7 +93,7 @@ class SUTRAOutputs:
 
         # now we need to loop through all thw output parameters to update their units to
         # whatever units the user has specified.
-        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those
+        # i.reservoir_enthalpy., they may have specified that all LENGTH results must be in feet, so we need to convert those
         # from whatever LENGTH unit they are to feet.
         # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
 
@@ -126,7 +126,7 @@ class SUTRAOutputs:
                 f.write(NL)
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
-                f.write("      End-Use Option: " + str(model.surfaceplant.enduseoption.value.value) + NL)
+                f.write("      End-Use Option: " + str(model.surfaceplant.enduse_option.value.value) + NL)
                 f.write("      Reservoir Model = " + str(model.reserv.resoption.value.value) + " Model\n")
                 f.write(f"      Direct-Use heat breakeven price:                  {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
 
@@ -148,7 +148,7 @@ class SUTRAOutputs:
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write("      Economic Model  = " + model.economics.econmodel.value.value + NL)
                 f.write(f"      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} " + model.economics.inflrateconstruction.PreferredUnits.value + NL)
-                f.write(f"      Project lifetime:                              {model.surfaceplant.plantlifetime.value:10.0f} " + model.surfaceplant.plantlifetime.CurrentUnits.value + NL)
+                f.write(f"      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} " + model.surfaceplant.plant_lifetime.CurrentUnits.value + NL)
 
                 f.write(NL)
                 f.write('                          ***ENGINEERING PARAMETERS***\n')
@@ -156,7 +156,7 @@ class SUTRAOutputs:
                 f.write(f"      Number of Production Wells:                    {model.wellbores.nprod.value:10.0f}" + NL)
                 f.write(f"      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}" + NL)
                 f.write(f"      Well Depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
-                f.write(f"      Pump efficiency:                               {model.surfaceplant.pumpeff.value*100:10.1f} " + model.surfaceplant.pumpeff.PreferredUnits.value + NL)
+                f.write(f"      Pump efficiency:                               {model.surfaceplant.pump_efficiency.value * 100:10.1f} " + model.surfaceplant.pump_efficiency.PreferredUnits.value + NL)
 
                 f.write(f"      Lifetime Average Well Flow Rate:               {np.average(abs(model.wellbores.ProductionWellFlowRates.value)):10.1f} "  + model.wellbores.ProductionWellFlowRates.CurrentUnits.value + NL)
                 f.write(f"      Injection well casing ID:                      {model.wellbores.injwelldiam.value:10.3f} " + model.wellbores.injwelldiam.CurrentUnits.value + NL)

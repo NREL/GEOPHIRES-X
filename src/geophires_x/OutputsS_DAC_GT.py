@@ -56,7 +56,7 @@ class OutputsS_DAC_GT(Outputs):
                                              ")               ("+model.sdacgteconomics.S_DAC_GTCummCashFlow.PreferredUnits.value +
                                              ")           ("+model.sdacgteconomics.CummCostPerTonne.PreferredUnits.value + ")" +NL)
                 i = 0
-                for i in range(0, model.surfaceplant.plantlifetime.value, 1):
+                for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
                     f.write(f"   {i+1:3.0f}    {model.sdacgteconomics.CarbonExtractedAnnually.value[i]:,.2f}   {model.sdacgteconomics.S_DAC_GTCummCarbonExtracted.value[i]:,.2f}    {model.sdacgteconomics.S_DAC_GTAnnualCost.value[i]:,.2f}         {model.sdacgteconomics.S_DAC_GTCummCashFlow.value[i]:,.2f}         {model.sdacgteconomics.CummCostPerTonne.value[i]:.2f}" + NL)
                     i = i + 1
 

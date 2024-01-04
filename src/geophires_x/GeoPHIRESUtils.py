@@ -120,7 +120,7 @@ def HeatCapacityWater(Twater: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def RecoverableHeat(DefaultRecoverableHeat: float, Twater: float) -> float:
+def RecoverableHeat(Twater: float) -> float:
     """
     the RecoverableHeat function is used to calculate the recoverable heat fraction as a function of temperature
 
@@ -141,18 +141,12 @@ def RecoverableHeat(DefaultRecoverableHeat: float, Twater: float) -> float:
     if not isinstance(Twater, (int, float)):
         raise ValueError("Twater must be a number")
 
-    if not isinstance(DefaultRecoverableHeat, (int, float)):
-        raise ValueError("DefaultRecoverableHeat must be a number")
-
-    if DefaultRecoverableHeat >= 0.0:
-        recoverable_heat = DefaultRecoverableHeat
+    if Twater <= LOW_TEMP_THRESHOLD:
+        recoverable_heat = LOW_TEMP_RECOVERABLE_HEAT
+    elif Twater >= HIGH_TEMP_THRESHOLD:
+        recoverable_heat = HIGH_TEMP_RECOVERABLE_HEAT
     else:
-        if Twater <= LOW_TEMP_THRESHOLD:
-            recoverable_heat = LOW_TEMP_RECOVERABLE_HEAT
-        elif Twater >= HIGH_TEMP_THRESHOLD:
-            recoverable_heat = HIGH_TEMP_RECOVERABLE_HEAT
-        else:
-            recoverable_heat = 0.0038 * Twater + 0.085
+        recoverable_heat = 0.0038 * Twater + 0.085
 
     return recoverable_heat
 

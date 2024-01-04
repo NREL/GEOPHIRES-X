@@ -43,17 +43,17 @@ def main():
     #    0) Code_File: Python code to run (this file)
     #    1) Input_file: The input parameter file that controls the executon of this program
     #    2) Input_file contains the following lines (the group of following lines can be repeasted as many times as you want for different input parameter files):
-    #       GEOPHIRES-X_Validation_Tool output file, with the results of the analysis, e.g., "D:\Work\GEOPHIRES3-master\Results\GEOPHIRES-X_Output_Validation_Tool_output.txt"
-    #       GEOPHIRES-X input control file, with the parameters the user wishes to change, e.g., D:\Work\GEOPHIRES3-master\Examples\example1.txt
-    #       GEOPHIRES-X output result file, with results from running the above input control file, e.g., D:\Work\GEOPHIRES3-master\Example1V3_output.txt
-    #       Precomputed results file that we will be comparing against, e.g., D:\Work\GEOPHIRES3-master\Results\Example1V3.txt
+    #       GEOPHIRES-X_Validation_Tool output file, with the results of the analysis, reservoir_enthalpy.g., "D:\Work\GEOPHIRES3-master\Results\GEOPHIRES-X_Output_Validation_Tool_output.txt"
+    #       GEOPHIRES-X input control file, with the parameters the user wishes to change, reservoir_enthalpy.g., D:\Work\GEOPHIRES3-master\Examples\example1.txt
+    #       GEOPHIRES-X output result file, with results from running the above input control file, reservoir_enthalpy.g., D:\Work\GEOPHIRES3-master\Example1V3_output.txt
+    #       Precomputed results file that we will be comparing against, reservoir_enthalpy.g., D:\Work\GEOPHIRES3-master\Results\Example1V3.txt
     #       List of output files that you want used to compare and validate. List can be as long as you want, terminated with a blank line.
     #            This string in the search string that must appear in BOTH OUTPUT FILES IN EXACTLY THE SAME FORMAT, case, spelling, etc. or you must specify the equivilent string in the precomputed file
     #                  adding a "|" and then the equivilent string in the precomputed file. The tool will look for this string(s) in both files, then extract the associated value (after the colon or =) and compare.
     #                  If it is the same, do nothing. If it is not, report it.
     #            For values in a table, the search string is the name of the table, followed by a comma, then the number of lines to skip to get to the value you want to validate, then a comma,
     #                 then the column number that contains the value you want to compare.
-    #       e.g.,
+    #       reservoir_enthalpy.g.,
     #       Average Net Electricity Production
     #       Electricity breakeven price|LCOE
     #       Average Production Temperature

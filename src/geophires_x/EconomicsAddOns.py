@@ -5,9 +5,9 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Economics as Economics
 import geophires_x.Model as Model
-from .OptionList import EndUseOptions
-from .Parameter import listParameter, OutputParameter
-from .Units import *
+from geophires_x.OptionList import EndUseOptions
+from geophires_x.Parameter import listParameter, OutputParameter
+from geophires_x.Units import *
 
 
 class EconomicsAddOns(Economics.Economics):
@@ -221,7 +221,7 @@ class EconomicsAddOns(Economics.Economics):
         # super.read_parameter will have already dealt with all the regular values, but anything unusual
         # may not be dealt with, so check.
         # In this case, all the values are array values, and weren't correctly dealt with, so below is where
-        # we process them.  The problem is that they have a position number i.e., "AddOnCAPEX 1, AddOnCAPEX 2"
+        # we process them.  The problem is that they have a position number i.reservoir_enthalpy., "AddOnCAPEX 1, AddOnCAPEX 2"
         # appended to them, while the
         # Parameter name is just "AddOnCAPEX" and the position indicates where in the array the user wants it stored.
         # So we need to look for the 5 arrays and position values and insert them into the arrays.
@@ -284,11 +284,11 @@ class EconomicsAddOns(Economics.Economics):
         # The amount of electricity and/or heat have for the project already been calculated in SurfacePlant,
         # so we need to update them here so when they get used in the final economic calculation (below),
         # the new values reflect the addition of the AddOns
-        for i in range(0, model.surfaceplant.plantlifetime.value):
-            if model.surfaceplant.enduseoption.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
+        for i in range(0, model.surfaceplant.plant_lifetime.value):
+            if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
                 model.surfaceplant.TotalkWhProduced.value[i] = model.surfaceplant.TotalkWhProduced.value[i] + self.AddOnElecGainedTotalPerYear.value
                 model.surfaceplant.NetkWhProduced.value[i] = model.surfaceplant.NetkWhProduced.value[i] + self.AddOnElecGainedTotalPerYear.value
-                if model.surfaceplant.enduseoption.value != EndUseOptions.ELECTRICITY:
+                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] + self.AddOnHeatGainedTotalPerYear.value
             else:
                 # all the end-use option of direct-use only components have a heat generation component
@@ -297,24 +297,24 @@ class EconomicsAddOns(Economics.Economics):
         # Calculate the adjusted OPEX and CAPEX
         self.AdjustedProjectCAPEX.value = model.economics.CCap.value + self.AddOnCAPEXTotal.value
         self.AdjustedProjectOPEX.value = model.economics.Coam.value + self.AddOnOPEXTotalPerYear.value
-        AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.ConstructionYears.value
-        ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.ConstructionYears.value
+        AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.construction_years.value
+        ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.construction_years.value
 
         # (re)Calculate the revenues
-        self.AddOnElecRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.AddOnHeatRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.AddOnRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.AddOnCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.ProjectCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        for i in range(0, model.surfaceplant.plantlifetime.value, 1):
+        self.AddOnElecRevenue.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.AddOnHeatRevenue.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.AddOnRevenue.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.AddOnCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.ProjectCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
             ProjectElectricalEnergy = 0.0
             ProjectHeatEnergy = 0.0
             AddOnElectricalEnergy = 0.0
             AddOnHeatEnergy = 0.0
-            if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:  # This option has no heat component
+            if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # This option has no heat component
                 ProjectElectricalEnergy = model.surfaceplant.NetkWhProduced.value[i]
                 AddOnElectricalEnergy = self.AddOnElecGainedTotalPerYear.value
-            elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:  # has heat component but no electricity
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:  # has heat component but no electricity
                 ProjectHeatEnergy = model.surfaceplant.HeatkWhProduced.value[i]
                 AddOnHeatEnergy = self.AddOnHeatGainedTotalPerYear.value
             else:  # everything else has a component of both
@@ -336,7 +336,7 @@ class EconomicsAddOns(Economics.Economics):
 
         # now insert the cost of construction into the front of the array that will be used to calculate
         # NPV = the convention is that the upfront CAPEX is negative
-        for i in range(0, model.surfaceplant.ConstructionYears.value, 1):
+        for i in range(0, model.surfaceplant.construction_years.value, 1):
             self.AddOnCashFlow.value.insert(0, -1.0 * AddOnCapCostPerYear)
             self.ProjectCashFlow.value.insert(0, -1.0 * ProjectCapCostPerYear)
 
@@ -379,7 +379,7 @@ class EconomicsAddOns(Economics.Economics):
         # Calculate MOIC which depends on CumCashFlow
         self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value) - 1] / (
                 self.AdjustedProjectCAPEX.value + (
-                    self.AdjustedProjectOPEX.value * model.surfaceplant.plantlifetime.value))
+                    self.AdjustedProjectOPEX.value * model.surfaceplant.plant_lifetime.value))
 
         # recalculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOH(self, model)

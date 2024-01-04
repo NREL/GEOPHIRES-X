@@ -4,9 +4,9 @@ import math
 import numpy_financial as npf
 from geophires_x.Model import Model
 from geophires_x.Economics import BuildPricingModel, Economics
-from .OptionList import EndUseOptions
-from .Parameter import intParameter, floatParameter, OutputParameter
-from .Units import *
+from geophires_x.OptionList import EndUseOptions
+from geophires_x.Parameter import intParameter, floatParameter, OutputParameter
+from geophires_x.Units import *
 
 
 class EconomicsCCUS(Economics):
@@ -354,40 +354,40 @@ class EconomicsCCUS(Economics):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        self.CCUSRevenue.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.CCUSCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.CCUSCummCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.CarbonThatWouldHaveBeenProducedAnnually.value = [0.0] * model.surfaceplant.plantlifetime.value
+        self.CCUSRevenue.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.CCUSCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.CCUSCummCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.CarbonThatWouldHaveBeenProducedAnnually.value = [0.0] * model.surfaceplant.plant_lifetime.value
         self.CarbonThatWouldHaveBeenProducedTotal.value = 0.0
         ProjectCapCostPerYear = model.economics.CCap.value / self.ConstructionYears.value
 
         # Calculate carbon price models
-        self.CCUSPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, self.CCUSEscalationStart.value,
+        self.CCUSPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, self.CCUSEscalationStart.value,
                                                  self.CCUSStartPrice.value, self.CCUSEndPrice.value,
                                                  self.CCUSEscalationStart.value, self.CCUSEscalationRate.value)
-        self.CCUSOnElecPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0,
+        self.CCUSOnElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, 0,
                                                        self.ElecStartPrice.value, self.ElecEndPrice.value,
                                                        self.ElecEscalationStart.value, self.ElecEscalationRate.value)
-        self.CCUSOnHeatPrice.value = BuildPricingModel(model.surfaceplant.plantlifetime.value, 0,
+        self.CCUSOnHeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, 0,
                                                        self.HeatStartPrice.value, self.HeatEndPrice.value,
                                                        self.HeatEscalationStart.value, self.HeatEscalationRate.value)
 
         # Figure out how much energy is being produced each year, and the amount of carbon that would have been
         # produced if that energy had been made using the grid average carbon production.
         # That then gives us the revenue, since we have a carbon price model
-        # We can also get annual cash flow from it.
-        self.ProjectCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.ProjectCummCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        for i in range(0, model.surfaceplant.plantlifetime.value, 1):
+        # reservoir_producible_electricity can also get annual cash flow from it.
+        self.ProjectCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.ProjectCummCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
             dElectricalEnergy = 0.0
             ProjectElectricalEnergy = 0.0
             dHeatEnergy = 0.0
             ProjectHeatEnergy = 0.0
             dBothEnergy = 0.0
-            if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:  # This option has no heat component
+            if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # This option has no heat component
                 ProjectElectricalEnergy = model.surfaceplant.NetkWhProduced.value[i]
                 dElectricalEnergy = model.surfaceplant.NetkWhProduced.value[i]
-            elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:  # has heat component but no electricity
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:  # has heat component but no electricity
                 ProjectHeatEnergy = model.surfaceplant.HeatkWhProduced.value[i]
                 dHeatEnergy = model.surfaceplant.HeatkWhProduced.value[i]
             else:  # everything else has a component of both
@@ -418,7 +418,7 @@ class EconomicsCCUS(Economics):
             i = i + 1
 
         # now insert the cost of construction into the front of the array that will be used to calculate NPV = the convention is that the upfront CAPEX is negative
-        self.ProjectCummCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
+        self.ProjectCummCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
         for i in range(0, self.ConstructionYears.value, 1):
             self.ProjectCashFlow.value.insert(0, -1.0 * ProjectCapCostPerYear)
             self.ProjectCummCashFlow.value.insert(0, -1.0 * ProjectCapCostPerYear)
@@ -446,7 +446,7 @@ class EconomicsCCUS(Economics):
 
         # Calculate MOIC which depends on CumCashFlow
         self.ProjectMOIC.value = self.ProjectCummCashFlow.value[len(self.ProjectCummCashFlow.value) - 1] / (
-                model.economics.CCap.value + (model.economics.Coam.value * model.surfaceplant.plantlifetime.value))
+                model.economics.CCap.value + (model.economics.Coam.value * model.surfaceplant.plant_lifetime.value))
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

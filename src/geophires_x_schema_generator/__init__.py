@@ -10,7 +10,7 @@ from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
 from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
-from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant
+from geophires_x.SurfacePlantSUTRA import SUTRASurfacePlant
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 
 

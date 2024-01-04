@@ -1,11 +1,7 @@
-import sys
-import os
-import numpy as np
-import geophires_x.Model as Model
 from geophires_x.WellBores import *
-from .Parameter import floatParameter, OutputParameter
-from .Units import *
-from .OptionList import WorkingFluid, EndUseOptions
+from geophires_x.Parameter import floatParameter, OutputParameter
+from geophires_x.Units import *
+from geophires_x.OptionList import WorkingFluid, EndUseOptions
 from geophires_x.SurfacePlant import SurfacePlant as SurfacePlant
 
 # code from Koenraad
@@ -322,16 +318,16 @@ class AGSSurfacePlant(SurfacePlant):
             model.logger.info("No parameters read because no content provided")
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
-        self.End_use = model.surfaceplant.enduseoption.value  # same units are GEOPHIRES
-        self.Pump_efficiency = model.surfaceplant.pumpeff.value  # same units are GEOPHIRES
-        self.Lifetime = int(model.surfaceplant.plantlifetime.value)  # same units are GEOPHIRES
-        self.T0 = model.surfaceplant.Tenv.value + 273.15  # convert Celsius to Kelvin
+        self.End_use = model.surfaceplant.enduse_option.value  # same units are GEOPHIRES
+        self.Pump_efficiency = model.surfaceplant.pump_efficiency.value  # same units are GEOPHIRES
+        self.Lifetime = int(model.surfaceplant.plant_lifetime.value)  # same units are GEOPHIRES
+        self.T0 = model.surfaceplant.ambient_temperature.value + 273.15  # convert Celsius to Kelvin
         self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
 
         # initialize some arrays
-        self.HeatkWhProduced.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
-        self.HeatkWhExtracted.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
-        self.PumpingkWh.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
+        self.HeatkWhProduced.value = [0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
+        self.HeatkWhExtracted.value = [0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
+        self.PumpingkWh.value = [0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
@@ -758,26 +754,26 @@ class AGSSurfacePlant(SurfacePlant):
             self.HeatExtracted.value = self.HeatExtracted.value / 1000.0
             # useful direct-use heat provided to application [MWth]
             self.HeatProduced.value = self.HeatExtracted.value * self.enduseefficiencyfactor.value
-            for i in range(0, self.plantlifetime.value):
+            for i in range(0, self.plant_lifetime.value):
                 self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
                                                           (i * model.economics.timestepsperyear.value):((
                                                             i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
                 self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
                                                     (i * model.economics.timestepsperyear.value):((
                                                              i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
 
             self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
                 self.HeatkWhExtracted.value) * 3600 * 1E3 / 1E15
 
             if self.End_use != EndUseOptions.ELECTRICITY:
-                self.HeatkWhProduced.value = np.zeros(self.plantlifetime.value)
-                for i in range(0, self.plantlifetime.value):
+                self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
+                for i in range(0, self.plant_lifetime.value):
                     self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
                                                              (0 + i * model.economics.timestepsperyear.value):((
                                                                   i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                             dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+                                                             dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
             else:
                 # copy some arrays so we have a GEOPHIRES equivalent
                 self.TotalkWhProduced.value = self.Annual_electricity_production.copy()

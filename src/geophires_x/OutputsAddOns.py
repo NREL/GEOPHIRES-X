@@ -65,12 +65,12 @@ class OutputsAddOns(Outputs):
                                                                                 ")       (" + model.addeconomics.ProjectCashFlow.PreferredUnits.value +
                                                                                         ")        (" + model.addeconomics.ProjectCummCashFlow.PreferredUnits.value+")" + NL)
                     i = 0
-                    for i in range(0, model.surfaceplant.ConstructionYears.value, 1):
+                    for i in range(0, model.surfaceplant.construction_years.value, 1):
                         # construction years...
                         f.write(f"   {i+1:3.0f}                                                            {model.addeconomics.AddOnCashFlow.value[i]:5.2f}     {model.addeconomics.AddOnCummCashFlow.value[i]:5.2f}      {model.addeconomics.ProjectCashFlow.value[i]:5.2f}           {model.addeconomics.ProjectCummCashFlow.value[i]:5.2f}" + NL)
                         i = i + 1
                     ii = 0
-                    for ii in range(0, (model.surfaceplant.ConstructionYears.value + model.surfaceplant.plantlifetime.value - 1), 1):
+                    for ii in range(0, (model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value - 1), 1):
                         # running years...
                         f.write(f"   {i+1:3.0f}    {model.economics.ElecPrice.value[ii]:5.3f}   {model.addeconomics.AddOnElecRevenue.value[ii]:5.4f}        {model.economics.HeatPrice.value[ii]:5.3f}   {model.addeconomics.AddOnHeatRevenue.value[ii]:5.4f}        {model.addeconomics.AddOnRevenue.value[ii]:5.2f}        {model.addeconomics.AddOnCashFlow.value[ii]:5.2f}     {model.addeconomics.AddOnCummCashFlow.value[ii]:5.2f}        {model.addeconomics.ProjectCashFlow.value[ii]:5.2f}           {model.addeconomics.ProjectCummCashFlow.value[ii]:5.2f}" + NL)
                         ii = ii + 1

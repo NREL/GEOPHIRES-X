@@ -31,7 +31,7 @@ class AGSOutputs(Outputs.Outputs):
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values
         # back to the units that the user entered the data in
-        # We do this because the value may be displayed in the output, and we want the user to recognize their value,
+        # reservoir_producible_electricity do this because the value may be displayed in the output, and we want the user to recognize their value,
         # not some converted value
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.ParameterDict:
@@ -40,7 +40,7 @@ class AGSOutputs(Outputs.Outputs):
                     ConvertUnitsBack(param, model)
 
         # now we need to loop thru all thw output parameters to update their units to whatever units the user has specified.
-        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert
+        # i.reservoir_enthalpy., they may have specified that all LENGTH results must be in feet, so we need to convert
         # those from whatever LENGTH unit they are to feet.
         # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
 
@@ -61,7 +61,7 @@ class AGSOutputs(Outputs.Outputs):
                     f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                    model.wellbores.PumpingPower.value, fill_value="extrapolate")
                     model.wellbores.PumpingPower.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
-                if model.surfaceplant.enduseoption.value != EndUseOptions.HEAT:
+                if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:
                     if len(model.wellbores.PumpingPower.value) != len(model.wellbores.ProducedTemperature.value):
                         f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                        model.wellbores.PumpingPower.value, fill_value="extrapolate")
@@ -155,14 +155,14 @@ class AGSOutputs(Outputs.Outputs):
                     f.write('                                        ******************************\n')
                     f.write('                                        *  POWER GENERATION PROFILE  *\n')
                     f.write('                                        ******************************\n')
-                    if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:  # only electricity
+                    if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # only electricity
                         f.write(
                             '  YEAR       THERMAL               GEOFLUID               PUMP               NET               FIRST LAW\n')
                         f.write(
                             '             DRAWDOWN             TEMPERATURE             POWER             POWER              EFFICIENCY\n')
                         f.write(
                             "                                     (" + model.wellbores.ProducedTemperature.CurrentUnits.value + ")               (" + model.wellbores.PumpingPower.CurrentUnits.value + ")              (" + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ")                  (%)\n")
-                        for i in range(0, model.surfaceplant.plantlifetime.value):
+                        for i in range(0, model.surfaceplant.plant_lifetime.value):
                             f.write(
                                 '  {0:2.0f}         {1:8.4f}              {2:8.2f}             {3:8.4f}          {4:8.4f}              {5:8.4f}'.format(
                                     i + 1,
@@ -172,11 +172,11 @@ class AGSOutputs(Outputs.Outputs):
                                     model.wellbores.PumpingPower.value[i],
                                     model.surfaceplant.NetElectricityProduced.value[i],
                                     model.surfaceplant.FirstLawEfficiency.value[i] * 100) + NL)
-                    elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:  # only direct-use
+                    elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:  # only direct-use
                         f.write('  YEAR       THERMAL               GEOFLUID               PUMP               NET\n')
                         f.write('             DRAWDOWN             TEMPERATURE             POWER              HEAT\n')
                         f.write('                                   (deg C)                (MW)               (MW)\n')
-                        for i in range(0, model.surfaceplant.plantlifetime.value - 1):
+                        for i in range(0, model.surfaceplant.plant_lifetime.value - 1):
                             f.write(
                                 '  {0:2.0f}         {1:8.4f}              {2:8.2f}             {3:8.4f}          {4:8.4f}'.format(
                                     i,
@@ -193,14 +193,14 @@ class AGSOutputs(Outputs.Outputs):
                         '                              *  HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE  *\n')
                     f.write(
                         '                              ***************************************************************\n')
-                    if model.surfaceplant.enduseoption.value == EndUseOptions.ELECTRICITY:  # only electricity
+                    if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # only electricity
                         f.write(
                             '  YEAR             ELECTRICITY                   HEAT                RESERVOIR            PERCENTAGE OF\n')
                         f.write(
                             '                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
                         f.write(
                             '                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)\n')
-                        for i in range(0, model.surfaceplant.plantlifetime.value):
+                        for i in range(0, model.surfaceplant.plant_lifetime.value):
                             f.write(
                                 '  {0:2.0f}              {1:8.1f}                    {2:8.1f}              {3:8.2f}               {4:8.2f}'.format(
                                     i + 1,
@@ -208,14 +208,14 @@ class AGSOutputs(Outputs.Outputs):
                                     model.surfaceplant.HeatkWhExtracted.value[i] / 1E6,
                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                     (model.reserv.InitialReservoirHeatContent.value - model.surfaceplant.RemainingReservoirHeatContent.value[i]) * 100 / model.reserv.InitialReservoirHeatContent.value) + NL)
-                    elif model.surfaceplant.enduseoption.value == EndUseOptions.HEAT:  # only direct-use
+                    elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:  # only direct-use
                         f.write(
                             '  YEAR               HEAT                       HEAT                RESERVOIR           CUM PERCENTAGE OF\n')
                         f.write(
                             '                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
                         f.write(
                             '                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)\n')
-                        for i in range(0, model.surfaceplant.plantlifetime.value - 1):
+                        for i in range(0, model.surfaceplant.plant_lifetime.value - 1):
                             f.write(
                                 '  {0:2.0f}              {1:8.1f}                    {2:8.1f}              {3:8.2f}               {4:8.2f}'.format(
                                     i + 1,

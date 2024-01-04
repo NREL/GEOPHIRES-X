@@ -655,14 +655,14 @@ class TestHipRa:
         hip_ra.read_parameters()
         assert hip_ra.reservoir_temperature.value == 150.0
         assert hip_ra.rejection_temperature.value == 25.0
-        assert hip_ra.formation_porosity.value == 18.0
+        assert hip_ra.reservoir_porosity.value == 18.0
         assert hip_ra.reservoir_area.value == 81.0
         assert hip_ra.reservoir_thickness.value == 0.286
         assert hip_ra.reservoir_life_cycle.value == 30
-        assert hip_ra.reservoir_heat_capacity.value == 2840000000000.0
-        assert hip_ra.water_heat_capacity.value == -1.0
+        assert hip_ra.rock_heat_capacity.value == 2840000000000.0
+        assert hip_ra.fluid_heat_capacity.value == -1.0
         assert hip_ra.HeatCapacityOfRock.value == 1.0
-        assert hip_ra.water_density.value == -1.0
+        assert hip_ra.fluid_density.value == -1.0
         assert hip_ra.rock_density.value == 2550000000000.0
         assert hip_ra.RecoverableHeat.value == -1.0
         assert hip_ra.WaterContent.value == 18.0
@@ -676,15 +676,15 @@ class TestHipRa:
         hip_ra = HIP_RA()
         hip_ra.read_parameters()
         hip_ra.Calculate()
-        assert hip_ra.V.value == pytest.approx(23.166, abs=1e-3)
-        assert hip_ra.qR.value == pytest.approx(1.034e+14, abs=1e+10)
-        assert hip_ra.mWH.value == pytest.approx(4.159e+13, abs=1e+10)
-        assert hip_ra.e.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.qWH.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.Rg.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.WA.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.WE.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.We.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.reservoir_volume.value == pytest.approx(23.166, abs=1e-3)
+        assert hip_ra.reservoir_stored_heat.value == pytest.approx(1.034e+14, abs=1e+10)
+        assert hip_ra.reservoir_mass.value == pytest.approx(4.159e+13, abs=1e+10)
+        assert hip_ra.reservoir_enthalpy.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.wellhead_heat.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.reservoir_recovery_factor.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.reservoir_available_heat.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.reservoir_producible_heat.value == pytest.approx(0.0, abs=1e-3)
+        assert hip_ra.reservoir_producible_electricity.value == pytest.approx(0.0, abs=1e-3)
 
     #  The class prints the output parameters to a file.
     def test_printing_output_parameters_to_file(self):
@@ -715,14 +715,14 @@ class TestHipRa:
         hip_ra.read_parameters()
         assert hip_ra.reservoir_temperature.value == 150.0
         assert hip_ra.rejection_temperature.value == 25.0
-        assert hip_ra.formation_porosity.value == 18.0
+        assert hip_ra.reservoir_porosity.value == 18.0
         assert hip_ra.reservoir_area.value == 81.0
         assert hip_ra.reservoir_thickness.value == 0.286
         assert hip_ra.reservoir_life_cycle.value == 30
-        assert hip_ra.reservoir_heat_capacity.value == 2840000000000.0
-        assert hip_ra.water_heat_capacity.value == -1.0
+        assert hip_ra.rock_heat_capacity.value == 2840000000000.0
+        assert hip_ra.fluid_heat_capacity.value == -1.0
         assert hip_ra.HeatCapacityOfRock.value == 1.0
-        assert hip_ra.water_density.value == -1.0
+        assert hip_ra.fluid_density.value == -1.0
         assert hip_ra.rock_density.value == 2550000000000.0
         assert hip_ra.RecoverableHeat.value == -1.0
         assert hip_ra.WaterContent.value == 18.0
@@ -767,15 +767,15 @@ class TestHipRa:
         hip_ra = HIP_RA()
         hip_ra.read_parameters()
         hip_ra.Calculate()
-        hip_ra.V.CurrentUnits = VolumeUnit.METERS3
-        hip_ra.qR.CurrentUnits = HeatUnit.J
-        hip_ra.mWH.CurrentUnits = MassUnit.GRAM
-        hip_ra.e.CurrentUnits = EnthalpyUnit.KJPERKG
-        hip_ra.qWH.CurrentUnits = HeatUnit.J
-        hip_ra.Rg.CurrentUnits = PercentUnit.PERCENT
-        hip_ra.WA.CurrentUnits = HeatUnit.J
-        hip_ra.WE.CurrentUnits = HeatUnit.J
-        hip_ra.We.CurrentUnits = PowerUnit.W
+        hip_ra.reservoir_volume.CurrentUnits = VolumeUnit.METERS3
+        hip_ra.reservoir_stored_heat.CurrentUnits = HeatUnit.J
+        hip_ra.reservoir_mass.CurrentUnits = MassUnit.GRAM
+        hip_ra.reservoir_enthalpy.CurrentUnits = EnthalpyUnit.KJPERKG
+        hip_ra.wellhead_heat.CurrentUnits = HeatUnit.J
+        hip_ra.reservoir_recovery_factor.CurrentUnits = PercentUnit.PERCENT
+        hip_ra.reservoir_available_heat.CurrentUnits = HeatUnit.J
+        hip_ra.reservoir_producible_heat.CurrentUnits = HeatUnit.J
+        hip_ra.reservoir_producible_electricity.CurrentUnits = PowerUnit.W
         hip_ra.PrintOutputs()
         with open('HIP.out', 'r') as f:
             content = f.readlines()
@@ -815,18 +815,18 @@ class TestHipRa:
     #  The class handles the case when the density of water is less than the minimum allowed value.
     def test_handle_low_density_of_water(self):
         hip_ra = HIP_RA()
-        hip_ra.water_density.value = -1.0
+        hip_ra.fluid_density.value = -1.0
         hip_ra.reservoir_temperature.value = 100.0
         hip_ra.Calculate()
-        assert hip_ra.water_density.value == pytest.approx(999.7, abs=1e-2)
+        assert hip_ra.fluid_density.value == pytest.approx(999.7, abs=1e-2)
 
     #  The class handles the case when the heat capacity of water is less than the minimum allowed value.
     def test_handle_low_heat_capacity_of_water(self):
         hip_ra = HIP_RA()
-        hip_ra.water_heat_capacity.value = -1.0
+        hip_ra.fluid_heat_capacity.value = -1.0
         hip_ra.reservoir_temperature.value = 100.0
         hip_ra.Calculate()
-        assert hip_ra.water_heat_capacity.value == pytest.approx(4.18, abs=1e-2)
+        assert hip_ra.fluid_heat_capacity.value == pytest.approx(4.18, abs=1e-2)
 
 
 class Test__Init__:
@@ -846,13 +846,13 @@ class Test__Init__:
         hip_ra = HIP_RA()
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
-        assert isinstance(hip_ra.formation_porosity, floatParameter)
+        assert isinstance(hip_ra.reservoir_porosity, floatParameter)
         assert isinstance(hip_ra.reservoir_area, floatParameter)
         assert isinstance(hip_ra.reservoir_thickness, floatParameter)
-        assert isinstance(hip_ra.reservoir_heat_capacity, floatParameter)
-        assert isinstance(hip_ra.water_heat_capacity, floatParameter)
+        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
+        assert isinstance(hip_ra.fluid_heat_capacity, floatParameter)
         assert isinstance(hip_ra.HeatCapacityOfRock, floatParameter)
-        assert isinstance(hip_ra.water_density, floatParameter)
+        assert isinstance(hip_ra.fluid_density, floatParameter)
         assert isinstance(hip_ra.rock_density, floatParameter)
         assert isinstance(hip_ra.RecoverableHeat, floatParameter)
         assert isinstance(hip_ra.WaterContent, floatParameter)
@@ -869,15 +869,15 @@ class Test__Init__:
     #  The method initializes several OutputParameter objects and assigns them to corresponding attributes in the OutputParameterDict dictionary.
     def test_output_parameters_initialized(self):
         hip_ra = HIP_RA()
-        assert isinstance(hip_ra.V, OutputParameter)
-        assert isinstance(hip_ra.qR, OutputParameter)
-        assert isinstance(hip_ra.mWH, OutputParameter)
-        assert isinstance(hip_ra.e, OutputParameter)
-        assert isinstance(hip_ra.qWH, OutputParameter)
-        assert isinstance(hip_ra.Rg, OutputParameter)
-        assert isinstance(hip_ra.WA, OutputParameter)
-        assert isinstance(hip_ra.WE, OutputParameter)
-        assert isinstance(hip_ra.We, OutputParameter)
+        assert isinstance(hip_ra.reservoir_volume, OutputParameter)
+        assert isinstance(hip_ra.reservoir_stored_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_mass, OutputParameter)
+        assert isinstance(hip_ra.reservoir_enthalpy, OutputParameter)
+        assert isinstance(hip_ra.wellhead_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_recovery_factor, OutputParameter)
+        assert isinstance(hip_ra.reservoir_available_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_producible_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_producible_electricity, OutputParameter)
 
     #  The 'enable_geophires_logging_config' parameter is False, so the logger is not configured.
     def test_logger_not_configured_when_enable_geophires_logging_config_is_false(self):
@@ -918,7 +918,7 @@ class TestReadParameters:
         # Assert that all the parameters have been read in and updated
         assert hip_ra.reservoir_temperature.value == 150.0
         assert hip_ra.rejection_temperature.value == 25.0
-        assert hip_ra.formation_porosity.value == 18.0
+        assert hip_ra.reservoir_porosity.value == 18.0
         assert hip_ra.reservoir_area.value == 81.0
         assert hip_ra.reservoir_thickness.value == 0.286
         # Add assertions for other parameters as needed
@@ -940,7 +940,7 @@ class TestReadParameters:
 
         # Assert that the changed parameters have been updated
         assert hip_ra.reservoir_temperature.value == 200.0
-        assert hip_ra.formation_porosity.value == 25.0
+        assert hip_ra.reservoir_porosity.value == 25.0
         # Add assertions for other changed parameters as needed
 
     #  handles any special cases
@@ -967,8 +967,8 @@ class TestReadParameters:
         assert hip_ra.rejection_temperature_k.value == pytest.approx(323.15)
         assert hip_ra.rejection_entropy.value == pytest.approx(0.091)
         assert hip_ra.rejection_enthalpy.value == pytest.approx(105.0)
-        assert hip_ra.water_density.value == pytest.approx(999999999.999)
-        assert hip_ra.water_heat_capacity.value == pytest.approx(4.186)
+        assert hip_ra.fluid_density.value == pytest.approx(999999999.999)
+        assert hip_ra.fluid_heat_capacity.value == pytest.approx(4.186)
         assert hip_ra.RecoverableHeat.value == pytest.approx(0.0)
         # Add assertions for other special cases as needed
 
@@ -989,7 +989,7 @@ class TestReadParameters:
 
         # Assert that the CurrentUnits have been set to PreferredUnits
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
-        assert hip_ra.formation_porosity.CurrentUnits == PercentUnit.PERCENT
+        assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
         # Add assertions for other parameters with matching PreferredUnits as needed
 
     #  sets the CurrentUnits of a parameter to the units provided by the user if they don't match
@@ -1009,7 +1009,7 @@ class TestReadParameters:
 
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
-        assert hip_ra.formation_porosity.CurrentUnits == PercentUnit.PERCENT
+        assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
         # Add assertions for other parameters with non-matching PreferredUnits as needed
 
 
@@ -1019,67 +1019,67 @@ class TestCalculate:
     def test_calculate_stored_heat(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.qR.value == hip_ra.V.value * (hip_ra.reservoir_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value))
+        assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (hip_ra.rock_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value))
 
     #  Calculates the volume of the reservoir
     def test_calculate_reservoir_volume(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.V.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
+        assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
 
     #  Calculates the maximum energy out per unit of mass
     def test_calculate_maximum_energy(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.e.value == ((EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_enthalpy.value) - (hip_ra.rejection_temperature_k.value * (EntropyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_entropy.value)))
+        assert hip_ra.reservoir_enthalpy.value == ((EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_enthalpy.value) - (hip_ra.rejection_temperature_k.value * (EntropyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_entropy.value)))
 
     #  Calculates the heat recovery at the wellhead
     def test_calculate_heat_recovery(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.qWH.value == hip_ra.mWH.value * (EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_temperature_k.value)
+        assert hip_ra.wellhead_heat.value == hip_ra.reservoir_mass.value * (EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_temperature_k.value)
 
     #  Calculates the available heat
     def test_calculate_available_heat(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.WA.value == (hip_ra.mWH.value * hip_ra.e.value * hip_ra.Rg.value * RecoverableHeat(hip_ra.RecoverableHeat.value, hip_ra.reservoir_temperature.value))
+        assert hip_ra.reservoir_available_heat.value == (hip_ra.reservoir_mass.value * hip_ra.reservoir_enthalpy.value * hip_ra.reservoir_recovery_factor.value * RecoverableHeat(hip_ra.RecoverableHeat.value, hip_ra.reservoir_temperature.value))
 
     #  Calculates the mass of the fluid in the reservoir with wrong formula
     def test_calculate_mass_of_fluid_wrong_formula(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        assert hip_ra.mWH.value == (hip_ra.V.value * (hip_ra.formation_porosity.value / 100.0)) * hip_ra.water_density.value
+        assert hip_ra.reservoir_mass.value == (hip_ra.reservoir_volume.value * (hip_ra.reservoir_porosity.value / 100.0)) * hip_ra.fluid_density.value
 
     #  Calculates the density of water with wrong formula
     def test_calculate_density_of_water_wrong_formula(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        if hip_ra.water_density.value < hip_ra.water_density.Min:
-            hip_ra.water_density.value = DensityWater(hip_ra.reservoir_temperature.value) * 1_000_000_000.0
-        assert hip_ra.water_density.value >= hip_ra.water_density.Min
+        if hip_ra.fluid_density.value < hip_ra.fluid_density.Min:
+            hip_ra.fluid_density.value = DensityWater(hip_ra.reservoir_temperature.value) * 1_000_000_000.0
+        assert hip_ra.fluid_density.value >= hip_ra.fluid_density.Min
 
     #  Calculates the heat capacity of water with wrong formula
     def test_calculate_heat_capacity_of_water_wrong_formula(self):
         hip_ra = HIP_RA()
         hip_ra.Calculate()
-        if hip_ra.water_heat_capacity.value < hip_ra.water_heat_capacity.Min:
-            hip_ra.water_heat_capacity.value = HeatCapacityWater(hip_ra.reservoir_temperature.value) / 1000.0
-        assert hip_ra.water_heat_capacity.value >= hip_ra.water_heat_capacity.Min
+        if hip_ra.fluid_heat_capacity.value < hip_ra.fluid_heat_capacity.Min:
+            hip_ra.fluid_heat_capacity.value = HeatCapacityWater(hip_ra.reservoir_temperature.value) / 1000.0
+        assert hip_ra.fluid_heat_capacity.value >= hip_ra.fluid_heat_capacity.Min
 
     #  Calculates the stored heat in the reservoir with negative values
     def test_calculate_stored_heat_negative_values(self):
         hip_ra = HIP_RA()
-        hip_ra.reservoir_heat_capacity.value = -1e12
+        hip_ra.rock_heat_capacity.value = -1e12
         hip_ra.Calculate()
-        assert hip_ra.qR.value == hip_ra.V.value * (hip_ra.reservoir_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value))
+        assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (hip_ra.rock_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value))
 
     #  Calculates the maximum energy out per unit of mass with negative values
     def test_calculate_maximum_energy_negative_values(self):
         hip_ra = HIP_RA()
         hip_ra.rejection_enthalpy.value = 1e12
         hip_ra.Calculate()
-        assert hip_ra.e.value == ((EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_enthalpy.value) - (hip_ra.rejection_temperature_k.value * (EntropyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_entropy.value)))
+        assert hip_ra.reservoir_enthalpy.value == ((EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_enthalpy.value) - (hip_ra.rejection_temperature_k.value * (EntropyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_entropy.value)))
 
 
 class TestPrintOutputs:

@@ -127,7 +127,7 @@ class Reservoir:
             CurrentUnits=TemperatureUnit.CELSIUS,
             Required=True,
             ErrMessage="assume default maximum temperature (400 deg.C)",
-            ToolTipText="Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). \
+            ToolTipText="Maximum allowable reservoir temperature (reservoir_enthalpy.g. due to drill bit or logging tools constraints). \
             GEOPHIRES will cap the drilling depth to stay below this maximum temperature."
         )
 
@@ -809,8 +809,8 @@ class Reservoir:
             self.averagegradient.value = (self.Trock.value - self.Tsurf.value) / self.depth.value
 
         # specify time-stepping vectors
-        self.timevector.value = np.linspace(0, model.surfaceplant.plantlifetime.value,
-                                        model.economics.timestepsperyear.value * model.surfaceplant.plantlifetime.value+1)
+        self.timevector.value = np.linspace(0, model.surfaceplant.plant_lifetime.value,
+                                            model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value + 1)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
         if self.resoption.value != ReservoirModel.SUTRA:

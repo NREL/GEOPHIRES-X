@@ -89,15 +89,15 @@ class UPPReservoir(Reservoir):
                   + model.reserv.filenamereservoiroutput.value+') and will abort simulation.')
             sys.exit()
         numlines = len(contentprodtemp)
-        if numlines != model.surfaceplant.plantlifetime.value*model.economics.timestepsperyear.value+1:
+        if numlines != model.surfaceplant.plant_lifetime.value*model.economics.timestepsperyear.value+1:
             model.logging.critical('Error: Reservoir output file ('
                                    + model.reserv.filenamereservoiroutput.value +
                                    ') does not have required ' +
-                                   str(model.surfaceplant.plantlifetime.value*model.economics.timestepsperyear.value+1) +
+                                   str(model.surfaceplant.plant_lifetime.value * model.economics.timestepsperyear.value + 1) +
                                    ' lines. GEOPHIRES will abort simulation.')
             print('Error: Reservoir output file (' +
-                  model.reserv.filenamereservoiroutput.value+') does not have required ' +
-                  str(model.surfaceplant.plantlifetime.value*model.economics.timestepsperyear.value+1) +
+                  model.reserv.filenamereservoiroutput.value +') does not have required ' +
+                  str(model.surfaceplant.plant_lifetime.value * model.economics.timestepsperyear.value + 1) +
                   ' lines. GEOPHIRES will abort simulation.')
             sys.exit()
         for i in range(0, numlines-1):

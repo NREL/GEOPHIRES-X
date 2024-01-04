@@ -3,9 +3,9 @@ import os
 import numpy as np
 import geophires_x.Model as Model
 import geophires_x.Economics as Economics
-from .Parameter import floatParameter
-from .Units import *
-from .OptionList import WorkingFluid, EndUseOptions, EconomicModel
+from geophires_x.Parameter import floatParameter
+from geophires_x.Units import *
+from geophires_x.OptionList import WorkingFluid, EndUseOptions, EconomicModel
 
 
 class AGSEconomics(Economics.Economics):
@@ -113,7 +113,7 @@ class AGSEconomics(Economics.Economics):
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
         self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
-        self.Electricity_rate = model.surfaceplant.elecprice.value  # same units are GEOPHIRES
+        self.Electricity_rate = model.surfaceplant.electricity_cost_to_buy.value  # same units are GEOPHIRES
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 

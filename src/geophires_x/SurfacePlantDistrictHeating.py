@@ -8,7 +8,7 @@ from geophires_x.Units import *
 import geophires_x.Model as Model
 
 
-class surface_plant_district_heating(SurfacePlant):
+class SurfacePlantDistrictHeating(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -118,33 +118,28 @@ class surface_plant_district_heating(SurfacePlant):
         # Results - used by other objects or printed in output downstream
         self.hourly_heating_demand = self.OutputParameterDict[self.hourly_heating_demand.Name] = OutputParameter(
             Name="Hourly Heating Demand",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.MWhPERHOUR,
             CurrentUnits=EnergyFrequencyUnit.MWhPERHOUR
         )
         self.daily_heating_demand = self.OutputParameterDict[self.daily_heating_demand.Name] = OutputParameter(
             Name="Daily Heating Demand",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.MWhPERDAY,
             CurrentUnits=EnergyFrequencyUnit.MWhPERDAY
         )
         self.annual_heating_demand = self.OutputParameterDict[self.annual_heating_demand.Name] = OutputParameter(
             Name="Annual Heating Demand",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWhPERYEAR
         )
         self.util_factor_array = self.OutputParameterDict[self.util_factor_array.Name] = OutputParameter(
             Name="Utilisation Factor Array",
-            value=[0.0],
             UnitType=Units.NONE
         )
         self.annual_ng_demand = self.OutputParameterDict[self.annual_ng_demand.Name] = OutputParameter(
             Name="Annual Peaking Boiler Natural Gas Demand",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.MWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.MWhPERYEAR
@@ -152,21 +147,18 @@ class surface_plant_district_heating(SurfacePlant):
         self.max_peaking_boiler_demand = self.OutputParameterDict[
             self.max_peaking_boiler_demand.Name] = OutputParameter(
             Name="Maximum Peaking Boiler Natural Gas Demand",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.dh_geothermal_heating = self.OutputParameterDict[self.dh_geothermal_heating.Name] = OutputParameter(
             Name="Instantaneous Geothermal Heating Over Lifetime",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.dh_natural_gas_heating = self.OutputParameterDict[self.dh_natural_gas_heating.Name] = OutputParameter(
             Name="Instantaneous Natural Gas Heating Over Lifetime",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
@@ -416,7 +408,11 @@ class surface_plant_district_heating(SurfacePlant):
                 # compare thermal demand with supply
                 current_index = i * 365 + j
                 current_time = i + j / 365
-                current_heat_output = np.interp(current_time, np.arange(0, self.plant_lifetime.value + 0.01, 1 / time_steps_per_year), heat_produced)
+                xp = np.arange(0, self.plant_lifetime.value + 0.01, 1 / time_steps_per_year)
+                fp = heat_produced
+                xp = xp[:len(fp)]
+                current_heat_output = np.interp(current_time, xp, fp)
+#                current_heat_output = np.interp(current_time, np.arange(0, self.plant_lifetime.value + 0.01, 1 / time_steps_per_year), heat_produced)
                 current_heat_output_stored[current_index] = current_heat_output
                 if self.daily_heating_demand.value[j] / 24 > current_heat_output:
                     actual_geothermal_used[current_index] = current_heat_output

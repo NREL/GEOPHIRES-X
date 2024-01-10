@@ -2,7 +2,6 @@ import sys
 import os
 import math
 import numpy_financial as npf
-from geophires_x.Model import Model
 from geophires_x.Economics import BuildPricingModel, Economics
 from geophires_x.OptionList import EndUseOptions
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter
@@ -10,7 +9,7 @@ from geophires_x.Units import *
 
 
 class EconomicsCCUS(Economics):
-    def __init__(self, model: Model):
+    def __init__(self, model):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments
@@ -313,7 +312,7 @@ class EconomicsCCUS(Economics):
 
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def read_parameters(self, model: Model) -> None:
+    def read_parameters(self, model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
@@ -337,7 +336,7 @@ class EconomicsCCUS(Economics):
 
         model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-    def Calculate(self, model: Model) -> None:
+    def Calculate(self, model) -> None:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.

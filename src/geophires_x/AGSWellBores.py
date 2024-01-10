@@ -77,7 +77,7 @@ class data:
 
             # dim = Mdot x L2 x L1 x grad x D x Tinj x k
             self.Wt = file[output_loc + "Wt"][:]  # int mdot * dh dt
-            self.We = file[output_loc + "reservoir_producible_electricity"][:]  # int mdot * (dh - Too * ds) dt
+            self.We = file[output_loc + "We"][:]  # int mdot * (dh - Too * ds) dt
 
             self.GWhr = 1e6 * 3_600_000.0
 
@@ -657,14 +657,19 @@ class AGSWellBores(WellBores):
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
-                    # just handle special cases for this class - the call to super set all thr values,
+                    # just handle special cases for this class - the call to super set all the values,
                     # including the value unique to this class
-                    if ParameterToModify.Name == "Heat Transfer Fluid":
+                    if ParameterToModify.Name == "Multilaterals Cased":
+                        if ParameterReadIn.sValue == str(1):
+                            self.NonverticalsCased.value = True
+                        else:
+                            self.NonverticalsCased.value = False
+                    elif ParameterToModify.Name == "Heat Transfer Fluid":
                         if ParameterReadIn.sValue == str(1):
                             self.Fluid.value = WorkingFluid.WATER
                         else:
                             self.Fluid.value = WorkingFluid.SCO2
-                    if ParameterToModify.Name == "Closed-loop Configuration":
+                    elif ParameterToModify.Name == "Closed-loop Configuration":
                         if ParameterReadIn.sValue == str(1):
                             self.Configuration.value = Configuration.ULOOP
                         else:

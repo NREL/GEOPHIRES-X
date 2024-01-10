@@ -4,7 +4,7 @@ from .SurfacePlant import SurfacePlant
 import geophires_x.Model as Model
 
 
-class surface_plant_direct_use_heat(SurfacePlant):
+class SurfacePlantIndustrialHeat(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -29,7 +29,7 @@ class surface_plant_direct_use_heat(SurfacePlant):
         model.logger.info("Complete " + self.__class__.__name__ + ": " + __name__)
 
     def __str__(self):
-        return "surface_plant_direct_use_heat"
+        return "SurfacePlantIndustrialHeat"
 
     def read_parameters(self, model: Model) -> None:
         """

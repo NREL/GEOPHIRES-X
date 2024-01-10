@@ -7,7 +7,7 @@ from geophires_x.Units import *
 import geophires_x.Model as Model
 
 
-class surface_plant_heat_pump(SurfacePlant):
+class SurfacePlantHeatPump(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -54,14 +54,12 @@ class surface_plant_heat_pump(SurfacePlant):
         # Results - used by other objects or printed in output downstream
         self.heat_pump_electricity_used = self.OutputParameterDict[self.heat_pump_electricity_used.Name] = OutputParameter(
             Name="Heat Pump Electricity Consumed",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.heat_pump_electricity_kwh_used = self.OutputParameterDict[self.heat_pump_electricity_kwh_used.Name] = OutputParameter(
             Name = "Annual Heat Pump Electricity Consumption",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWhPERYEAR
@@ -70,7 +68,7 @@ class surface_plant_heat_pump(SurfacePlant):
         model.logger.info("Complete " + str(__class__) + ": " + inspect.currentframe().f_code.co_name)
 
     def __str__(self):
-        return "surface_plant_heat_pump"
+        return "SurfacePlantHeatPump"
 
     def read_parameters(self, model:Model) -> None:
         """

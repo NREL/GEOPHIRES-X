@@ -6,7 +6,7 @@ from .Units import *
 import geophires_x.Model as Model
 
 
-class surface_plant_sutra(SurfacePlant):
+class SurfacePlantSUTRA(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -40,7 +40,6 @@ class surface_plant_sutra(SurfacePlant):
         # Results - used by other objects or printed in output downstream
         self.SUTRATimeStep = self.OutputParameterDict[self.SUTRATimeStep.Name] = OutputParameter(
             Name="Time Step used in SUTRA",
-            value=[0.0],
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.HOUR,
             CurrentUnits=TimeUnit.HOUR
@@ -48,14 +47,12 @@ class surface_plant_sutra(SurfacePlant):
 
         self.HeatInjected = self.OutputParameterDict[self.HeatInjected.Name] = OutputParameter(
             Name="Heat Injected",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.HeatProduced = self.OutputParameterDict[self.HeatProduced.Name] = OutputParameter(
             Name="Heat Produced",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
@@ -63,7 +60,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.AuxiliaryHeatProduced = self.OutputParameterDict[self.AuxiliaryHeatProduced.Name] = OutputParameter(
             Name="Auxiliary Heat Produced",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
@@ -71,7 +67,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.TotalHeatProduced = self.OutputParameterDict[self.TotalHeatProduced.Name] = OutputParameter(
             Name="Total Heat Produced",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
@@ -79,7 +74,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.AnnualHeatInjected = self.OutputParameterDict[self.AnnualHeatInjected.Name] = OutputParameter(
             Name="Annual Heat Injected",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWhPERYEAR
@@ -87,7 +81,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.AnnualHeatProduced = self.OutputParameterDict[self.AnnualHeatProduced.Name] = OutputParameter(
             Name="Annual Heat Produced",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWhPERYEAR
@@ -95,7 +88,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.AnnualAuxiliaryHeatProduced = self.OutputParameterDict[self.AnnualAuxiliaryHeatProduced.Name] = OutputParameter(
             Name="Annual Auxiliary Heat Produced",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWhPERYEAR
@@ -103,7 +95,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.AnnualTotalHeatProduced = self.OutputParameterDict[self.AnnualTotalHeatProduced.Name] = OutputParameter(
             Name="Annual Total Heat Produced",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWhPERYEAR
@@ -111,7 +102,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.PumpingkWh = self.OutputParameterDict[self.PumpingkWh.Name] = OutputParameter(
             Name="Annual Pumping Electricity Required",
-            value=[],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWhPERYEAR
@@ -119,7 +109,6 @@ class surface_plant_sutra(SurfacePlant):
 
         self.maxpeakingboilerdemand = self.OutputParameterDict[self.maxpeakingboilerdemand.Name] = OutputParameter(
             Name = "Maximum Peaking Boiler Natural Gas Demand",
-            value=[0.0],
             UnitType = Units.POWER,
             PreferredUnits = PowerUnit.MW,
             CurrentUnits = PowerUnit.MW
@@ -128,14 +117,12 @@ class surface_plant_sutra(SurfacePlant):
         #heat pump (potentially used in the future)
         self.HeatPumpElectricityUsed = self.OutputParameterDict[self.HeatPumpElectricityUsed.Name] = OutputParameter(
             Name = "Heat Pump Electricity Consumed",
-            value=[0.0],
             UnitType = Units.POWER,
             PreferredUnits = PowerUnit.MW,
             CurrentUnits = PowerUnit.MW
         )
         self.HeatPumpElectricitykWhUsed = self.OutputParameterDict[self.HeatPumpElectricitykWhUsed.Name] = OutputParameter(
             Name = "Annual Heat Pump Electricity Consumption",
-            value=[0.0],
             UnitType = Units.ENERGYFREQUENCY,
             PreferredUnits = EnergyFrequencyUnit.KWhPERYEAR,
             CurrentUnits = EnergyFrequencyUnit.KWhPERYEAR

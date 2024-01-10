@@ -5,7 +5,7 @@ from geophires_x.OptionList import EndUseOptions
 from geophires_x.SurfacePlant import SurfacePlant
 import geophires_x.Model as Model
 
-class surface_plant_single_flash(SurfacePlant):
+class SurfacePlantSingleFlash(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.

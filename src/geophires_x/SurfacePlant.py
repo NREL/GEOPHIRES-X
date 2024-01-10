@@ -31,12 +31,12 @@ class SurfacePlant:
 
         """
         if enduse_option in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT]:
-            TenteringPP = np.repeat(T_chp_bottom, len(timevector))
+            TenteringPP = np.full(len(timevector), T_chp_bottom)
         else:
             TenteringPP = ProducedTemperature
         return TenteringPP
 
-    def availability_water(self, T0, T1, T2):
+    def availability_water(self, T0: float, T1: float, T2: float) -> float:
         """
         Availability water: copied from GEOPHIRES v1.0 Fortran Code
         :param T0: T0
@@ -74,7 +74,10 @@ class SurfacePlant:
         :param D22: D22
         :return: injection temperature, reinjection temperature, and etau
         """
-        Tfraction = (ambient_temperature - 5.) / 10.
+        if ambient_temperature < 15.:
+            Tfraction = (ambient_temperature - 5.) / 10.
+        else:
+            Tfraction = (ambient_temperature - 15.) / 10.
         etaull = C21*TenteringPP**2 + C11*TenteringPP + C01
         etauul = D21*TenteringPP**2 + D11*TenteringPP + D01
         etau = (1.-Tfraction)*etaull + Tfraction*etauul
@@ -159,9 +162,9 @@ class SurfacePlant:
         # all end-use options have "heat extracted from reservoir" and pumping kWs
         HeatkWhExtracted = np.zeros(plant_lifetime)
         PumpingkWh = np.zeros(plant_lifetime)
-        TotalkWhProduced = np.empty(0)
-        NetkWhProduced = np.empty(0)
-        HeatkWhProduced = np.empty(0)
+        TotalkWhProduced = np.zeros(plant_lifetime)
+        NetkWhProduced = np.zeros(plant_lifetime)
+        HeatkWhProduced = np.zeros(plant_lifetime)
 
         for i in range(0, plant_lifetime):
             HeatkWhExtracted[i] = np.trapz(HeatExtracted[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
@@ -391,96 +394,82 @@ class SurfacePlant:
         # Results - used by other objects or printed in output downstream
         self.usebuiltinoutletplantcorrelation = self.OutputParameterDict[self.usebuiltinoutletplantcorrelation.Name] = OutputParameter(
             Name="usebuiltinoutletplantcorrelation",
-            value=False,
             UnitType=Units.NONE
         )
         self.TenteringPP = self.OutputParameterDict[self.TenteringPP.Name] = OutputParameter(
             Name="TenteringPP",
-            value=[],
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
         )
         self.HeatkWhExtracted = self.OutputParameterDict[self.HeatkWhExtracted.Name] = OutputParameter(
             Name="annual heat production",
-            value=[],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.GWPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.GWPERYEAR
         )
         self.PumpingkWh = self.OutputParameterDict[self.PumpingkWh.Name] = OutputParameter(
             Name="annual electricity production",
-            value=[],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWPERYEAR
         )
         self.ElectricityProduced = self.OutputParameterDict[self.ElectricityProduced.Name] = OutputParameter(
             Name="Total Electricity Generation",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.NetElectricityProduced = self.OutputParameterDict[self.NetElectricityProduced.Name] = OutputParameter(
             Name="Net Electricity Production",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.TotalkWhProduced = self.OutputParameterDict[self.TotalkWhProduced.Name] = OutputParameter(
             Name="Total Electricity Generation",
-            value=[0.0],
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
         self.NetkWhProduced = self.OutputParameterDict[self.NetkWhProduced.Name] = OutputParameter(
             Name="Net Electricity Generation",
-            value=[0.0],
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
         self.FirstLawEfficiency = self.OutputParameterDict[self.FirstLawEfficiency.Name] = OutputParameter(
             Name="First Law Efficiency",
-            value=[0.0],
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
         self.HeatExtracted = self.OutputParameterDict[self.HeatExtracted.Name] = OutputParameter(
             Name="Heat Extracted",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.HeatProduced = self.OutputParameterDict[self.HeatProduced.Name] = OutputParameter(
             Name="Heat Produced in MW",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.HeatkWhProduced = self.OutputParameterDict[self.HeatkWhProduced.Name] = OutputParameter(
             Name="Heat Produced in kWh",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.KW,
             CurrentUnits=PowerUnit.KW
         )
         self.Availability = self.OutputParameterDict[self.Availability.Name] = OutputParameter(
             Name="Geofluid Availability",
-            value=[0.0],
             UnitType=Units.AVAILABILITY,
             PreferredUnits=AvailabilityUnit.MWPERKGPERSEC,
             CurrentUnits=AvailabilityUnit.MWPERKGPERSEC
         )
         self.RemainingReservoirHeatContent = self.OutputParameterDict[self.RemainingReservoirHeatContent.Name] = OutputParameter(
             Name="Remaining Reservoir Heat Content",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
@@ -544,8 +533,7 @@ class SurfacePlant:
                         elif ParameterReadIn.sValue == str(52):
                             ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
 
-
-                    if ParameterToModify.Name == "Power Plant Type":
+                    elif ParameterToModify.Name == "Power Plant Type":
                         if ParameterReadIn.sValue == str(1):
                             ParameterToModify.value = PlantType.SUB_CRITICAL_ORC
                         elif ParameterReadIn.sValue == str(2):
@@ -591,7 +579,7 @@ class SurfacePlant:
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:
                                 model.wellbores.impedancemodelallowed.value = False
                                 self.setinjectionpressurefixed = True
-                    if ParameterToModify.Name == "Plant Outlet Pressure":
+                    elif ParameterToModify.Name == "Plant Outlet Pressure":
                         if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100

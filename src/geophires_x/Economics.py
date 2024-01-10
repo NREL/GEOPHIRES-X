@@ -136,7 +136,8 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
             LCOE = (self.FCR.value * (1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value) / \
                    np.average(model.surfaceplant.NetkWhProduced.value) * 1E8  # cents/kWh
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
+        elif (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and
+              model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):
             LCOH = (self.FCR.value * (1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value +
                     self.averageannualpumpingcosts.value) / np.average(
                 model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
@@ -164,17 +165,17 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 LCOH = (self.CCap.value + self.Coam.value - averageannualelectricityincome) / np.average(
                     model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
                 LCOH = LCOH * 2.931  # $/MMBTU
-        elif model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
             LCOC = (self.FCR.value * (
                     1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value) / np.average(
                 model.surfaceplant.cooling_kWh_Produced.value) * 1E8  # cents/kWh
             LCOC = LCOC * 2.931  # $/Million Btu
-        elif model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
             LCOH = (self.FCR.value * (
                     1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualheatpumpelectricitycost.value) / np.average(
                 model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-        elif model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             LCOH = (self.FCR.value * (
                     1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualngcost.value) / model.surfaceplant.annual_heating_demand.value * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
@@ -186,7 +187,8 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
             LCOE = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
                 self.Coam.value * discountvector)) / np.sum(
                 model.surfaceplant.NetkWhProduced.value * discountvector) * 1E8  # cents/kWh
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and \
+            model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
             self.averageannualpumpingcosts.value = np.average(
                 model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
             LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum((
@@ -215,20 +217,20 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                     model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
                 LCOH = LCOH * 2.931  # $/MMBTU
 
-        elif model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
             LCOC = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum((
                                                                                          self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(
                 model.surfaceplant.cooling_kWh_Produced.value * discountvector) * 1E8  # cents/kWh
             LCOC = LCOC * 2.931  # $/Million Btu
-        elif model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
             LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
-                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 + \
+                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
                  model.surfaceplant.heat_pump_electricity_kwh_used.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(
                 model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-        elif model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
-                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 + \
+                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
                  self.annualngcost.value) * discountvector)) / np.sum(
                 model.surfaceplant.annual_heating_demand.value * discountvector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
@@ -252,7 +254,8 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
             NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
             LCOE = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(
                 model.surfaceplant.NetkWhProduced.value * inflationvector * discountvector) * 1E8
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and \
+            model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             NPVoandm = np.sum((self.Coam.value + PumpingCosts) * inflationvector * discountvector)
             NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
@@ -285,7 +288,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                     model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
                 LCOH = self.LCOELCOHCombined.value * 2.931  # $/MMBTU
 
-        elif model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             NPVoandm = np.sum((self.Coam.value + PumpingCosts) * inflationvector * discountvector)
             NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
@@ -293,7 +296,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 model.surfaceplant.cooling_kWh_Produced.value * inflationvector * discountvector) * 1E8
             LCOC = LCOC * 2.931  # $/MMBTU
 
-        elif model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             HeatPumpElecCosts = model.surfaceplant.heat_pump_electricity_kwh_used.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             NPVoandm = np.sum((self.Coam.value + PumpingCosts + HeatPumpElecCosts) * inflationvector * discountvector)
@@ -302,7 +305,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
             LCOH = self.LCOH.value * 2.931  # $/MMBTU
 
-        elif model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             NPVoandm = np.sum(
                 (self.Coam.value + PumpingCosts + self.annualngcost.value) * inflationvector * discountvector)
@@ -962,29 +965,6 @@ class Economics:
             ToolTipText="Specify the population in the district heating network"
         )
 
-        self.ElecPrice = self.OutputParameterDict[self.ElecPrice.Name] = OutputParameter(
-            "Electricity Sale Price Model",
-            value=[0.055],
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.CENTSSPERKWH
-        )
-        self.HeatPrice = self.OutputParameterDict[self.HeatPrice.Name] = OutputParameter(
-            "Heat Sale Price Model",
-            value=[0.025],
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.CENTSSPERKWH
-        )
-
-        self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
-            Name="LCOC",
-            value=0.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
-        )
-
         self.HeatStartPrice = self.ParameterDict[self.HeatStartPrice.Name] = floatParameter(
             "Starting Heat Sale Price",
             value=0.025,
@@ -1144,101 +1124,108 @@ class Economics:
         self.MyPath = os.path.abspath(__file__)
 
         # results
+        self.ElecPrice = self.OutputParameterDict[self.ElecPrice.Name] = OutputParameter(
+            "Electricity Sale Price Model",
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
+            CurrentUnits=EnergyCostUnit.CENTSSPERKWH
+        )
+        self.HeatPrice = self.OutputParameterDict[self.HeatPrice.Name] = OutputParameter(
+            "Heat Sale Price Model",
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
+            CurrentUnits=EnergyCostUnit.CENTSSPERKWH
+        )
+
+        self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
+            Name="LCOC",
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
+        )
+
         self.LCOE = self.OutputParameterDict[self.LCOE.Name] = OutputParameter(
             Name="LCOE",
-            value=0.0,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH
         )
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             Name="LCOH",
-            value=0.0,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )  # $/MMBTU
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
             Name="Wellfield cost",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
-            value=-999.9,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
-            value=-999.9,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(
             Name="Field gathering system cost",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Cpiping = self.OutputParameterDict[self.Cpiping.Name] = OutputParameter(
             Name="Transmission pipeline costs",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Coamwater = self.OutputParameterDict[self.Coamwater.Name] = OutputParameter(
             Name="O&M Make-up Water costs",
-            value=-999.9,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
-            value=-999.9,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Coam = self.OutputParameterDict[self.Coam.Name] = OutputParameter(
             Name="Total O&M Cost",
-            value=-999.9,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-        self.averageannualpumpingcosts = self.OutputParameterDict[
-            self.averageannualpumpingcosts.Name] = OutputParameter(
+#        self.averageannualpumpingcosts = self.OutputParameterDict[
+#            self.averageannualpumpingcosts.Name] = OutputParameter(  #typo here!??!
+        self.averageannualpumpingcosts = OutputParameter(
             Name="Average Annual Pumping Costs",
-            value=-0.0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1248,7 +1235,6 @@ class Economics:
         self.averageannualheatpumpelectricitycost = self.OutputParameterDict[
             self.averageannualheatpumpelectricitycost.Name] = OutputParameter(
             Name="Average Annual Heat Pump Electricity Cost",
-            value=0.0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1257,41 +1243,36 @@ class Economics:
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
             Name="Peaking boiler cost",
-            value=0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.dhdistrictcost = self.OutputParameterDict[self.dhdistrictcost.Name] = OutputParameter(
             Name="District Heating System Cost",
-            value=0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.populationdensity = self.OutputParameterDict[self.populationdensity.Name] = OutputParameter(
             Name="District Heating System Population Density",
-            value=0,
             UnitType=Units.POPDENSITY,
             PreferredUnits=PopDensityUnit.perkm2,
             CurrentUnits=PopDensityUnit.perkm2
         )
         self.annualngcost = self.OutputParameterDict[self.annualngcost.Name] = OutputParameter(
             Name="Annual Peaking Fuel Cost",
-            value=0, UnitType=Units.CURRENCYFREQUENCY,
+            UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.dhdistrictoandmcost = self.OutputParameterDict[self.dhdistrictoandmcost.Name] = OutputParameter(
             Name="Annual District Heating O&M Cost",
-            value=0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.averageannualngcost = self.OutputParameterDict[self.averageannualngcost.Name] = OutputParameter(
             Name="Average Annual Peaking Fuel Cost",
-            value=0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1299,70 +1280,60 @@ class Economics:
 
         self.ElecRevenue = self.OutputParameterDict[self.ElecRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Electricity Production",
-            value=[0.0],
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.ElecCummRevenue = self.OutputParameterDict[self.ElecCummRevenue.Name] = OutputParameter(
             Name="Cumulative Revenue from Electricity Production",
-            value=[0.0],
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.HeatRevenue = self.OutputParameterDict[self.HeatRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Heat Production",
-            value=[0.0],
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.HeatCummRevenue = self.OutputParameterDict[self.HeatCummRevenue.Name] = OutputParameter(
             Name="Cumulative Revenue from Electricity Production",
-            value=[0.0],
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.TotalRevenue = self.OutputParameterDict[self.TotalRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Project",
-            value=[0.0],
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.TotalCummRevenue = self.OutputParameterDict[self.TotalCummRevenue.Name] = OutputParameter(
             Name="Cumulative Revenue from Project",
-            value=[0.0],
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.ProjectNPV = self.OutputParameterDict[self.ProjectNPV.Name] = OutputParameter(
             "Project Net Present Value",
-            value=0.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.ProjectIRR = self.OutputParameterDict[self.ProjectIRR.Name] = OutputParameter(
             "Project Internal Rate of Return",
-            value=0.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
         self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = OutputParameter(
             "Project Value Investment Ratio",
-            value=0.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH
         )
         self.ProjectMOIC = self.OutputParameterDict[self.ProjectMOIC.Name] = OutputParameter(
             "Project Multiple of Invested Capital",
-            value=0.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH
@@ -1402,7 +1373,22 @@ class Economics:
                     ReadParameter(ParameterReadIn, ParameterToModify, model)
 
                     # handle special cases
-                    if ParameterToModify.Name == "Economic Model":
+                    if ParameterToModify.Name == "Do AddOn Calculations":
+                        if ParameterReadIn.sValue == '1':
+                            self.DoAddOnCalculations.value = True
+                        else:
+                            self.DoAddOnCalculations.value = False
+                    elif ParameterToModify.Name == "Do CCUS Calculations":
+                        if ParameterReadIn.sValue == '1':
+                            self.DoCCUSCalculations.value = True
+                        else:
+                            self.DoCCUSCalculations.value = False
+                    elif ParameterToModify.Name == "Do S-DAC-GT Calculations":
+                        if ParameterReadIn.sValue == '1':
+                            self.DoSDACGTCalculations.value = True
+                        else:
+                            self.DoSDACGTCalculations.value = False
+                    elif ParameterToModify.Name == "Economic Model":
                         if ParameterReadIn.sValue == '1':
                             self.econmodel.value = EconomicModel.FCR
                         elif ParameterReadIn.sValue == '2':
@@ -1876,7 +1862,8 @@ class Economics:
                 (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
         # plant costs
-        if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:  # direct-use
+        if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT
+            and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):  # direct-use
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
@@ -1884,7 +1871,7 @@ class Economics:
                     model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
 
         # absorption chiller
-        elif model.surfaceplant.enduse_option.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
@@ -1899,7 +1886,7 @@ class Economics:
                 self.Cplant.value += self.chillercapex.value
 
         # heat pump
-        elif model.surfaceplant.enduse_option.value == PlantType.HEAT_PUMP:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
@@ -1914,7 +1901,7 @@ class Economics:
                 self.Cplant.value += self.heatpumpcapex.value
 
         # district heating
-        elif model.surfaceplant.enduse_option.value == PlantType.DISTRICT_HEATING:
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
@@ -2099,7 +2086,7 @@ class Economics:
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
 
             # district heating network costs
-            if model.surfaceplant.enduse_option.value == PlantType.DISTRICT_HEATING:  # district heat
+            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heat
                 if self.dhtotaldistrictnetworkcost.Provided:
                     self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
                 elif self.dhpipinglength.Provided:
@@ -2136,20 +2123,18 @@ class Economics:
         # O&M costs
         # calculate first O&M costs independent of whether oamtotalfixed is provided or not
         # additional electricity cost for heat pump as end-use
-        if model.surfaceplant.enduse_option.value == PlantType.HEAT_PUMP:  # heat pump:
+        if model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:  # heat pump:
             self.averageannualheatpumpelectricitycost.value = np.average(
                 model.surfaceplant.heat_pump_electricity_kwh_used.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
 
         # district heating peaking fuel annual cost
-        if model.surfaceplant.enduse_option.value == PlantType.DISTRICT_HEATING:  # district heating
+        if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
             self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000 / self.peakingboilerefficiency.value  # array with annual O&M cost for peaking fuel
             self.averageannualngcost.value = np.average(self.annualngcost.value)
 
         # calculate average annual pumping costs in case no electricity is provided
-        if model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT, PlantType.ABSORPTION_CHILLER,
-                                                      PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
-            self.averageannualpumpingcosts.value = np.average(
-                model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
+        if model.surfaceplant.plant_type.value in [PlantType.INDUSTRIAL, PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
+            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
 
         if not self.oamtotalfixed.Valid:
             # labor cost
@@ -2193,7 +2178,7 @@ class Economics:
                                                                        365. * 24. * 3600. / 1E6 * 925. / 1E6)
 
             # additional O&M cost for absorption chiller if used
-            if model.surfaceplant.enduse_option.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller:
+            if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller:
                 if self.chilleropex.value == -1:
                     self.chilleropex.value = self.chillercapex.value * 2 / 100  # assumed annual O&M for chiller is 2% of investment cost
 
@@ -2206,7 +2191,7 @@ class Economics:
                 self.chilleropex.value = 0
 
             # district heating O&M cost
-            if model.surfaceplant.enduse_option.value == PlantType.DISTRICT_HEATING:  # district heating
+            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
                 self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000  # array with annual O&M cost for peaking fuel
 
                 if self.dhoandmcost.Provided:

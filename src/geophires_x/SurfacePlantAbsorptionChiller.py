@@ -5,7 +5,7 @@ from .Units import *
 import geophires_x.Model as Model
 
 
-class surface_plant_absorption_chiller(SurfacePlant):
+class SurfacePlantAbsorptionChiller(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -51,14 +51,12 @@ class surface_plant_absorption_chiller(SurfacePlant):
         # Output Parameters
         self.cooling_produced = self.OutputParameterDict[self.cooling_produced.Name] = OutputParameter(
             Name="Cooling Produced",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.cooling_kWh_Produced = self.OutputParameterDict[self.cooling_kWh_Produced.Name] = OutputParameter(
             Name="Annual Cooling Produced",
-            value=[0.0],
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWhPERYEAR,
             CurrentUnits=EnergyFrequencyUnit.KWhPERYEAR
@@ -67,7 +65,7 @@ class surface_plant_absorption_chiller(SurfacePlant):
         model.logger.info(f"Complete {self.__class__.__name__}: {__name__}")
 
     def __str__(self):
-        return "surface_plant_absorption_chiller"
+        return "SurfacePlantAbsorptionChiller"
 
     def read_parameters(self, model: Model) -> None:
         """

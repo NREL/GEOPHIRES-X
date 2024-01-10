@@ -1,11 +1,9 @@
 from pathlib import Path
-import numpy as np
-from geophires_x.OptionList import EndUseOptions
 from geophires_x.SurfacePlant import SurfacePlant
 import geophires_x.Model as Model
 
 
-class surface_plant_subcritical_orc(SurfacePlant):
+class SurfacePlantSubcriticalOrc(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.

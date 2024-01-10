@@ -1,7 +1,6 @@
 import sys
 from geophires_x.Outputs import Outputs
 import numpy as np
-from geophires_x.Model import Model
 
 NL = "\n"
 
@@ -10,7 +9,7 @@ class OutputsCCUS(Outputs):
     """
     Class to handles output of the CCUS values
     """
-    def PrintOutputs(self, model: Model):
+    def PrintOutputs(self, model):
         """
         The PrintOutputs function prints the results of the CCUS to a text file and to the screen.
         :param model: Model: The container class of the application, giving access to everything else, including the logger

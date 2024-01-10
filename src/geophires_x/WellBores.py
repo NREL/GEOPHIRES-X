@@ -508,7 +508,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
         self.rhowaterprod = self.rhowaterinj = 0.0
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -742,9 +742,9 @@ class WellBores:
         self.usebuiltinhydrostaticpressurecorrelation = True
         self.usebuiltinppwellheadcorrelation = True
         self.Pminimum = 0.0
-        sclass = str(__class__).replace("<class \'", "")
-        self.MyClass = sclass.replace("\'>", "")
-        self.MyPath = os.path.abspath(__file__)
+        sclass = self.__class__.__name__
+        self.MyClass = sclass
+        self.MyPath = __file__
 
         # Results - used by other objects or printed in output downstream
         self.Phydrostaticcalc = self.OutputParameterDict[self.Phydrostaticcalc.Name] = floatParameter(
@@ -756,110 +756,92 @@ class WellBores:
         )
         self.redrill = self.OutputParameterDict[self.redrill.Name] = OutputParameter(
             Name="redrill",
-            value=0,
             UnitType=Units.NONE
         )
         self.PumpingPowerProd = self.OutputParameterDict[self.PumpingPowerProd.Name] = OutputParameter(
             Name="PumpingPowerProd",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.PumpingPowerInj = self.OutputParameterDict[self.PumpingPowerInj.Name] = OutputParameter(
             Name="PumpingPowerInj",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.pumpdepth = self.OutputParameterDict[self.pumpdepth.Name] = OutputParameter(
             Name="pumpdepth",
-            value=[0.0],
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,
             CurrentUnits=LengthUnit.METERS
         )
         self.impedancemodelallowed = self.OutputParameterDict[self.impedancemodelallowed.Name] = OutputParameter(
             Name="impedancemodelallowed",
-            value=True,
             UnitType=Units.NONE
         )
         self.productionwellpumping = self.OutputParameterDict[self.productionwellpumping.Name] = OutputParameter(
             Name="productionwellpumping",
-            value=True,
             UnitType=Units.NONE
         )
         self.impedancemodelused = self.OutputParameterDict[self.impedancemodelused.Name] = OutputParameter(
             Name="impedancemodelused",
-            value=False,
             UnitType=Units.NONE
         )
         self.ProdTempDrop = self.OutputParameterDict[self.ProdTempDrop.Name] = OutputParameter(
             Name="Production Well Temperature Drop",
-            value=[0.0],
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
         )
         self.DPOverall = self.OutputParameterDict[self.DPOverall.Name] = OutputParameter(
             Name="Total Pressure Drop",
-            value=[0.0],
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
         self.DPInjWell = self.OutputParameterDict[self.DPInjWell.Name] = OutputParameter(
             Name="Injection Well Pressure Drop",
-            value=[0.0],
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
         self.DPReserv = self.OutputParameterDict[self.DPReserv.Name] = OutputParameter(
             Name="Reservoir Pressure Drop",
-            value=[0.0],
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
         self.DPProdWell = self.OutputParameterDict[self.DPProdWell.Name] = OutputParameter(
             Name="Production Well Pump Pressure Drop",
-            value=[0.0],
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
         self.DPBouyancy = self.OutputParameterDict[self.DPBouyancy.Name] = OutputParameter(
             Name="Bouyancy Pressure Drop",
-            value=[0.0],
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
         self.ProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
             Name="Produced Temperature",
-            value=[0.0],
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
         )
         self.PumpingPower = self.OutputParameterDict[self.PumpingPower.Name] = OutputParameter(
             Name="Pumping Power",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.Pprodwellhead = self.OutputParameterDict[self.Pprodwellhead.Name] = OutputParameter(
             Name="Production wellhead pressure",
-            value=-999.0,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
-
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):
         return "WellBores"
@@ -867,21 +849,21 @@ class WellBores:
     def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
-          It also handles special cases that need to be handled after a value has been read in and checked.
-            If you choose to subclass this master class, you can also choose to override this method (or not).
+        It also handles special cases that need to be handled after a value has been read in and checked.
+        If you choose to subclass this master class, you can also choose to override this method (or not).
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
 
-        # Deal with all the parameter values that the user has provided.  They should really only provide values that
+        # Deal with all the parameter values that the user has provided. They should really only provide values that
         # they want to change from the default values, but they can provide a value that is already set because it is a
-        # default value set in __init__.  It will ignore those.
+        # default value set in __init__. It will ignore those.
         # This also deals with all the special cases that need to be taken care of after a value has been
         # read in and checked.
         # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
+        # and if you do, do it before or after you call you own version of this method. If you do, you can also choose
         # to call this method from you class, which can modify all these superclass parameters in your class.
 
         if len(model.InputParameters) > 0:
@@ -897,9 +879,17 @@ class WellBores:
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this should handle all non-special cases
 
                     # handle special cases
+                    # IsAGS is false by default - if it equal 1, then it is true
+                    if ParameterToModify.Name == "Ramey Production Wellbore Model":
+                        if ParameterReadIn.sValue == '0':
+                            ParameterToModify.value = False
+                    # Ramey Production Wellbore Model is true by default - if it equal 0, then it is false
+                    elif ParameterToModify.Name == "Is AGS":
+                        if ParameterReadIn.sValue == '1':
+                            ParameterToModify.value = True
                     # impedance: impedance per well pair (input as GPa*s/m^3 and converted to KPa/kg/s
                     # (assuming 1000 for density; density will be corrected for later))
-                    if ParameterToModify.Name == "Reservoir Impedance":
+                    elif ParameterToModify.Name == "Reservoir Impedance":
                         # shift it by a constant to make the units right, per line 619 of GEOPHIRES 2
                         self.impedance.value = self.impedance.value * (1E6 / 1E3)
                         self.impedancemodelused.value = True
@@ -917,7 +907,7 @@ class WellBores:
                             self.usebuiltinppwellheadcorrelation = False
         else:
             model.logger.info("No parameters read because no content provided")
-        model.logger.info("read parameters complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
 
     def Calculate(self, model: Model) -> None:
         """
@@ -927,7 +917,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -1035,4 +1025,4 @@ class WellBores:
                                                            model.surfaceplant.plant_outlet_pressure.value,
                                                            self.PumpingPowerProd.value)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")

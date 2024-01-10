@@ -171,7 +171,7 @@ class AGSEconomics(Economics.Economics):
                 "Error: CLGS model database imposes additional range restrictions: Power plant capital cost must be \
                 between 0 and 10,000 $/kWe. Simulation terminated.")
             self.error = 1
-        if model.surfaceplant.End_use not in (EndUseOptions.HEAT, EndUseOptions.ELECTRICITY):
+        if model.surfaceplant.enduse_option.value not in (EndUseOptions.HEAT, EndUseOptions.ELECTRICITY):
             print(
                 "Error: CLGS model database imposes additional range restrictions: Economic Calculations can only be \
                 made only for electricity or heat, not a combination.")
@@ -204,10 +204,10 @@ class AGSEconomics(Economics.Economics):
             vertical_CAPEX_Drilling = vert * self.Vertical_drilling_cost_per_m.value / 1e6  # Drilling capital cost [M$]
             horizontal_CAPEX_Drilling = horiz * self.Nonvertical_drilling_cost_per_m.value / 1e6  # Drilling capital cost [M$]
             self.CAPEX_Drilling = vertical_CAPEX_Drilling + horizontal_CAPEX_Drilling
-            if model.surfaceplant.End_use == EndUseOptions.HEAT:
+            if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
                 self.CAPEX_Surface_Plant = np.max(
                     model.surfaceplant.Instantaneous_heat_production) * self.Direct_use_heat_cost_per_kWth.value / 1e6  # [M$]
-            elif model.surfaceplant.End_use == EndUseOptions.ELECTRICITY:
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
                 if model.wellbores.Fluid.value == WorkingFluid.WATER:
                     self.CAPEX_Surface_Plant = np.max(
                         model.surfaceplant.Instantaneous_electricity_production_method_1) * self.Power_plant_cost_per_kWe.value / 1e6  # [M$]
@@ -218,9 +218,9 @@ class AGSEconomics(Economics.Economics):
             self.TotalCAPEX = self.CAPEX_Drilling + self.CAPEX_Surface_Plant  # Total system capital cost (only includes drilling and surface plant cost) [M$]
 
             # Calculate OPEX
-            if model.surfaceplant.End_use == EndUseOptions.HEAT:
+            if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
                 self.OPEX_Plant = self.O_and_M_cost_plant.value * self.CAPEX_Surface_Plant + model.surfaceplant.Annual_pumping_power * self.Electricity_rate / 1e6  # Annual plant O&M cost [M$/year]
-            elif model.surfaceplant.End_use == EndUseOptions.ELECTRICITY:
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
                 self.OPEX_Plant = self.O_and_M_cost_plant.value * self.CAPEX_Surface_Plant  # Annual plant O&M cost [M$/year]
 
             self.AverageOPEX_Plant = np.average(self.OPEX_Plant)
@@ -228,14 +228,14 @@ class AGSEconomics(Economics.Economics):
             # Calculate LCO(H)(E)
             Discount_vector = 1. / np.power(1 + self.Discount_rate, np.linspace(0, model.surfaceplant.Lifetime - 1,
                                                                                 model.surfaceplant.Lifetime))
-            if model.surfaceplant.End_use == EndUseOptions.HEAT:
+            if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT:
                 self.LCOH.CurrentUnits = EnergyCostUnit.DOLLARSPERMWH
                 self.LCOH.value = (self.TotalCAPEX + np.sum(self.OPEX_Plant * Discount_vector)) * 1e6 / np.sum(
                     model.surfaceplant.Annual_heat_production / 1e3 * Discount_vector)  # $/MWh
                 if self.LCOH.value < 0:
                     self.LCOH.value = 9999
                     model.surfaceplant.error_codes = np.append(model.surfaceplant.error_codes, 5000)
-            elif model.surfaceplant.End_use == EndUseOptions.ELECTRICITY:
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
                 self.LCOE.CurrentUnits = EnergyCostUnit.DOLLARSPERMWH
                 if model.surfaceplant.Average_electricity_production == 0:
                     self.LCOE.value = 9999

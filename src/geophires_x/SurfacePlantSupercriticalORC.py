@@ -2,7 +2,7 @@ from geophires_x.SurfacePlant import SurfacePlant
 import geophires_x.Model as Model
 
 
-class surface_plant_supercritical_orc(SurfacePlant):
+class SurfacePlantSupercriticalOrc(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.

@@ -5,7 +5,7 @@ from .SurfacePlant import SurfacePlant
 import geophires_x.Model as Model
 
 
-class surface_plant_double_flash(SurfacePlant):
+class SurfacePlantDoubleFlash(SurfacePlant):
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.

@@ -256,6 +256,7 @@ def main(enable_geophires_logging_config=True):
         f.write(s)
 
     # TODO Use a scratch directory to minimize the ness: https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory
+    # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
     # build the args list
     pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
 

@@ -3,6 +3,9 @@
 __pycache__
 tests/__pycache__
 
+# requirements defined in setup.py
+requirements.txt
+
 # Temp files
 .*.sw[po]
 *~

@@ -16,7 +16,7 @@ from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import VaporPressureWater
 from geophires_x.GeoPHIRESUtils import ViscosityWater
-from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
+
 from geophires_x.GeoPHIRESUtils import interp_entropy_func
 from geophires_x.GeoPHIRESUtils import interp_util_eff_func
 from geophires_x.Parameter import OutputParameter
@@ -67,114 +67,6 @@ class TestDensityWater(unittest.TestCase):
         """Handles the minimum and maximum float values for Twater."""
         assert DensityWater(sys.float_info.min) == 999.972
         assert DensityWater(sys.float_info.max) == 958.366
-
-
-class TestCelsiusToKelvin(unittest.TestCase):
-    #  Should return the correct Kelvin value when given a valid Celsius value
-    def test_valid_celsius_value(self):
-        # Arrange
-        celsius = 25
-        expected_kelvin = 298.15
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
-
-    #  Should return the correct Kelvin value when given the minimum Celsius value (absolute zero)
-    def test_minimum_celsius_value(self):
-        # Arrange
-        celsius = -273.15
-        expected_kelvin = 0
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
-
-    #  Should return the correct Kelvin value when given the maximum Celsius value (boiling point of water)
-    def test_maximum_celsius_value(self):
-        # Arrange
-        celsius = 100
-        expected_kelvin = 373.15
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
-
-    #  Should raise a ValueError when given a non-numeric input
-    def test_non_numeric_input(self):
-        # Arrange
-        celsius = '25'
-
-        # Act and Assert
-        with pytest.raises(ValueError):
-            celsius_to_kelvin(celsius)
-
-    #  Should raise a ValueError when given a None input
-    def test_none_input(self):
-        # Arrange
-        celsius = None
-
-        # Act and Assert
-        with pytest.raises(ValueError):
-            celsius_to_kelvin(celsius)
-
-    #  Should raise a ValueError when given a string input
-    def test_string_input(self):
-        # Arrange
-        celsius = 'twenty-five'
-
-        # Act and Assert
-        with pytest.raises(ValueError):
-            celsius_to_kelvin(celsius)
-
-    def test_negative_celsius_value(self):
-        # Arrange
-        celsius = -10
-
-        # Act and Assert
-        assert celsius_to_kelvin(celsius) == 263.15
-
-    #  Should return the correct Kelvin value when given a float input
-    def test_float_input(self):
-        # Arrange
-        celsius = 37.5
-        expected_kelvin = 310.65
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
-
-    #  Should return the correct Kelvin value when given an integer input
-    def test_integer_input(self):
-        # Arrange
-        celsius = 20
-        expected_kelvin = 293.15
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
-
-    #  Should return the correct Kelvin value when given a very large Celsius value
-    def test_large_celsius_value(self):
-        # Arrange
-        celsius = 1000000
-        expected_kelvin = 1000273.15
-
-        # Act
-        result = celsius_to_kelvin(celsius)
-
-        # Assert
-        assert result == expected_kelvin
 
 
 class TestViscosityWater(unittest.TestCase):

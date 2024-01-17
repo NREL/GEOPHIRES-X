@@ -286,7 +286,7 @@ def read_input_file(return_dict_1, logger=None):
                     # so they can parse out their specific parameters (and ignore the rest)
                     content = f.readlines()
             else:
-                logger.warn(f'File: {f_name} not found - proceeding with default parameter run...')
+                logger.warning(f'File: {f_name} not found - proceeding with default parameter run...')
                 return
 
         except BaseException as ex:
@@ -334,7 +334,7 @@ def read_input_file(return_dict_1, logger=None):
             return_dict_1[description] = p_entry  # make the dictionary element
 
     else:
-        logger.warn("No input parameter file specified on the command line. Proceeding with default parameter run... ")
+        logger.warning('No input parameter file specified on the command line. Proceeding with default parameter run... ')
 
     logger.info(f'Complete {__name__}: {sys._getframe().f_code.co_name}')
 

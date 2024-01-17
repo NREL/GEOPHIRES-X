@@ -911,7 +911,7 @@ class AGSWellBores(WellBores):
         if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
             # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.
             if self.Tini > 375.0:
-                model.logger.warn("In AGS, but forced to use Wanju code because initial reservoir temperature \
+                model.logger.warning("In AGS, but forced to use Wanju code because initial reservoir temperature \
                 is too high for CLGS")
                 print("In AGS, but forced to use Wanju code because initial reservoir temperature \
                 is too high for CLGS")

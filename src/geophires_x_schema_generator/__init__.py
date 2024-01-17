@@ -2,15 +2,17 @@ import json
 from typing import Tuple
 
 from geophires_x.AGSEconomics import AGSEconomics
-from geophires_x.SurfacePlantAGS import SurfacePlantAGS
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
+from geophires_x.EconomicsAddOns import EconomicsAddOns
+from geophires_x.EconomicsCCUS import EconomicsCCUS
 from geophires_x.GeoPHIRESUtils import json_dumpse
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
+from geophires_x.SurfacePlantAGS import SurfacePlantAGS
+from geophires_x.SurfacePlantSUTRA import SurfacePlantSUTRA
 from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
-from geophires_x.SurfacePlantSUTRA import SurfacePlantSUTRA
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 
 
@@ -41,6 +43,8 @@ class GeophiresXSchemaGenerator:
             (dummy_model.economics, 'Economics'),
             (AGSEconomics(dummy_model), 'Economics'),
             (SUTRAEconomics(dummy_model), 'Economics'),
+            (EconomicsCCUS(dummy_model), 'Economics'),
+            (EconomicsAddOns(dummy_model), 'Economics'),
         ]
 
         output_params = {}

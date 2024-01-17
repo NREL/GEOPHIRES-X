@@ -7,12 +7,12 @@ Contributions are welcome and greatly appreciated. GEOPHIRES is free and open so
 Feature requests and feedback
 =============================
 
-The best way to make a feature request or give feedback is to file an issue at https://github.com/NREL/python-geophires-x/issues.
+The best way to make a feature request or give feedback is to file an issue at https://github.com/NREL/GEOPHIRES-X/issues.
 
 Bug reports
 ===========
 
-`Report bugs by creating an issue here <https://github.com/NREL/python-geophires-x/issues>`__.
+`Report bugs by creating an issue here <https://github.com/NREL/GEOPHIRES-X/issues>`__.
 
 When reporting a bug please include:
 
@@ -26,7 +26,7 @@ Development
 
 To get started, create your own fork of GEOPHIRES-X and clone it locally:
 
-1. Fork NREL/python-geophires-x on GitHub by going to https://github.com/NREL/python-geophires-x/fork
+1. Fork NREL/GEOPHIRES-X on GitHub by going to https://github.com/NREL/GEOPHIRES-X/fork
 
 2. Enable Actions on your fork on GitHub in your fork's Actions tab
 
@@ -35,8 +35,8 @@ To get started, create your own fork of GEOPHIRES-X and clone it locally:
 4. Clone your fork locally in a terminal::
 
     cd some/path/where-you-have-your-code-projects
-    git clone git@github.com:<your GitHub username>/python-geophires-x.git
-    cd python-geophires-x
+    git clone git@github.com:<your GitHub username>/GEOPHIRES-X.git
+    cd GEOPHIRES-X
 
 5. Continue with the Local Setup instructions below.
 
@@ -47,7 +47,7 @@ Prerequisite: Follow fork & clone instructions above.
 
 Strongly recommended: use a Python IDE such as `PyCharm <https://www.jetbrains.com/pycharm/>`__ or `Visual Studio Code (aka VS Code) <https://code.visualstudio.com/>`__.
 
-If you are using PyCharm, first open the the cloned repo by going to File → Open and selecting your ``python-geophires-x`` directory (from the previous steps).
+If you are using PyCharm, first open the the cloned repo by going to File → Open and selecting your ``GEOPHIRES-X`` directory (from the previous steps).
 Run commands in a terminal with View → Tool Windows → Terminal
 
 1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already. Then set up and activate a virtual environment for the project::
@@ -78,7 +78,7 @@ You're now ready to start making changes and committing them.
 Note that ``pre-commit`` will run when you run ``git commit``. If your code does not pass automated checks you will have to
 add fixed files (or manually fix in some cases). Example::
 
-        (venv) ➜  python-geophires-x git:(main) ✗ git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
+        (venv) ➜  GEOPHIRES-X git:(main) ✗ git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
         ruff.....................................................................Passed
         black....................................................................Failed
         - hook id: black
@@ -92,7 +92,7 @@ add fixed files (or manually fix in some cases). Example::
         trim trailing whitespace.................................................Passed
         fix end of files.........................................................Passed
         debug statements (python)................................................Passed
-        (venv) ➜  python-geophires-x git:(main) ✗ git add src/hip_ra/HIP_RA.py && git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
+        (venv) ➜  GEOPHIRES-X git:(main) ✗ git add src/hip_ra/HIP_RA.py && git commit -m "Use __future__ annotations to allow type union syntax in HIP_RA.py"
         ruff.....................................................................Passed
         black....................................................................Passed
         trim trailing whitespace.................................................Passed
@@ -103,7 +103,7 @@ add fixed files (or manually fix in some cases). Example::
 
 
 5. Verify that tests pass with your changes. In PyCharm, you can run unit tests by right-clicking the ``tests/`` folder and selecting "Run 'Python tests in tests'".
-If you want to be extra thorough you can `run tox locally <#Tox-tests>`_ but in general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
+If you want to be extra thorough you can `run tox locally <#Tox-tests>`__ but in general it is more practical to run unit tests in PyCharm locally and then let GitHub Actions on your fork run the full ``tox`` suite.
 
 6. Push your changes to your fork::
 
@@ -282,7 +282,7 @@ Tips
 git
 ^^^
 
-A working understanding of `git <https://git-scm.com/>`_ is one of the most beneficial skills you can have when working on software, even if you are not a software engineer.
+A working understanding of `git <https://git-scm.com/>`__ is one of the most beneficial skills you can have when working on software, even if you are not a software engineer.
 Although most modern IDEs now provide a reasonable GUI for working with git, learning and using git on the command line is often the most effective way
 to become proficient. This is not an easy skill to learn for most, and there is no one tutorial that will substitute for real-world experience.
 However the following tutorials may be a good place to start:

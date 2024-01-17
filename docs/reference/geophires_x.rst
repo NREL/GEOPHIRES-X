@@ -45,3 +45,9 @@ geophires_x
 
 .. automodule:: geophires_x.SUTRAEconomics
     :members:
+
+.. automodule:: geophires_x.EconomicsCCUS
+    :members:
+
+.. automodule:: geophires_x.EconomicsAddOns
+    :members:

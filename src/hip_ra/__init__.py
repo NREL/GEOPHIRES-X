@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import tempfile
 import uuid
@@ -25,6 +26,23 @@ class HipRaInputParameters:
 class HipRaResult:
     def __init__(self, output_file_path):
         self.output_file_path = output_file_path
+        self.result = self._parse_fields()
+
+    def _parse_fields(self):
+        with open(self.output_file_path) as f:
+            text = f.read()
+            pattern = re.compile(r'(\w+(\s\w+)*):\s+([0-9eE.+-]+)\s*(.+)+?')
+
+            matches = re.findall(pattern, text)
+
+            result = {
+                key.strip(): {'value': float(value), 'unit': unit.strip()}
+                if unit
+                else {'value': float(value), 'unit': None}
+                for key, _, value, unit in matches
+            }
+
+            return result
 
 
 class HipRaClient:

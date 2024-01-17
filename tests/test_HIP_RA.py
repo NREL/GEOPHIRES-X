@@ -2,6 +2,7 @@ from pathlib import Path
 
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
+from hip_ra import HipRaResult
 from tests.base_test_case import BaseTestCase
 
 
@@ -23,3 +24,22 @@ class HIP_RATestCase(BaseTestCase):
 
                     assert result is not None
                     self.assertFileContentsEqual(get_output_file_for_example(input_file_path), result.output_file_path)
+
+    def test_result_parsing(self):
+        result = HipRaResult(self._get_test_file_path('examples/HIPexample1.out'))
+        self.assertIsNotNone(result.result)
+        self.assertDictEqual(
+            result.result,
+            {
+                'Reservoir Temperature': {'value': 250.0, 'unit': 'degC'},
+                'Reservoir Volume': {'value': 13.75, 'unit': 'km**3'},
+                'Stored Heat': {'value': 7420000000000000.0, 'unit': 'kJ'},
+                'Fluid Produced': {'value': 1100000000000.0, 'unit': 'kilogram'},
+                'Enthalpy': {'value': 181.43, 'unit': 'kJ/kg'},
+                'Wellhead Heat': {'value': 827000000000000.0, 'unit': 'kJ'},
+                'Recovery Factor': {'value': 11.15, 'unit': '%'},
+                'Available Heat': {'value': 14700000000000.0, 'unit': 'kJ'},
+                'Producible Heat': {'value': 5860000000000.0, 'unit': 'kJ'},
+                'Producible Electricity': {'value': 185.85, 'unit': 'MW'},
+            },
+        )

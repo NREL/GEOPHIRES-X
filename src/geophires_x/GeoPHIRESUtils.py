@@ -53,8 +53,8 @@ def DensityWater(Twater: float) -> float:
     Raises:
         ValueError: If Twater is not a float or convertible to float.
     """
-    if not isinstance(Twater, float):
-        raise ValueError("Twater must be a float or convertible to float.")
+    if not np.can_cast(Twater, float):
+        raise ValueError(f'Twater ({Twater}) must be a float or convertible to float.')
 
     return interp_density_func(Twater) * 1e3
 

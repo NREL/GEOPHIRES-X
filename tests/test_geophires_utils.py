@@ -1,6 +1,8 @@
 import unittest
 
+from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
+from geophires_x.GeoPHIRESUtils import interp_util_eff_func
 
 
 class TestCelsiusToKelvin(unittest.TestCase):
@@ -109,6 +111,78 @@ class TestCelsiusToKelvin(unittest.TestCase):
 
         # Assert
         assert result == expected_kelvin
+
+
+class TestUtileffFunc(unittest.TestCase):
+    #  Returns the utilization efficiency of the system for a given temperature within the range of 0 to 373.946 degrees C.
+    def test_within_range_temperature(self):
+        temperature = 50.0
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Returns the same utilization efficiency for the same temperature input.
+    def test_same_temperature_input(self):
+        temperature = 60.0
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Returns the utilization efficiency of the system for the temperature at the lower bound of the range (0.01 degrees C).
+    def test_lower_bound_temperature(self):
+        temperature = 0.01
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Returns the utilization efficiency of the system for the temperature at the upper bound of the range (373.946 degrees C).
+    def test_upper_bound_temperature(self):
+        temperature = 373.946
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Returns the utilization efficiency of the system for a temperature that is exactly in the middle of two temperature values in the T array.
+    def test_middle_temperature(self):
+        temperature = 150.0
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Raises a ValueError if the input temperature is not a float or convertible to float.
+    def test_non_float_temperature(self):
+        temperature = '50.0'
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    #  Raises a ValueError if the input temperature is less than the lower bound of the range (0.01 degrees C).
+    def test_less_than_lower_bound_temperature(self):
+        temperature = -10.0
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    #  Raises a ValueError if the input temperature is greater than the upper bound of the range (373.946 degrees C).
+    def test_greater_than_upper_bound_temperature(self):
+        temperature = 400.0
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    #  Returns the utilization efficiency of the system for a temperature that is exactly equal to one of the temperature values in the T array.
+    def test_exact_temperature_value(self):
+        temperature = 120.0
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    #  Returns the utilization efficiency of the system for a temperature that is very close to the lower bound of the range (0.01 + epsilon degrees C).
+    def test_very_close_to_lower_bound_temperature(self):
+        temperature = 0.01 + 1e-6
+        expected_util_eff = interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
 
 
 if __name__ == '__main__':

@@ -13,12 +13,12 @@ from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
-from geophires_x.GeoPHIRESUtils import UtilEff_func
+
 from geophires_x.GeoPHIRESUtils import VaporPressureWater
 from geophires_x.GeoPHIRESUtils import ViscosityWater
 
 from geophires_x.GeoPHIRESUtils import interp_entropy_func
-from geophires_x.GeoPHIRESUtils import interp_util_eff_func
+
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
@@ -463,78 +463,6 @@ class TestEnthalpyh20Func(unittest.TestCase):
         temperature = 100.001
         expected_enthalpy = 251.002
         assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-
-class TestUtileffFunc(unittest.TestCase):
-    #  Returns the utilization efficiency of the system for a given temperature within the range of 0 to 373.946 degrees C.
-    def test_within_range_temperature(self):
-        temperature = 50.0
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Returns the same utilization efficiency for the same temperature input.
-    def test_same_temperature_input(self):
-        temperature = 60.0
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Returns the utilization efficiency of the system for the temperature at the lower bound of the range (0.01 degrees C).
-    def test_lower_bound_temperature(self):
-        temperature = 0.01
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Returns the utilization efficiency of the system for the temperature at the upper bound of the range (373.946 degrees C).
-    def test_upper_bound_temperature(self):
-        temperature = 373.946
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Returns the utilization efficiency of the system for a temperature that is exactly in the middle of two temperature values in the T array.
-    def test_middle_temperature(self):
-        temperature = 150.0
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Raises a ValueError if the input temperature is not a float or convertible to float.
-    def test_non_float_temperature(self):
-        temperature = '50.0'
-
-        with pytest.raises(ValueError):
-            UtilEff_func(temperature)
-
-    #  Raises a ValueError if the input temperature is less than the lower bound of the range (0.01 degrees C).
-    def test_less_than_lower_bound_temperature(self):
-        temperature = -10.0
-
-        with pytest.raises(ValueError):
-            UtilEff_func(temperature)
-
-    #  Raises a ValueError if the input temperature is greater than the upper bound of the range (373.946 degrees C).
-    def test_greater_than_upper_bound_temperature(self):
-        temperature = 400.0
-
-        with pytest.raises(ValueError):
-            UtilEff_func(temperature)
-
-    #  Returns the utilization efficiency of the system for a temperature that is exactly equal to one of the temperature values in the T array.
-    def test_exact_temperature_value(self):
-        temperature = 120.0
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
-
-    #  Returns the utilization efficiency of the system for a temperature that is very close to the lower bound of the range (0.01 + epsilon degrees C).
-    def test_very_close_to_lower_bound_temperature(self):
-        temperature = 0.01 + 1e-6
-        expected_util_eff = interp_util_eff_func(temperature)
-
-        assert UtilEff_func(temperature) == expected_util_eff
 
 
 class TestHipRa(unittest.TestCase):

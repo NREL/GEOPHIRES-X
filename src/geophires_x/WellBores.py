@@ -782,6 +782,7 @@ class WellBores:
         )
         self.productionwellpumping = self.OutputParameterDict[self.productionwellpumping.Name] = OutputParameter(
             Name="productionwellpumping",
+            value=True,
             UnitType=Units.NONE
         )
         self.impedancemodelused = self.OutputParameterDict[self.impedancemodelused.Name] = OutputParameter(

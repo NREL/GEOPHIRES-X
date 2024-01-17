@@ -13,7 +13,7 @@ from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
-
+from geophires_x.GeoPHIRESUtils import T
 from geophires_x.GeoPHIRESUtils import VaporPressureWater
 from geophires_x.GeoPHIRESUtils import ViscosityWater
 
@@ -892,7 +892,7 @@ class TestCalculate:
             hip_ra.reservoir_mass.value
             * hip_ra.reservoir_enthalpy.value
             * hip_ra.reservoir_recovery_factor.value
-            * RecoverableHeat(hip_ra.RecoverableHeat.value, hip_ra.reservoir_temperature.value)
+            * RecoverableHeat(hip_ra.recoverable_rock_heat.value, hip_ra.reservoir_temperature.value)
         )
 
     #  Calculates the mass of the fluid in the reservoir with wrong formula

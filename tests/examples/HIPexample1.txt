@@ -4,4 +4,3 @@ Reservoir Porosity, 10.0
 Reservoir Area, 55.0
 Reservoir Thickness, 0.25
 Reservoir Life Cycle, 25
-

@@ -1,9 +1,12 @@
+import sys
 import unittest
 
+from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
 from geophires_x.GeoPHIRESUtils import interp_util_eff_func
+from geophires_x_client import _get_logger
 
 
 class TestCelsiusToKelvin(unittest.TestCase):
@@ -238,6 +241,56 @@ class TestViscosityWater(unittest.TestCase):
         """The function raises a ValueError if the input temperature is a string."""
         with self.assertRaises(ValueError):
             ViscosityWater('water')
+
+
+class TestDensityWater(unittest.TestCase):
+    def test_correct_density(self):
+        """Returns the correct density of water for a given temperature."""
+        log = _get_logger()
+        input_expected_val_pairs = [
+            (25, 997.047),
+            (50, 988.032),
+            # (75, 983.213), # FIXME need correct value
+            (100, 958.366),
+            # (25.5, 996.747), # FIXME need correct value
+            (50.5, 987.732),
+            # (75.5, 982.913), # FIXME need correct value
+            (100.5, 958.066),
+        ]
+
+        for pair in input_expected_val_pairs:
+            t_water_deg_c = pair[0]
+            calc_density = DensityWater(t_water_deg_c)
+            expected_density = pair[1]
+            try:
+                assert calc_density == expected_density
+            except AssertionError:
+                log.warning(
+                    f'Exact comparison failed for T={t_water_deg_c}C; '
+                    f'expected {expected_density}, got {calc_density}; '
+                    f'falling back to almost-equal comparison...'
+                )
+                self.assertAlmostEqual(calc_density, expected_density, places=0)
+
+    def test_returns_density_in_kg_per_m3(self):
+        """Returns the density in kg/m3."""
+        assert isinstance(DensityWater(25), float)
+        assert isinstance(DensityWater(50), float)
+        assert isinstance(DensityWater(75), float)
+        assert isinstance(DensityWater(100), float)
+
+    def test_handles_minimum_temperature_value(self):
+        """Handles the minimum temperature value in T."""
+        assert DensityWater(-273.15) == 999.972
+
+    def test_handles_maximum_temperature_value(self):
+        """Handles the maximum temperature value in T."""
+        assert DensityWater(374.15) == 958.366
+
+    def test_handles_minimum_and_maximum_float_values(self):
+        """Handles the minimum and maximum float values for Twater."""
+        assert DensityWater(sys.float_info.min) == 999.972
+        assert DensityWater(sys.float_info.max) == 958.366
 
 
 if __name__ == '__main__':

@@ -33,42 +33,6 @@ from geophires_x.Units import VolumeUnit
 from hip_ra.HIP_RA import HIP_RA
 
 
-class TestDensityWater(unittest.TestCase):
-    def test_correct_density(self):
-        """Returns the correct density of water for a given temperature."""
-        assert DensityWater(25) == 997.047
-        assert DensityWater(50) == 988.032
-        assert DensityWater(75) == 983.213
-        assert DensityWater(100) == 958.366
-
-    def test_accepts_float_values(self):
-        """Accepts float values for Twater."""
-        assert DensityWater(25.5) == 996.747
-        assert DensityWater(50.5) == 987.732
-        assert DensityWater(75.5) == 982.913
-        assert DensityWater(100.5) == 958.066
-
-    def test_returns_density_in_kg_per_m3(self):
-        """Returns the density in kg/m3."""
-        assert isinstance(DensityWater(25), float)
-        assert isinstance(DensityWater(50), float)
-        assert isinstance(DensityWater(75), float)
-        assert isinstance(DensityWater(100), float)
-
-    def test_handles_minimum_temperature_value(self):
-        """Handles the minimum temperature value in T."""
-        assert DensityWater(-273.15) == 999.972
-
-    def test_handles_maximum_temperature_value(self):
-        """Handles the maximum temperature value in T."""
-        assert DensityWater(374.15) == 958.366
-
-    def test_handles_minimum_and_maximum_float_values(self):
-        """Handles the minimum and maximum float values for Twater."""
-        assert DensityWater(sys.float_info.min) == 999.972
-        assert DensityWater(sys.float_info.max) == 958.366
-
-
 class TestHeatCapacityWater(unittest.TestCase):
     #  Returns the specific heat capacity of water for a valid input temperature within the range of 0 to 370 degrees Celsius.
     def test_valid_input_within_range(self):

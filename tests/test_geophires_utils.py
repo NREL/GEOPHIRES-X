@@ -279,18 +279,26 @@ class TestDensityWater(unittest.TestCase):
         assert isinstance(DensityWater(75), float)
         assert isinstance(DensityWater(100), float)
 
-    def test_handles_minimum_temperature_value(self):
+    def test_minimum_temperature_value(self):
         """Handles the minimum temperature value in T."""
-        assert DensityWater(-273.15) == 999.972
+        assert DensityWater(0.01) == 999.8428299999999
 
     def test_handles_maximum_temperature_value(self):
         """Handles the maximum temperature value in T."""
-        assert DensityWater(374.15) == 958.366
+        assert DensityWater(373.946) == 322
 
-    def test_handles_minimum_and_maximum_float_values(self):
+    def test_raises_value_error_outside_valid_input_range(self):
         """Handles the minimum and maximum float values for Twater."""
-        assert DensityWater(sys.float_info.min) == 999.972
-        assert DensityWater(sys.float_info.max) == 958.366
+        invalid_range_vals = [
+            0,
+            374,  # FIXME TODO extend HIP-RA to handle values above 374
+            sys.float_info.min,
+            sys.float_info.max,
+        ]
+
+        for invalid_val in invalid_range_vals:
+            with self.assertRaises(ValueError):
+                DensityWater(invalid_val)
 
 
 if __name__ == '__main__':

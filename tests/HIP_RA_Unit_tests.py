@@ -69,55 +69,6 @@ class TestDensityWater(unittest.TestCase):
         assert DensityWater(sys.float_info.max) == 958.366
 
 
-class TestViscosityWater(unittest.TestCase):
-    #  The function returns the correct viscosity value for a valid input temperature within the range of 0 to 370 degrees Celsius.
-    def test_valid_input_temperature(self):
-        assert ViscosityWater(50) == 0.000890625
-        assert ViscosityWater(200) == 0.00130859375
-        assert ViscosityWater(300) == 0.0015625
-
-    #  The function returns the correct viscosity value for the minimum valid input temperature of 0 degrees Celsius.
-    def test_minimum_valid_input_temperature(self):
-        assert ViscosityWater(0) == 0.000890625
-
-    #  The function returns the correct viscosity value for the maximum valid input temperature of 370 degrees Celsius.
-    def test_maximum_valid_input_temperature(self):
-        assert ViscosityWater(370) == 0.0015625
-
-    #  The function returns the correct viscosity value for the input temperature of 100 degrees Celsius.
-    def test_input_temperature_100(self):
-        assert ViscosityWater(100) == 0.00109375
-
-    #  The function returns the correct viscosity value for the input temperature of 20 degrees Celsius.
-    def test_input_temperature_20(self):
-        assert ViscosityWater(20) == 0.000890625
-
-    #  The function raises a ValueError if the input temperature is less than 0 degrees Celsius.
-    def test_negative_input_temperature(self):
-        with pytest.raises(ValueError):
-            ViscosityWater(-10)
-
-    #  The function raises a ValueError if the input temperature is greater than 370 degrees Celsius.
-    def test_high_input_temperature(self):
-        with pytest.raises(ValueError):
-            ViscosityWater(400)
-
-    #  The function raises a ValueError if the input temperature is not a number.
-    def test_non_number_input_temperature(self):
-        with pytest.raises(ValueError):
-            ViscosityWater('25')
-
-    #  The function raises a ValueError if the input temperature is None.
-    def test_none_input_temperature(self):
-        with pytest.raises(ValueError):
-            ViscosityWater(None)
-
-    #  The function raises a ValueError if the input temperature is a string.
-    def test_string_input_temperature(self):
-        with pytest.raises(ValueError):
-            ViscosityWater('water')
-
-
 class TestHeatCapacityWater(unittest.TestCase):
     #  Returns the specific heat capacity of water for a valid input temperature within the range of 0 to 370 degrees Celsius.
     def test_valid_input_within_range(self):

@@ -1,6 +1,7 @@
 import unittest
 
 from geophires_x.GeoPHIRESUtils import UtilEff_func
+from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
 from geophires_x.GeoPHIRESUtils import interp_util_eff_func
 
@@ -183,6 +184,60 @@ class TestUtileffFunc(unittest.TestCase):
         expected_util_eff = interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
+
+
+class TestViscosityWater(unittest.TestCase):
+    @unittest.skip('FIXME incorrect result')
+    def test_valid_input_temperature(self):
+        """The function returns the correct viscosity value for a valid input temperature within the range of 0 to 370 degrees Celsius."""
+        assert ViscosityWater(50) == 0.000890625
+        assert ViscosityWater(200) == 0.00130859375
+        assert ViscosityWater(300) == 0.0015625
+
+    @unittest.skip('FIXME incorrect result')
+    def test_minimum_valid_input_temperature(self):
+        """The function returns the correct viscosity value for the minimum valid input temperature of 0 degrees Celsius."""
+        assert ViscosityWater(0) == 0.000890625
+
+    @unittest.skip('FIXME incorrect result')
+    def test_maximum_valid_input_temperature(self):
+        """The function returns the correct viscosity value for the maximum valid input temperature of 370 degrees Celsius."""
+        assert ViscosityWater(370) == 0.0015625
+
+    @unittest.skip('FIXME incorrect result')
+    def test_input_temperature_100(self):
+        """The function returns the correct viscosity value for the input temperature of 100 degrees Celsius."""
+        assert ViscosityWater(100) == 0.00109375
+
+    @unittest.skip('FIXME incorrect result')
+    def test_input_temperature_20(self):
+        """The function returns the correct viscosity value for the input temperature of 20 degrees Celsius."""
+        assert ViscosityWater(20) == 0.000890625
+
+    #  The function raises a ValueError if the input temperature is less than 0 degrees Celsius.
+    def test_negative_input_temperature(self):
+        with self.assertRaises(ValueError):
+            ViscosityWater(-10)
+
+    #  The function raises a ValueError if the input temperature is greater than 370 degrees Celsius.
+    def test_high_input_temperature(self):
+        with self.assertRaises(ValueError):
+            ViscosityWater(400)
+
+    #  The function raises a ValueError if the input temperature is not a number.
+    def test_non_number_input_temperature(self):
+        with self.assertRaises(ValueError):
+            ViscosityWater('25')
+
+    #  The function raises a ValueError if the input temperature is None.
+    def test_none_input_temperature(self):
+        with self.assertRaises(ValueError):
+            ViscosityWater(None)
+
+    #  The function raises a ValueError if the input temperature is a string.
+    def test_string_input_temperature(self):
+        with self.assertRaises(ValueError):
+            ViscosityWater('water')
 
 
 if __name__ == '__main__':

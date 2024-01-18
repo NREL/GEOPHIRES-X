@@ -156,6 +156,8 @@ class SUTRAOutputs:
                 f.write(f"      Number of Production Wells:                    {model.wellbores.nprod.value:10.0f}" + NL)
                 f.write(f"      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}" + NL)
                 f.write(f"      Well Depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
+
+                # FIXME should be rendered with percent unit (%) but isn't
                 f.write(f"      Pump efficiency:                               {model.surfaceplant.pump_efficiency.value * 100:10.1f} " + model.surfaceplant.pump_efficiency.PreferredUnits.value + NL)
 
                 f.write(f"      Lifetime Average Well Flow Rate:               {np.average(abs(model.wellbores.ProductionWellFlowRates.value)):10.1f} "  + model.wellbores.ProductionWellFlowRates.CurrentUnits.value + NL)

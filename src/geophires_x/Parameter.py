@@ -239,8 +239,8 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
-        # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default
-        # value)
+        # reservoir_producible_electricity have nothing to change - user provide value that was the same as the
+        # existing value (likely, the default value)
         if New_val == ParamToModify.value:
             return
         # user provided value is out of range, so announce it, leave set to whatever it was set to (default value)
@@ -256,7 +256,8 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
     elif isinstance(ParamToModify, floatParameter):
         New_val = float(ParameterReadIn.sValue)
-        # Warning - the value read in is the same as the default value, making it superfluous - add a warning and suggestion
+        # Warning - the value read in is the same as the default value, making it superfluous
+        # - add a warning and suggestion
         if New_val == ParamToModify.DefaultValue:
             ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:

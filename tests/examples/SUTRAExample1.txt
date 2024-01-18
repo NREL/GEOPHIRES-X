@@ -27,8 +27,9 @@ Reservoir Impedance,0.2,					---[GPa*s/m3]
 
 ***SURFACE TECHNICAL PARAMETERS***
 **********************************
-End-Use Option,9,			  			---[-] Reservoir Thermal Energy Storage
+End-Use Option,2,			  			        ---[-] Direct-Use Heat
 Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
+Power Plant Type,8,                             ---[-] Reservoir Thermal Energy Storage
 
 ***FINANCIAL PARAMETERS***
 **************************

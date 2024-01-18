@@ -107,7 +107,7 @@ class SurfacePlantSUTRA(SurfacePlant):
             CurrentUnits=EnergyFrequencyUnit.KWhPERYEAR
         )
 
-        self.maxpeakingboilerdemand = self.OutputParameterDict[self.maxpeakingboilerdemand.Name] = OutputParameter(
+        self.max_peaking_boiler_demand = self.OutputParameterDict[self.max_peaking_boiler_demand.Name] = OutputParameter(
             Name = "Maximum Peaking Boiler Natural Gas Demand",
             UnitType = Units.POWER,
             PreferredUnits = PowerUnit.MW,
@@ -202,7 +202,7 @@ class SurfacePlantSUTRA(SurfacePlant):
             self.PumpingkWh.value[i] = sum(model.wellbores.PumpingPower.value[0+i*730:(i+1)*730])*self.SUTRATimeStep.value
 
         # calculate maximum auxiliary boiler demand
-        self.maxpeakingboilerdemand.value = max(self.AnnualAuxiliaryHeatProduced.value)
+        self.max_peaking_boiler_demand.value = max(self.AnnualAuxiliaryHeatProduced.value)
 
         model.logger.info(f"complete {self.__class__.__name__}: {self.__init__.__name__}")
 

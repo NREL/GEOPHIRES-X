@@ -12,7 +12,7 @@ Simulation Metadata
 
                            ***SUMMARY OF RESULTS***
 
-      End-Use Option: Reservoir Thermal Energy Storage
+      End-Use Option: Direct-Use Heat
       Reservoir Model = SUTRA Model
       Direct-Use heat breakeven price:                     1730.66 cents/kWh
       Number of Production Wells:                             1
@@ -33,7 +33,7 @@ Simulation Metadata
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
       Well Depth:                                         600.0 meter
-      Pump efficiency:                                     80.0 %
+      Pump efficiency:                                     80.0
       Lifetime Average Well Flow Rate:                     16.2 kg/sec
       Injection well casing ID:                           0.198 meter
       Production well casing ID:                          0.198 meter

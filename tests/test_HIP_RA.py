@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
+from hip_ra.HIP_RA import HIP_RA
 from tests.base_test_case import BaseTestCase
 
 
@@ -43,3 +45,36 @@ class HIP_RATestCase(BaseTestCase):
                 'Producible Electricity': {'value': 185.85, 'unit': 'MW'},
             },
         )
+
+    def test_calculate_reservoir_volume(self):
+        """Calculates the volume of the reservoir"""
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.Calculate()
+        assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
+
+    def test_standard_outputs(self):
+        """Prints the standard outputs to the output file"""
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.PrintOutputs()
+
+        # Assert that the output file is created
+        # ruff: noqa: PTH110
+        assert os.path.exists('HIP.out')
+
+        # Assert that the output file is not empty
+        # ruff: noqa: PTH202
+        assert os.path.getsize('HIP.out') > 0
+
+        # Clean up the output file
+        # ruff: noqa: PTH107
+        os.remove('HIP.out')
+
+    def test_converts_units_back(self):
+        """Converts Units back to PreferredUnits, if required"""
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.PrintOutputs()
+        # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
+
+        for key in hip_ra.ParameterDict:
+            param = hip_ra.ParameterDict[key]
+            assert param.CurrentUnits == param.PreferredUnits

@@ -809,12 +809,6 @@ class TestCalculate:
             hip_ra.rock_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value)
         )
 
-    #  Calculates the volume of the reservoir
-    def test_calculate_reservoir_volume(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.Calculate()
-        assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
-
     #  Calculates the maximum energy out per unit of mass
     def test_calculate_maximum_energy(self):
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
@@ -895,26 +889,6 @@ class TestCalculate:
 
 
 class TestPrintOutputs:
-    #  Prints the standard outputs to the output file
-    def test_prints_standard_outputs(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the output file is created
-        assert os.path.exists('HIP.out')
-        # Assert that the output file is not empty
-        assert os.path.getsize('HIP.out') > 0
-        # Clean up the output file
-        os.remove('HIP.out')
-
-    #  Converts Units back to PreferredUnits, if required
-    def test_converts_units_back(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
-        for key in hip_ra.ParameterDict:
-            param = hip_ra.ParameterDict[key]
-            assert param.CurrentUnits == param.PreferredUnits
-
     #  Loops through all the output parameters to update their units to whatever units the user has specified
     def test_updates_output_parameter_units(self):
         hip_ra = HIP_RA(enable_geophires_logging_config=False)

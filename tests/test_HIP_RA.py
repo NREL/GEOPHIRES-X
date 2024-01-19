@@ -25,9 +25,14 @@ class HIP_RATestCase(BaseTestCase):
                     result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
 
                     assert result is not None
-                    self.assertFileContentsEqual(get_output_file_for_example(input_file_path), result.output_file_path)
+                    expected_result_output_file_path = get_output_file_for_example(input_file_path)
 
-    def test_result_parsing(self):
+                    self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
+
+                    expected_result = HipRaResult(expected_result_output_file_path)
+                    self.assertDictEqual(result.result, expected_result.result)
+
+    def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))
         self.assertIsNotNone(result.result)
         self.assertDictEqual(
@@ -43,6 +48,49 @@ class HIP_RATestCase(BaseTestCase):
                 'Available Heat': {'value': 14700000000000.0, 'unit': 'kJ'},
                 'Producible Heat': {'value': 5860000000000.0, 'unit': 'kJ'},
                 'Producible Electricity': {'value': 185.85, 'unit': 'MW'},
+            },
+        )
+
+    def test_result_parsing_2(self):
+        result = HipRaResult(self._get_test_file_path('hip-result_example-2.out'))
+        self.assertIsNotNone(result.result)
+        self.assertDictEqual(
+            result.result,
+            {
+                'Reservoir Temperature': {'value': 250.00, 'unit': 'degC'},
+                'Reservoir Volume (reservoir)': {'value': 13.75, 'unit': 'km**3'},
+                'Reservoir Volume (rock)': {'value': 12.38, 'unit': 'km**3'},
+                'Reservoir Volume (fluid)': {'value': 0.69, 'unit': 'km**3'},
+                'Stored Heat (reservoir)': {'value': 5.52e15, 'unit': 'kJ'},
+                'Stored Heat (rock)': {'value': 5.01e15, 'unit': 'kJ'},
+                'Stored Heat (fluid)': {'value': 5.09e14, 'unit': 'kJ'},
+                'Mass of Reservoir (total)': {'value': 3.21e13, 'unit': 'kilogram'},
+                'Mass of Reservoir (rock)': {'value': 3.16e13, 'unit': 'kilogram'},
+                'Mass of Reservoir (fluid)': {'value': 5.49e11, 'unit': 'kilogram'},
+                'Enthalpy (reservoir)': {'value': 49.31, 'unit': 'kJ/kg'},
+                'Enthalpy (rock)': {'value': -333.72, 'unit': 'kJ/kg'},
+                'Enthalpy (fluid)': {'value': 383.04, 'unit': 'kJ/kg'},
+                'Wellhead Heat (reservoir)': {'value': 5.52e15, 'unit': 'kJ'},
+                'Wellhead Heat (rock)': {'value': 5.01e15, 'unit': 'kJ'},
+                'Wellhead Heat (fluid)': {'value': 5.09e14, 'unit': 'kJ'},
+                'Recovery Factor (reservoir)': {'value': -49.39, 'unit': '%'},
+                'Recovery Factor (rock)': {'value': -55.51, 'unit': '%'},
+                'Recovery Factor (fluid)': {'value': 10.91, 'unit': '%'},
+                'Available Heat (reservoir)': {'value': -6.81e15, 'unit': 'kJ'},
+                'Available Heat (rock)': {'value': -6.95e15, 'unit': 'kJ'},
+                'Available Heat (fluid)': {'value': 1.39e14, 'unit': 'kJ'},
+                'Producible Heat (reservoir)': {'value': -2.72e15, 'unit': 'kJ'},
+                'Producible Heat (rock)': {'value': -2.78e15, 'unit': 'kJ'},
+                'Producible Heat (fluid)': {'value': 5.55e13, 'unit': 'kJ'},
+                'Producible Heat/Unit Area (reservoir)': {'value': -4.95e13, 'unit': 'KJ/km**2'},
+                'Producible Heat/Unit Area (rock)': {'value': -5.05e13, 'unit': 'KJ/km**2'},
+                'Producible Heat/Unit Area (fluid)': {'value': 1.01e12, 'unit': 'KJ/km**2'},
+                'Producible Electricity (reservoir)': {'value': -86399.37, 'unit': 'MW'},
+                'Producible Electricity (rock)': {'value': -88159.67, 'unit': 'MW'},
+                'Producible Electricity (fluid)': {'value': 1760.30, 'unit': 'MW'},
+                'Producible Electricity/Unit Area (reservoir)': {'value': -1570.90, 'unit': 'MW/km**2'},
+                'Producible Electricity/Unit Area (rock)': {'value': -1602.90, 'unit': 'MW/km**2'},
+                'Producible Electricity/Unit Area (fluid)': {'value': 32.01, 'unit': 'MW/km**2'},
             },
         )
 

@@ -249,7 +249,7 @@ class HIP_RA:
             CurrentUnits=DensityUnit.KGPERKILOMETERS3,
             Required=True,
             ErrMessage='assume default Density Of Rock (2.55E+12 kg/km3)',
-            ToolTipText='Heat Density Of Rock [2.55E+12 kg/km3]',
+            ToolTipText='Density Of Rock [2.55E+12 kg/km3]',
         )
         self.rock_recoverable_heat = self.ParameterDict[self.rock_recoverable_heat.Name] = floatParameter(
             'Rock Recoverable Heat',

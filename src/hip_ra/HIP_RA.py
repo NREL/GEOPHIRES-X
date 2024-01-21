@@ -13,6 +13,7 @@ from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
+from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
 from geophires_x.GeoPHIRESUtils import read_input_file
 from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
@@ -620,8 +621,8 @@ class HIP_RA:
                 self.fluid_heat_capacity.value = (
                     HeatCapacityWater(self.reservoir_temperature.value) / 1000.0
                 )  # converted to kJ/kg-K
-            rejection_temperature_k = 273.15 + self.rejection_temperature.value
-            reservoir_temperature_k = 273.15 + self.reservoir_temperature.value
+            rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
+            reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
             # delta_temperature = self.reservoir_temperature.value - self.rejection_temperature.value
             delta_temperature_k = reservoir_temperature_k - rejection_temperature_k
             # rejection_entropy = EntropyH20_func(self.rejection_temperature.value)

@@ -2,6 +2,7 @@ import sys
 import unittest
 
 from geophires_x.GeoPHIRESUtils import DensityWater
+from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
@@ -299,6 +300,44 @@ class TestDensityWater(unittest.TestCase):
         for invalid_val in invalid_range_vals:
             with self.assertRaises(ValueError):
                 DensityWater(invalid_val)
+
+
+class TestHeatCapacityWater(unittest.TestCase):
+    def test_valid_input_within_range(self):
+        result = HeatCapacityWater(100)
+        assert result == 4216.645118923585
+
+    def test_valid_input_minimum_range(self):
+        result = HeatCapacityWater(0.01)
+        assert result == 4219.897711106461
+
+    def test_valid_input_maximum_range(self):
+        result = HeatCapacityWater(370)
+        assert result == 47095.500723768
+
+    def test_valid_input_midpoint_range(self):
+        result = HeatCapacityWater(185)
+        assert result == 4425.471257522954
+
+    def test_valid_input_exact_match(self):
+        result = HeatCapacityWater(25)
+        assert result == 4182.179909825829
+
+    def test_invalid_input_less_than_minimum(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(-10)
+
+    def test_invalid_input_not_number(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater('abc')
+
+    def test_invalid_input_negative(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(-50)
+
+    def test_invalid_input_greater_than_500(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(501)
 
 
 if __name__ == '__main__':

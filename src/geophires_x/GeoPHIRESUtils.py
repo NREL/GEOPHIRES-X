@@ -4,6 +4,7 @@ import dataclasses
 import json
 import numbers
 from functools import lru_cache
+
 from scipy.interpolate import interp1d
 import numpy as np
 
@@ -14,31 +15,203 @@ from geophires_x.Parameter import *
 # and entropy (aka "h", kJ/kg) of water a function of T (deg-c)
 # from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 
-# FIXME use iapws library instead of hardcoded values
+# FIXME WIP use iapws library instead of hardcoded values
 
-T = np.array([0.01, 10.0, 20.0, 25.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 140.0, 160.0,
-              180.0, 200.0, 220.0, 240.0, 260.0, 280.0, 300.0, 320.0, 340.0, 360.0, 373.946])
-DensityH20 = np.array([0.99984283, 0.9998495, 0.9982067, 0.997047, 0.9956488, 0.9922152, 0.98804, 0.9832, 0.97776, 0.97179,
-                       0.96531, 0.95835, 0.95095, 0.94311, 0.92613, 0.90745, 0.887, 0.86466, 0.84022, 0.81337, 0.78363,
-                       0.75028, 0.71214,
-                       0.66709, 0.61067, 0.52759, 0.322])
-SpecificHeatH20 = np.array([4.2199, 4.1955, 4.1844, 4.1816, 4.1801, 4.1796, 4.1815, 4.1851, 4.1902, 4.1969, 4.2053,
-                            4.2157, 4.2283, 4.2435, 4.2826, 4.3354, 4.405, 4.4958, 4.6146, 4.7719, 4.9856, 5.2889,
-                            5.7504, 6.5373, 8.208,
-                            15.004, 419.1])
-EntropyH20 = np.array([0.0, 0.15109, 0.29648, 0.36722, 0.43675, 0.5724, 0.70381, 0.83129, 0.95513, 1.0756, 1.1929,
-                       1.3072, 1.4188, 1.5279, 1.7392, 1.9426, 2.1392, 2.3305, 2.5177, 2.702, 2.8849, 3.0685, 3.2552,
-                       3.4494, 3.6601,
-                       3.9167, 4.407])
-EnthalpyH20 = np.array([0.000612, 42.021, 83.914, 104.83, 125.73, 167.53, 209.34, 251.18, 293.07, 335.01, 377.04,
-                        419.17, 461.42, 503.81, 589.16, 675.47, 763.05, 852.27, 943.58, 1037.6, 1135.0, 1236.9, 1345.0,
-                        1462.2, 1594.5,
-                        1761.7, 2084.3])
-UtilEff = np.array([0.0, 0.0, 0.0, 0.0, 0.0057, 0.0337, 0.0617, 0.0897, 0.1177, 0.13, 0.16, 0.19, 0.22, 0.26,
-                    0.29, 0.32, 0.35, 0.38, 0.40, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4])
+T = np.array(
+    [
+        0.01,
+        10.0,
+        20.0,
+        25.0,
+        30.0,
+        40.0,
+        50.0,
+        60.0,
+        70.0,
+        80.0,
+        90.0,
+        100.0,
+        110.0,
+        120.0,
+        140.0,
+        160.0,
+        180.0,
+        200.0,
+        220.0,
+        240.0,
+        260.0,
+        280.0,
+        300.0,
+        320.0,
+        340.0,
+        360.0,
+        373.946,
+    ]
+)
+DensityH20 = np.array(
+    [
+        0.99984283,
+        0.9998495,
+        0.9982067,
+        0.997047,
+        0.9956488,
+        0.9922152,
+        0.98804,
+        0.9832,
+        0.97776,
+        0.97179,
+        0.96531,
+        0.95835,
+        0.95095,
+        0.94311,
+        0.92613,
+        0.90745,
+        0.887,
+        0.86466,
+        0.84022,
+        0.81337,
+        0.78363,
+        0.75028,
+        0.71214,
+        0.66709,
+        0.61067,
+        0.52759,
+        0.322,
+    ]
+)
+
+# @deprecated(reason='Not used - TODO remove')
+SpecificHeatH20 = np.array(
+    [
+        4.2199,
+        4.1955,
+        4.1844,
+        4.1816,
+        4.1801,
+        4.1796,
+        4.1815,
+        4.1851,
+        4.1902,
+        4.1969,
+        4.2053,
+        4.2157,
+        4.2283,
+        4.2435,
+        4.2826,
+        4.3354,
+        4.405,
+        4.4958,
+        4.6146,
+        4.7719,
+        4.9856,
+        5.2889,
+        5.7504,
+        6.5373,
+        8.208,
+        15.004,
+        419.1,
+    ]
+)
+
+EntropyH20 = np.array(
+    [
+        0.0,
+        0.15109,
+        0.29648,
+        0.36722,
+        0.43675,
+        0.5724,
+        0.70381,
+        0.83129,
+        0.95513,
+        1.0756,
+        1.1929,
+        1.3072,
+        1.4188,
+        1.5279,
+        1.7392,
+        1.9426,
+        2.1392,
+        2.3305,
+        2.5177,
+        2.702,
+        2.8849,
+        3.0685,
+        3.2552,
+        3.4494,
+        3.6601,
+        3.9167,
+        4.407,
+    ]
+)
+EnthalpyH20 = np.array(
+    [
+        0.000612,
+        42.021,
+        83.914,
+        104.83,
+        125.73,
+        167.53,
+        209.34,
+        251.18,
+        293.07,
+        335.01,
+        377.04,
+        419.17,
+        461.42,
+        503.81,
+        589.16,
+        675.47,
+        763.05,
+        852.27,
+        943.58,
+        1037.6,
+        1135.0,
+        1236.9,
+        1345.0,
+        1462.2,
+        1594.5,
+        1761.7,
+        2084.3,
+    ]
+)
+UtilEff = np.array(
+    [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0057,
+        0.0337,
+        0.0617,
+        0.0897,
+        0.1177,
+        0.13,
+        0.16,
+        0.19,
+        0.22,
+        0.26,
+        0.29,
+        0.32,
+        0.35,
+        0.38,
+        0.40,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+    ]
+)
 
 interp_density_func = interp1d(T, DensityH20)
+
+# @deprecated(reason='Not used - TODO remove')
 interp_specific_heat_func = interp1d(T, SpecificHeatH20)
+
 interp_entropy_func = interp1d(T, EntropyH20)
 interp_enthalpy_func = interp1d(T, EnthalpyH20)
 interp_util_eff_func = interp1d(T, UtilEff)
@@ -94,7 +267,8 @@ def ViscosityWater(water_temperature: float) -> float:
     """
     if not isinstance(water_temperature, numbers.Real) or water_temperature < 0 or water_temperature > 370:
         raise ValueError(
-            f"Invalid input for water_temperature. water_temperature must be a non-negative number and must be within the range of 0 to 370 degrees Celsius. The input value was: {water_temperature}")
+            f"Invalid input for water_temperature. water_temperature must be a non-negative number and must be within the range of 0 to 370 degrees Celsius. The input value was: {water_temperature}"
+        )
 
     TEMPERATURE_OFFSET = 140
     TEMPERATURE_CONSTANT = 247.8
@@ -102,30 +276,41 @@ def ViscosityWater(water_temperature: float) -> float:
 
     temperature_difference = celsius_to_kelvin(water_temperature) - TEMPERATURE_OFFSET
     temperature_exponent = TEMPERATURE_CONSTANT / temperature_difference
-    muwater = WATER_VISCOSITY_CONSTANT * (10 ** temperature_exponent)
+    muwater = WATER_VISCOSITY_CONSTANT * (10**temperature_exponent)
 
     return muwater
 
 
 @lru_cache(maxsize=None)
-def HeatCapacityWater(Twater: float) -> float:
+def HeatCapacityWater(Twater_degC: float) -> float:
     """
-    Calculate the specific heat capacity of water as a function of temperature.
+    Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
 
     Args:
-        Twater: The temperature of water in degrees C.
+        Twater_degC: The temperature of water in degrees C.
     Returns:
-        The specific heat capacity of water as a function of temperature in J/kg-K.
+        The isobaric specific heat capacity of water as a function of temperature in J/kg-K.
     Raises:
-        ValueError: If Twater is not a float or convertible to float.
+        ValueError: If Twater_degC is not a float or convertible to float.
     """
-    if Twater < T[0] or Twater > T[-1]:
-        raise ValueError("Input temperature is out of range.")
-    if not isinstance(Twater, numbers.Real) or Twater < 0 or Twater > 370:
+    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > 500:
         raise ValueError(
-            f"Invalid input for water_temperature. water_temperature must be a non-negative number and must be within the range of 0 to 370 degrees Celsius. The input value was: {water_temperature}")
+            f'Invalid input for Twater_degC.'
+            f'Twater_degC must be a non-negative number and must be within the range of 0 to 500 degrees Celsius.'
+            f'The input value was: {Twater_degC}'
+        )
 
-    return interp_specific_heat_func(Twater) * 1e3
+    # if Twater_degC < T[0] or Twater_degC > T[-1]:
+    #     raise ValueError(f'Input temperature {Twater_degC} is out of range [{T[0]},{T[-1]}].')
+
+    try:
+    #     from iapws.iapws95 import IAPWS95
+    #     return IAPWS95(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
+    # except NotImplementedError as nie:
+        from iapws.iapws97 import IAPWS97
+        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)
@@ -198,13 +383,13 @@ def VaporPressureWater(Twater: float) -> float:
 @lru_cache(maxsize=None)
 def EntropyH20_func(temperature: float) -> float:
     """
-    the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
+        the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
 
-    Args:
-        temperature: the temperature of water in degrees C
-    Returns:
-        the entropy of water as a function of temperature in kJ/kg-K
-``    Raises:
+        Args:
+            temperature: the temperature of water in degrees C
+        Returns:
+            the entropy of water as a function of temperature in kJ/kg-K
+    ``    Raises:
 
     """
     try:
@@ -288,8 +473,7 @@ def read_input_file(return_dict_1, logger=None):
         try:
             if exists(f_name):
                 content = []
-                logger.info(
-                    f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
+                logger.info(f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
                 with open(f_name, encoding='UTF-8') as f:
                     # store all input in one long string that will be passed to all objects
                     # so they can parse out their specific parameters (and ignore the rest)
@@ -343,8 +527,10 @@ def read_input_file(return_dict_1, logger=None):
             return_dict_1[description] = p_entry  # make the dictionary element
 
     else:
-        logger.warning('No input parameter file specified on the command line. \
-        Proceeding with default parameter run... ')
+        logger.warning(
+            'No input parameter file specified on the command line. \
+        Proceeding with default parameter run... '
+        )
 
     logger.info(f'Complete {__name__}: {sys._getframe().f_code.co_name}')
 

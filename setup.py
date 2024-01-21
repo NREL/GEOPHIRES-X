@@ -75,6 +75,7 @@ setup(
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
         'h5py',
         'scipy',
+        'iapws',
     ],
     extras_require={
         # eg:

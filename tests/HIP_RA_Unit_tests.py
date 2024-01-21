@@ -33,58 +33,6 @@ from geophires_x.Units import VolumeUnit
 from hip_ra.HIP_RA import HIP_RA
 
 
-class TestHeatCapacityWater(unittest.TestCase):
-    #  Returns the specific heat capacity of water for a valid input temperature within the range of 0 to 370 degrees Celsius.
-    def test_valid_input_within_range(self):
-        result = HeatCapacityWater(100)
-        assert result == 4186.0
-
-    #  Returns the specific heat capacity of water for a valid input temperature at the minimum range of 0 degrees Celsius.
-    def test_valid_input_minimum_range(self):
-        result = HeatCapacityWater(0)
-        assert result == 4186.0
-
-    #  Returns the specific heat capacity of water for a valid input temperature at the maximum range of 370 degrees Celsius.
-    def test_valid_input_maximum_range(self):
-        result = HeatCapacityWater(370)
-        assert result == 4186.0
-
-    #  Returns the specific heat capacity of water for a valid input temperature at the midpoint of the range of 185 degrees Celsius.
-    def test_valid_input_midpoint_range(self):
-        result = HeatCapacityWater(185)
-        assert result == 4186.0
-
-    #  Returns the specific heat capacity of water for a valid input temperature at a temperature that is an exact match to one of the pre-defined temperatures in the T array.
-    def test_valid_input_exact_match(self):
-        result = HeatCapacityWater(25)
-        assert result == 4186.0
-
-    #  Raises a ValueError if the input temperature is less than the minimum range of 0 degrees Celsius.
-    def test_invalid_input_less_than_minimum(self):
-        with pytest.raises(ValueError):
-            HeatCapacityWater(-10)
-
-    #  Raises a ValueError if the input temperature is greater than the maximum range of 370 degrees Celsius.
-    def test_invalid_input_greater_than_maximum(self):
-        with pytest.raises(ValueError):
-            HeatCapacityWater(400)
-
-    #  Raises a ValueError if the input temperature is not a float or convertible to float.
-    def test_invalid_input_not_float(self):
-        with pytest.raises(ValueError):
-            HeatCapacityWater('abc')
-
-    #  Raises a ValueError if the input temperature is negative.
-    def test_invalid_input_negative(self):
-        with pytest.raises(ValueError):
-            HeatCapacityWater(-50)
-
-    #  Raises a ValueError if the input temperature is greater than 370 degrees Celsius.
-    def test_invalid_input_greater_than_370(self):
-        with pytest.raises(ValueError):
-            HeatCapacityWater(400)
-
-
 class TestRecoverableHeat(unittest.TestCase):
     #  Returns recoverable heat fraction when given valid input values within the default range.
     def test_valid_input_within_default_range(self):

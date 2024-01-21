@@ -220,7 +220,7 @@ class Model(object):
         if self.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             self.surfaceplant.CalculateDHDemand(self)  # calculate district heating demand
 
-        self.logger.info("complete " + str(__class__) + ": " + __name__)
+        self.logger.info(f'complete {str(__class__)}: {__name__}')
 
     def Calculate(self):
         """

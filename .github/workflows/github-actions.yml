@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
-      fail-fast: false # FIXME TEMP
+      fail-fast: true
       matrix:
         include:
           - name: 'check'

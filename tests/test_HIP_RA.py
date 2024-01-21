@@ -27,10 +27,10 @@ class HIP_RATestCase(BaseTestCase):
                     assert result is not None
                     expected_result_output_file_path = get_output_file_for_example(input_file_path)
 
-                    self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
-
                     expected_result = HipRaResult(expected_result_output_file_path)
                     self.assertDictEqual(result.result, expected_result.result)
+
+                    self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
 
     def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))

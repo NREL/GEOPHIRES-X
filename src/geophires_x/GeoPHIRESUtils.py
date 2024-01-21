@@ -10,12 +10,15 @@ import numpy as np
 
 from geophires_x.Parameter import *
 
-# user-defined static functions
-# define lookup values for the density, specific heat capacity, enthalpy (aka "s", kJ/(kg K))
-# and entropy (aka "h", kJ/kg) of water a function of T (deg-c)
-# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
+from iapws.iapws97 import IAPWS97
 
-# FIXME WIP use iapws library instead of hardcoded values
+"""
+user-defined static functions define lookup values for the density, specific heat capacity,
+enthalpy (aka "s", kJ/(kg K)) and entropy (aka "h", kJ/kg) of water a function of T (deg-c)
+from https://www.engineeringtoolbox.com/water-properties-d_1508.html
+
+FIXME WIP use iapws library instead of hardcoded values
+"""
 
 T = np.array(
     [
@@ -77,39 +80,6 @@ DensityH20 = np.array(
         0.61067,
         0.52759,
         0.322,
-    ]
-)
-
-# @deprecated(reason='Not used - TODO remove')
-SpecificHeatH20 = np.array(
-    [
-        4.2199,
-        4.1955,
-        4.1844,
-        4.1816,
-        4.1801,
-        4.1796,
-        4.1815,
-        4.1851,
-        4.1902,
-        4.1969,
-        4.2053,
-        4.2157,
-        4.2283,
-        4.2435,
-        4.2826,
-        4.3354,
-        4.405,
-        4.4958,
-        4.6146,
-        4.7719,
-        4.9856,
-        5.2889,
-        5.7504,
-        6.5373,
-        8.208,
-        15.004,
-        419.1,
     ]
 )
 
@@ -208,10 +178,6 @@ UtilEff = np.array(
 )
 
 interp_density_func = interp1d(T, DensityH20)
-
-# @deprecated(reason='Not used - TODO remove')
-interp_specific_heat_func = interp1d(T, SpecificHeatH20)
-
 interp_entropy_func = interp1d(T, EntropyH20)
 interp_enthalpy_func = interp1d(T, EnthalpyH20)
 interp_util_eff_func = interp1d(T, UtilEff)
@@ -255,26 +221,27 @@ def celsius_to_kelvin(celsius: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def ViscosityWater(water_temperature: float) -> float:
+def ViscosityWater(Twater_degC: float) -> float:
     """
     The ViscosityWater function is used to calculate the viscosity of water as a function of temperature.
     Args:
-        water_temperature: the temperature of water in degrees C
+        Twater_degC: the temperature of water in degrees C
     Returns:
         Viscosity of water in Ns/m2
     Raises:
         ValueError: If water_temperature is not a float or convertible to float.
     """
-    if not isinstance(water_temperature, numbers.Real) or water_temperature < 0 or water_temperature > 370:
+    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > 370:
         raise ValueError(
-            f"Invalid input for water_temperature. water_temperature must be a non-negative number and must be within the range of 0 to 370 degrees Celsius. The input value was: {water_temperature}"
+            f'Invalid input for Twater_degC. Twater_degC must be a non-negative number and must be within the range of'
+            f'0 to 370 degrees Celsius. The input value was: {Twater_degC}'
         )
 
     TEMPERATURE_OFFSET = 140
     TEMPERATURE_CONSTANT = 247.8
     WATER_VISCOSITY_CONSTANT = 2.414e-5
 
-    temperature_difference = celsius_to_kelvin(water_temperature) - TEMPERATURE_OFFSET
+    temperature_difference = celsius_to_kelvin(Twater_degC) - TEMPERATURE_OFFSET
     temperature_exponent = TEMPERATURE_CONSTANT / temperature_difference
     muwater = WATER_VISCOSITY_CONSTANT * (10**temperature_exponent)
 
@@ -300,14 +267,7 @@ def HeatCapacityWater(Twater_degC: float) -> float:
             f'The input value was: {Twater_degC}'
         )
 
-    # if Twater_degC < T[0] or Twater_degC > T[-1]:
-    #     raise ValueError(f'Input temperature {Twater_degC} is out of range [{T[0]},{T[-1]}].')
-
     try:
-    #     from iapws.iapws95 import IAPWS95
-    #     return IAPWS95(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
-    # except NotImplementedError as nie:
-        from iapws.iapws97 import IAPWS97
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
     except NotImplementedError as nie:
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie

@@ -84,7 +84,7 @@ class Outputs:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
@@ -418,7 +418,7 @@ class Outputs:
                 f.write('                            ************************************************************\n')
                 f.write('                            *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *\n')
                 f.write('                            ************************************************************\n')
-                if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:   #only electricity
+                if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY: # only electricity
                     f.write('  YEAR       THERMAL               GEOFLUID               PUMP               NET               FIRST LAW\n')
                     f.write('             DRAWDOWN             TEMPERATURE             POWER             POWER              EFFICIENCY\n')
                     f.write("                                     (" + model.wellbores.ProducedTemperature.CurrentUnits.value+")               (" + model.wellbores.PumpingPower.CurrentUnits.value + ")              (" + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ")                  (%)\n")
@@ -441,7 +441,7 @@ class Outputs:
                                                                                                                                 model.surfaceplant.HeatProduced.value[i*model.economics.timestepsperyear.value])+NL)
 
 
-                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.HEAT_PUMP]: #heat pump
+                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.HEAT_PUMP]: # heat pump
                     f.write('  YEAR         THERMAL              GEOFLUID               PUMP               NET             HEAT PUMP\n')
                     f.write('               DRAWDOWN            TEMPERATURE             POWER              HEAT         ELECTRICITY USE\n')
                     f.write('                                    (deg C)                (MWe)              (MWt)             (MWe)\n')
@@ -464,7 +464,7 @@ class Outputs:
                                                                                                                                 model.surfaceplant.HeatProduced.value[i*model.economics.timestepsperyear.value])+NL)
 
 
-                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]: #absorption chiller
+                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]: # absorption chiller
                     f.write('  YEAR         THERMAL              GEOFLUID               PUMP               NET              NET\n')
                     f.write('               DRAWDOWN            TEMPERATURE             POWER              HEAT             COOLING\n')
                     f.write('                                    (deg C)                (MWe)              (MWt)            (MWt)\n')
@@ -494,7 +494,7 @@ class Outputs:
                 f.write('                              *******************************************************************\n')
                 f.write('                              *  ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *\n')
                 f.write('                              *******************************************************************\n')
-                if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  #only electricity
+                if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # only electricity
                     f.write('  YEAR             ELECTRICITY                   HEAT                RESERVOIR            PERCENTAGE OF\n')
                     f.write('                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
                     f.write('                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)\n')
@@ -504,19 +504,7 @@ class Outputs:
                                                                             model.surfaceplant.HeatkWhExtracted.value[i]/1E6,
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
-                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT: #only direct-use
-                    f.write('  YEAR               HEAT                       HEAT                RESERVOIR            PERCENTAGE OF\n')
-                    f.write('                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
-                    f.write('                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)\n')
-                    for i in range(0, model.surfaceplant.plant_lifetime.value):
-                        f.write('  {0:2.0f}              {1:8.1f}                    {2:8.1f}              {3:8.2f}               {4:8.2f}'.format(i+1,
-                                                model.surfaceplant.HeatkWhProduced.value[i]/1E6,
-                                                                            model.surfaceplant.HeatkWhExtracted.value[i]/1E6,
-                                                                                                    model.surfaceplant.RemainingReservoirHeatContent.value[i],
-                                                                                                                            (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
-
-
-                elif model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER: #absorption chiller
+                elif model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER: # absorption chiller
                     f.write('  YEAR              COOLING                 HEAT                RESERVOIR            PERCENTAGE OF\n')
                     f.write('                    PROVIDED              EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
                     f.write('                   (GWh/year)             (GWh/year)            (10^15 J)                 (%)\n')
@@ -528,7 +516,7 @@ class Outputs:
                                                                                                                                               (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i]) * 100 / model.reserv.InitialReservoirHeatContent.value)+NL)
 
 
-                elif model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP: #heat pump
+                elif model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP: # heat pump
                     f.write('  YEAR              HEATING             RESERVOIR HEAT          HEAT PUMP          RESERVOIR           PERCENTAGE OF\n')
                     f.write('                    PROVIDED              EXTRACTED          ELECTRICITY USE      HEAT CONTENT        TOTAL HEAT MINED\n')
                     f.write('                   (GWh/year)             (GWh/year)           (GWh/year)           (10^15 J)                (%)\n')
@@ -551,7 +539,7 @@ class Outputs:
                                                                                                                             model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                                                 (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                elif model.surfaceplant.plant_type.value in [PlantType.DISTRICT_HEATING]: #district-heating
+                elif model.surfaceplant.plant_type.value in [PlantType.DISTRICT_HEATING]: # district-heating
                     f.write('  YEAR           GEOTHERMAL          PEAKING BOILER       RESERVOIR HEAT          RESERVOIR         PERCENTAGE OF\n')
                     f.write('              HEATING PROVIDED      HEATING PROVIDED        EXTRACTED            HEAT CONTENT     TOTAL HEAT MINED\n')
                     f.write('                 (GWh/year)            (GWh/year)           (GWh/year)            (10^15 J)              (%)\n')
@@ -562,6 +550,19 @@ class Outputs:
                                                                                                                                                              model.surfaceplant.HeatkWhExtracted.value[i] / 1E6,
                                                                                                                                                              model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                                                              (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i]) * 100 / model.reserv.InitialReservoirHeatContent.value)+NL)
+                elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT: # only direct-use
+                    f.write('  YEAR               HEAT                       HEAT                RESERVOIR            PERCENTAGE OF\n')
+                    f.write('                    PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED\n')
+                    f.write('                   (GWh/year)                  (GWh/year)            (10^15 J)                 (%)\n')
+                    for i in range(0, model.surfaceplant.plant_lifetime.value):
+                        f.write('  {0:2.0f}              {1:8.1f}                    {2:8.1f}              {3:8.2f}               {4:8.2f}'.format(i+1,
+                                                model.surfaceplant.HeatkWhProduced.value[i]/1E6,
+                                                                            model.surfaceplant.HeatkWhExtracted.value[i]/1E6,
+                                                                                                    model.surfaceplant.RemainingReservoirHeatContent.value[i],
+                                                                                                                            (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
+
+
+
                 f.write(NL)
 
             if model.economics.DoAddOnCalculations.value: model.addoutputs.PrintOutputs(model)

@@ -13,7 +13,6 @@ from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import _interp_entropy_func
 from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
-from geophires_x_client import _get_logger
 
 
 class TestCelsiusToKelvin(unittest.TestCase):
@@ -235,31 +234,22 @@ class TestViscosityWater(unittest.TestCase):
 class TestDensityWater(unittest.TestCase):
     def test_correct_density(self):
         """Returns the correct density of water for a given temperature."""
-        log = _get_logger()
         input_expected_val_pairs = [
-            (25, 997.047),
-            (50, 988.032),
-            # (75, 983.213), # FIXME need correct value
-            (100, 958.366),
-            # (25.5, 996.747), # FIXME need correct value
-            (50.5, 987.732),
-            # (75.5, 982.913), # FIXME need correct value
-            (100.5, 958.066),
+            (25, 997.0038346094865),
+            (25.5, 996.8746788233803),
+            (50, 988.0087757351533),
+            (50.5, 987.7821218479756),
+            (75, 974.8288462197903),
+            (75.5, 974.5296342180826),
+            (100, 958.3542772858901),
+            (100.5, 957.9946917721559),
         ]
 
         for pair in input_expected_val_pairs:
             t_water_deg_c = pair[0]
             calc_density = DensityWater(t_water_deg_c)
             expected_density = pair[1]
-            try:
-                assert calc_density == expected_density
-            except AssertionError:
-                log.warning(
-                    f'Exact comparison failed for T={t_water_deg_c}C; '
-                    f'expected {expected_density}, got {calc_density}; '
-                    f'falling back to almost-equal comparison...'
-                )
-                self.assertAlmostEqual(calc_density, expected_density, places=0)
+            self.assertAlmostEqual(calc_density, expected_density, places=3)
 
     def test_returns_density_in_kg_per_m3(self):
         """Returns the density in kg/m3."""
@@ -268,9 +258,10 @@ class TestDensityWater(unittest.TestCase):
         assert isinstance(DensityWater(75), float)
         assert isinstance(DensityWater(100), float)
 
-    def test_minimum_temperature_value(self):
-        """Handles the minimum temperature value in T."""
-        assert DensityWater(0.01) == 999.8428299999999
+    def test_small_temperature_values(self):
+        self.assertAlmostEqual(DensityWater(0.01), 999.7937454059017, places=3)
+        self.assertAlmostEqual(DensityWater(0.0), 999.793065506329, places=3)
+        self.assertIsNotNone(DensityWater(sys.float_info.min))
 
     def test_handles_maximum_temperature_value(self):
         """Handles the maximum temperature value in T."""
@@ -279,9 +270,7 @@ class TestDensityWater(unittest.TestCase):
     def test_raises_value_error_outside_valid_input_range(self):
         """Handles the minimum and maximum float values for Twater."""
         invalid_range_vals = [
-            0,
             374,  # FIXME TODO extend HIP-RA to handle values above 374
-            sys.float_info.min,
             sys.float_info.max,
         ]
 

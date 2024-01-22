@@ -51,37 +51,6 @@ _T = np.array(
         373.946,
     ]
 )
-_DensityH20 = np.array(
-    [
-        0.99984283,
-        0.9998495,
-        0.9982067,
-        0.997047,
-        0.9956488,
-        0.9922152,
-        0.98804,
-        0.9832,
-        0.97776,
-        0.97179,
-        0.96531,
-        0.95835,
-        0.95095,
-        0.94311,
-        0.92613,
-        0.90745,
-        0.887,
-        0.86466,
-        0.84022,
-        0.81337,
-        0.78363,
-        0.75028,
-        0.71214,
-        0.66709,
-        0.61067,
-        0.52759,
-        0.322,
-    ]
-)
 
 _EntropyH20 = np.array(
     [
@@ -147,7 +116,6 @@ _UtilEff = np.array(
     ]
 )
 
-_interp_density_func = interp1d(_T, _DensityH20)
 _interp_entropy_func = interp1d(_T, _EntropyH20)
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
@@ -160,14 +128,17 @@ def DensityWater(Twater_degC: float) -> float:
     Args:
         Twater_degC: The temperature of water in degrees C.
     Returns:
-        The density of water in kg/m3.
+        The density of water in kg/m³.
     Raises:
         ValueError: If Twater is not a float or convertible to float.
     """
     if not np.can_cast(Twater_degC, float):
         raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
 
-    return _interp_density_func(Twater_degC) * 1e3
+    try:
+        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)

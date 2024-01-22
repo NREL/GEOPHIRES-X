@@ -26,69 +26,6 @@ from geophires_x.Units import VolumeUnit
 from hip_ra.HIP_RA import HIP_RA
 
 
-class TestEnthalpyh20Func(unittest.TestCase):
-    #  Returns the correct enthalpy value for a given temperature within the valid range.
-    def test_valid_temperature(self):
-        temperature = 50.0
-        expected_enthalpy = 106.0
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-    #  Returns the correct enthalpy value for the minimum valid temperature (0.01 degrees C).
-    def test_minimum_temperature(self):
-        temperature = 0.01
-        expected_enthalpy = 0.0
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-    #  Returns the correct enthalpy value for the maximum valid temperature (373.946 degrees C).
-    def test_maximum_temperature(self):
-        temperature = 373.946
-        expected_enthalpy = 2836.0
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-    #  Returns the same enthalpy value for the same temperature input.
-    def test_same_temperature(self):
-        temperature = 50.0
-        enthalpy1 = EnthalpyH20_func(temperature)
-        enthalpy2 = EnthalpyH20_func(temperature)
-        assert enthalpy1 == enthalpy2
-
-    #  Returns the correct enthalpy value for a temperature input that is exactly in the middle of two known temperatures in the T array.
-    def test_middle_temperature(self):
-        temperature = 15.0
-        expected_enthalpy = 52.0
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-    #  Raises a TypeError if the temperature input is not a float or convertible to float.
-    def test_non_float_temperature(self):
-        temperature = '50.0'
-        with pytest.raises(TypeError):
-            EnthalpyH20_func(temperature)
-
-    #  Raises a ValueError if the temperature input is below the minimum valid temperature (0.01 degrees C).
-    def test_below_minimum_temperature(self):
-        temperature = -10.0
-        with pytest.raises(ValueError):
-            EnthalpyH20_func(temperature)
-
-    #  Raises a ValueError if the temperature input is above the maximum valid temperature (373.946 degrees C).
-    def test_above_maximum_temperature(self):
-        temperature = 400.0
-        with pytest.raises(ValueError):
-            EnthalpyH20_func(temperature)
-
-    #  Returns the correct enthalpy value for a temperature input that is equal to one of the known temperatures in the T array.
-    def test_known_temperature(self):
-        temperature = 100.0
-        expected_enthalpy = 251.0
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-    #  Returns the correct enthalpy value for a temperature input that is very close to one of the known temperatures in the T array.
-    def test_close_temperature(self):
-        temperature = 100.001
-        expected_enthalpy = 251.002
-        assert EnthalpyH20_func(temperature) == expected_enthalpy
-
-
 class TestHipRa(unittest.TestCase):
     #  The class initializes successfully with default parameters and logging enabled.
     def test_initialization_with_default_parameters_and_logging_enabled(self):

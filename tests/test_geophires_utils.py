@@ -3,6 +3,7 @@ import unittest
 
 from geophires_x.GeoPHIRESUtils import _T
 from geophires_x.GeoPHIRESUtils import DensityWater
+from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
@@ -484,6 +485,59 @@ class TestVaporPressureWater(unittest.TestCase):
     def test_75_degrees(self):
         result = VaporPressureWater(75)
         self.assertAlmostEqual(result, 38.59536268655676, places=3)
+
+
+class TestEnthalpyh20Func(unittest.TestCase):
+    def test_valid_temperature(self):
+        temperature = 50.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 209.3362003948904, places=3)
+
+    def test_minimum_temperature(self):
+        temperature = 0.01
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 0.0006117830490730841, places=5)
+
+    def test_maximum_temperature(self):
+        temperature = 373.946
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 2087.5468451171537, places=3)
+
+    def test_same_temperature(self):
+        temperature = 50.0
+        enthalpy1 = EnthalpyH20_func(temperature)
+        enthalpy2 = EnthalpyH20_func(temperature)
+        assert enthalpy1 == enthalpy2
+
+    def test_middle_temperature(self):
+        temperature = 15.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 62.98365208053001, places=3)
+
+    def test_non_float_temperature(self):
+        temperature = 'abc123'
+        with self.assertRaises(TypeError):
+            EnthalpyH20_func(temperature)
+
+    def test_below_minimum_temperature(self):
+        temperature = -10.0
+        with self.assertRaises(ValueError):
+            EnthalpyH20_func(temperature)
+
+    def test_above_maximum_temperature(self):
+        temperature = 400.0
+        with self.assertRaises(ValueError):
+            EnthalpyH20_func(temperature)
+
+    def test_known_temperature(self):
+        temperature = 100.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 419.09915499770307, places=3)
+
+    def test_close_temperature(self):
+        temperature = 100.001
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 419.1033743616401, places=3)
 
 
 if __name__ == '__main__':

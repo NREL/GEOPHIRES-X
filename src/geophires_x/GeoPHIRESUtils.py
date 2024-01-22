@@ -329,7 +329,6 @@ def VaporPressureWater(Twater_degC: float) -> float:
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
-
 @lru_cache(maxsize=None)
 def EntropyH20_func(temperature_degC: float) -> float:
     """
@@ -357,12 +356,12 @@ def EntropyH20_func(temperature_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def EnthalpyH20_func(temperature: float) -> float:
+def EnthalpyH20_func(temperature_degC: float) -> float:
     """
     the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
 
     Args:
-        temperature: the temperature of water in degrees C (float)
+        temperature_degC: the temperature of water in degrees C (float)
     Returns:
         the enthalpy of water as a function of temperature in kJ/kg
     Raises:
@@ -370,18 +369,14 @@ def EnthalpyH20_func(temperature: float) -> float:
         ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
     """
     try:
-        temperature = float(temperature)
+        temperature_degC = float(temperature_degC)
     except ValueError:
-        raise TypeError("Input temperature must be a float")
+        raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
-    if temperature < 0:
-        raise ValueError("Input temperature must be a non-negative number.")
-
-    if temperature > _T[-1]:
-        raise ValueError(f"Input temperature must be within the range of 0 to {_T[-1]} degrees C.")
-
-    enthalpy = _interp_enthalpy_func(temperature)
-    return enthalpy
+    try:
+        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).h
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)

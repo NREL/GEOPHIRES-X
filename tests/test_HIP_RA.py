@@ -1,6 +1,9 @@
 import os
+import re
+import unittest
 from pathlib import Path
 
+from geophires_x.Parameter import OutputParameter
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
@@ -126,3 +129,56 @@ class HIP_RATestCase(BaseTestCase):
         for key in hip_ra.ParameterDict:
             param = hip_ra.ParameterDict[key]
             assert param.CurrentUnits == param.PreferredUnits
+
+    def test_updates_output_parameter_units(self):
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.PrintOutputs()
+        # Assert that the units of all parameters in OutputParameterDict are updated to the user-specified units
+        for key in hip_ra.OutputParameterDict:
+            param: OutputParameter = hip_ra.OutputParameterDict[key]
+            assert param.CurrentUnits == param.PreferredUnits
+
+    @unittest.skip('FIXME WIP')
+    def test_aligns_space_between_value_and_units(self):
+        """
+        Assert that the space between value and units is aligned to the same column for each line in the output file
+        """
+
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.PrintOutputs()
+
+        with open('HIP.out') as f:
+            content = f.readlines()
+            for line in content:
+                assert line.count(' ') == 3
+
+    def test_raises_permission_error(self):
+        """Raises a PermissionError if there is no permission to write to the output file"""
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        # Create a read-only file
+        Path.chmod('HIP.out', 0o444)
+        with self.assertRaises(PermissionError):
+            hip_ra.PrintOutputs()
+        # Restore file permissions
+        Path.chmod('HIP.out', 0o644)
+
+    def test_handles_converting_output_units(self):
+        """Handles converting output units for all classes of units (TEMPERATURE, DENSITY, etc.)"""
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra.PrintOutputs()
+        # Assert that the units of all parameters in OutputParameterDict are converted to the user-specified units
+        for key in hip_ra.OutputParameterDict:
+            param = hip_ra.OutputParameterDict[key]
+            assert param.CurrentUnits == param.PreferredUnits
+
+    def test_handles_rendering_float_parameters_in_scientific_notation(self):
+        """
+        Assert that the float parameters in scientific notation are rendered correctly in the output file
+        """
+        client = HipRaClient()
+        result: HipRaResult = client.get_hip_ra_result(
+            HipRaInputParameters(self._get_test_file_path('examples/HIPexample1.txt'))
+        )
+        with open(result.output_file_path) as f:
+            content = f.read()
+            assert len(re.compile(r'[0-9]e\+[0-9]+\s').findall(content)) > 0

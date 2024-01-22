@@ -127,7 +127,7 @@ class HIP_RA:
         # "OutputParameter" Objects.  This will allow us later to access them in a user interface and get that list,
         # along with unit type, preferred units, etc.
         self.ParameterDict = {}
-        self.OutputParameterDict = {}  # declare some dictionaries
+        self.OutputParameterDict: dict[str, OutputParameter] = {}
         self.InputParameters = {}  # dictionary to hold all the input parameter the user wants to change
 
         # inputs

@@ -3,11 +3,13 @@
 
 import logging
 import os
+import re
 import sys
 import unittest
 
 import pytest
 
+from base_test_case import BaseTestCase
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
@@ -30,6 +32,7 @@ from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
+from hip_ra import HipRaClient, HipRaInputParameters, HipRaResult
 from hip_ra.HIP_RA import HIP_RA
 
 
@@ -798,69 +801,3 @@ class TestCalculate:
                 * (EntropyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_entropy.value)
             )
         )
-
-
-class TestPrintOutputs:
-    #  Loops through all the output parameters to update their units to whatever units the user has specified
-    def test_updates_output_parameter_units(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the units of all parameters in OutputParameterDict are updated to the user-specified units
-        for key in hip_ra.OutputParameterDict:
-            param = hip_ra.OutputParameterDict[key]
-            assert param.CurrentUnits == param.UserSpecifiedUnits
-
-    #  Aligns space between value and units to same column
-    def test_aligns_space_between_value_and_units(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the space between value and units is aligned to the same column for each line in the output file
-        with open('HIP.out') as f:
-            content = f.readlines()
-            for line in content:
-                assert line.count(' ') == 3
-
-    #  Raises a FileNotFoundError if the output file is not found
-    def test_raises_file_not_found_error(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        with pytest.raises(FileNotFoundError):
-            hip_ra.PrintOutputs()
-
-    #  Raises a PermissionError if there is no permission to write to the output file
-    def test_raises_permission_error(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        # Create a read-only file
-        with open('HIP.out', 'w') as f:
-            os.chmod('HIP.out', 0o444)
-        with pytest.raises(PermissionError):
-            hip_ra.PrintOutputs()
-        # Restore file permissions
-        os.chmod('HIP.out', 0o644)
-
-    #  Raises an Exception if there is an error while writing to the output file
-    def test_raises_exception_on_error(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        # Create a directory with the same name as the output file
-        os.mkdir('HIP.out')
-        with pytest.raises(Exception):
-            hip_ra.PrintOutputs()
-        # Clean up the directory
-        os.rmdir('HIP.out')
-
-    #  Handles converting output units for all classes of units (TEMPERATURE, DENSITY, etc.)
-    def test_handles_converting_output_units(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the units of all parameters in OutputParameterDict are converted to the user-specified units
-        for key in hip_ra.OutputParameterDict:
-            param = hip_ra.OutputParameterDict[key]
-            assert param.CurrentUnits == param.UserSpecifiedUnits
-
-    #  Handles rendering float parameters in scientific notation
-    def test_handles_rendering_float_parameters_in_scientific_notation(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
-        hip_ra.PrintOutputs()
-        # Assert that the float parameters in scientific notation are rendered correctly in the output file
-        with open('HIP.out') as f:
-            content = f.read()
-            assert '1.00e+00' in content

@@ -19,6 +19,7 @@ from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
 from geophires_x.Parameter import LookupUnits
 from geophires_x.Parameter import OutputParameter
+from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import ReadParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
@@ -128,7 +129,7 @@ class HIP_RA:
         # along with unit type, preferred units, etc.
         self.ParameterDict = {}
         self.OutputParameterDict: dict[str, OutputParameter] = {}
-        self.InputParameters = {}  # dictionary to hold all the input parameter the user wants to change
+        self.InputParameters: dict[str, ParameterEntry] = {}  # input parameters the user wants to change
 
         # inputs
         self.reservoir_temperature = self.ParameterDict[self.reservoir_temperature.Name] = floatParameter(
@@ -572,7 +573,6 @@ class HIP_RA:
                     ReadParameter(
                         ParameterReadIn, ParameterToModify, self
                     )  # this should handle all the non-special cases
-
         else:
             self.logger.info('No parameters read because no content provided')
 

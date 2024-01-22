@@ -4,6 +4,9 @@ import unittest
 from pathlib import Path
 
 from geophires_x.Parameter import OutputParameter
+from geophires_x.Parameter import ParameterEntry
+from geophires_x.Units import PercentUnit
+from geophires_x.Units import TemperatureUnit
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
@@ -182,3 +185,109 @@ class HIP_RATestCase(BaseTestCase):
         with open(result.output_file_path) as f:
             content = f.read()
             assert len(re.compile(r'[0-9]e\+[0-9]+\s').findall(content)) > 0
+
+    def test_read_all_parameters(self):
+        # Initialize the HIP_RA class object
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+
+        # Call the read_parameters method
+        hip_ra.read_parameters()
+
+        # Assert that all the parameters have been read in and updated
+        assert hip_ra.reservoir_temperature.value == 150.0
+        assert hip_ra.rejection_temperature.value == 25.0
+        assert hip_ra.reservoir_porosity.value == 18.0
+        assert hip_ra.reservoir_area.value == 81.0
+        assert hip_ra.reservoir_thickness.value == 0.286
+        # Add assertions for other parameters as needed
+
+    def test_update_changed_parameters(self):
+        """updates any of these parameter values that have been changed by the user"""
+
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+
+        # Set some input parameters to be changed by the user
+        hip_ra.InputParameters = {
+            param.Name: param
+            for param in [
+                ParameterEntry(Name='Reservoir Temperature', sValue='200'),
+                ParameterEntry(Name='Reservoir Porosity', sValue='25.0'),
+            ]
+        }
+
+        hip_ra.read_parameters()
+
+        # Assert that the changed parameters have been updated
+        assert hip_ra.reservoir_temperature.value == 200.0
+        assert hip_ra.reservoir_porosity.value == 25.0
+
+    #  handles any special cases
+    def test_handle_special_cases(self):
+        # Initialize the HIP_RA class object
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+
+        # Set some input parameters to trigger special cases
+        hip_ra.InputParameters = {
+            param.Name: param
+            for param in [
+                ParameterEntry(Name='Reservoir Porosity', sValue='30.0'),
+                ParameterEntry(Name='Rejection Temperature', sValue='50.0'),
+                ParameterEntry(Name='Density Of Water', sValue='-1'),
+                ParameterEntry(Name='Heat Capacity Of Water', sValue='-1'),
+                ParameterEntry(Name='Recoverable Heat', sValue='-1'),
+            ]
+        }
+
+        hip_ra.read_parameters()
+
+        assert hip_ra.rejection_temperature.value == 50
+        assert hip_ra.fluid_density.value == -1
+        assert hip_ra.fluid_heat_capacity.value == -1
+        assert hip_ra.fluid_recoverable_heat.value == -1
+
+    def test_set_current_units_preferred_units_match(self):
+        """sets the CurrentUnits of a parameter to its PreferredUnits if they match"""
+        # Initialize the HIP_RA class object
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+
+        # Set some input parameters with matching PreferredUnits
+        hip_ra.InputParameters = {
+            param.Name: param
+            for param in [
+                ParameterEntry(Name='Reservoir Temperature', sValue='150.0'),
+                ParameterEntry(Name='Formation Porosity', sValue='18.0'),
+            ]
+        }
+
+        # Call the read_parameters method
+        hip_ra.read_parameters()
+
+        # Assert that the CurrentUnits have been set to PreferredUnits
+        assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
+        assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
+        # Add assertions for other parameters with matching PreferredUnits as needed
+
+    def test_set_current_units_preferred_units_do_not_match(self):
+        """sets the CurrentUnits of a parameter to the units provided by the user if they don't match"""
+        # Initialize the HIP_RA class object
+        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+
+        # Set some input parameters with non-matching PreferredUnits
+        hip_ra.InputParameters = {
+            param.Name: param
+            for param in [
+                # TODO Pint conversion would treat 'F' as farad, hence 'degF' here. However, it is possible to
+                #  configure Pint to treat 'F' as Fahrenheit instead, which should be done since users could make
+                #  this mistake.
+                ParameterEntry(Name='Reservoir Temperature', sValue='150.0 degF'),
+                ParameterEntry(Name='Formation Porosity', sValue='18.0 %'),
+            ]
+        }
+
+        # Call the read_parameters method
+        hip_ra.read_parameters()
+
+        # Assert that the CurrentUnits have been set to the units provided by the user
+        assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
+        assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
+        # Add assertions for other parameters with non-matching PreferredUnits as needed

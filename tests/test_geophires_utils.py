@@ -4,6 +4,7 @@ import unittest
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
+from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import T
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import ViscosityWater
@@ -409,6 +410,37 @@ class TestEntropyh20Func(unittest.TestCase):
         temperature = T[-1]
         expected_entropy = interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
+
+
+class TestRecoverableHeat(unittest.TestCase):
+    def test_valid_input_within_default_range(self):
+        """Returns recoverable heat fraction when given valid input values within the default range."""
+
+        twater = 100.0
+
+        result = RecoverableHeat(twater)
+
+        assert result == 0.0038 * twater + 0.085
+
+    def test_valid_input_outside_default_range(self):
+        """Returns recoverable heat fraction when given valid input values outside the default range."""
+
+        assert RecoverableHeat(160.0) == 0.66
+
+    def test_lowest_valid_temperature_value(self):
+        """Returns recoverable heat fraction when given the lowest valid temperature value."""
+        assert RecoverableHeat(90.0) == 0.43
+
+    def test_highest_valid_temperature_value(self):
+        """Returns recoverable heat fraction when given the highest valid temperature value."""
+
+        assert RecoverableHeat(150.0) == 0.66
+
+    def test_non_numeric_value_for_twater(self):
+        """Raises ValueError when given a non-numeric value for Twater."""
+
+        with self.assertRaises(ValueError):
+            RecoverableHeat('abc')
 
 
 if __name__ == '__main__':

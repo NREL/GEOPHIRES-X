@@ -2,26 +2,17 @@
 # ruff: noqa
 
 import logging
-import os
-import re
-import sys
 import unittest
 
 import pytest
 
-from base_test_case import BaseTestCase
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
-from geophires_x.GeoPHIRESUtils import T
 from geophires_x.GeoPHIRESUtils import VaporPressureWater
-from geophires_x.GeoPHIRESUtils import ViscosityWater
-
-from geophires_x.GeoPHIRESUtils import interp_entropy_func
-
-from geophires_x.Parameter import OutputParameter, ParameterEntry
+from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
 from geophires_x.Units import EnthalpyUnit
@@ -32,126 +23,7 @@ from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
-from hip_ra import HipRaClient, HipRaInputParameters, HipRaResult
 from hip_ra.HIP_RA import HIP_RA
-
-
-class TestRecoverableHeat(unittest.TestCase):
-    #  Returns recoverable heat fraction when given valid input values within the default range.
-    def test_valid_input_within_default_range(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 100.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.0038 * twater + 0.085
-
-    #  Returns recoverable heat fraction when given valid input values outside the default range.
-    def test_valid_input_outside_default_range(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 160.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.66
-
-    #  Returns recoverable heat fraction when given the lowest valid temperature value.
-    def test_lowest_valid_temperature_value(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 90.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.43
-
-    #  Returns recoverable heat fraction when given the highest valid temperature value.
-    def test_highest_valid_temperature_value(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 150.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.66
-
-    #  Returns recoverable heat fraction when given the default recoverable heat fraction and the lowest valid temperature value.
-    def test_default_recoverable_heat_and_lowest_valid_temperature_value(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 90.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.43
-
-    #  Raises ValueError when given a non-numeric value for Twater.
-    def test_non_numeric_value_for_twater(self):
-        # Arrange
-        default_recoverable_heat = 0.5
-        twater = 'abc'
-
-        # Act and Assert
-        with pytest.raises(ValueError):
-            RecoverableHeat(default_recoverable_heat, twater)
-
-    #  Raises ValueError when given a non-numeric value for DefaultRecoverableHeat.
-    def test_non_numeric_value_for_default_recoverable_heat(self):
-        # Arrange
-        default_recoverable_heat = 'abc'
-        twater = 100.0
-
-        # Act and Assert
-        with pytest.raises(ValueError):
-            RecoverableHeat(default_recoverable_heat, twater)
-
-    #  Returns the lowest recoverable heat fraction when given the lowest valid temperature value and a negative default recoverable heat fraction.
-    def test_negative_default_recoverable_heat_and_lowest_valid_temperature_value(self):
-        # Arrange
-        default_recoverable_heat = -0.5
-        twater = 90.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.43
-
-    #  Returns the highest recoverable heat fraction when given the highest valid temperature value and a negative default recoverable heat fraction.
-    def test_negative_default_recoverable_heat_and_highest_valid_temperature_value(self):
-        # Arrange
-        default_recoverable_heat = -0.5
-        twater = 150.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == 0.66
-
-    #  Returns the default recoverable heat fraction when given a negative default recoverable heat fraction and a valid temperature value within the default range.
-    def test_negative_default_recoverable_heat_and_valid_temperature_within_default_range(self):
-        # Arrange
-        default_recoverable_heat = -0.5
-        twater = 100.0
-
-        # Act
-        result = RecoverableHeat(default_recoverable_heat, twater)
-
-        # Assert
-        assert result == default_recoverable_heat
 
 
 class TestVaporPressureWater(unittest.TestCase):

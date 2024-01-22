@@ -20,7 +20,7 @@ from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 FIXME WIP use iapws library instead of hardcoded values
 """
 
-T = np.array(
+_T = np.array(
     [
         0.01,
         10.0,
@@ -51,7 +51,7 @@ T = np.array(
         373.946,
     ]
 )
-DensityH20 = np.array(
+_DensityH20 = np.array(
     [
         0.99984283,
         0.9998495,
@@ -83,7 +83,7 @@ DensityH20 = np.array(
     ]
 )
 
-EntropyH20 = np.array(
+_EntropyH20 = np.array(
     [
         0.0,
         0.15109,
@@ -114,7 +114,7 @@ EntropyH20 = np.array(
         4.407,
     ]
 )
-EnthalpyH20 = np.array(
+_EnthalpyH20 = np.array(
     [
         0.000612,
         42.021,
@@ -145,7 +145,7 @@ EnthalpyH20 = np.array(
         2084.3,
     ]
 )
-UtilEff = np.array(
+_UtilEff = np.array(
     [
         0.0,
         0.0,
@@ -177,10 +177,10 @@ UtilEff = np.array(
     ]
 )
 
-interp_density_func = interp1d(T, DensityH20)
-interp_entropy_func = interp1d(T, EntropyH20)
-interp_enthalpy_func = interp1d(T, EnthalpyH20)
-interp_util_eff_func = interp1d(T, UtilEff)
+_interp_density_func = interp1d(_T, _DensityH20)
+_interp_entropy_func = interp1d(_T, _EntropyH20)
+_interp_enthalpy_func = interp1d(_T, _EnthalpyH20)
+_interp_util_eff_func = interp1d(_T, _UtilEff)
 
 
 @lru_cache(maxsize=None)
@@ -198,7 +198,7 @@ def DensityWater(Twater_degC: float) -> float:
     if not np.can_cast(Twater_degC, float):
         raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
 
-    return interp_density_func(Twater_degC) * 1e3
+    return _interp_density_func(Twater_degC) * 1e3
 
 
 @lru_cache(maxsize=None)
@@ -356,12 +356,12 @@ def EntropyH20_func(temperature_degC: float) -> float:
     except ValueError:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
-    if temperature_degC < T[0] or temperature_degC > T[-1]:
+    if temperature_degC < _T[0] or temperature_degC > _T[-1]:
         raise ValueError(
-            f'Input temperature ({temperature_degC}) must be within the range of {T[0]} to {T[-1]} degrees C.'
+            f'Input temperature ({temperature_degC}) must be within the range of {_T[0]} to {_T[-1]} degrees C.'
         )
 
-    entropy = interp_entropy_func(temperature_degC)
+    entropy = _interp_entropy_func(temperature_degC)
     return entropy
 
 
@@ -386,10 +386,10 @@ def EnthalpyH20_func(temperature: float) -> float:
     if temperature < 0:
         raise ValueError("Input temperature must be a non-negative number.")
 
-    if temperature > T[-1]:
-        raise ValueError(f"Input temperature must be within the range of 0 to {T[-1]} degrees C.")
+    if temperature > _T[-1]:
+        raise ValueError(f"Input temperature must be within the range of 0 to {_T[-1]} degrees C.")
 
-    enthalpy = interp_enthalpy_func(temperature)
+    enthalpy = _interp_enthalpy_func(temperature)
     return enthalpy
 
 
@@ -408,10 +408,10 @@ def UtilEff_func(temperature: float) -> float:
     if not isinstance(temperature, (int, float)):
         raise ValueError("Input temperature must be a number")
 
-    if temperature < T[0] or temperature > T[-1]:
-        raise ValueError(f"Temperature must be within the range of {T[0]} to {T[-1]} degrees C.")
+    if temperature < _T[0] or temperature > _T[-1]:
+        raise ValueError(f"Temperature must be within the range of {_T[0]} to {_T[-1]} degrees C.")
 
-    util_eff = interp_util_eff_func(temperature)
+    util_eff = _interp_util_eff_func(temperature)
     return util_eff
 
 

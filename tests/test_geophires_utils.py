@@ -1,16 +1,16 @@
 import sys
 import unittest
 
+from geophires_x.GeoPHIRESUtils import _T
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
-from geophires_x.GeoPHIRESUtils import T
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import ViscosityWater
+from geophires_x.GeoPHIRESUtils import _interp_entropy_func
+from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
-from geophires_x.GeoPHIRESUtils import interp_entropy_func
-from geophires_x.GeoPHIRESUtils import interp_util_eff_func
 from geophires_x_client import _get_logger
 
 
@@ -126,35 +126,35 @@ class TestUtileffFunc(unittest.TestCase):
     def test_within_range_temperature(self):
         """Returns the utilization efficiency of the system for a given temperature within the range of 0 to 373.946 degrees C."""
         temperature = 50.0
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
     def test_same_temperature_input(self):
         """Returns the same utilization efficiency for the same temperature input."""
         temperature = 60.0
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
     def test_lower_bound_temperature(self):
         """Returns the utilization efficiency of the system for the temperature at the lower bound of the range (0.01 degrees C)."""
         temperature = 0.01
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
     def test_upper_bound_temperature(self):
         """Returns the utilization efficiency of the system for the temperature at the upper bound of the range (373.946 degrees C)."""
         temperature = 373.946
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
     def test_middle_temperature(self):
         """Returns the utilization efficiency of the system for a temperature that is exactly in the middle of two temperature values in the T array."""
         temperature = 150.0
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
@@ -182,14 +182,14 @@ class TestUtileffFunc(unittest.TestCase):
     def test_exact_temperature_value(self):
         """Returns the utilization efficiency of the system for a temperature that is exactly equal to one of the temperature values in the T array."""
         temperature = 120.0
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
     def test_very_close_to_lower_bound_temperature(self):
         """Returns the utilization efficiency of the system for a temperature that is very close to the lower bound of the range (0.01 + epsilon degrees C)."""
         temperature = 0.01 + 1e-6
-        expected_util_eff = interp_util_eff_func(temperature)
+        expected_util_eff = _interp_util_eff_func(temperature)
 
         assert UtilEff_func(temperature) == expected_util_eff
 
@@ -349,28 +349,28 @@ class TestEntropyh20Func(unittest.TestCase):
         """Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]"""
 
         temperature = 50.0
-        expected_entropy = interp_entropy_func(temperature)
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_minimum_temperature_input(self):
         """Returns the correct entropy value for the minimum temperature input (T[0])"""
 
-        temperature = T[0]
-        expected_entropy = interp_entropy_func(temperature)
+        temperature = _T[0]
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_maximum_temperature_input(self):
         """Returns the correct entropy value for the maximum temperature input (T[-1])"""
 
-        temperature = T[-1]
-        expected_entropy = interp_entropy_func(temperature)
+        temperature = _T[-1]
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_temperature_input_in_T(self):
         """Returns the correct entropy value for a temperature input that is an element of T"""
 
-        temperature = T[3]
-        expected_entropy = interp_entropy_func(temperature)
+        temperature = _T[3]
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_temperature_input_within_range(self):
@@ -380,7 +380,7 @@ class TestEntropyh20Func(unittest.TestCase):
         """
 
         temperature = 150.0
-        expected_entropy = interp_entropy_func(temperature)
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_temperature_input_less_than_T0(self):
@@ -400,15 +400,15 @@ class TestEntropyh20Func(unittest.TestCase):
     def test_temperature_input_equal_to_T0(self):
         """Returns the correct entropy value for a temperature input that is equal to the minimum temperature input (T[0])"""
 
-        temperature = T[0]
-        expected_entropy = interp_entropy_func(temperature)
+        temperature = _T[0]
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_temperature_input_equal_to_Tn(self):
         """Returns the correct entropy value for a temperature input that is equal to the maximum temperature input (T[-1])"""
 
-        temperature = T[-1]
-        expected_entropy = interp_entropy_func(temperature)
+        temperature = _T[-1]
+        expected_entropy = _interp_entropy_func(temperature)
         assert EntropyH20_func(temperature) == expected_entropy
 
 

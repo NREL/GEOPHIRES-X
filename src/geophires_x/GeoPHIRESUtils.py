@@ -341,26 +341,28 @@ def VaporPressureWater(Twater: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def EntropyH20_func(temperature: float) -> float:
+def EntropyH20_func(temperature_degC: float) -> float:
     """
         the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
 
         Args:
-            temperature: the temperature of water in degrees C
+            temperature_degC: the temperature of water in degrees C
         Returns:
             the entropy of water as a function of temperature in kJ/kg-K
     ``    Raises:
 
     """
     try:
-        temperature = float(temperature)
+        temperature_degC = float(temperature_degC)
     except ValueError:
-        raise TypeError("Input temperature must be a float")
+        raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
-    if temperature < T[0] or temperature > T[-1]:
-        raise ValueError(f"Input temperature must be within the range of {T[0]} to {T[-1]} degrees C.")
+    if temperature_degC < T[0] or temperature_degC > T[-1]:
+        raise ValueError(
+            f'Input temperature ({temperature_degC}) must be within the range of {T[0]} to {T[-1]} degrees C.'
+        )
 
-    entropy = interp_entropy_func(temperature)
+    entropy = interp_entropy_func(temperature_degC)
     return entropy
 
 

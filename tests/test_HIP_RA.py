@@ -102,12 +102,14 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_calculate_reservoir_volume(self):
         """Calculates the volume of the reservoir"""
+
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
 
     def test_standard_outputs(self):
         """Prints the standard outputs to the output file"""
+
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         hip_ra.PrintOutputs()
 
@@ -125,10 +127,11 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_converts_units_back(self):
         """Converts Units back to PreferredUnits, if required"""
+
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         hip_ra.PrintOutputs()
-        # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
 
+        # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
         for key in hip_ra.ParameterDict:
             param = hip_ra.ParameterDict[key]
             assert param.CurrentUnits == param.PreferredUnits
@@ -157,6 +160,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_raises_permission_error(self):
         """Raises a PermissionError if there is no permission to write to the output file"""
+
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         # Create a read-only file
         Path.chmod('HIP.out', 0o444)
@@ -167,6 +171,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_handles_converting_output_units(self):
         """Handles converting output units for all classes of units (TEMPERATURE, DENSITY, etc.)"""
+
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         hip_ra.PrintOutputs()
         # Assert that the units of all parameters in OutputParameterDict are converted to the user-specified units
@@ -190,7 +195,6 @@ class HIP_RATestCase(BaseTestCase):
         # Initialize the HIP_RA class object
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
 
-        # Call the read_parameters method
         hip_ra.read_parameters()
 
         # Assert that all the parameters have been read in and updated
@@ -199,7 +203,6 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_porosity.value == 18.0
         assert hip_ra.reservoir_area.value == 81.0
         assert hip_ra.reservoir_thickness.value == 0.286
-        # Add assertions for other parameters as needed
 
     def test_update_changed_parameters(self):
         """updates any of these parameter values that have been changed by the user"""
@@ -221,7 +224,6 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.value == 200.0
         assert hip_ra.reservoir_porosity.value == 25.0
 
-    #  handles any special cases
     def test_handle_special_cases(self):
         # Initialize the HIP_RA class object
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
@@ -259,17 +261,14 @@ class HIP_RATestCase(BaseTestCase):
             ]
         }
 
-        # Call the read_parameters method
         hip_ra.read_parameters()
 
         # Assert that the CurrentUnits have been set to PreferredUnits
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
-        # Add assertions for other parameters with matching PreferredUnits as needed
 
     def test_set_current_units_preferred_units_do_not_match(self):
         """sets the CurrentUnits of a parameter to the units provided by the user if they don't match"""
-        # Initialize the HIP_RA class object
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
 
         # Set some input parameters with non-matching PreferredUnits
@@ -284,10 +283,8 @@ class HIP_RATestCase(BaseTestCase):
             ]
         }
 
-        # Call the read_parameters method
         hip_ra.read_parameters()
 
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
-        # Add assertions for other parameters with non-matching PreferredUnits as needed

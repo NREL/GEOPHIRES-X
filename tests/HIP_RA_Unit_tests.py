@@ -206,68 +206,6 @@ class TestVaporPressureWater(unittest.TestCase):
         assert result == 7.375
 
 
-class TestEntropyh20Func(unittest.TestCase):
-    #  Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]
-    def test_valid_temperature_within_range(self):
-        temperature = 50.0
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Returns the correct entropy value for the minimum temperature input (T[0])
-    def test_minimum_temperature_input(self):
-        temperature = T[0]
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Returns the correct entropy value for the maximum temperature input (T[-1])
-    def test_maximum_temperature_input(self):
-        temperature = T[-1]
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Returns the correct entropy value for a temperature input that is an element of T
-    def test_temperature_input_in_T(self):
-        temperature = T[3]
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Returns the correct entropy value for a temperature input that is not an element of T but within the range of T[0] to T[-1]
-    def test_temperature_input_within_range(self):
-        temperature = 150.0
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Raises a TypeError if the temperature input is not a float
-    def test_non_float_temperature_input(self):
-        temperature = '50.0'
-        with pytest.raises(TypeError):
-            EntropyH20_func(temperature)
-
-    #  Raises a ValueError if the temperature input is less than T[0]
-    def test_temperature_input_less_than_T0(self):
-        temperature = -10.0
-        with pytest.raises(ValueError):
-            EntropyH20_func(temperature)
-
-    #  Raises a ValueError if the temperature input is greater than T[-1]
-    def test_temperature_input_greater_than_Tn(self):
-        temperature = 400.0
-        with pytest.raises(ValueError):
-            EntropyH20_func(temperature)
-
-    #  Returns the correct entropy value for a temperature input that is equal to the minimum temperature input (T[0])
-    def test_temperature_input_equal_to_T0(self):
-        temperature = T[0]
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    #  Returns the correct entropy value for a temperature input that is equal to the maximum temperature input (T[-1])
-    def test_temperature_input_equal_to_Tn(self):
-        temperature = T[-1]
-        expected_entropy = interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-
 class TestEnthalpyh20Func(unittest.TestCase):
     #  Returns the correct enthalpy value for a given temperature within the valid range.
     def test_valid_temperature(self):

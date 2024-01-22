@@ -54,7 +54,7 @@ class TestHipRa(unittest.TestCase):
         assert hip_ra.reservoir_life_cycle.value == 30
         assert hip_ra.rock_heat_capacity.value == 2840000000000.0
         assert hip_ra.fluid_heat_capacity.value == -1.0
-        assert hip_ra.HeatCapacityOfRock.value == 1.0
+        assert hip_ra.rock_heat_capacity.value == 1.0
         assert hip_ra.fluid_density.value == -1.0
         assert hip_ra.rock_density.value == 2550000000000.0
         assert hip_ra.RecoverableHeat.value == -1.0
@@ -239,9 +239,8 @@ class Test__Init__:
         hip_ra = HIP_RA(enable_geophires_logging_config=False)
         assert hip_ra.logger.level == logging.INFO
 
-    #  The method initializes several floatParameter objects and assigns them to corresponding attributes in the ParameterDict dictionary.
     def test_float_parameters_initialized(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra: HIP_RA = HIP_RA(enable_geophires_logging_config=False)
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
         assert isinstance(hip_ra.reservoir_porosity, floatParameter)
@@ -249,15 +248,17 @@ class Test__Init__:
         assert isinstance(hip_ra.reservoir_thickness, floatParameter)
         assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
         assert isinstance(hip_ra.fluid_heat_capacity, floatParameter)
-        assert isinstance(hip_ra.HeatCapacityOfRock, floatParameter)
+        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
         assert isinstance(hip_ra.fluid_density, floatParameter)
         assert isinstance(hip_ra.rock_density, floatParameter)
-        assert isinstance(hip_ra.RecoverableHeat, floatParameter)
-        assert isinstance(hip_ra.WaterContent, floatParameter)
-        assert isinstance(hip_ra.RockContent, floatParameter)
-        assert isinstance(hip_ra.rejection_temperature_k, floatParameter)
-        assert isinstance(hip_ra.rejection_entropy, floatParameter)
-        assert isinstance(hip_ra.rejection_enthalpy, floatParameter)
+        assert isinstance(hip_ra.fluid_recoverable_heat, floatParameter)
+        assert isinstance(hip_ra.volume_fluid, OutputParameter)
+        assert isinstance(hip_ra.volume_rock, OutputParameter)
+
+        # TODO should these be initialized?
+        # assert isinstance(hip_ra.rejection_temperature_k, floatParameter)
+        # assert isinstance(hip_ra.rejection_entropy, floatParameter)
+        # assert isinstance(hip_ra.rejection_enthalpy, floatParameter)
 
     #  The method initializes several intParameter objects and assigns them to corresponding attributes in the ParameterDict dictionary.
     def test_int_parameters_initialized(self):

@@ -23,6 +23,7 @@ from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
+from hip_ra import HipRaClient, HipRaInputParameters
 from hip_ra.HIP_RA import HIP_RA
 
 
@@ -253,7 +254,7 @@ class Test__Init__:
 class TestCalculate:
     #  Calculates the stored heat in the reservoir
     def test_calculate_stored_heat(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (
             hip_ra.rock_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value)

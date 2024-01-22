@@ -192,29 +192,19 @@ def celsius_to_kelvin(celsius: float) -> float:
 @lru_cache(maxsize=None)
 def ViscosityWater(Twater_degC: float) -> float:
     """
-    The ViscosityWater function is used to calculate the viscosity of water as a function of temperature.
+    The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
     Args:
         Twater_degC: the temperature of water in degrees C
     Returns:
-        Viscosity of water in Ns/m2
+        Viscosity of water in Pa·s (Ns/m2)
     Raises:
-        ValueError: If water_temperature is not a float or convertible to float.
+        ValueError: If Twater_degC is not a float or convertible to float.
     """
-    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > 370:
-        raise ValueError(
-            f'Invalid input for Twater_degC. Twater_degC must be a non-negative number and must be within the range of'
-            f'0 to 370 degrees Celsius. The input value was: {Twater_degC}'
-        )
 
-    TEMPERATURE_OFFSET = 140
-    TEMPERATURE_CONSTANT = 247.8
-    WATER_VISCOSITY_CONSTANT = 2.414e-5
-
-    temperature_difference = celsius_to_kelvin(Twater_degC) - TEMPERATURE_OFFSET
-    temperature_exponent = TEMPERATURE_CONSTANT / temperature_difference
-    muwater = WATER_VISCOSITY_CONSTANT * (10**temperature_exponent)
-
-    return muwater
+    try:
+        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).mu
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)

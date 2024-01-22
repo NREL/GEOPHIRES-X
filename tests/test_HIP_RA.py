@@ -103,14 +103,14 @@ class HIP_RATestCase(BaseTestCase):
     def test_calculate_reservoir_volume(self):
         """Calculates the volume of the reservoir"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
 
     def test_standard_outputs(self):
         """Prints the standard outputs to the output file"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.PrintOutputs()
 
         # Assert that the output file is created
@@ -128,7 +128,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_converts_units_back(self):
         """Converts Units back to PreferredUnits, if required"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.PrintOutputs()
 
         # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
@@ -137,7 +137,7 @@ class HIP_RATestCase(BaseTestCase):
             assert param.CurrentUnits == param.PreferredUnits
 
     def test_updates_output_parameter_units(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.PrintOutputs()
         # Assert that the units of all parameters in OutputParameterDict are updated to the user-specified units
         for key in hip_ra.OutputParameterDict:
@@ -150,7 +150,7 @@ class HIP_RATestCase(BaseTestCase):
         Assert that the space between value and units is aligned to the same column for each line in the output file
         """
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.PrintOutputs()
 
         with open('HIP.out') as f:
@@ -161,7 +161,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_raises_permission_error(self):
         """Raises a PermissionError if there is no permission to write to the output file"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         # Create a read-only file
         Path.chmod('HIP.out', 0o444)
         with self.assertRaises(PermissionError):
@@ -172,7 +172,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_handles_converting_output_units(self):
         """Handles converting output units for all classes of units (TEMPERATURE, DENSITY, etc.)"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.PrintOutputs()
         # Assert that the units of all parameters in OutputParameterDict are converted to the user-specified units
         for key in hip_ra.OutputParameterDict:
@@ -193,7 +193,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_read_all_parameters(self):
         # Initialize the HIP_RA class object
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         hip_ra.read_parameters()
 
@@ -207,7 +207,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_update_changed_parameters(self):
         """updates any of these parameter values that have been changed by the user"""
 
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         # Set some input parameters to be changed by the user
         hip_ra.InputParameters = {
@@ -226,7 +226,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_handle_special_cases(self):
         # Initialize the HIP_RA class object
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         # Set some input parameters to trigger special cases
         hip_ra.InputParameters = {
@@ -250,7 +250,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_set_current_units_preferred_units_match(self):
         """sets the CurrentUnits of a parameter to its PreferredUnits if they match"""
         # Initialize the HIP_RA class object
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         # Set some input parameters with matching PreferredUnits
         hip_ra.InputParameters = {
@@ -269,7 +269,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_set_current_units_preferred_units_do_not_match(self):
         """sets the CurrentUnits of a parameter to the units provided by the user if they don't match"""
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         # Set some input parameters with non-matching PreferredUnits
         hip_ra.InputParameters = {

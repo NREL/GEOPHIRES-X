@@ -97,7 +97,7 @@ class HIP_RA:
     HIP_RA is the container class of the HIP_RA application, giving access to everything else, including the logger
     """
 
-    def __init__(self, enable_geophires_logging_config=True):
+    def __init__(self, enable_hip_ra_logging_config=True):
         """
         The __init__ function is called automatically every time the class is being used to create a new object.
         The self parameter is a Python convention. It must be included in each function definition and points to the
@@ -109,7 +109,7 @@ class HIP_RA:
         # get logging started
         self.logger = logging.getLogger('root')
 
-        if enable_geophires_logging_config:
+        if enable_hip_ra_logging_config:
             logging.config.fileConfig('logging.conf')
             self.logger.setLevel(logging.INFO)
 
@@ -884,7 +884,7 @@ def main(enable_geophires_logging_config=True):
     logger.info('Initializing the application')
 
     # initiate the HIP-RA parameters, setting them to their default values
-    model = HIP_RA(enable_geophires_logging_config=enable_geophires_logging_config)
+    model = HIP_RA(enable_hip_ra_logging_config=enable_geophires_logging_config)
 
     # read the parameters that apply to the model
     model.read_parameters()

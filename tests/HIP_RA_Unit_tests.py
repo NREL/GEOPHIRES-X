@@ -29,7 +29,7 @@ from hip_ra.HIP_RA import HIP_RA
 class TestHipRa(unittest.TestCase):
     #  The class initializes successfully with default parameters and logging enabled.
     def test_initialization_with_default_parameters_and_logging_enabled(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.isEnabledFor(logging.INFO) == True
         assert hip_ra.reservoir_temperature.Name == 'Reservoir Temperature'
         assert hip_ra.reservoir_temperature.value == 150.0
@@ -44,7 +44,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class reads input parameters from a file and updates the corresponding attributes.
     def test_reading_input_parameters_from_file_and_updating_attributes(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         assert hip_ra.reservoir_temperature.value == 150.0
         assert hip_ra.rejection_temperature.value == 25.0
@@ -66,7 +66,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class calculates the output parameters based on the input parameters.
     def test_calculating_output_parameters_based_on_input_parameters(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         hip_ra.Calculate()
         assert hip_ra.reservoir_volume.value == pytest.approx(23.166, abs=1e-3)
@@ -81,7 +81,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class prints the output parameters to a file.
     def test_printing_output_parameters_to_file(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         hip_ra.Calculate()
         hip_ra.PrintOutputs()
@@ -104,7 +104,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when no parameters are provided in the input file.
     def test_handling_no_parameters_in_input_file(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         assert hip_ra.reservoir_temperature.value == 150.0
         assert hip_ra.rejection_temperature.value == 25.0
@@ -126,19 +126,19 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when the input file is not found.
     def test_handling_input_file_not_found(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         with pytest.raises(FileNotFoundError):
             hip_ra.read_parameters()
 
     #  The class handles the case when the input file cannot be accessed due to permission issues.
     def test_handling_input_file_permission_issues(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         with pytest.raises(PermissionError):
             hip_ra.read_parameters()
 
     #  The class handles the case when an exception occurs while writing the output file.
     def test_handling_exception_while_writing_output_file(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         hip_ra.Calculate()
         with pytest.raises(Exception):
@@ -146,7 +146,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when the output file is empty.
     def test_handling_empty_output_file(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         hip_ra.Calculate()
         hip_ra.PrintOutputs()
@@ -157,7 +157,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when the units of the output parameters do not match the preferred units.
     def test_handling_output_parameter_units_not_matching_preferred_units(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.read_parameters()
         hip_ra.Calculate()
         hip_ra.reservoir_volume.CurrentUnits = VolumeUnit.METERS3
@@ -184,7 +184,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class converts units of the output parameters if specified in the input file.
     def test_convert_units_of_output_parameters(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].CurrentUnits = VolumeUnit.METERS3
         hip_ra.OutputParameterDict['Stored Heat (reservoir)'].CurrentUnits = HeatUnit.J
 
@@ -213,7 +213,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when the density of water is less than the minimum allowed value.
     def test_handle_low_density_of_water(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.fluid_density.value = -1.0
         hip_ra.reservoir_temperature.value = 100.0
         hip_ra.Calculate()
@@ -221,7 +221,7 @@ class TestHipRa(unittest.TestCase):
 
     #  The class handles the case when the heat capacity of water is less than the minimum allowed value.
     def test_handle_low_heat_capacity_of_water(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.fluid_heat_capacity.value = -1.0
         hip_ra.reservoir_temperature.value = 100.0
         hip_ra.Calculate()
@@ -231,16 +231,16 @@ class TestHipRa(unittest.TestCase):
 class Test__Init__:
     #  The '__init__' method initializes the logger attribute with the 'root' logger.
     def test_logger_initialized_with_root_logger(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.name == 'root'
 
     #  If 'enable_geophires_logging_config' is True, the method configures the logger using the 'logging.conf' file and sets the logger level to INFO.
     def test_logger_configured_with_logging_conf_file(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.level == logging.INFO
 
     def test_float_parameters_initialized(self):
-        hip_ra: HIP_RA = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
         assert isinstance(hip_ra.reservoir_porosity, floatParameter)
@@ -262,12 +262,12 @@ class Test__Init__:
 
     #  The method initializes several intParameter objects and assigns them to corresponding attributes in the ParameterDict dictionary.
     def test_int_parameters_initialized(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert isinstance(hip_ra.reservoir_life_cycle, intParameter)
 
     #  The method initializes several OutputParameter objects and assigns them to corresponding attributes in the OutputParameterDict dictionary.
     def test_output_parameters_initialized(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert isinstance(hip_ra.reservoir_volume, OutputParameter)
         assert isinstance(hip_ra.reservoir_stored_heat, OutputParameter)
         assert isinstance(hip_ra.reservoir_mass, OutputParameter)
@@ -280,34 +280,34 @@ class Test__Init__:
 
     #  The 'enable_geophires_logging_config' parameter is False, so the logger is not configured.
     def test_logger_not_configured_when_enable_geophires_logging_config_is_false(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.level == logging.NOTSET
 
     #  The 'enable_geophires_logging_config' parameter is not provided, so the default value of True is used.
     def test_logger_configured_when_enable_geophires_logging_config_is_not_provided(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.level == logging.INFO
 
     #  The 'reservoir_temperature' floatParameter object is initialized with a value below the minimum allowed value (50).
     def test_reservoir_temperature_initialized_with_value_below_minimum(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.reservoir_temperature.value == 50.0
 
     #  The 'reservoir_temperature' floatParameter object is initialized with a value above the maximum allowed value (1000).
     def test_reservoir_temperature_initialized_with_value_above_maximum(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.reservoir_temperature.value == 1000.0
 
     #  The 'reservoir_thickness' floatParameter object is initialized with a value of 0, which is the minimum allowed value.
     def test_reservoir_thickness_initialized_with_minimum_value(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.reservoir_thickness.value == 0.0
 
 
 class TestCalculate:
     #  Calculates the stored heat in the reservoir
     def test_calculate_stored_heat(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (
             hip_ra.rock_heat_capacity.value * (hip_ra.reservoir_temperature.value - hip_ra.rejection_temperature.value)
@@ -315,7 +315,7 @@ class TestCalculate:
 
     #  Calculates the maximum energy out per unit of mass
     def test_calculate_maximum_energy(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_enthalpy.value == (
             (EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_enthalpy.value)
@@ -327,7 +327,7 @@ class TestCalculate:
 
     #  Calculates the heat recovery at the wellhead
     def test_calculate_heat_recovery(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.wellhead_heat.value == hip_ra.reservoir_mass.value * (
             EnthalpyH20_func(hip_ra.reservoir_temperature.value) - hip_ra.rejection_temperature_k.value
@@ -335,7 +335,7 @@ class TestCalculate:
 
     #  Calculates the available heat
     def test_calculate_available_heat(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_available_heat.value == (
             hip_ra.reservoir_mass.value
@@ -346,7 +346,7 @@ class TestCalculate:
 
     #  Calculates the mass of the fluid in the reservoir with wrong formula
     def test_calculate_mass_of_fluid_wrong_formula(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert (
             hip_ra.reservoir_mass.value
@@ -355,7 +355,7 @@ class TestCalculate:
 
     #  Calculates the density of water with wrong formula
     def test_calculate_density_of_water_wrong_formula(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         if hip_ra.fluid_density.value < hip_ra.fluid_density.Min:
             hip_ra.fluid_density.value = DensityWater(hip_ra.reservoir_temperature.value) * 1_000_000_000.0
@@ -363,7 +363,7 @@ class TestCalculate:
 
     #  Calculates the heat capacity of water with wrong formula
     def test_calculate_heat_capacity_of_water_wrong_formula(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         if hip_ra.fluid_heat_capacity.value < hip_ra.fluid_heat_capacity.Min:
             hip_ra.fluid_heat_capacity.value = HeatCapacityWater(hip_ra.reservoir_temperature.value) / 1000.0
@@ -371,7 +371,7 @@ class TestCalculate:
 
     #  Calculates the stored heat in the reservoir with negative values
     def test_calculate_stored_heat_negative_values(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.rock_heat_capacity.value = -1e12
         hip_ra.Calculate()
         assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (
@@ -380,7 +380,7 @@ class TestCalculate:
 
     #  Calculates the maximum energy out per unit of mass with negative values
     def test_calculate_maximum_energy_negative_values(self):
-        hip_ra = HIP_RA(enable_geophires_logging_config=False)
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.rejection_enthalpy.value = 1e12
         hip_ra.Calculate()
         assert hip_ra.reservoir_enthalpy.value == (

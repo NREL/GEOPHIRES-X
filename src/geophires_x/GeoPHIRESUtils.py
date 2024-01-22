@@ -114,37 +114,7 @@ _EntropyH20 = np.array(
         4.407,
     ]
 )
-_EnthalpyH20 = np.array(
-    [
-        0.000612,
-        42.021,
-        83.914,
-        104.83,
-        125.73,
-        167.53,
-        209.34,
-        251.18,
-        293.07,
-        335.01,
-        377.04,
-        419.17,
-        461.42,
-        503.81,
-        589.16,
-        675.47,
-        763.05,
-        852.27,
-        943.58,
-        1037.6,
-        1135.0,
-        1236.9,
-        1345.0,
-        1462.2,
-        1594.5,
-        1761.7,
-        2084.3,
-    ]
-)
+
 _UtilEff = np.array(
     [
         0.0,
@@ -179,7 +149,6 @@ _UtilEff = np.array(
 
 _interp_density_func = interp1d(_T, _DensityH20)
 _interp_entropy_func = interp1d(_T, _EntropyH20)
-_interp_enthalpy_func = interp1d(_T, _EnthalpyH20)
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 

@@ -305,38 +305,29 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def VaporPressureWater(Twater: float) -> float:
+def VaporPressureWater(Twater_degC: float) -> float:
     """
     The VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature.
-    Uses the Antione Equation.
 
     Args:
-        Twater: the temperature of water in degrees C
+        Twater_degC: the temperature of water in degrees C
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
-        ValueError: If Twater is not a float or convertible to float.
-        ValueError: If Twater is below 0.
+        ValueError: If Twater_degC is not a float or convertible to float.
+        ValueError: If Twater_degC is below 0.
     """
-    if not isinstance(Twater, (int, float)):
-        raise ValueError("Twater must be a number")
-    if Twater < 0:
-        raise ValueError("Twater must be greater than or equal to 0")
 
-    # Constants for the calculation
-    if Twater < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
+    if not isinstance(Twater_degC, (int, float)):
+        raise ValueError(f'Twater_degC ({Twater_degC}) must be a number')
+    if Twater_degC < 0:
+        raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
-    # Calculate the vapor pressure using the Antione Equation
-    vapor_pressure = 133.322 * (10 ** (A - B / (C + Twater))) / 1000
+    try:
+        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).P * 1e3
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
-    return vapor_pressure
 
 
 @lru_cache(maxsize=None)
@@ -394,24 +385,25 @@ def EnthalpyH20_func(temperature: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def UtilEff_func(temperature: float) -> float:
+def UtilEff_func(temperature_degC: float) -> float:
     """
     the UtilEff_func function is used to calculate the utilization efficiency of the system as a function of temperature
     Args:
-        temperature: the temperature of water in degrees C
+        temperature_degC: the temperature of water in degrees C
     Returns:
          the utilization efficiency of the system as a function of temperature
     Raises:
         ValueError: If x is not a float or convertible to float.
         ValueError: If x is not within the range of 0 to 373.946 degrees C.
     """
-    if not isinstance(temperature, (int, float)):
-        raise ValueError("Input temperature must be a number")
 
-    if temperature < _T[0] or temperature > _T[-1]:
-        raise ValueError(f"Temperature must be within the range of {_T[0]} to {_T[-1]} degrees C.")
+    if not isinstance(temperature_degC, (int, float)):
+        raise ValueError(f'Input temperature ({temperature_degC}) must be a number')
 
-    util_eff = _interp_util_eff_func(temperature)
+    if temperature_degC < _T[0] or temperature_degC > _T[-1]:
+        raise ValueError(f'Temperature ({temperature_degC}) must be within the range of {_T[0]} to {_T[-1]} degrees C.')
+
+    util_eff = _interp_util_eff_func(temperature_degC)
     return util_eff
 
 
@@ -423,6 +415,7 @@ def read_input_file(return_dict_1, logger=None):
     :return: dictionary of parameters
     :rtype: dict
     """
+
     logger.info(f'Init {__name__}')
 
     # Specify path of input file - it will always be the first command line argument.

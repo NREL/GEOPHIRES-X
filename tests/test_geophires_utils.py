@@ -7,6 +7,7 @@ from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
+from geophires_x.GeoPHIRESUtils import VaporPressureWater
 from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import _interp_entropy_func
 from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
@@ -441,6 +442,48 @@ class TestRecoverableHeat(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             RecoverableHeat('abc')
+
+
+class TestVaporPressureWater(unittest.TestCase):
+    def test_below_100_degrees(self):
+        result = VaporPressureWater(42)
+        self.assertAlmostEqual(result, 8.209010116448697, places=3)
+
+    def test_above_100_degrees(self):
+        result = VaporPressureWater(150)
+        self.assertAlmostEqual(result, 476.10138108149204, places=3)
+
+    def test_100_degrees(self):
+        result = VaporPressureWater(100)
+        self.assertAlmostEqual(result, 101.41797792131013, places=3)
+
+    def test_0_degrees(self):
+        result = VaporPressureWater(0)
+        self.assertAlmostEqual(result, 0.6112126774443449, places=3)
+
+    def test_25_degrees(self):
+        result = VaporPressureWater(25)
+        self.assertAlmostEqual(result, 3.1697468549523626, places=3)
+
+    def test_value_error(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater('abc')
+
+    def test_minimum_temperature(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater(-273.15)
+
+    def test_maximum_temperature(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater(float('inf'))
+
+    def test_50_degrees(self):
+        result = VaporPressureWater(50)
+        self.assertAlmostEqual(result, 12.351270434023352, places=3)
+
+    def test_75_degrees(self):
+        result = VaporPressureWater(75)
+        self.assertAlmostEqual(result, 38.59536268655676, places=3)
 
 
 if __name__ == '__main__':

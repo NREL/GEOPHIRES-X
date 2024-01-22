@@ -26,58 +26,6 @@ from geophires_x.Units import VolumeUnit
 from hip_ra.HIP_RA import HIP_RA
 
 
-class TestVaporPressureWater(unittest.TestCase):
-    #  Returns the vapor pressure of water for a temperature below 100 degrees Celsius
-    def test_below_100_degrees(self):
-        result = VaporPressureWater(50)
-        assert result == 12.324
-
-    #  Returns the vapor pressure of water for a temperature above 100 degrees Celsius
-    def test_above_100_degrees(self):
-        result = VaporPressureWater(150)
-        assert result == 13.456
-
-    #  Returns the vapor pressure of water for a temperature of exactly 100 degrees Celsius
-    def test_100_degrees(self):
-        result = VaporPressureWater(100)
-        assert result == 13.456
-
-    #  Returns the expected vapor pressure for a temperature of 0 degrees Celsius
-    def test_0_degrees(self):
-        result = VaporPressureWater(0)
-        assert result == 6.107
-
-    #  Returns the expected vapor pressure for a temperature of 25 degrees Celsius
-    def test_25_degrees(self):
-        result = VaporPressureWater(25)
-        assert result == 3.170
-
-    #  Raises a ValueError if Twater is not a number
-    def test_value_error(self):
-        with pytest.raises(ValueError):
-            VaporPressureWater('abc')
-
-    #  Returns the expected vapor pressure for the minimum possible temperature (-273.15 degrees Celsius)
-    def test_minimum_temperature(self):
-        result = VaporPressureWater(-273.15)
-        assert result == 0.006
-
-    #  Returns the expected vapor pressure for the maximum possible temperature (infinitely high)
-    def test_maximum_temperature(self):
-        result = VaporPressureWater(float('inf'))
-        assert result == float('inf')
-
-    #  Returns the expected vapor pressure for a temperature of 50 degrees Celsius
-    def test_50_degrees(self):
-        result = VaporPressureWater(50)
-        assert result == 12.324
-
-    #  Returns the expected vapor pressure for a temperature of 75 degrees Celsius
-    def test_75_degrees(self):
-        result = VaporPressureWater(75)
-        assert result == 7.375
-
-
 class TestEnthalpyh20Func(unittest.TestCase):
     #  Returns the correct enthalpy value for a given temperature within the valid range.
     def test_valid_temperature(self):

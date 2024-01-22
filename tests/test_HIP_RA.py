@@ -5,8 +5,11 @@ from pathlib import Path
 
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import ParameterEntry
+from geophires_x.Parameter import floatParameter
+from geophires_x.Parameter import intParameter
 from geophires_x.Units import PercentUnit
 from geophires_x.Units import TemperatureUnit
+from geophires_x.Units import Units
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
@@ -269,7 +272,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_set_current_units_preferred_units_do_not_match(self):
         """sets the CurrentUnits of a parameter to the units provided by the user if they don't match"""
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
 
         # Set some input parameters with non-matching PreferredUnits
         hip_ra.InputParameters = {
@@ -288,3 +291,49 @@ class HIP_RATestCase(BaseTestCase):
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
+
+    def test_initialization_with_default_parameters(self):
+        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
+        assert isinstance(hip_ra.reservoir_temperature, floatParameter)
+        assert isinstance(hip_ra.rejection_temperature, floatParameter)
+        assert isinstance(hip_ra.reservoir_porosity, floatParameter)
+        assert isinstance(hip_ra.reservoir_area, floatParameter)
+        assert isinstance(hip_ra.reservoir_thickness, floatParameter)
+        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
+        assert isinstance(hip_ra.fluid_heat_capacity, floatParameter)
+        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
+        assert isinstance(hip_ra.fluid_density, floatParameter)
+        assert isinstance(hip_ra.rock_density, floatParameter)
+        assert isinstance(hip_ra.fluid_recoverable_heat, floatParameter)
+
+        # TODO should these be initialized?
+        # assert isinstance(hip_ra.rejection_temperature_k, floatParameter)
+        # assert isinstance(hip_ra.rejection_entropy, floatParameter)
+        # assert isinstance(hip_ra.rejection_enthalpy, floatParameter)
+
+        assert isinstance(hip_ra.reservoir_life_cycle, intParameter)
+
+        assert isinstance(hip_ra.volume_fluid, OutputParameter)
+        assert isinstance(hip_ra.volume_rock, OutputParameter)
+        assert isinstance(hip_ra.reservoir_volume, OutputParameter)
+        assert isinstance(hip_ra.reservoir_stored_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_mass, OutputParameter)
+        assert isinstance(hip_ra.reservoir_enthalpy, OutputParameter)
+        assert isinstance(hip_ra.wellhead_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_recovery_factor, OutputParameter)
+        assert isinstance(hip_ra.reservoir_available_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_producible_heat, OutputParameter)
+        assert isinstance(hip_ra.reservoir_producible_electricity, OutputParameter)
+
+        assert hip_ra.reservoir_thickness.value == 0.286
+
+        assert hip_ra.reservoir_temperature.Name == 'Reservoir Temperature'
+        assert hip_ra.reservoir_temperature.value == 150.0
+        assert hip_ra.reservoir_temperature.Min == 50
+        assert hip_ra.reservoir_temperature.Max == 1000
+        assert hip_ra.reservoir_temperature.UnitType == Units.TEMPERATURE
+        assert hip_ra.reservoir_temperature.PreferredUnits == TemperatureUnit.CELSIUS
+        assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
+        assert hip_ra.reservoir_temperature.Required is True
+        assert hip_ra.reservoir_temperature.ErrMessage == 'assume default reservoir temperature (150 deg-C)'
+        assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'

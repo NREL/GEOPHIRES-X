@@ -239,45 +239,6 @@ class Test__Init__:
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.level == logging.INFO
 
-    def test_float_parameters_initialized(self):
-        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
-        assert isinstance(hip_ra.reservoir_temperature, floatParameter)
-        assert isinstance(hip_ra.rejection_temperature, floatParameter)
-        assert isinstance(hip_ra.reservoir_porosity, floatParameter)
-        assert isinstance(hip_ra.reservoir_area, floatParameter)
-        assert isinstance(hip_ra.reservoir_thickness, floatParameter)
-        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
-        assert isinstance(hip_ra.fluid_heat_capacity, floatParameter)
-        assert isinstance(hip_ra.rock_heat_capacity, floatParameter)
-        assert isinstance(hip_ra.fluid_density, floatParameter)
-        assert isinstance(hip_ra.rock_density, floatParameter)
-        assert isinstance(hip_ra.fluid_recoverable_heat, floatParameter)
-        assert isinstance(hip_ra.volume_fluid, OutputParameter)
-        assert isinstance(hip_ra.volume_rock, OutputParameter)
-
-        # TODO should these be initialized?
-        # assert isinstance(hip_ra.rejection_temperature_k, floatParameter)
-        # assert isinstance(hip_ra.rejection_entropy, floatParameter)
-        # assert isinstance(hip_ra.rejection_enthalpy, floatParameter)
-
-    #  The method initializes several intParameter objects and assigns them to corresponding attributes in the ParameterDict dictionary.
-    def test_int_parameters_initialized(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert isinstance(hip_ra.reservoir_life_cycle, intParameter)
-
-    #  The method initializes several OutputParameter objects and assigns them to corresponding attributes in the OutputParameterDict dictionary.
-    def test_output_parameters_initialized(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert isinstance(hip_ra.reservoir_volume, OutputParameter)
-        assert isinstance(hip_ra.reservoir_stored_heat, OutputParameter)
-        assert isinstance(hip_ra.reservoir_mass, OutputParameter)
-        assert isinstance(hip_ra.reservoir_enthalpy, OutputParameter)
-        assert isinstance(hip_ra.wellhead_heat, OutputParameter)
-        assert isinstance(hip_ra.reservoir_recovery_factor, OutputParameter)
-        assert isinstance(hip_ra.reservoir_available_heat, OutputParameter)
-        assert isinstance(hip_ra.reservoir_producible_heat, OutputParameter)
-        assert isinstance(hip_ra.reservoir_producible_electricity, OutputParameter)
-
     #  The 'enable_geophires_logging_config' parameter is False, so the logger is not configured.
     def test_logger_not_configured_when_enable_geophires_logging_config_is_false(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
@@ -287,21 +248,6 @@ class Test__Init__:
     def test_logger_configured_when_enable_geophires_logging_config_is_not_provided(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         assert hip_ra.logger.level == logging.INFO
-
-    #  The 'reservoir_temperature' floatParameter object is initialized with a value below the minimum allowed value (50).
-    def test_reservoir_temperature_initialized_with_value_below_minimum(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.reservoir_temperature.value == 50.0
-
-    #  The 'reservoir_temperature' floatParameter object is initialized with a value above the maximum allowed value (1000).
-    def test_reservoir_temperature_initialized_with_value_above_maximum(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.reservoir_temperature.value == 1000.0
-
-    #  The 'reservoir_thickness' floatParameter object is initialized with a value of 0, which is the minimum allowed value.
-    def test_reservoir_thickness_initialized_with_minimum_value(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.reservoir_thickness.value == 0.0
 
 
 class TestCalculate:

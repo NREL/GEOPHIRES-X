@@ -198,11 +198,11 @@ class HIP_RATestCase(BaseTestCase):
             content = f.read()
             assert len(re.compile(r'[0-9]e\+[0-9]+\s').findall(content)) > 0
 
-    def test_read_all_parameters(self):
+    def test_read_all_parameters_no_effect_with_no_input_file(self):
         def read_params(hip_ra):
             hip_ra.read_parameters()
 
-        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=read_params)
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance(pre_re_stash_runner=read_params)
 
         # Assert that all the parameters have been read in and updated
         assert hip_ra.reservoir_temperature.value == 150.0
@@ -226,7 +226,7 @@ class HIP_RATestCase(BaseTestCase):
 
             hip_ra.read_parameters()
 
-        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the changed parameters have been updated
         assert hip_ra.reservoir_temperature.value == 200.0
@@ -248,7 +248,7 @@ class HIP_RATestCase(BaseTestCase):
 
             hip_ra.read_parameters()
 
-        hip_ra = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
+        hip_ra = self._new_hip_ra_test_instance(pre_re_stash_runner=set_and_read_input_params)
 
         assert hip_ra.rejection_temperature.value == 50
         assert hip_ra.fluid_density.value == -1
@@ -270,7 +270,7 @@ class HIP_RATestCase(BaseTestCase):
 
             hip_ra.read_parameters()
 
-        hip_ra = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
+        hip_ra = self._new_hip_ra_test_instance(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the CurrentUnits have been set to PreferredUnits
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
@@ -294,14 +294,14 @@ class HIP_RATestCase(BaseTestCase):
 
             hip_ra.read_parameters()
 
-        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
 
     def test_initialization_with_default_parameters(self):
-        hip_ra: HIP_RA = self._new_hip_ra()
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance()
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
         assert isinstance(hip_ra.reservoir_porosity, floatParameter)
@@ -347,7 +347,7 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'
 
     def test_logger_initialization(self):
-        hip_ra = self._new_hip_ra(enable_hip_ra_logging_config=True)
+        hip_ra = self._new_hip_ra_test_instance(enable_hip_ra_logging_config=True)
         assert hip_ra.logger.name == 'root'
         assert hip_ra.logger.level == logging.INFO
         assert hip_ra.logger.isEnabledFor(logging.INFO) is True
@@ -365,7 +365,7 @@ class HIP_RATestCase(BaseTestCase):
         self.assertIn('Unable to read input file', str(rex.exception))
         self.assertIn('.txt not found', str(rex.exception))
 
-    def _new_hip_ra(self, enable_hip_ra_logging_config=False, pre_re_stash_runner=None) -> HIP_RA:
+    def _new_hip_ra_test_instance(self, enable_hip_ra_logging_config=False, pre_re_stash_runner=None) -> HIP_RA:
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
 

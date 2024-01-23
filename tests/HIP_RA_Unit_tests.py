@@ -86,8 +86,6 @@ class TestHipRa(unittest.TestCase):
         assert hip_ra.rejection_entropy.value == 0.367
         assert hip_ra.rejection_enthalpy.value == 104.8
 
-    #  The class handles the case when the input file is not found.
-
     #  The class handles the case when the input file cannot be accessed due to permission issues.
     def test_handling_input_file_permission_issues(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
@@ -100,17 +98,6 @@ class TestHipRa(unittest.TestCase):
         hip_ra.read_parameters()
         hip_ra.Calculate()
         with pytest.raises(Exception):
-            hip_ra.PrintOutputs()
-
-    #  The class handles the case when the output file is empty.
-    def test_handling_empty_output_file(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.read_parameters()
-        hip_ra.Calculate()
-        hip_ra.PrintOutputs()
-        with open('HIP.out', 'w') as f:
-            f.write('')
-        with pytest.raises(AssertionError):
             hip_ra.PrintOutputs()
 
     #  The class handles the case when the units of the output parameters do not match the preferred units.

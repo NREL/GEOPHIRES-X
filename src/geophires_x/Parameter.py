@@ -37,7 +37,7 @@ class OutputParameter:
         Name (str): The official name of that output
         value: (any): the value of this parameter - can be int, float, text, bool, list, etc...
         ToolTipText (str): Text to place in a ToolTip in a UI
-        UnitType (IntEnum): The class of units that parameter falls in (i.reservoir_enthalpy., "length", "time", "area"...)
+        UnitType (IntEnum): The class of units that parameter falls in (i.e., "length", "time", "area"...)
         PreferredUnits (Enum): The units as required by GEOPHIRES (or your algorithms)
         CurrentUnits (Enum): The units that the parameter is provided in (usually the same PreferredUnits)
         UnitsMatch (boolean): Internal flag set when units are different
@@ -70,7 +70,7 @@ class Parameter:
               by default, it is: "assuming default value (see manual)"
         InputComment (str): The optional comment that the user provided with that parameter in the text file
         ToolTipText (str): Text to place in a ToolTip in a UI
-        UnitType (IntEnum): The class of units that parameter falls in (i.reservoir_enthalpy., "length", "time", "area"...)
+        UnitType (IntEnum): The class of units that parameter falls in (i.e., "length", "time", "area"...)
         PreferredUnits (Enum): The units as required by GEOPHIRES (or your algorithms)
         CurrentUnits (Enum): The units that the parameter is provided in (usually the same PreferredUnits)
         UnitsMatch (boolean): Internal flag set when units are different
@@ -356,7 +356,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
         # All is good.  With a list, we have to use the last character of the Description to get the position.
-        # I.reservoir_enthalpy., "Gradient 1" should yield a position = 0 ("1" - 1)
+        # I.e., "Gradient 1" should yield a position = 0 ("1" - 1)
         else:
             parts = ParameterReadIn.Name.split(' ')
             position = int(parts[1]) - 1

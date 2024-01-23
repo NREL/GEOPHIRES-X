@@ -1,6 +1,6 @@
-# This file tells git what files to ignore (reservoir_enthalpy.g., you won't see them as
+# This file tells git what files to ignore (e.g., you won't see them as
 # untracked with "git status").  Add anything to it that can be cleared
-# without any worry (reservoir_enthalpy.g., by "git clean -Xdf"), because it can be
+# without any worry (e.g., by "git clean -Xdf"), because it can be
 # regenerated.  Lines beginning with # are comments.  You can also ignore
 # files on a per-repository basis by modifying the core.excludesfile
 # configuration option (see "git help config").  If you need to make git

@@ -98,7 +98,7 @@ class Outputs:
 
         # now we need to loop through all thw output parameters to update their units to
         # whatever units the user has specified.
-        # i.reservoir_enthalpy., they may have specified that all LENGTH results must be in feet, so we need to convert those
+        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those
         # from whatever LENGTH unit they are to feet.
         # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
 

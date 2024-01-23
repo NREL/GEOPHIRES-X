@@ -221,7 +221,7 @@ class EconomicsAddOns(Economics.Economics):
         # super.read_parameter will have already dealt with all the regular values, but anything unusual
         # may not be dealt with, so check.
         # In this case, all the values are array values, and weren't correctly dealt with, so below is where
-        # we process them.  The problem is that they have a position number i.reservoir_enthalpy., "AddOnCAPEX 1, AddOnCAPEX 2"
+        # we process them.  The problem is that they have a position number i.e., "AddOnCAPEX 1, AddOnCAPEX 2"
         # appended to them, while the
         # Parameter name is just "AddOnCAPEX" and the position indicates where in the array the user wants it stored.
         # So we need to look for the 5 arrays and position values and insert them into the arrays.

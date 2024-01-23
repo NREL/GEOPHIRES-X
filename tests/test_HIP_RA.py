@@ -196,7 +196,6 @@ class HIP_RATestCase(BaseTestCase):
             assert len(re.compile(r'[0-9]e\+[0-9]+\s').findall(content)) > 0
 
     def test_read_all_parameters(self):
-        # Initialize the HIP_RA class object
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
         hip_ra.read_parameters()
@@ -343,3 +342,4 @@ class HIP_RATestCase(BaseTestCase):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=True)
         assert hip_ra.logger.name == 'root'
         assert hip_ra.logger.level == logging.INFO
+        assert hip_ra.logger.isEnabledFor(logging.INFO) is True

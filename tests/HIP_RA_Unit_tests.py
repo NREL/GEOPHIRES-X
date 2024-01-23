@@ -11,10 +11,6 @@ from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
 from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
-from geophires_x.GeoPHIRESUtils import VaporPressureWater
-from geophires_x.Parameter import OutputParameter
-from geophires_x.Parameter import floatParameter
-from geophires_x.Parameter import intParameter
 from geophires_x.Units import EnthalpyUnit
 from geophires_x.Units import HeatUnit
 from geophires_x.Units import MassUnit
@@ -23,26 +19,10 @@ from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
-from hip_ra import HipRaClient, HipRaInputParameters
 from hip_ra.HIP_RA import HIP_RA
 
 
 class TestHipRa(unittest.TestCase):
-    #  The class initializes successfully with default parameters and logging enabled.
-    def test_initialization_with_default_parameters_and_logging_enabled(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.logger.isEnabledFor(logging.INFO) == True
-        assert hip_ra.reservoir_temperature.Name == 'Reservoir Temperature'
-        assert hip_ra.reservoir_temperature.value == 150.0
-        assert hip_ra.reservoir_temperature.Min == 50
-        assert hip_ra.reservoir_temperature.Max == 1000
-        assert hip_ra.reservoir_temperature.UnitType == Units.TEMPERATURE
-        assert hip_ra.reservoir_temperature.PreferredUnits == TemperatureUnit.CELSIUS
-        assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
-        assert hip_ra.reservoir_temperature.Required == True
-        assert hip_ra.reservoir_temperature.ErrMessage == 'assume default reservoir temperature (150 deg-C)'
-        assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'
-
     #  The class reads input parameters from a file and updates the corresponding attributes.
     def test_reading_input_parameters_from_file_and_updating_attributes(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)

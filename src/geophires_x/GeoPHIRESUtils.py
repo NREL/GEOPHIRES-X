@@ -364,6 +364,7 @@ def read_input_file(return_dict_1, logger=None):
         except BaseException as ex:
             print(ex)
             logger.error(f'Error {ex} using filename {f_name} proceeding with default parameter run...')
+            # FIXME this should almost certainly re-raise the exception instead of effectively silently ignoring input
             return
 
         # successful read of data into list.  Now make a dictionary with all the parameter entries.

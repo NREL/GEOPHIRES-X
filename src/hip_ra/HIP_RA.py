@@ -20,6 +20,7 @@ from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
 from geophires_x.Parameter import LookupUnits
 from geophires_x.Parameter import OutputParameter
+from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import ReadParameter
 from geophires_x.Parameter import floatParameter
@@ -128,7 +129,7 @@ class HIP_RA:
         # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
         # "OutputParameter" Objects.  This will allow us later to access them in a user interface and get that list,
         # along with unit type, preferred units, etc.
-        self.ParameterDict = {}
+        self.ParameterDict: dict[str, Parameter] = {}
         self.OutputParameterDict: dict[str, OutputParameter] = {}
         self.InputParameters: dict[str, ParameterEntry] = {}  # input parameters the user wants to change
 
@@ -875,20 +876,19 @@ class HIP_RA:
         return 'HIP_RA'
 
 
-def main(enable_geophires_logging_config=True):
+def main(enable_hip_ra_logging_config=True):
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # set up logging.
-    if enable_geophires_logging_config:
+    if enable_hip_ra_logging_config:
         logging.config.fileConfig('logging.conf')
-    logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('root')
 
     logger.info('Initializing the application')
 
     # initiate the HIP-RA parameters, setting them to their default values
-    model = HIP_RA(enable_hip_ra_logging_config=enable_geophires_logging_config)
+    model = HIP_RA(enable_hip_ra_logging_config=enable_hip_ra_logging_config)
 
     # read the parameters that apply to the model
     model.read_parameters()

@@ -268,7 +268,7 @@ def EntropyH20_func(temperature_degC: float) -> float:
             temperature_degC: the temperature of water in degrees C
         Returns:
             the entropy of water as a function of temperature in kJ/kg-K
-    ``    Raises:
+        Raises:
 
     """
     try:

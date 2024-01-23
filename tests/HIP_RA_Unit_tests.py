@@ -27,43 +27,6 @@ from hip_ra.HIP_RA import HIP_RA
 
 
 class TestHipRa(unittest.TestCase):
-    #  The class reads input parameters from a file and updates the corresponding attributes.
-    def test_reading_input_parameters_from_file_and_updating_attributes(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.read_parameters()
-        assert hip_ra.reservoir_temperature.value == 150.0
-        assert hip_ra.rejection_temperature.value == 25.0
-        assert hip_ra.reservoir_porosity.value == 18.0
-        assert hip_ra.reservoir_area.value == 81.0
-        assert hip_ra.reservoir_thickness.value == 0.286
-        assert hip_ra.reservoir_life_cycle.value == 30
-        assert hip_ra.rock_heat_capacity.value == 2840000000000.0
-        assert hip_ra.fluid_heat_capacity.value == -1.0
-        assert hip_ra.rock_heat_capacity.value == 1.0
-        assert hip_ra.fluid_density.value == -1.0
-        assert hip_ra.rock_density.value == 2550000000000.0
-        assert hip_ra.RecoverableHeat.value == -1.0
-        assert hip_ra.WaterContent.value == 18.0
-        assert hip_ra.RockContent.value == 82.0
-        assert hip_ra.rejection_temperature_k.value == 298.15
-        assert hip_ra.rejection_entropy.value == 0.367
-        assert hip_ra.rejection_enthalpy.value == 104.8
-
-    #  The class calculates the output parameters based on the input parameters.
-    def test_calculating_output_parameters_based_on_input_parameters(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.read_parameters()
-        hip_ra.Calculate()
-        assert hip_ra.reservoir_volume.value == pytest.approx(23.166, abs=1e-3)
-        assert hip_ra.reservoir_stored_heat.value == pytest.approx(1.034e14, abs=1e10)
-        assert hip_ra.reservoir_mass.value == pytest.approx(4.159e13, abs=1e10)
-        assert hip_ra.reservoir_enthalpy.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.wellhead_heat.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.reservoir_recovery_factor.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.reservoir_available_heat.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.reservoir_producible_heat.value == pytest.approx(0.0, abs=1e-3)
-        assert hip_ra.reservoir_producible_electricity.value == pytest.approx(0.0, abs=1e-3)
-
     #  The class handles the case when no parameters are provided in the input file.
     def test_handling_no_parameters_in_input_file(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)

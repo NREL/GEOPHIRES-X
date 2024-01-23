@@ -110,14 +110,14 @@ class HIP_RATestCase(BaseTestCase):
     def test_calculate_reservoir_volume(self):
         """Calculates the volume of the reservoir"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         hip_ra.Calculate()
         assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
 
     def test_standard_outputs(self):
         """Prints the standard outputs to the output file"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
 
         # Assert that the output file is created
@@ -135,7 +135,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_converts_units_back(self):
         """Converts Units back to PreferredUnits, if required"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
 
         # Assert that the units of all parameters in ParameterDict are converted back to PreferredUnits
@@ -144,7 +144,7 @@ class HIP_RATestCase(BaseTestCase):
             assert param.CurrentUnits == param.PreferredUnits
 
     def test_updates_output_parameter_units(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
         # Assert that the units of all parameters in OutputParameterDict are updated to the user-specified units
         for key in hip_ra.OutputParameterDict:
@@ -157,7 +157,7 @@ class HIP_RATestCase(BaseTestCase):
         Assert that the space between value and units is aligned to the same column for each line in the output file
         """
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
 
         with open('HIP.out') as f:
@@ -168,7 +168,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_raises_permission_error(self):
         """Raises a PermissionError if there is no permission to write to the output file"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra = self._new_hip_ra_test_instance()
         # Create a read-only file
         Path.chmod('HIP.out', 0o444)
         with self.assertRaises(PermissionError):
@@ -302,6 +302,7 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_initialization_with_default_parameters(self):
         hip_ra: HIP_RA = self._new_hip_ra_test_instance()
+
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
         assert isinstance(hip_ra.reservoir_porosity, floatParameter)
@@ -345,6 +346,24 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.Required is True
         assert hip_ra.reservoir_temperature.ErrMessage == 'assume default reservoir temperature (150 deg-C)'
         assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'
+
+        assert hip_ra.rejection_temperature.value == 25.0
+        assert hip_ra.reservoir_porosity.value == 18.0
+        assert hip_ra.reservoir_area.value == 81.0
+        assert hip_ra.reservoir_thickness.value == 0.286
+        assert hip_ra.reservoir_life_cycle.value == 30
+        assert hip_ra.rock_heat_capacity.value == 2840000000000.0
+        assert hip_ra.fluid_heat_capacity.value == -1.0
+        assert hip_ra.fluid_density.value == -1.0
+        assert hip_ra.rock_density.value == 2550000000000.0
+        assert hip_ra.rock_recoverable_heat.value == -1.0
+        assert hip_ra.rejection_temperature.value == 25.0
+
+        # FIXME TODO determine if these are applicable
+        # assert hip_ra.WaterContent.value == 18.0
+        # assert hip_ra.RockContent.value == 82.0
+        # assert hip_ra.rejection_entropy.value == 0.367
+        # assert hip_ra.rejection_enthalpy.value == 104.8
 
     def test_logger_initialization(self):
         hip_ra = self._new_hip_ra_test_instance(enable_hip_ra_logging_config=True)

@@ -6,6 +6,7 @@ import math
 import os
 import sys
 import traceback
+from pathlib import Path
 
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
@@ -110,7 +111,7 @@ class HIP_RA:
         self.logger = logging.getLogger('root')
 
         if enable_hip_ra_logging_config:
-            logging.config.fileConfig('logging.conf')
+            logging.config.fileConfig(Path(os.path.dirname(os.path.abspath(__file__)), 'logging.conf'))
             self.logger.setLevel(logging.INFO)
 
         self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
@@ -634,17 +635,20 @@ class HIP_RA:
             )
             rock_net_entropy = rock_entropy_func()
 
-            # calculate the stored heat of the rock and the fluid in the reservoir (in kJ)
-            # note that the rock stored heat is a function of the volume, so we multiple times the volume of the rock (in km3)
-            # and the fluid stored heat is a function of the mass of the fluid, so we multiply times the mass of the fluid (in kg)
-            # Also note that we can't recover all the heat from the rock, so we multiply times the recoverable rock heat factor
+            """
+            Calculate the stored heat of the rock and the fluid in the reservoir (in kJ)
+            Note that the rock stored heat is a function of the volume, so we multiply by the volume of the rock
+            (in km**3) and the fluid stored heat is a function of the mass of the fluid, so we multiply times the mass
+            of the fluid (in kg).
+            Also note that we can't recover all the heat from the rock, so we multiply by the recoverable rock heat factor
+            """
             self.stored_heat_rock.value = self.volume_rock.value * self.rock_heat_capacity.value * delta_temperature_k
-            self.stored_heat_rock.value = self.stored_heat_rock.value * self.recoverable_rock_heat.value
+            self.stored_heat_rock.value *= self.recoverable_rock_heat.value
             self.stored_heat_fluid.value = self.mass_fluid.value * self.fluid_heat_capacity.value * delta_temperature_k
             self.reservoir_stored_heat.value = self.stored_heat_rock.value + self.stored_heat_fluid.value
 
-            # calculate the maximum energy out per unit of mass (in kJ/kg)
-            #            self.enthalpy_rock.value = fluid_net_enthalpy - (delta_temperature_k * rock_net_entropy)
+            # Calculate the maximum energy out per unit of mass (in kJ/kg)
+            # self.enthalpy_rock.value = fluid_net_enthalpy - (delta_temperature_k * rock_net_entropy)
             self.enthalpy_rock.value = rock_net_enthalpy - (delta_temperature_k * rock_net_entropy)
             self.enthalpy_fluid.value = fluid_net_enthalpy - (delta_temperature_k * fluid_net_entropy)
             # self.enthalpy_rock.value = self.stored_heat_rock.value/self.mass_rock.value

@@ -229,31 +229,9 @@ class TestHipRa(unittest.TestCase):
         assert hip_ra.fluid_heat_capacity.value == pytest.approx(4.18, abs=1e-2)
 
 
-class Test__Init__:
-    #  The '__init__' method initializes the logger attribute with the 'root' logger.
-    def test_logger_initialized_with_root_logger(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.logger.name == 'root'
-
-    #  If 'enable_geophires_logging_config' is True, the method configures the logger using the 'logging.conf' file and sets the logger level to INFO.
-    def test_logger_configured_with_logging_conf_file(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.logger.level == logging.INFO
-
-    #  The 'enable_geophires_logging_config' parameter is False, so the logger is not configured.
-    def test_logger_not_configured_when_enable_geophires_logging_config_is_false(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.logger.level == logging.NOTSET
-
-    #  The 'enable_geophires_logging_config' parameter is not provided, so the default value of True is used.
-    def test_logger_configured_when_enable_geophires_logging_config_is_not_provided(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        assert hip_ra.logger.level == logging.INFO
-
-
 class TestCalculate:
-    #  Calculates the stored heat in the reservoir
     def test_calculate_stored_heat(self):
+        """Calculates the stored heat in the reservoir"""
         hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
         assert hip_ra.reservoir_stored_heat.value == hip_ra.reservoir_volume.value * (
@@ -291,7 +269,7 @@ class TestCalculate:
             * RecoverableHeat(hip_ra.recoverable_rock_heat.value, hip_ra.reservoir_temperature.value)
         )
 
-    #  Calculates the mass of the fluid in the reservoir with wrong formula
+    # Calculates the mass of the fluid in the reservoir with wrong formula
     def test_calculate_mass_of_fluid_wrong_formula(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()
@@ -300,7 +278,7 @@ class TestCalculate:
             == (hip_ra.reservoir_volume.value * (hip_ra.reservoir_porosity.value / 100.0)) * hip_ra.fluid_density.value
         )
 
-    #  Calculates the density of water with wrong formula
+    # Calculates the density of water with wrong formula
     def test_calculate_density_of_water_wrong_formula(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
         hip_ra.Calculate()

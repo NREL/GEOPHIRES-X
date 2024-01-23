@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import unittest
@@ -337,3 +338,8 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.Required is True
         assert hip_ra.reservoir_temperature.ErrMessage == 'assume default reservoir temperature (150 deg-C)'
         assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'
+
+    def test_logger_initialization(self):
+        hip_ra = HIP_RA(enable_hip_ra_logging_config=True)
+        assert hip_ra.logger.name == 'root'
+        assert hip_ra.logger.level == logging.INFO

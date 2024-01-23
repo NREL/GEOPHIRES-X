@@ -11,9 +11,13 @@ from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
+from geophires_x.Units import EnthalpyUnit
+from geophires_x.Units import HeatUnit
 from geophires_x.Units import PercentUnit
+from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
+from geophires_x.Units import VolumeUnit
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
@@ -179,7 +183,7 @@ class HIP_RATestCase(BaseTestCase):
     def test_handles_converting_output_units(self):
         """Handles converting output units for all classes of units (TEMPERATURE, DENSITY, etc.)"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
         # Assert that the units of all parameters in OutputParameterDict are converted to the user-specified units
         for key in hip_ra.OutputParameterDict:
@@ -299,6 +303,38 @@ class HIP_RATestCase(BaseTestCase):
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
+
+    def test_convert_units_of_output_parameters(self):
+        """The class converts units of the output parameters if specified in the input file."""
+
+        hip_ra: HIP_RA = self._new_hip_ra_test_instance()
+        hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].PreferredUnits = VolumeUnit.METERS3
+        hip_ra.OutputParameterDict['Stored Heat (reservoir)'].PreferredUnits = HeatUnit.J
+
+        # FIXME WIP
+        # hip_ra.OutputParameterDict['Fluid Produced'].PreferredUnits = MassUnit.GRAM
+
+        hip_ra.OutputParameterDict['Enthalpy (reservoir)'].PreferredUnits = EnthalpyUnit.KJPERKG
+        hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].PreferredUnits = HeatUnit.J
+        hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].PreferredUnits = PercentUnit.PERCENT
+        hip_ra.OutputParameterDict['Available Heat (reservoir)'].PreferredUnits = HeatUnit.J
+        hip_ra.OutputParameterDict['Producible Heat (reservoir)'].PreferredUnits = HeatUnit.J
+        hip_ra.OutputParameterDict['Producible Electricity (reservoir)'].PreferredUnits = PowerUnit.W
+
+        hip_ra.PrintOutputs()
+
+        assert hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].CurrentUnits == VolumeUnit.KILOMETERS3
+        assert hip_ra.OutputParameterDict['Stored Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
+
+        # FIXME WIP
+        # assert hip_ra.OutputParameterDict['Fluid Produced'].CurrentUnits == MassUnit.KILOGRAM
+
+        assert hip_ra.OutputParameterDict['Enthalpy (reservoir)'].CurrentUnits == EnthalpyUnit.KJPERKG
+        assert hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
+        assert hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].CurrentUnits == PercentUnit.PERCENT
+        assert hip_ra.OutputParameterDict['Available Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
+        assert hip_ra.OutputParameterDict['Producible Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
+        assert hip_ra.OutputParameterDict['Producible Electricity (reservoir)'].CurrentUnits == PowerUnit.MW
 
     def test_initialization_with_default_parameters(self):
         hip_ra: HIP_RA = self._new_hip_ra_test_instance()

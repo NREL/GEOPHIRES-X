@@ -27,28 +27,6 @@ from hip_ra.HIP_RA import HIP_RA
 
 
 class TestHipRa(unittest.TestCase):
-    #  The class handles the case when no parameters are provided in the input file.
-    def test_handling_no_parameters_in_input_file(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.read_parameters()
-        assert hip_ra.reservoir_temperature.value == 150.0
-        assert hip_ra.rejection_temperature.value == 25.0
-        assert hip_ra.reservoir_porosity.value == 18.0
-        assert hip_ra.reservoir_area.value == 81.0
-        assert hip_ra.reservoir_thickness.value == 0.286
-        assert hip_ra.reservoir_life_cycle.value == 30
-        assert hip_ra.rock_heat_capacity.value == 2840000000000.0
-        assert hip_ra.fluid_heat_capacity.value == -1.0
-        assert hip_ra.HeatCapacityOfRock.value == 1.0
-        assert hip_ra.fluid_density.value == -1.0
-        assert hip_ra.rock_density.value == 2550000000000.0
-        assert hip_ra.RecoverableHeat.value == -1.0
-        assert hip_ra.WaterContent.value == 18.0
-        assert hip_ra.RockContent.value == 82.0
-        assert hip_ra.rejection_temperature_k.value == 298.15
-        assert hip_ra.rejection_entropy.value == 0.367
-        assert hip_ra.rejection_enthalpy.value == 104.8
-
     #  The class handles the case when the input file cannot be accessed due to permission issues.
     def test_handling_input_file_permission_issues(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
@@ -89,35 +67,6 @@ class TestHipRa(unittest.TestCase):
             assert content[13].strip() == '      Available Heat:                 0.00 J'
             assert content[14].strip() == '      Producible Heat:                0.00 J'
             assert content[15].strip() == '      Producible Electricity:         0.00 W'
-
-    #  The class converts units of the output parameters if specified in the input file.
-    def test_convert_units_of_output_parameters(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].CurrentUnits = VolumeUnit.METERS3
-        hip_ra.OutputParameterDict['Stored Heat (reservoir)'].CurrentUnits = HeatUnit.J
-
-        # FIXME WIP
-        # hip_ra.OutputParameterDict['Fluid Produced'].CurrentUnits = MassUnit.GRAM
-
-        hip_ra.OutputParameterDict['Enthalpy (reservoir)'].CurrentUnits = EnthalpyUnit.KJPERKG
-        hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].CurrentUnits = HeatUnit.J
-        hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].CurrentUnits = PercentUnit.PERCENT
-        hip_ra.OutputParameterDict['Available Heat (reservoir)'].CurrentUnits = HeatUnit.J
-        hip_ra.OutputParameterDict['Producible Heat (reservoir)'].CurrentUnits = HeatUnit.J
-        hip_ra.OutputParameterDict['Producible Electricity (reservoir)'].CurrentUnits = PowerUnit.W
-        hip_ra.PrintOutputs()
-        assert hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].CurrentUnits == VolumeUnit.KILOMETERS3
-        assert hip_ra.OutputParameterDict['Stored Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
-
-        # FIXME WIP
-        # assert hip_ra.OutputParameterDict['Fluid Produced'].CurrentUnits == MassUnit.KILOGRAM
-
-        assert hip_ra.OutputParameterDict['Enthalpy (reservoir)'].CurrentUnits == EnthalpyUnit.KJPERKG
-        assert hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
-        assert hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].CurrentUnits == PercentUnit.PERCENT
-        assert hip_ra.OutputParameterDict['Available Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
-        assert hip_ra.OutputParameterDict['Producible Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
-        assert hip_ra.OutputParameterDict['Producible Electricity (reservoir)'].CurrentUnits == PowerUnit.MW
 
     #  The class handles the case when the density of water is less than the minimum allowed value.
     def test_handle_low_density_of_water(self):

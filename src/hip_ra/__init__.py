@@ -61,10 +61,10 @@ class HipRaClient:
             raise RuntimeError(f'HIP-RA encountered an exception: {e!s}') from e
         except SystemExit:
             raise RuntimeError('HIP-RA exited without giving a reason') from None
-
-        # Undo HIP-RA internal global settings changes
-        sys.argv = stash_sys_argv
-        os.chdir(stash_cwd)
+        finally:
+            # Undo HIP-RA internal global settings changes
+            sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)
 
         self._logger.info(f'HIP-RA output file: {input_params.output_file_path}')
 

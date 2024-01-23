@@ -1,7 +1,10 @@
 import logging
 import os
 import re
+import sys
+import tempfile
 import unittest
+import uuid
 from pathlib import Path
 
 from geophires_x.Parameter import OutputParameter
@@ -196,9 +199,10 @@ class HIP_RATestCase(BaseTestCase):
             assert len(re.compile(r'[0-9]e\+[0-9]+\s').findall(content)) > 0
 
     def test_read_all_parameters(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        def read_params(hip_ra):
+            hip_ra.read_parameters()
 
-        hip_ra.read_parameters()
+        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=read_params)
 
         # Assert that all the parameters have been read in and updated
         assert hip_ra.reservoir_temperature.value == 150.0
@@ -210,40 +214,41 @@ class HIP_RATestCase(BaseTestCase):
     def test_update_changed_parameters(self):
         """updates any of these parameter values that have been changed by the user"""
 
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        def set_and_read_input_params(hip_ra):
+            # Set some input parameters to be changed by the user
+            hip_ra.InputParameters = {
+                param.Name: param
+                for param in [
+                    ParameterEntry(Name='Reservoir Temperature', sValue='200'),
+                    ParameterEntry(Name='Reservoir Porosity', sValue='25.0'),
+                ]
+            }
 
-        # Set some input parameters to be changed by the user
-        hip_ra.InputParameters = {
-            param.Name: param
-            for param in [
-                ParameterEntry(Name='Reservoir Temperature', sValue='200'),
-                ParameterEntry(Name='Reservoir Porosity', sValue='25.0'),
-            ]
-        }
+            hip_ra.read_parameters()
 
-        hip_ra.read_parameters()
+        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the changed parameters have been updated
         assert hip_ra.reservoir_temperature.value == 200.0
         assert hip_ra.reservoir_porosity.value == 25.0
 
     def test_handle_special_cases(self):
-        # Initialize the HIP_RA class object
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
+        def set_and_read_input_params(hip_ra):
+            # Set some input parameters to trigger special cases
+            hip_ra.InputParameters = {
+                param.Name: param
+                for param in [
+                    ParameterEntry(Name='Reservoir Porosity', sValue='30.0'),
+                    ParameterEntry(Name='Rejection Temperature', sValue='50.0'),
+                    ParameterEntry(Name='Density Of Water', sValue='-1'),
+                    ParameterEntry(Name='Heat Capacity Of Water', sValue='-1'),
+                    ParameterEntry(Name='Recoverable Heat', sValue='-1'),
+                ]
+            }
 
-        # Set some input parameters to trigger special cases
-        hip_ra.InputParameters = {
-            param.Name: param
-            for param in [
-                ParameterEntry(Name='Reservoir Porosity', sValue='30.0'),
-                ParameterEntry(Name='Rejection Temperature', sValue='50.0'),
-                ParameterEntry(Name='Density Of Water', sValue='-1'),
-                ParameterEntry(Name='Heat Capacity Of Water', sValue='-1'),
-                ParameterEntry(Name='Recoverable Heat', sValue='-1'),
-            ]
-        }
+            hip_ra.read_parameters()
 
-        hip_ra.read_parameters()
+        hip_ra = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
 
         assert hip_ra.rejection_temperature.value == 50
         assert hip_ra.fluid_density.value == -1
@@ -252,19 +257,20 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_set_current_units_preferred_units_match(self):
         """sets the CurrentUnits of a parameter to its PreferredUnits if they match"""
-        # Initialize the HIP_RA class object
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
 
-        # Set some input parameters with matching PreferredUnits
-        hip_ra.InputParameters = {
-            param.Name: param
-            for param in [
-                ParameterEntry(Name='Reservoir Temperature', sValue='150.0'),
-                ParameterEntry(Name='Formation Porosity', sValue='18.0'),
-            ]
-        }
+        def set_and_read_input_params(hip_ra):
+            # Set some input parameters with matching PreferredUnits
+            hip_ra.InputParameters = {
+                param.Name: param
+                for param in [
+                    ParameterEntry(Name='Reservoir Temperature', sValue='150.0'),
+                    ParameterEntry(Name='Formation Porosity', sValue='18.0'),
+                ]
+            }
 
-        hip_ra.read_parameters()
+            hip_ra.read_parameters()
+
+        hip_ra = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the CurrentUnits have been set to PreferredUnits
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
@@ -272,28 +278,30 @@ class HIP_RATestCase(BaseTestCase):
 
     def test_set_current_units_preferred_units_do_not_match(self):
         """sets the CurrentUnits of a parameter to the units provided by the user if they don't match"""
-        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
 
-        # Set some input parameters with non-matching PreferredUnits
-        hip_ra.InputParameters = {
-            param.Name: param
-            for param in [
-                # TODO Pint conversion would treat 'F' as farad, hence 'degF' here. However, it is possible to
-                #  configure Pint to treat 'F' as Fahrenheit instead, which should be done since users could make
-                #  this mistake.
-                ParameterEntry(Name='Reservoir Temperature', sValue='150.0 degF'),
-                ParameterEntry(Name='Formation Porosity', sValue='18.0 %'),
-            ]
-        }
+        def set_and_read_input_params(hip_ra: HIP_RA):
+            # Set some input parameters with non-matching PreferredUnits
+            hip_ra.InputParameters = {
+                param.Name: param
+                for param in [
+                    # TODO Pint conversion would treat 'F' as farad, hence 'degF' here. However, it is possible to
+                    #  configure Pint to treat 'F' as Fahrenheit instead, which should be done since users could make
+                    #  this mistake.
+                    ParameterEntry(Name='Reservoir Temperature', sValue='150.0 degF'),
+                    ParameterEntry(Name='Formation Porosity', sValue='18.0 %'),
+                ]
+            }
 
-        hip_ra.read_parameters()
+            hip_ra.read_parameters()
+
+        hip_ra: HIP_RA = self._new_hip_ra(pre_re_stash_runner=set_and_read_input_params)
 
         # Assert that the CurrentUnits have been set to the units provided by the user
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.FAHRENHEIT
         assert hip_ra.reservoir_porosity.CurrentUnits == PercentUnit.PERCENT
 
     def test_initialization_with_default_parameters(self):
-        hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=False)
+        hip_ra: HIP_RA = self._new_hip_ra()
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
         assert isinstance(hip_ra.reservoir_porosity, floatParameter)
@@ -339,7 +347,35 @@ class HIP_RATestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 dec-C]'
 
     def test_logger_initialization(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=True)
+        hip_ra = self._new_hip_ra(enable_hip_ra_logging_config=True)
         assert hip_ra.logger.name == 'root'
         assert hip_ra.logger.level == logging.INFO
         assert hip_ra.logger.isEnabledFor(logging.INFO) is True
+
+    def test_handling_input_file_not_found(self):
+        client = HipRaClient()
+
+        with self.assertRaises(RuntimeError) as rex:
+            client.get_hip_ra_result(
+                HipRaInputParameters(
+                    from_file_path=Path(tempfile.gettempdir(), f'a-non-existent-file_{uuid.uuid1()!s}.txt')
+                )
+            )
+
+        self.assertIn('Unable to read input file', str(rex.exception))
+        self.assertIn('.txt not found', str(rex.exception))
+
+    def _new_hip_ra(self, enable_hip_ra_logging_config=False, pre_re_stash_runner=None) -> HIP_RA:
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+
+        sys.argv = ['']
+
+        try:
+            hip_ra: HIP_RA = HIP_RA(enable_hip_ra_logging_config=enable_hip_ra_logging_config)
+            if pre_re_stash_runner is not None:
+                pre_re_stash_runner(hip_ra)
+            return hip_ra
+        finally:
+            sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)

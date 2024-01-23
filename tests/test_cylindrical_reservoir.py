@@ -1,5 +1,6 @@
 import math
 import unittest
+from pathlib import Path
 
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001
@@ -17,14 +18,26 @@ from geophires_x.CylindricalReservoir import CylindricalReservoir
 # ruff: noqa: I001
 from geophires_x.AGSWellBores import AGSWellBores
 
+import sys
+import os
+
 
 class CylindricalReservoirTestCase(unittest.TestCase):
     def _new_model(self) -> Model:
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+
+        sys.argv = ['']
+
         m = Model(enable_geophires_logging_config=False)
         m.InputParameters['Is AGS'] = True
         reservoir = CylindricalReservoir(m)
         m.reserv = reservoir
         m.wellbores = AGSWellBores(m)
+
+        sys.argv = stash_sys_argv
+        os.chdir(stash_cwd)
+
         return m
 
     def test_calculate_temperature_inflow_end(self):

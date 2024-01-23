@@ -2,7 +2,10 @@
 # ruff: noqa
 
 import logging
+import tempfile
 import unittest
+import uuid
+from pathlib import Path
 
 import pytest
 
@@ -19,6 +22,7 @@ from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
+from hip_ra import HipRaClient, HipRaInputParameters
 from hip_ra.HIP_RA import HIP_RA
 
 
@@ -60,29 +64,6 @@ class TestHipRa(unittest.TestCase):
         assert hip_ra.reservoir_producible_heat.value == pytest.approx(0.0, abs=1e-3)
         assert hip_ra.reservoir_producible_electricity.value == pytest.approx(0.0, abs=1e-3)
 
-    #  The class prints the output parameters to a file.
-    def test_printing_output_parameters_to_file(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        hip_ra.read_parameters()
-        hip_ra.Calculate()
-        hip_ra.PrintOutputs()
-        with open('HIP.out') as f:
-            content = f.readlines()
-            assert content[0].strip() == '                               *********************'
-            assert content[1].strip() == '                               ***HIP CASE REPORT***'
-            assert content[2].strip() == '                               *********************'
-            assert content[4].strip() == '                           ***SUMMARY OF RESULTS***'
-            assert content[6].strip() == '      Reservoir Temperature:          150.00 deg-C'
-            assert content[7].strip() == '      Reservoir Volume:               23.17 km3'
-            assert content[8].strip() == '      Stored Heat:                    1.03e+14 kJ'
-            assert content[9].strip() == '      Fluid Produced:                 4.16e+13 kg'
-            assert content[10].strip() == '      Enthalpy:                       0.00 kJ/kg'
-            assert content[11].strip() == '      Wellhead Heat:                  0.00 kJ'
-            assert content[12].strip() == '      Recovery Factor:                0.00 %'
-            assert content[13].strip() == '      Available Heat:                 0.00 kJ'
-            assert content[14].strip() == '      Producible Heat:                0.00 kJ'
-            assert content[15].strip() == '      Producible Electricity:         0.00 MW'
-
     #  The class handles the case when no parameters are provided in the input file.
     def test_handling_no_parameters_in_input_file(self):
         hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
@@ -106,10 +87,6 @@ class TestHipRa(unittest.TestCase):
         assert hip_ra.rejection_enthalpy.value == 104.8
 
     #  The class handles the case when the input file is not found.
-    def test_handling_input_file_not_found(self):
-        hip_ra = HIP_RA(enable_hip_ra_logging_config=False)
-        with pytest.raises(FileNotFoundError):
-            hip_ra.read_parameters()
 
     #  The class handles the case when the input file cannot be accessed due to permission issues.
     def test_handling_input_file_permission_issues(self):

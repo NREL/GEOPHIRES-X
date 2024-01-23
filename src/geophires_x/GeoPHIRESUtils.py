@@ -262,13 +262,13 @@ def VaporPressureWater(Twater_degC: float) -> float:
 @lru_cache(maxsize=None)
 def EntropyH20_func(temperature_degC: float) -> float:
     """
-        the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
+    the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
 
-        Args:
-            temperature_degC: the temperature of water in degrees C
-        Returns:
-            the entropy of water as a function of temperature in kJ/kg-K
-        Raises:
+    Args:
+        temperature_degC: the temperature of water in degrees C
+    Returns:
+        the entropy of water as a function of temperature in kJ/kg-K
+    Raises:
 
     """
     try:
@@ -349,29 +349,21 @@ def read_input_file(return_dict_1, logger=None):
     # read input data (except input from optional filenames)
     if len(sys.argv) > 1:
         f_name = sys.argv[1]
-        try:
-            if exists(f_name):
-                content = []
-                logger.info(f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
-                with open(f_name, encoding='UTF-8') as f:
-                    # store all input in one long string that will be passed to all objects
-                    # so they can parse out their specific parameters (and ignore the rest)
-                    content = f.readlines()
-            else:
-                logger.warning(f'File: {f_name} not found - proceeding with default parameter run...')
-                return
-
-        except BaseException as ex:
-            print(ex)
-            logger.error(f'Error {ex} using filename {f_name} proceeding with default parameter run...')
-            # FIXME this should almost certainly re-raise the exception instead of effectively silently ignoring input
-            return
+        content = []
+        if exists(f_name):
+            logger.info(f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
+            with open(f_name, encoding='UTF-8') as f:
+                # store all input in one long string that will be passed to all objects
+                # so they can parse out their specific parameters (and ignore the rest)
+                content = f.readlines()
+        else:
+            raise FileNotFoundError(f'Unable to read input file: File {f_name} not found')
 
         # successful read of data into list.  Now make a dictionary with all the parameter entries.
         # Index will be the unique name of the parameter.
         # The value will be a "ParameterEntry" structure, with name, value (optionally with units), optional comment
         for line in content:
-            if line.startswith("#"):
+            if line.startswith('#'):
                 # skip any line that starts with "#" - # will be the comment parameter
                 continue
 

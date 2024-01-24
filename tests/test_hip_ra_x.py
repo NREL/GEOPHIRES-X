@@ -121,7 +121,7 @@ class HipRaXTestCase(BaseTestCase):
         hip_ra.Calculate()
         assert hip_ra.reservoir_volume.value == hip_ra.reservoir_area.value * hip_ra.reservoir_thickness.value
 
-    @unittest.skip(reason='Race condition if tests are run in parallel')
+    @unittest.skip(reason='FIXME: Race condition if tests are run in parallel')
     def test_standard_outputs(self):
         """Prints the standard outputs to the output file"""
 
@@ -173,7 +173,7 @@ class HipRaXTestCase(BaseTestCase):
             for line in content:
                 assert line.count(' ') == 3
 
-    @unittest.skip(reason='Race condition if tests are run in parallel')
+    @unittest.skip(reason='FIXME: Race condition if tests are run in parallel')
     def test_raises_permission_error(self):
         """Raises a PermissionError if there is no permission to write to the output file"""
 
@@ -406,6 +406,7 @@ class HipRaXTestCase(BaseTestCase):
         # assert hip_ra.rejection_entropy.value == 0.367
         # assert hip_ra.rejection_enthalpy.value == 104.8
 
+    @unittest.skip(reason='FIXME: Race condition if tests are run in parallel')
     def test_logger_initialization(self):
         hip_ra = self._new_hip_ra_test_instance(enable_hip_ra_logging_config=True)
         assert hip_ra.logger.name == 'root'

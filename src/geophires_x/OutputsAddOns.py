@@ -1,6 +1,5 @@
 import sys
 from geophires_x.Outputs import Outputs
-from geophires_x.Model import Model
 
 NL = "\n"
 
@@ -10,7 +9,8 @@ class OutputsAddOns(Outputs):
     Class to handle output of the AddOns values
     """
 
-    def PrintOutputs(self, model: Model):
+    def PrintOutputs(self, model):
+
         """
         The PrintOutputs function prints the results of the AddOns to a text file and to the screen.
         :param model: Model: The container class of the application, giving access to everything else, including the logger
@@ -86,7 +86,7 @@ class OutputsAddOns(Outputs):
                             ")        (" + ae.ProjectCummCashFlow.PreferredUnits.value + ")\n")
                     # running years...
                     for ii in range(0, (
-                        model.surfaceplant.ConstructionYears.value + model.surfaceplant.plantlifetime.value - 1), 1):
+                        model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value - 1), 1):
                         f.write(
                             f"   {ii + 1:3.0f}    {model.economics.ElecPrice.value[ii]:5.3f}   {model.addeconomics.AddOnElecRevenue.value[ii]:5.4f}        {model.economics.HeatPrice.value[ii]:5.3f}   {model.addeconomics.AddOnHeatRevenue.value[ii]:5.4f}        {model.addeconomics.AddOnRevenue.value[ii]:5.2f}        {model.addeconomics.AddOnCashFlow.value[ii]:5.2f}     {model.addeconomics.AddOnCummCashFlow.value[ii]:5.2f}        {model.addeconomics.ProjectCashFlow.value[ii]:5.2f}           {model.addeconomics.ProjectCummCashFlow.value[ii]:5.2f}\n")
 

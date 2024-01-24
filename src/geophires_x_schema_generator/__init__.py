@@ -1,18 +1,24 @@
 import json
+import os
+import sys
+from pathlib import Path
 from typing import Tuple
 
+# Ruff disabled because imports are order-dependent
+# ruff: noqa: I001
+from geophires_x.Model import Model
+
 from geophires_x.AGSEconomics import AGSEconomics
-from geophires_x.AGSSurfacePlant import AGSSurfacePlant
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
 from geophires_x.EconomicsAddOns import EconomicsAddOns
 from geophires_x.EconomicsCCUS import EconomicsCCUS
 from geophires_x.GeoPHIRESUtils import json_dumpse
-from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
+from geophires_x.SurfacePlantAGS import SurfacePlantAGS
+from geophires_x.SurfacePlantSUTRA import SurfacePlantSUTRA
 from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
-from geophires_x.SUTRASurfacePlant import SUTRASurfacePlant
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 
 
@@ -20,8 +26,19 @@ class GeophiresXSchemaGenerator:
     def __init__(self):
         pass
 
+    def _get_dummy_model(self):
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+        sys.argv = ['']
+        try:
+            dummy_model = Model(enable_geophires_logging_config=False)
+            return dummy_model
+        finally:
+            sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)
+
     def get_parameters_json(self) -> Tuple[str, str]:
-        dummy_model = Model(enable_geophires_logging_config=False)
+        dummy_model = self._get_dummy_model()
 
         def with_category(param_dict: dict, category: str):
             def _with_cat(p: Parameter, cat: str):
@@ -38,8 +55,8 @@ class GeophiresXSchemaGenerator:
             (AGSWellBores(dummy_model), 'Well Bores'),
             (SUTRAWellBores(dummy_model), 'Well Bores'),
             (dummy_model.surfaceplant, 'Surface Plant'),
-            (AGSSurfacePlant(dummy_model), 'Surface Plant'),
-            (SUTRASurfacePlant(dummy_model), 'Surface Plant'),
+            (SurfacePlantAGS(dummy_model), 'Surface Plant'),
+            (SurfacePlantSUTRA(dummy_model), 'Surface Plant'),
             (dummy_model.economics, 'Economics'),
             (AGSEconomics(dummy_model), 'Economics'),
             (SUTRAEconomics(dummy_model), 'Economics'),

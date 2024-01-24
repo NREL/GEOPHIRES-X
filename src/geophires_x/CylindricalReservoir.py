@@ -213,8 +213,8 @@ class CylindricalReservoir(Reservoir):
         model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
 
         # specify time-stepping vectors
-        self.timevector.value = np.linspace(0, model.surfaceplant.plantlifetime.value,
-                                            model.economics.timestepsperyear.value*model.surfaceplant.plantlifetime.value)
+        self.timevector.value = np.linspace(0, model.surfaceplant.plant_lifetime.value,
+                                            model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value)
         self.averagegradient.value = self.gradient.value[0]
 
         self.Trock.value = self.Tsurf.value + (self.gradient.value[0] * (self.InputDepth.value * 1000.0))

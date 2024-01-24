@@ -31,10 +31,10 @@ geophires_x
 .. automodule:: geophires_x.SurfacePlant
     :members:
 
-.. automodule:: geophires_x.AGSSurfacePlant
+.. automodule:: geophires_x.SurfacePlantAGS
     :members:
 
-.. automodule:: geophires_x.SUTRASurfacePlant
+.. automodule:: geophires_x.SurfacePlantSUTRA
     :members:
 
 .. automodule:: geophires_x.Economics

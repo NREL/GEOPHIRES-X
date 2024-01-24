@@ -284,7 +284,7 @@ class CLWellBores(WellBores):
             CurrentUnits=TemperatureUnit.CELSIUS
         )
         self.HorizontalProducedTemperature.value = [
-                                                       0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
+                                                       0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
         self.HorizontalPressureDrop = self.OutputParameterDict[self.HorizontalPressureDrop.Name] = OutputParameter(
             Name="Horizontal Pressure Drop",
             value=[0.0],
@@ -292,7 +292,7 @@ class CLWellBores(WellBores):
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
-        self.HorizontalPressureDrop.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
+        self.HorizontalPressureDrop.value = [0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def read_parameters(self, model: Model) -> None:
@@ -324,7 +324,7 @@ class CLWellBores(WellBores):
         self.y_well = 0.5 * self.y_boundary  # Horizontal wellbore in the center
         self.z_well = 0.5 * self.z_boundary  # Horizontal wellbore in the center
         self.al = 365.0 / 4.0 * model.economics.timestepsperyear.value
-        self.time_max = model.surfaceplant.plantlifetime.value * 365.0
+        self.time_max = model.surfaceplant.plant_lifetime.value * 365.0
         self.rhorock = model.reserv.rhorock.value
         self.cprock = model.reserv.cprock.value
         self.alpha_rock = model.reserv.krock.value / model.reserv.rhorock.value / model.reserv.cprock.value * 24.0 * 3600.0
@@ -396,7 +396,7 @@ class CLWellBores(WellBores):
         model.wellbores.DPOverall.value = model.wellbores.DPOverall.value + self.HorizontalPressureDrop.value
 
         # recalculate pumping power [MWe] (approximate)
-        model.wellbores.PumpingPower.value = model.wellbores.DPOverall.value * self.q_circulation / rhowater / model.surfaceplant.pumpeff.value / 1E3
+        model.wellbores.PumpingPower.value = model.wellbores.DPOverall.value * self.q_circulation / rhowater / model.surfaceplant.pump_efficiency.value / 1E3
 
         # in GEOPHIRES v1.2, negative pumping power values become zero
         # (b/c we are not generating electricity) = thermosiphon is happening!

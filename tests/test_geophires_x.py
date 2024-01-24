@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from geophires_x.OptionList import EndUseOptions
+from geophires_x.OptionList import PlantType
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
@@ -175,9 +175,10 @@ class GeophiresXTestCase(BaseTestCase):
                             'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
                             'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
                         ]
-                        if example_file_path in cases_to_allow_almost_equal:
+                        allow_almost_equal = example_file_path in cases_to_allow_almost_equal
+                        if allow_almost_equal:
                             log.warning(
-                                f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual"
+                                f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual..."
                             )
                             self.assertDictAlmostEqual(
                                 geophires_result.result,
@@ -229,4 +230,4 @@ class GeophiresXTestCase(BaseTestCase):
         )
 
     def test_RTES_name(self):
-        self.assertEqual(EndUseOptions.RTES.value, 'Reservoir Thermal Energy Storage')
+        self.assertEqual(PlantType.RTES.value, 'Reservoir Thermal Energy Storage')

@@ -46,7 +46,7 @@ from geophires_x.Units import VolumeUnit
 
 
 # user-defined static functions
-def DensityWater(Twater: float) -> float:
+def _DensityWater(Twater: float) -> float:
     """
     the DensityWater function is used to calculate the density of water as a function of temperature
 
@@ -63,7 +63,7 @@ def DensityWater(Twater: float) -> float:
     return rhowater
 
 
-def ViscosityWater(Twater: float) -> float:
+def _ViscosityWater(Twater: float) -> float:
     """
     the ViscosityWater function is used to calculate the viscosity of water as a function of temperature
     Args:
@@ -77,7 +77,7 @@ def ViscosityWater(Twater: float) -> float:
     return muwater
 
 
-def HeatCapacityWater(Twater) -> float:
+def _HeatCapacityWater(Twater) -> float:
     """
     the HeatCapacityWater function is used to calculate the specific heat capacity of water as a function of temperature
     Args:
@@ -98,7 +98,7 @@ def HeatCapacityWater(Twater) -> float:
     return cpwater
 
 
-def RecoverableHeat(DefaultRecoverableHeat, Twater) -> float:
+def _RecoverableHeat(DefaultRecoverableHeat, Twater) -> float:
     """
     the RecoverableHeat function is used to calculate the recoverable heat fraction as a function of temperature
     Args:
@@ -119,7 +119,7 @@ def RecoverableHeat(DefaultRecoverableHeat, Twater) -> float:
     return 0.0038 * Twater + 0.085
 
 
-def VaporPressureWater(Twater) -> float:
+def _VaporPressureWater(Twater) -> float:
     """
     the VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature
     Args:
@@ -141,7 +141,7 @@ def VaporPressureWater(Twater) -> float:
 
 # define 3 lookup functions for the enthalpy (aka "s", kJ/(kg K)) and entropy (aka "h", kJ/kg) of water
 # as a function of T (dec-c) from https://www.engineeringtoolbox.com/water-properties-d_1508.html
-T = [
+_T = [
     0.01,
     10.0,
     20.0,
@@ -170,7 +170,7 @@ T = [
     360.0,
     373.946,
 ]
-EntropyH20 = [
+_EntropyH20 = [
     0.0,
     0.15109,
     0.29648,
@@ -199,7 +199,7 @@ EntropyH20 = [
     3.9167,
     4.407,
 ]
-EnthalpyH20 = [
+_EnthalpyH20 = [
     0.000612,
     42.021,
     83.914,
@@ -228,7 +228,7 @@ EnthalpyH20 = [
     1761.7,
     2084.3,
 ]
-UtilEff = [
+_UtilEff = [
     0.0,
     0.0,
     0.0,
@@ -259,7 +259,7 @@ UtilEff = [
 ]
 
 
-def EntropyH20_func(x: float) -> float:
+def _EntropyH20_func(x: float) -> float:
     """
     the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
     Args:
@@ -268,11 +268,11 @@ def EntropyH20_func(x: float) -> float:
     Returns:
         the entropy of water as a function of temperature in kJ/kg-K
     """
-    y = np.interp(x, T, EntropyH20)
+    y = np.interp(x, _T, _EntropyH20)
     return y
 
 
-def EnthalpyH20_func(x: float) -> float:
+def _EnthalpyH20_func(x: float) -> float:
     """
     the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
     Args:
@@ -280,11 +280,11 @@ def EnthalpyH20_func(x: float) -> float:
 
     Returns: the enthalpy of water as a function of temperature in kJ/kg
     """
-    y = np.interp(x, T, EnthalpyH20)
+    y = np.interp(x, _T, _EnthalpyH20)
     return y
 
 
-def UtilEff_func(x: float) -> float:
+def _UtilEff_func(x: float) -> float:
     """
     the UtilEff_func function is used to calculate the utilization efficiency of the system as a function of temperature
     Args:
@@ -292,7 +292,7 @@ def UtilEff_func(x: float) -> float:
 
     Returns: the utilization efficiency of the system as a function of temperature
     """
-    y = np.interp(x, T, UtilEff)
+    y = np.interp(x, _T, _UtilEff)
     return y
 
 
@@ -301,7 +301,7 @@ class HIP_RA:
     HIP_RA is the container class of the HIP_RA application, giving access to everything else, including the logger
     """
 
-    def __init__(self, enable_geophires_logging_config=True):
+    def __init__(self, enable_hip_ra_logging_config=True):
         """
         The __init__ function is called automatically every time the class is being used to create a new object.
         The self parameter is a Python convention. It must be included in each function definition and points to the
@@ -313,7 +313,7 @@ class HIP_RA:
         # get logging started
         self.logger = logging.getLogger('root')
 
-        if enable_geophires_logging_config:
+        if enable_hip_ra_logging_config:
             logging.config.fileConfig('logging.conf')
             self.logger.setLevel(logging.INFO)
 
@@ -637,25 +637,25 @@ class HIP_RA:
 
                     elif ParameterToModify.Name == 'Rejection Temperature':
                         self.RejectionTemperatureK.value = 273.15 + ParameterToModify.value
-                        self.RejectionEntropy.value = EntropyH20_func(ParameterToModify.value)
-                        self.RejectionEnthalpy.value = EnthalpyH20_func(ParameterToModify.value)
+                        self.RejectionEntropy.value = _EntropyH20_func(ParameterToModify.value)
+                        self.RejectionEnthalpy.value = _EnthalpyH20_func(ParameterToModify.value)
 
                     elif ParameterToModify.Name == 'Density Of Water':
                         value = float(ParameterReadIn.sValue)
                         if value < 0:  # if the user supplied -1 as the density, they want us to calculate it.
-                            ParameterToModify.value = DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
+                            ParameterToModify.value = _DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
                             self.DensityOfWater.value = ParameterToModify.value
 
                     elif ParameterToModify.Name == 'Heat Capacity Of Water':
                         value = float(ParameterReadIn.sValue)
                         if value < 0:  # if the user supplied -1 as the capacity, they want us to calculate it.
-                            ParameterToModify.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
+                            ParameterToModify.value = _HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
                             self.HeatCapacityOfWater.value = ParameterToModify.value
 
                     elif ParameterToModify.Name == 'Recoverable Heat':
                         value = float(ParameterReadIn.sValue)
                         if value < 0:  # if the user supplied -1 as the Recoverable Heat, they want us to calculate it.
-                            ParameterToModify.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
+                            ParameterToModify.value = _HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
                             self.HeatCapacityOfWater.value = ParameterToModify.value
         else:
             self.logger.info('No parameters read because no content provided')
@@ -684,29 +684,29 @@ class HIP_RA:
 
         # This is where all the calculations are made using all the values that have been set.
         if self.DensityOfWater.value < self.DensityOfWater.Min:
-            self.DensityOfWater.value = DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
+            self.DensityOfWater.value = _DensityWater(self.ReservoirTemperature.value) * 1_000_000_000.0
         if self.HeatCapacityOfWater.value < self.HeatCapacityOfWater.Min:
-            self.HeatCapacityOfWater.value = HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
+            self.HeatCapacityOfWater.value = _HeatCapacityWater(self.ReservoirTemperature.value) / 1000.0
         self.V.value = self.ReservoirArea.value * self.ReservoirThickness.value
         self.qR.value = self.V.value * (
             self.ReservoirHeatCapacity.value * (self.ReservoirTemperature.value - self.RejectionTemperature.value)
         )
         self.mWH.value = (self.V.value * (self.FormationPorosity.value / 100.0)) * self.DensityOfWater.value
-        self.e.value = (EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionEnthalpy.value) - (
+        self.e.value = (_EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionEnthalpy.value) - (
             self.RejectionTemperatureK.value
-            * (EntropyH20_func(self.ReservoirTemperature.value) - self.RejectionEntropy.value)
+            * (_EntropyH20_func(self.ReservoirTemperature.value) - self.RejectionEntropy.value)
         )
         self.qWH.value = self.mWH.value * (
-            EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionTemperatureK.value
+            _EnthalpyH20_func(self.ReservoirTemperature.value) - self.RejectionTemperatureK.value
         )
         self.Rg.value = self.qWH.value / self.qR.value
         self.WA.value = (
             self.mWH.value
             * self.e.value
             * self.Rg.value
-            * RecoverableHeat(self.RecoverableHeat.value, self.ReservoirTemperature.value)
+            * _RecoverableHeat(self.RecoverableHeat.value, self.ReservoirTemperature.value)
         )
-        self.WE.value = self.WA.value * UtilEff_func(self.ReservoirTemperature.value)
+        self.WE.value = self.WA.value * _UtilEff_func(self.ReservoirTemperature.value)
         self.We.value = (self.WE.value / 3_600_000) / 8_760  # convert Kilojoules of heat to MWe of electricity
 
         self.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
@@ -803,11 +803,11 @@ class HIP_RA:
         return 'HIP_RA'
 
 
-def main(enable_geophires_logging_config=True):
+def main(enable_hip_ra_logging_config=True):
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    if enable_geophires_logging_config:
+    if enable_hip_ra_logging_config:
         # set up logging.
         logging.config.fileConfig('logging.conf')
 
@@ -815,7 +815,7 @@ def main(enable_geophires_logging_config=True):
     logger.info(f'Init {__name__!s}')
 
     # initiate the HIP-RA parameters, setting them to their default values
-    model = HIP_RA(enable_geophires_logging_config=enable_geophires_logging_config)
+    model = HIP_RA(enable_hip_ra_logging_config=enable_hip_ra_logging_config)
 
     # read the parameters that apply to the model
     model.read_parameters()

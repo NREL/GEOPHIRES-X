@@ -782,8 +782,11 @@ def ConvertUnitsBack(ParamToModify, model):
             )
             sys.exit()
 
-        # rest the value
-        ParamToModify.value = currQ.magnitude
+        # reset the values
+        if ParamToModify.value != currQ.magnitude:
+            ParamToModify.value = currQ.magnitude
+            ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 

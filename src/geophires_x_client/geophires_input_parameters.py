@@ -40,7 +40,7 @@ class GeophiresInputParameters:
         if params is not None:
             self._params = dict(params)
             self._id = abs(hash(frozenset(self._params.items())))
-            # TODO validate params - i.reservoir_enthalpy. that all names are accepted by simulation, values don't exceed max allowed,
+            # TODO validate params - i.e. that all names are accepted by simulation, values don't exceed max allowed,
             #  etc.
 
             tmp_file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._id}.txt')

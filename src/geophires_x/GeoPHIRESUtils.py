@@ -12,14 +12,6 @@ from geophires_x.Parameter import *
 
 from iapws.iapws97 import IAPWS97
 
-"""
-user-defined static functions define lookup values for the density, specific heat capacity,
-enthalpy (aka "s", kJ/(kg K)) and entropy (aka "h", kJ/kg) of water a function of T (deg-c)
-from https://www.engineeringtoolbox.com/water-properties-d_1508.html
-
-FIXME WIP use iapws library instead of hardcoded values
-"""
-
 _T = np.array(
     [
         0.01,
@@ -52,6 +44,7 @@ _T = np.array(
     ]
 )
 
+# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _EntropyH20 = np.array(
     [
         0.0,
@@ -84,6 +77,7 @@ _EntropyH20 = np.array(
     ]
 )
 
+# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _UtilEff = np.array(
     [
         0.0,
@@ -263,6 +257,7 @@ def VaporPressureWater(Twater_degC: float) -> float:
 def EntropyH20_func(temperature_degC: float) -> float:
     """
     the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
+    TODO switch to IAPWS instead of custom interpolation
 
     Args:
         temperature_degC: the temperature of water in degrees C

@@ -1,6 +1,8 @@
 Reservoir Temperature, 250.0
 Rejection Temperature, 60.0
-Reservoir Porosity, 10.0
+Formation Porosity, 10.0
 Reservoir Area, 55.0
 Reservoir Thickness, 0.25
 Reservoir Life Cycle, 25
+Heat Capacity Of Water, -1
+Density Of Water, -1

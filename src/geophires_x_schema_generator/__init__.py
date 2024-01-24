@@ -1,4 +1,7 @@
 import json
+import os
+import sys
+from pathlib import Path
 from typing import Tuple
 
 # Ruff disabled because imports are order-dependent
@@ -23,8 +26,19 @@ class GeophiresXSchemaGenerator:
     def __init__(self):
         pass
 
+    def _get_dummy_model(self):
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+        sys.argv = ['']
+        try:
+            dummy_model = Model(enable_geophires_logging_config=False)
+            return dummy_model
+        finally:
+            sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)
+
     def get_parameters_json(self) -> Tuple[str, str]:
-        dummy_model = Model(enable_geophires_logging_config=False)
+        dummy_model = self._get_dummy_model()
 
         def with_category(param_dict: dict, category: str):
             def _with_cat(p: Parameter, cat: str):

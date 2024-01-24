@@ -640,7 +640,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         # Figure out how much energy is being produced each year, and the amount of carbon that
         # would have been produced if that energy had been made using the grid average carbon production.
         # That then gives us the revenue, since we have a carbon price model
-        # reservoir_producible_electricity can also get annual cash flow from it.
+        # We can also get annual cash flow from it.
         for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
             self.CarbonExtractedAnnually.value[i] = (self.EnergySplit.value * model.surfaceplant.HeatkWhExtracted.value[i]) / self.tot_heat_energy_consumed_per_tonne.value
             if i == 0:
@@ -655,7 +655,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
                 self.S_DAC_GTCummCashFlow.value[i] = self.S_DAC_GTCummCashFlow.value[i - 1] + self.S_DAC_GTAnnualCost.value[i]
             self.CummCostPerTonne.value[i] = self.S_DAC_GTCummCashFlow.value[i] / self.S_DAC_GTCummCarbonExtracted.value[i]
 
-        # reservoir_producible_electricity need to update the heat and electricity generated because we have consumed
+        # We need to update the heat and electricity generated because we have consumed
         # some (all) of it to do the capture, so when they get used in the final economic calculation (below),
         # the new values reflect the impact of S-DAC-GT
         for i in range(0, model.surfaceplant.plant_lifetime.value):

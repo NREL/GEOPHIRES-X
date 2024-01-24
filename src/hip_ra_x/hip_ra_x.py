@@ -733,7 +733,7 @@ class HIP_RA_X:
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go through all the parameters for all the objects and set the values back
         # to the units that the user entered the data in
-        # reservoir_producible_electricity do this because the value may be displayed in the output, and we want the user to recognize their value,
+        # We do this because the value may be displayed in the output, and we want the user to recognize their value,
         # not some converted value
         for key in self.ParameterDict:
             param = self.ParameterDict[key]

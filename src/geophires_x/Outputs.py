@@ -89,7 +89,7 @@ class Outputs:
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
         # to the units that the user entered the data in
-        # reservoir_producible_electricity do this because the value may be displayed in the output, and we want the user to recginze their value,
+        # We do this because the value may be displayed in the output, and we want the user to recginze their value,
         # not some converted value
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.ParameterDict:

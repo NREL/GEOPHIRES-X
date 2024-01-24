@@ -267,7 +267,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
-        # reservoir_producible_electricity have nothing to change - user provide value that was the same as the
+        # We have nothing to change - user provide value that was the same as the
         # existing value (likely, the default value)
         if New_val == ParamToModify.value:
             return
@@ -317,7 +317,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
                 )
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
-            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the
+            # We have nothing to change - user provide value that was the same as the
             # existing value (likely, the default value)
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
@@ -374,7 +374,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             New_val = True
         if New_val == ParamToModify.value:
             model.logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
-            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+            # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             return
         ParamToModify.value = New_val  # set the new value
         ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
@@ -382,7 +382,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     elif isinstance(ParamToModify, strParameter):
         New_val = str(ParameterReadIn.sValue)
         if New_val == ParamToModify.value:
-            # reservoir_producible_electricity have nothing to change - user provide value that was the same as the existing value (likely, the default value)
+            # We have nothing to change - user provide value that was the same as the existing value (likely, the default value)
             return
         ParamToModify.value = New_val  # set the new value
         ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
@@ -602,7 +602,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 def ConvertUnitsBack(ParamToModify, model):
     """
     CovertUnitsBack: Converts units back to what the user specified they as.  It does this so that the user can see them
-    in the report as the units they specified.  reservoir_producible_electricity know that because CurrentUnits contains the desired units
+    in the report as the units they specified. We know that because CurrentUnits contains the desired units
     :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
         the object that will be modified by this method - see Parameter class for details on the fields in it
     :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`

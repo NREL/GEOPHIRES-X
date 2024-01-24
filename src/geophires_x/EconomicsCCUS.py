@@ -374,7 +374,7 @@ class EconomicsCCUS(Economics):
         # Figure out how much energy is being produced each year, and the amount of carbon that would have been
         # produced if that energy had been made using the grid average carbon production.
         # That then gives us the revenue, since we have a carbon price model
-        # reservoir_producible_electricity can also get annual cash flow from it.
+        # We can also get annual cash flow from it.
         self.ProjectCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
         self.ProjectCummCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
         for i in range(0, model.surfaceplant.plant_lifetime.value, 1):

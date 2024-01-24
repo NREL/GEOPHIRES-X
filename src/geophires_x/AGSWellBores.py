@@ -657,14 +657,19 @@ class AGSWellBores(WellBores):
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
-                    # just handle special cases for this class - the call to super set all thr values,
+                    # just handle special cases for this class - the call to super set all the values,
                     # including the value unique to this class
-                    if ParameterToModify.Name == "Heat Transfer Fluid":
+                    if ParameterToModify.Name == "Multilaterals Cased":
+                        if ParameterReadIn.sValue == str(1):
+                            self.NonverticalsCased.value = True
+                        else:
+                            self.NonverticalsCased.value = False
+                    elif ParameterToModify.Name == "Heat Transfer Fluid":
                         if ParameterReadIn.sValue == str(1):
                             self.Fluid.value = WorkingFluid.WATER
                         else:
                             self.Fluid.value = WorkingFluid.SCO2
-                    if ParameterToModify.Name == "Closed-loop Configuration":
+                    elif ParameterToModify.Name == "Closed-loop Configuration":
                         if ParameterReadIn.sValue == str(1):
                             self.Configuration.value = Configuration.ULOOP
                         else:
@@ -853,7 +858,7 @@ class AGSWellBores(WellBores):
         :rtype: tuple
         """
         friction = 0.0
-        NonverticalPressureDrop = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
+        NonverticalPressureDrop = [0.0] * model.surfaceplant.plant_lifetime.value  # initialize the array
         while time_operation <= time_max:
             year = math.trunc(time_operation / al)
 
@@ -906,7 +911,7 @@ class AGSWellBores(WellBores):
         if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
             # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.
             if self.Tini > 375.0:
-                model.logger.warn("In AGS, but forced to use Wanju code because initial reservoir temperature \
+                model.logger.warning("In AGS, but forced to use Wanju code because initial reservoir temperature \
                 is too high for CLGS")
                 print("In AGS, but forced to use Wanju code because initial reservoir temperature \
                 is too high for CLGS")
@@ -927,13 +932,13 @@ class AGSWellBores(WellBores):
             self.y_well = 0.5 * self.y_boundary  # Nonvertical wellbore in the center
             self.z_well = 0.5 * self.z_boundary  # Nonvertical wellbore in the center
             self.al = 365.0 / 4.0 * model.economics.timestepsperyear.value
-            self.time_max = model.surfaceplant.plantlifetime.value * 365.0
+            self.time_max = model.surfaceplant.plant_lifetime.value * 365.0
             self.rhorock = model.reserv.rhorock.value
             self.cprock = model.reserv.cprock.value
             self.alpha_rock = model.reserv.krock.value / model.reserv.rhorock.value / model.reserv.cprock.value * 24.0 * 3600.0
             # initialize the arrays
-            self.NonverticalProducedTemperature.value = [0.0] * model.surfaceplant.plantlifetime.value
-            self.NonverticalPressureDrop.value = [0.0] * model.surfaceplant.plantlifetime.value
+            self.NonverticalProducedTemperature.value = [0.0] * model.surfaceplant.plant_lifetime.value
+            self.NonverticalPressureDrop.value = [0.0] * model.surfaceplant.plant_lifetime.value
 
             t = self.time_operation.value
             while self.time_operation.value <= self.time_max:
@@ -961,7 +966,7 @@ class AGSWellBores(WellBores):
                                                     model.reserv.cprock.value,
                                                     self.prodwelldiam.value,
                                                     model.reserv.timevector.value,
-                                                    model.surfaceplant.utilfactor.value,
+                                                    model.surfaceplant.utilization_factor.value,
                                                     self.prodwellflowrate.value,
                                                     model.reserv.cpwater.value,
                                                     model.reserv.Trock.value,
@@ -991,13 +996,13 @@ class AGSWellBores(WellBores):
                             self.rhowaterinj, self.rhowaterprod,
                             self.rhowaterprod, model.reserv.depth.value, self.prodwellflowrate.value,
                             self.prodwelldiam.value, self.impedance.value,
-                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
+                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pump_efficiency.value)
                     self.DPOverall.value, DowngoingPumpingPower, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                         ProdPressureDropsAndPumpingPowerUsingImpedenceModel(
                             f3, vprod,
                             self.rhowaterprod, self.rhowaterinj, model.reserv.rhowater.value, model.reserv.depth.value,
                             self.prodwellflowrate.value, self.injwelldiam.value, self.impedance.value,
-                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pumpeff.value)
+                            self.nprod.value, model.reserv.waterloss.value, model.surfaceplant.pump_efficiency.value)
 
                 else:  # PI is used for both the verticals
                     UpgoingPumpingPower, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
@@ -1007,7 +1012,7 @@ class AGSWellBores(WellBores):
                             model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
                             model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
                             self.prodwellflowrate.value, f3, vprod,
-                            self.prodwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
+                            self.prodwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,
                             self.rhowaterprod)
 
                     DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
@@ -1016,7 +1021,7 @@ class AGSWellBores(WellBores):
                         model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
                         model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
                         self.prodwellflowrate.value, f3, vprod,
-                        self.injwelldiam.value, self.nprod.value, model.surfaceplant.pumpeff.value,
+                        self.injwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,
                         self.rhowaterinj)
 
                 # Calculate Nonvertical Pressure Drop
@@ -1030,7 +1035,7 @@ class AGSWellBores(WellBores):
                 # calculate nonvertical well pumping power needed[MWe]
                 NonverticalPumpingPower = self.NonverticalPressureDrop.value * self.nprod.value * \
                                           self.prodwellflowrate.value / self.rhowaterprod / \
-                                          model.surfaceplant.pumpeff.value / 1E3  # [MWe] total pumping power for nonvertical section
+                                          model.surfaceplant.pump_efficiency.value / 1E3  # [MWe] total pumping power for nonvertical section
                 NonverticalPumpingPower = np.array(
                     [0. if x < 0. else x for x in NonverticalPumpingPower])  # cannot be negative so set to 0
 
@@ -1073,7 +1078,7 @@ class AGSWellBores(WellBores):
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary
             self.PumpingPower.value = [0.0] * (len(self.DPOverall.value))
-            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pumpeff.value / 1E3
+            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pump_efficiency.value / 1E3
             # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity) = thermosiphon is happening!
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 

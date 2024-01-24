@@ -27,9 +27,9 @@ Free software: `MIT license <LICENSE>`__
 ..      - | |docs|
 
 
-.. |github-actions| image:: https://github.com/NREL/python-geophires-x/actions/workflows/github-actions.yml/badge.svg
+.. |github-actions| image:: https://github.com/NREL/GEOPHIRES-X/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
-    :target: https://github.com/NREL/python-geophires-x/actions
+    :target: https://github.com/NREL/GEOPHIRES-X/actions
 
 .. |version| image:: https://img.shields.io/pypi/v/geophires-x.svg
     :alt: PyPI Package latest release
@@ -47,15 +47,15 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/python-geophires-x/v3.2.11.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.3.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/python-geophires-x/compare/v3.2.11...main
+    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.3.0...main
 
-.. |docs| image:: https://readthedocs.org/projects/python-geophires-x/badge/?style=flat
-    :target: https://nrel.github.io/python-geophires-x
+.. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
+    :target: https://nrel.github.io/GEOPHIRES-X
     :alt: Documentation Status
 
-.. TODO coverage badge https://github.com/NREL/python-geophires-x/issues/22
+.. TODO coverage badge https://github.com/NREL/GEOPHIRES-Xx/issues/22
 
 .. end-badges
 
@@ -108,7 +108,7 @@ Steps:
 
 5. Install the ``geophires-x`` package::
 
-    pip3 install -e git+https://github.com/NREL/python-geophires-x.git#egg=geophires-x --src .
+    pip3 install -e git+https://github.com/NREL/GEOPHIRES-X.git#egg=geophires-x --src .
 
 6. Run on an example file::
 
@@ -124,7 +124,7 @@ Pip Package
 
 If you do not need to view or edit GEOPHIRES-X source code, you can consume GEOPHIRES-X as a regular, non-editable python package::
 
-    pip3 install https://github.com/NREL/python-geophires-x/archive/main.zip
+    pip3 install https://github.com/NREL/GEOPHIRES-X/archive/main.zip
 
 
 .. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
@@ -211,7 +211,7 @@ You may also pass parameters as a text file:
     from geophires_x_client import GeophiresXClient
     from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 
-    # https://github.com/NREL/python-geophires-x/blob/main/tests/examples/example1.txt
+    # https://github.com/NREL/GEOPHIRES-X/blob/main/tests/examples/example1.txt
     example_file_path = Path('geophires-x/tests/examples/example1.txt').absolute()
 
     client = GeophiresXClient()
@@ -279,7 +279,7 @@ Extending GEOPHIRES-X
 ---------------------
 * `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
 
-  - `Extension example: SUTRA <https://github.com/NREL/python-geophires-x/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
+  - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
 Other Documentation:
 --------------------

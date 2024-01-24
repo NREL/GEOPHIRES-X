@@ -809,8 +809,8 @@ class Reservoir:
             self.averagegradient.value = (self.Trock.value - self.Tsurf.value) / self.depth.value
 
         # specify time-stepping vectors
-        self.timevector.value = np.linspace(0, model.surfaceplant.plantlifetime.value,
-                                        model.economics.timestepsperyear.value * model.surfaceplant.plantlifetime.value+1)
+        self.timevector.value = np.linspace(0, model.surfaceplant.plant_lifetime.value,
+                                            model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
         if self.resoption.value != ReservoirModel.SUTRA:

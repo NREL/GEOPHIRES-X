@@ -1,6 +1,5 @@
 import sys
 from geophires_x.Outputs import Outputs
-from geophires_x.Model import Model
 
 NL = "\n"
 
@@ -9,7 +8,7 @@ class OutputsS_DAC_GT(Outputs):
     """
     Class to handles output of the SDAC_GT values
     """
-    def PrintOutputs(self, model: Model):
+    def PrintOutputs(self, model):
         """
         The PrintOutputs function prints the results of the SDAC_GT to a text file and to the screen.
         :param model: Model: The container class of the application, giving access to everything else, including the logger
@@ -56,7 +55,7 @@ class OutputsS_DAC_GT(Outputs):
                                              ")               ("+model.sdacgteconomics.S_DAC_GTCummCashFlow.PreferredUnits.value +
                                              ")           ("+model.sdacgteconomics.CummCostPerTonne.PreferredUnits.value + ")" +NL)
                 i = 0
-                for i in range(0, model.surfaceplant.plantlifetime.value, 1):
+                for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
                     f.write(f"   {i+1:3.0f}    {model.sdacgteconomics.CarbonExtractedAnnually.value[i]:,.2f}   {model.sdacgteconomics.S_DAC_GTCummCarbonExtracted.value[i]:,.2f}    {model.sdacgteconomics.S_DAC_GTAnnualCost.value[i]:,.2f}         {model.sdacgteconomics.S_DAC_GTCummCashFlow.value[i]:,.2f}         {model.sdacgteconomics.CummCostPerTonne.value[i]:.2f}" + NL)
                     i = i + 1
 

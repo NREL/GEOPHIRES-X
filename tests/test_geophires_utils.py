@@ -1,0 +1,515 @@
+import sys
+import unittest
+
+from geophires_x.GeoPHIRESUtils import _T
+from geophires_x.GeoPHIRESUtils import DensityWater
+from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
+from geophires_x.GeoPHIRESUtils import EntropyH20_func
+from geophires_x.GeoPHIRESUtils import HeatCapacityWater
+from geophires_x.GeoPHIRESUtils import RecoverableHeat
+from geophires_x.GeoPHIRESUtils import UtilEff_func
+from geophires_x.GeoPHIRESUtils import VaporPressureWater
+from geophires_x.GeoPHIRESUtils import ViscosityWater
+from geophires_x.GeoPHIRESUtils import _interp_entropy_func
+from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
+from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
+
+
+class TestCelsiusToKelvin(unittest.TestCase):
+    def test_valid_celsius_value(self):
+        """Should return the correct Kelvin value when given a valid Celsius value"""
+        # Arrange
+        celsius = 25
+        expected_kelvin = 298.15
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+    def test_minimum_celsius_value(self):
+        """Should return the correct Kelvin value when given the minimum Celsius value (absolute zero)"""
+        # Arrange
+        celsius = -273.15
+        expected_kelvin = 0
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+    def test_maximum_celsius_value(self):
+        """Should return the correct Kelvin value when given the maximum Celsius value (boiling point of water)"""
+        # Arrange
+        celsius = 100
+        expected_kelvin = 373.15
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+    def test_non_numeric_input(self):
+        """Should raise a ValueError when given a non-numeric input"""
+        # Arrange
+        celsius = '25'
+
+        # Act and Assert
+        with self.assertRaises(ValueError):
+            celsius_to_kelvin(celsius)
+
+    def test_none_input(self):
+        """Should raise a ValueError when given a None input"""
+        # Arrange
+        celsius = None
+
+        # Act and Assert
+        with self.assertRaises(ValueError):
+            celsius_to_kelvin(celsius)
+
+    def test_string_input(self):
+        """Should raise a ValueError when given a string input"""
+        # Arrange
+        celsius = 'twenty-five'
+
+        # Act and Assert
+        with self.assertRaises(ValueError):
+            celsius_to_kelvin(celsius)
+
+    def test_negative_celsius_value(self):
+        # Arrange
+        celsius = -10
+
+        # Act and Assert
+        assert celsius_to_kelvin(celsius) == 263.15
+
+    def test_float_input(self):
+        """Should return the correct Kelvin value when given a float input"""
+        # Arrange
+        celsius = 37.5
+        expected_kelvin = 310.65
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+    def test_integer_input(self):
+        """Should return the correct Kelvin value when given an integer input"""
+        # Arrange
+        celsius = 20
+        expected_kelvin = 293.15
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+    def test_large_celsius_value(self):
+        """Should return the correct Kelvin value when given a very large Celsius value"""
+        # Arrange
+        celsius = 1000000
+        expected_kelvin = 1000273.15
+
+        # Act
+        result = celsius_to_kelvin(celsius)
+
+        # Assert
+        assert result == expected_kelvin
+
+
+class TestUtileffFunc(unittest.TestCase):
+    def test_within_range_temperature(self):
+        """Returns the utilization efficiency of the system for a given temperature within the range of 0 to 373.946 degrees C."""
+        temperature = 50.0
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_same_temperature_input(self):
+        """Returns the same utilization efficiency for the same temperature input."""
+        temperature = 60.0
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_lower_bound_temperature(self):
+        """Returns the utilization efficiency of the system for the temperature at the lower bound of the range (0.01 degrees C)."""
+        temperature = 0.01
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_upper_bound_temperature(self):
+        """Returns the utilization efficiency of the system for the temperature at the upper bound of the range (373.946 degrees C)."""
+        temperature = 373.946
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_middle_temperature(self):
+        """Returns the utilization efficiency of the system for a temperature that is exactly in the middle of two temperature values in the T array."""
+        temperature = 150.0
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_non_float_temperature(self):
+        """Raises a ValueError if the input temperature is not a float or convertible to float."""
+        temperature = '50.0'
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    def test_less_than_lower_bound_temperature(self):
+        """Raises a ValueError if the input temperature is less than the lower bound of the range (0.01 degrees C)."""
+        temperature = -10.0
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    def test_greater_than_upper_bound_temperature(self):
+        """Raises a ValueError if the input temperature is greater than the upper bound of the range (373.946 degrees C)."""
+        temperature = 400.0
+
+        with self.assertRaises(ValueError):
+            UtilEff_func(temperature)
+
+    def test_exact_temperature_value(self):
+        """Returns the utilization efficiency of the system for a temperature that is exactly equal to one of the temperature values in the T array."""
+        temperature = 120.0
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+    def test_very_close_to_lower_bound_temperature(self):
+        """Returns the utilization efficiency of the system for a temperature that is very close to the lower bound of the range (0.01 + epsilon degrees C)."""
+        temperature = 0.01 + 1e-6
+        expected_util_eff = _interp_util_eff_func(temperature)
+
+        assert UtilEff_func(temperature) == expected_util_eff
+
+
+class TestViscosityWater(unittest.TestCase):
+    def test_valid_input_temperature(self):
+        temp_expected_viscosities = [
+            (0, 0.0017919767869664313),
+            (20, 0.0010016273277686598),
+            (50, 0.0005465041540815786),
+            (100, 0.00028158501936566716),
+            (200, 0.00013458728069637348),
+            (300, 8.585569839970069e-05),
+            (370, 5.190184110293621e-05),
+        ]
+
+        for temp, expected_viscosity in temp_expected_viscosities:
+            self.assertAlmostEqual(ViscosityWater(temp), expected_viscosity, places=6)
+
+    def test_negative_input_temperature(self):
+        """The function raises a ValueError if the input temperature is less than 0 degrees Celsius."""
+        with self.assertRaises(ValueError):
+            ViscosityWater(-10)
+
+    def test_high_input_temperature(self):
+        """The function raises a ValueError if the input temperature is greater than 370 degrees Celsius."""
+        with self.assertRaises(ValueError):
+            ViscosityWater(400)
+
+    def test_none_input_temperature(self):
+        """The function raises a ValueError if the input temperature is None."""
+        with self.assertRaises(ValueError):
+            ViscosityWater(None)
+
+    def test_string_input_temperature(self):
+        """The function raises a ValueError if the input temperature is a string."""
+        with self.assertRaises(ValueError):
+            ViscosityWater('water')
+
+
+class TestDensityWater(unittest.TestCase):
+    def test_correct_density(self):
+        """Returns the correct density of water for a given temperature."""
+        input_expected_val_pairs = [
+            (25, 997.0038346094865),
+            (25.5, 996.8746788233803),
+            (50, 988.0087757351533),
+            (50.5, 987.7821218479756),
+            (75, 974.8288462197903),
+            (75.5, 974.5296342180826),
+            (100, 958.3542772858901),
+            (100.5, 957.9946917721559),
+        ]
+
+        for pair in input_expected_val_pairs:
+            t_water_deg_c = pair[0]
+            calc_density = DensityWater(t_water_deg_c)
+            expected_density = pair[1]
+            self.assertAlmostEqual(calc_density, expected_density, places=3)
+
+    def test_returns_density_in_kg_per_m3(self):
+        """Returns the density in kg/m3."""
+        assert isinstance(DensityWater(25), float)
+        assert isinstance(DensityWater(50), float)
+        assert isinstance(DensityWater(75), float)
+        assert isinstance(DensityWater(100), float)
+
+    def test_small_temperature_values(self):
+        self.assertAlmostEqual(DensityWater(0.01), 999.7937454059017, places=3)
+        self.assertAlmostEqual(DensityWater(0.0), 999.793065506329, places=3)
+        self.assertIsNotNone(DensityWater(sys.float_info.min))
+
+    def test_handles_maximum_temperature_value(self):
+        """Handles the maximum temperature value in T."""
+        assert DensityWater(373.946) == 322
+
+    def test_raises_value_error_outside_valid_input_range(self):
+        """Handles the minimum and maximum float values for Twater."""
+        invalid_range_vals = [
+            374,  # FIXME TODO extend HIP-RA to handle values above 374
+            sys.float_info.max,
+        ]
+
+        for invalid_val in invalid_range_vals:
+            with self.assertRaises(ValueError):
+                DensityWater(invalid_val)
+
+
+class TestHeatCapacityWater(unittest.TestCase):
+    def test_valid_input_within_range(self):
+        result = HeatCapacityWater(100)
+        assert result == 4216.645118923585
+
+    def test_valid_input_minimum_range(self):
+        result = HeatCapacityWater(0.01)
+        assert result == 4219.897711106461
+
+    def test_valid_input_maximum_range(self):
+        result = HeatCapacityWater(370)
+        assert result == 47095.500723768
+
+    def test_valid_input_midpoint_range(self):
+        result = HeatCapacityWater(185)
+        assert result == 4425.471257522954
+
+    def test_valid_input_exact_match(self):
+        result = HeatCapacityWater(25)
+        assert result == 4182.179909825829
+
+    def test_invalid_input_less_than_minimum(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(-10)
+
+    def test_invalid_input_not_number(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater('abc')
+
+    def test_invalid_input_negative(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(-50)
+
+    def test_invalid_input_greater_than_500(self):
+        with self.assertRaises(ValueError):
+            HeatCapacityWater(501)
+
+
+class TestEntropyh20Func(unittest.TestCase):
+    def test_valid_temperature_within_range(self):
+        """Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]"""
+
+        temperature = 50.0
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_minimum_temperature_input(self):
+        """Returns the correct entropy value for the minimum temperature input (T[0])"""
+
+        temperature = _T[0]
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_maximum_temperature_input(self):
+        """Returns the correct entropy value for the maximum temperature input (T[-1])"""
+
+        temperature = _T[-1]
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_temperature_input_in_T(self):
+        """Returns the correct entropy value for a temperature input that is an element of T"""
+
+        temperature = _T[3]
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_temperature_input_within_range(self):
+        """
+        Returns the correct entropy value for a temperature input that is not an element of T but within the range of
+        T[0] to T[-1]
+        """
+
+        temperature = 150.0
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_temperature_input_less_than_T0(self):
+        """Raises a ValueError if the temperature input is less than T[0]"""
+
+        temperature = -10.0
+        with self.assertRaises(ValueError):
+            EntropyH20_func(temperature)
+
+    def test_temperature_input_greater_than_Tn(self):
+        """Raises a ValueError if the temperature input is greater than T[-1]"""
+
+        temperature = 400.0
+        with self.assertRaises(ValueError):
+            EntropyH20_func(temperature)
+
+    def test_temperature_input_equal_to_T0(self):
+        """Returns the correct entropy value for a temperature input that is equal to the minimum temperature input (T[0])"""
+
+        temperature = _T[0]
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+    def test_temperature_input_equal_to_Tn(self):
+        """Returns the correct entropy value for a temperature input that is equal to the maximum temperature input (T[-1])"""
+
+        temperature = _T[-1]
+        expected_entropy = _interp_entropy_func(temperature)
+        assert EntropyH20_func(temperature) == expected_entropy
+
+
+class TestRecoverableHeat(unittest.TestCase):
+    def test_valid_input_within_default_range(self):
+        """Returns recoverable heat fraction when given valid input values within the default range."""
+
+        twater = 100.0
+
+        result = RecoverableHeat(twater)
+
+        assert result == 0.0038 * twater + 0.085
+
+    def test_valid_input_outside_default_range(self):
+        """Returns recoverable heat fraction when given valid input values outside the default range."""
+
+        assert RecoverableHeat(160.0) == 0.66
+
+    def test_lowest_valid_temperature_value(self):
+        """Returns recoverable heat fraction when given the lowest valid temperature value."""
+        assert RecoverableHeat(90.0) == 0.43
+
+    def test_highest_valid_temperature_value(self):
+        """Returns recoverable heat fraction when given the highest valid temperature value."""
+
+        assert RecoverableHeat(150.0) == 0.66
+
+    def test_non_numeric_value_for_twater(self):
+        """Raises ValueError when given a non-numeric value for Twater."""
+
+        with self.assertRaises(ValueError):
+            RecoverableHeat('abc')
+
+
+class TestVaporPressureWater(unittest.TestCase):
+    def test_below_100_degrees(self):
+        result = VaporPressureWater(42)
+        self.assertAlmostEqual(result, 8.209010116448697, places=3)
+
+    def test_above_100_degrees(self):
+        result = VaporPressureWater(150)
+        self.assertAlmostEqual(result, 476.10138108149204, places=3)
+
+    def test_100_degrees(self):
+        result = VaporPressureWater(100)
+        self.assertAlmostEqual(result, 101.41797792131013, places=3)
+
+    def test_0_degrees(self):
+        result = VaporPressureWater(0)
+        self.assertAlmostEqual(result, 0.6112126774443449, places=3)
+
+    def test_25_degrees(self):
+        result = VaporPressureWater(25)
+        self.assertAlmostEqual(result, 3.1697468549523626, places=3)
+
+    def test_value_error(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater('abc')
+
+    def test_minimum_temperature(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater(-273.15)
+
+    def test_maximum_temperature(self):
+        with self.assertRaises(ValueError):
+            VaporPressureWater(float('inf'))
+
+    def test_50_degrees(self):
+        result = VaporPressureWater(50)
+        self.assertAlmostEqual(result, 12.351270434023352, places=3)
+
+    def test_75_degrees(self):
+        result = VaporPressureWater(75)
+        self.assertAlmostEqual(result, 38.59536268655676, places=3)
+
+
+class TestEnthalpyh20Func(unittest.TestCase):
+    def test_valid_temperature(self):
+        temperature = 50.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 209.3362003948904, places=3)
+
+    def test_minimum_temperature(self):
+        temperature = 0.01
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 0.0006117830490730841, places=5)
+
+    def test_maximum_temperature(self):
+        temperature = 373.946
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 2087.5468451171537, places=3)
+
+    def test_same_temperature(self):
+        temperature = 50.0
+        enthalpy1 = EnthalpyH20_func(temperature)
+        enthalpy2 = EnthalpyH20_func(temperature)
+        assert enthalpy1 == enthalpy2
+
+    def test_middle_temperature(self):
+        temperature = 15.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 62.98365208053001, places=3)
+
+    def test_non_float_temperature(self):
+        temperature = 'abc123'
+        with self.assertRaises(TypeError):
+            EnthalpyH20_func(temperature)
+
+    def test_below_minimum_temperature(self):
+        temperature = -10.0
+        with self.assertRaises(ValueError):
+            EnthalpyH20_func(temperature)
+
+    def test_above_maximum_temperature(self):
+        temperature = 400.0
+        with self.assertRaises(ValueError):
+            EnthalpyH20_func(temperature)
+
+    def test_known_temperature(self):
+        temperature = 100.0
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 419.09915499770307, places=3)
+
+    def test_close_temperature(self):
+        temperature = 100.001
+        result = EnthalpyH20_func(temperature)
+        self.assertAlmostEqual(result, 419.1033743616401, places=3)
+
+
+if __name__ == '__main__':
+    unittest.main()

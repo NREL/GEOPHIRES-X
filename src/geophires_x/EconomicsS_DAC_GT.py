@@ -1,10 +1,10 @@
 import sys
 import os
-from .Parameter import floatParameter, OutputParameter, ReadParameter
-from .Units import *
-from .OptionList import EndUseOptions
-import geophires_x.Model as Model
 import numpy as np
+from geophires_x.Parameter import floatParameter, OutputParameter, ReadParameter
+from geophires_x.Units import *
+from geophires_x.OptionList import EndUseOptions
+import geophires_x.Model as Model
 import geophires_x.Economics as Economics
 
 
@@ -594,17 +594,17 @@ class EconomicsS_DAC_GT(Economics.Economics):
             sys.exit()
 
         self.CRF = self.calculate_CRF(self.wacc.value,
-                                      model.surfaceplant.plantlifetime.value)  # Calculate initial CRF value based on default inputs
+                                      model.surfaceplant.plant_lifetime.value)  # Calculate initial CRF value based on default inputs
         CAPEX = self.CAPEX.value * self.CRF  # don't change a parameters value directly - it throw off the rehydration
         CAPEX = CAPEX * self.CAPEX_mult.value
         self.OPEX.value = self.OPEX.value * self.OPEX_mult.value
         self.therm.value = self.therm.value * self.therm_index.value
-        power_totalcost = self.elec.value * model.surfaceplant.elecprice.value
-        elec_heat_totalcost = self.therm.value * model.surfaceplant.elecprice.value
+        power_totalcost = self.elec.value * model.surfaceplant.electricity_cost_to_buy.value
+        elec_heat_totalcost = self.therm.value * model.surfaceplant.electricity_cost_to_buy.value
         # Convert from $/McF to $/kWh_th, but don't change a parameters value directly - it will throw off the rehydration
         NG_price = self.NG_price.value / self.NG_EnergyDensity.value
         NG_totalcost = self.therm.value * NG_price
-        self.LCOH.value, self.kWh_e_per_kWh_th.value = self.geo_therm_cost(model.surfaceplant.elecprice.value,
+        self.LCOH.value, self.kWh_e_per_kWh_th.value = self.geo_therm_cost(model.surfaceplant.electricity_cost_to_buy.value,
                                                                            self.CAPEX_mult.value, self.OPEX_mult.value,
                                                                            model.reserv.depth.value * 3280.84,
                                                                            np.average(model.wellbores.ProducedTemperature.value),
@@ -630,18 +630,18 @@ class EconomicsS_DAC_GT(Economics.Economics):
         self.tot_cost_per_tonne.value = CAPEX + self.OPEX.value + self.storage.value + self.transport.value  # USD/tonne
         self.percent_thermal_energy_going_to_heat.value = self.therm.value / self.tot_heat_energy_consumed_per_tonne.value
 
-        self.S_DAC_GTAnnualCost.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.S_DAC_GTCummCashFlow.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.CarbonExtractedAnnually.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.S_DAC_GTCummCarbonExtracted.value = [0.0] * model.surfaceplant.plantlifetime.value
-        self.CummCostPerTonne.value = [0.0] * model.surfaceplant.plantlifetime.value
+        self.S_DAC_GTAnnualCost.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.S_DAC_GTCummCashFlow.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.CarbonExtractedAnnually.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.S_DAC_GTCummCarbonExtracted.value = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.CummCostPerTonne.value = [0.0] * model.surfaceplant.plant_lifetime.value
         self.CarbonExtractedTotal.value = 0.0
 
         # Figure out how much energy is being produced each year, and the amount of carbon that
         # would have been produced if that energy had been made using the grid average carbon production.
         # That then gives us the revenue, since we have a carbon price model
         # We can also get annual cash flow from it.
-        for i in range(0, model.surfaceplant.plantlifetime.value, 1):
+        for i in range(0, model.surfaceplant.plant_lifetime.value, 1):
             self.CarbonExtractedAnnually.value[i] = (self.EnergySplit.value * model.surfaceplant.HeatkWhExtracted.value[i]) / self.tot_heat_energy_consumed_per_tonne.value
             if i == 0:
                 self.S_DAC_GTCummCarbonExtracted.value[i] = self.CarbonExtractedAnnually.value[i]
@@ -658,13 +658,13 @@ class EconomicsS_DAC_GT(Economics.Economics):
         # We need to update the heat and electricity generated because we have consumed
         # some (all) of it to do the capture, so when they get used in the final economic calculation (below),
         # the new values reflect the impact of S-DAC-GT
-        for i in range(0, model.surfaceplant.plantlifetime.value):
-            if model.surfaceplant.enduseoption.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
+        for i in range(0, model.surfaceplant.plant_lifetime.value):
+            if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
                 model.surfaceplant.TotalkWhProduced.value[i] = model.surfaceplant.TotalkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
                 model.surfaceplant.NetkWhProduced.value[i] = model.surfaceplant.NetkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
-                if model.surfaceplant.enduseoption.value != EndUseOptions.ELECTRICITY:
+                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] - (
                         self.CarbonExtractedAnnually.value[i] * self.therm.value)
             else:

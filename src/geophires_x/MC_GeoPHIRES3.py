@@ -18,6 +18,8 @@ import uuid
 import shutil
 import concurrent.futures
 import subprocess
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def CheckAndReplaceMean(input_value, args) -> list:
@@ -241,10 +243,10 @@ def main(enable_geophires_logging_config=True):
     # combination of variables produced the interesting values (like lowest or highest, or mean)
     # start by creating the string we will write as header
     s = ""
-    for input in Inputs:
-        s = s + input[0] + ", "
     for output in Outputs:
         s = s + output + ", "
+    for input in Inputs:
+        s = s + input[0] + ", "
     s = "".join(s.rsplit(" ", 1))  # get rid of last space
     s = "".join(s.rsplit(",", 1))  # get rid of last comma
     s = s + "\n"
@@ -253,6 +255,8 @@ def main(enable_geophires_logging_config=True):
     with open(Outputfile, "w") as f:
         f.write(s)
 
+    # TODO Use a scratch directory to minimize the mess: https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory
+    # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
     # build the args list
     pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
 
@@ -287,6 +291,10 @@ def main(enable_geophires_logging_config=True):
 
     actual_records_count = len(Results)
 
+    # Load the results into  a pandas dataframe
+    results_pd = pd.read_csv(Outputfile)
+    df = pd.DataFrame(results_pd)
+
     # Compute the stats along the specified axes.
     mins = np.nanmin(Results, 0)
     maxs = np.nanmax(Results, 0)
@@ -295,21 +303,6 @@ def main(enable_geophires_logging_config=True):
     means = np.nanmean(Results, 0)
     std = np.nanstd(Results, 0)
 
-    # write them out
-    with open(Outputfile, "a") as f:
-        i = 0
-        if Iterations != actual_records_count:
-            f.write("\n\n" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
-        for output in Outputs:
-            f.write(output + ":" + "\n")
-            f.write(f"     minimum: {mins[i]:,.2f}\n")
-            f.write(f"     maximum: {maxs[i]:,.2f}\n")
-            f.write(f"     median: {medians[i]:,.2f}\n")
-            f.write(f"     average: {averages[i]:,.2f}\n")
-            f.write(f"     mean: {means[i]:,.2f}\n")
-            f.write(f"     standard deviation: {std[i]:,.2f}\n")
-            i = i + 1
-
     print(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
     logger.info(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
     print(" Calculation Time per iteration: " + "{0:10.3f}".format(((time.time() - tic)) / actual_records_count) + " sec\n")
@@ -317,6 +310,42 @@ def main(enable_geophires_logging_config=True):
     if Iterations != actual_records_count:
         print("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
         logger.warning("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
+
+    # write them out
+    annotations = ""
+    with open(Outputfile, "a") as f:
+        i = 0
+        if Iterations != actual_records_count:
+            f.write("\n\n" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
+        for output in Outputs:
+            f.write(output + ":" + "\n")
+            f.write(f"     minimum: {mins[i]:,.2f}\n")
+            annotations = annotations + f"     minimum: {mins[i]:,.2f}\n"
+            f.write(f"     maximum: {maxs[i]:,.2f}\n")
+            annotations = annotations + f"     maximum: {maxs[i]:,.2f}\n"
+            f.write(f"     median: {medians[i]:,.2f}\n")
+            annotations = annotations + f"     median: {medians[i]:,.2f}\n"
+            f.write(f"     average: {averages[i]:,.2f}\n")
+            annotations = annotations + f"     average: {averages[i]:,.2f}\n"
+            f.write(f"     mean: {means[i]:,.2f}\n")
+            annotations = annotations + f"     mean: {means[i]:,.2f}\n"
+            f.write(f"     standard deviation: {std[i]:,.2f}\n")
+            annotations = annotations + f"     standard deviation: {std[i]:,.2f}\n"
+
+            plt.figure(figsize=(8, 6))
+            ax = plt.subplot()
+            ax.set_title(output)
+            ax.set_xlabel("Output units")
+            ax.set_ylabel("Probability")
+
+            plt.figtext(0.11, 0.74, annotations, fontsize=8)
+            ret = plt.hist(df[df.columns[i]].tolist(), bins=50, density=True)
+            f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
+            f.write('bin edges: ' + str(ret[1]) + '\n')
+            fname = df.columns[i].strip().replace("/", "-")
+            plt.savefig(working_dir + fname + '.png')
+            i = i + 1
+            annotations = ""
 
     logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
 

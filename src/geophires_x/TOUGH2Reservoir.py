@@ -176,7 +176,7 @@ class TOUGH2Reservoir(Reservoir):
             f.write('START----1----*----2----*----3----*----4----*----5----*----6----*----7----*----8\n')
             f.write('PARAM----1-MOP* 123456789012345678901234----*----5----*----6----*----7----*----8\n')
             f.write(' 8 19999       5000000000001  03 000   0                                        \n')
-            f.write('       0.0 %9.3E 5259490.0       0.0                9.81       4.0       1.0\n' % (model.surfaceplant.plantlifetime.value*365*24*3600))
+            f.write('       0.0 %9.3E 5259490.0       0.0                9.81       4.0       1.0\n' % (model.surfaceplant.plant_lifetime.value * 365 * 24 * 3600))
             f.write('    1.0E-5       1.0                 1.0       1.0          \n')
             f.write('           1000000.0          %10.1f\n' % initialtemp)
             f.write('                                                                                \n')

@@ -49,7 +49,8 @@ Reservoir Thermal Conductivity,3,	--- [W/m/K]
 
 *** Surface technical parameters ***
 ************************************
-End-Use Option,8,			--- [-] District Heating
+End-Use Option,2, --- Direct use
+Power Plant Type, 7,				---[-] District Heating
 Circulation Pump Efficiency,0.8,	--- [-]
 Utilization Factor,0.8,			--- [-]
 Surface Temperature,12,			--- [deg.C]

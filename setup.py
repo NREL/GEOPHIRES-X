@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.2.11',
+    version='3.3.0',
     license='MIT',
     description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
@@ -75,6 +75,7 @@ setup(
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
         'h5py',
         'scipy',
+        'iapws',
     ],
     extras_require={
         # eg:

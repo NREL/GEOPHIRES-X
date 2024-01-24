@@ -1,21 +1,15 @@
-import sys
-import os
 import numpy as np
-import geophires_x.Model as Model
 from geophires_x.WellBores import *
-from .Parameter import floatParameter, OutputParameter
-from .Units import *
-from .OptionList import WorkingFluid, EndUseOptions
+from geophires_x.Parameter import floatParameter, OutputParameter
+from geophires_x.Units import *
+from geophires_x.OptionList import WorkingFluid, EndUseOptions
 from geophires_x.SurfacePlant import SurfacePlant as SurfacePlant
-
-# code from Koenraad
-import scipy
 from scipy.interpolate import interpn, interp1d
 
 
-class AGSSurfacePlant(SurfacePlant):
+class SurfacePlantAGS(SurfacePlant):
     """
-    AGSSurfacePlant Child class of SurfacePlant; it is the same, but has advanced AGS closed-loop functionality
+    SurfacePlantAGS Child class of SurfacePlant; it is the same, but has advanced AGS closed-loop functionality
     """
 
     def __init__(self, model: Model):
@@ -27,12 +21,11 @@ class AGSSurfacePlant(SurfacePlant):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("Init " + str(__class__) + ": " + self.__init__.__name__)
 
         # Initialize the superclass first to gain access to those variables
         super().__init__(model)
-        sclass = str(__class__).replace("<class \'", "")
-        self.MyClass = sclass.replace("\'>", "")
+        self.MyClass = self.__class__.__name__
         self.MyPath = os.path.abspath(__file__)
         self.Discount_rate = 0
         self.T0 = 0
@@ -207,35 +200,30 @@ class AGSSurfacePlant(SurfacePlant):
         # outputs
         self.HeatExtracted = self.OutputParameterDict[self.HeatExtracted.Name] = OutputParameter(
             Name="Heat Extracted",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.HeatProduced = self.OutputParameterDict[self.HeatProduced.Name] = OutputParameter(
             Name="Heat Produced in MW",
-            value=[0.0],
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.MW,
             CurrentUnits=PowerUnit.MW
         )
         self.HeatkWhProduced = self.OutputParameterDict[self.HeatkWhProduced.Name] = OutputParameter(
             Name="Heat Produced",
-            value=[0.0],
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
         self.PumpingkWh = self.OutputParameterDict[self.PumpingkWh.Name] = OutputParameter(
             Name="pumping power needed",
-            value=[],
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
         self.HeatkWhExtracted = self.OutputParameterDict[self.HeatkWhExtracted.Name] = OutputParameter(
             Name="Heat Extracted",
-            value=[],
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
@@ -243,7 +231,6 @@ class AGSSurfacePlant(SurfacePlant):
         self.FirstYearElectricityProduction = self.OutputParameterDict[
             self.FirstYearElectricityProduction.Name] = OutputParameter(
             Name="Electricity Produced in the First Year",
-            value=-999.0,
             UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
@@ -251,42 +238,38 @@ class AGSSurfacePlant(SurfacePlant):
         self.AveInstNetElectricityProduction = self.OutputParameterDict[
             self.AveInstNetElectricityProduction.Name] = OutputParameter(
             Name="Average Net Daily Electricity Production",
-            value=-999.0,
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.KW,
             CurrentUnits=PowerUnit.KW
         )
         self.FirstYearHeatProduction = self.OutputParameterDict[self.FirstYearHeatProduction.Name] = OutputParameter(
             Name="Heat Produced in the First Year",
-            value=-999.0, UnitType=Units.ENERGY,
+            UnitType=Units.ENERGY,
             PreferredUnits=EnergyUnit.KWH,
             CurrentUnits=EnergyUnit.KWH
         )
         self.AveInstHeatProduction = self.OutputParameterDict[self.AveInstHeatProduction.Name] = OutputParameter(
             Name="Average Net Daily Heat Production",
-            value=-999.0,
             UnitType=Units.POWER,
             PreferredUnits=PowerUnit.KW,
             CurrentUnits=PowerUnit.KW
         )
         self.AveProductionPressure = self.OutputParameterDict[self.AveProductionPressure.Name] = OutputParameter(
             Name="Average Production Pressure",
-            value=-999.0,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.BAR,
             CurrentUnits=PressureUnit.BAR
         )
         self.AveProductionTemperature = self.OutputParameterDict[self.AveProductionTemperature.Name] = OutputParameter(
             Name="Average Production Temperature",
-            value=-999.0,
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS
         )
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("complete " + str(__class__) + ": " + self.__init__.__name__)
 
     def __str__(self):
-        return "AGSSurfacePlant"
+        return "SurfacePlantAGS"
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -297,7 +280,7 @@ class AGSSurfacePlant(SurfacePlant):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info("Init " + str(__class__) + ": " + self.read_parameters.__name__)
         super().read_parameters(model)
         # if we call super, we don't need to deal with setting the parameters here,
         # just deal with the special cases for the variables in this class
@@ -314,26 +297,27 @@ class AGSSurfacePlant(SurfacePlant):
 
                     # handle special cases
                     if ParameterToModify.Name == "End-Use Option":
-                        if ParameterReadIn.sValue == str(1):
+                        if ParameterReadIn.sValue == '1':
                             ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == str(2):
+                        elif ParameterReadIn.sValue == '2':
                             ParameterToModify.value = EndUseOptions.HEAT
         else:
             model.logger.info("No parameters read because no content provided")
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
-        self.End_use = model.surfaceplant.enduseoption.value  # same units are GEOPHIRES
-        self.Pump_efficiency = model.surfaceplant.pumpeff.value  # same units are GEOPHIRES
-        self.Lifetime = int(model.surfaceplant.plantlifetime.value)  # same units are GEOPHIRES
-        self.T0 = model.surfaceplant.Tenv.value + 273.15  # convert Celsius to Kelvin
+        self.End_use = model.surfaceplant.enduse_option.value  # same units are GEOPHIRES
+        self.Pump_efficiency = model.surfaceplant.pump_efficiency.value  # same units are GEOPHIRES
+        self.Lifetime = int(model.surfaceplant.plant_lifetime.value)  # same units are GEOPHIRES
+        self.T0 = model.surfaceplant.ambient_temperature.value + 273.15  # convert Celsius to Kelvin
         self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
 
         # initialize some arrays
-        self.HeatkWhProduced.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
-        self.HeatkWhExtracted.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
-        self.PumpingkWh.value = [0.0] * model.surfaceplant.plantlifetime.value  # initialize the array
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        self.HeatkWhProduced.value = np.zeros(model.surfaceplant.plant_lifetime.value)  # initialize the array
+        self.HeatkWhExtracted.value = np.zeros(model.surfaceplant.plant_lifetime.value)  # initialize the array
+        self.PumpingkWh.value = np.zeros(model.surfaceplant.plant_lifetime.value)  # initialize the array
+
+        model.logger.info("complete " + str(__class__) + ": " + self.read_parameters.__name__)
 
     def verify(self, model: Model) -> int:
         """
@@ -726,74 +710,71 @@ class AGSSurfacePlant(SurfacePlant):
         :return: None
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
-        if (model.wellbores.Tini > 375.0) or (model.wellbores.numnonverticalsections.value > 1):
-            # must be a multilateral setup or too hot for CLGS, so must try to use the parent code.
-            super().Calculate(model)  # run the parent calculation
+
+        err = self.verify(model)
+        if err > 0:
+            model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
+            print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
+            sys.exit()
+        self.initialize(model)
+
+        self.Linear_production_temperature = model.wellbores.InterpolatedTemperatureArray
+        self.Linear_production_pressure = model.wellbores.InterpolatedPressureArray
+        self.AveProductionTemperature.value = np.average(self.Linear_production_temperature)
+        self.AveProductionPressure.value = np.average(self.Linear_production_pressure) / 1e5  # [bar]
+        if min(self.Linear_production_temperature) > model.wellbores.Tinj.value:
+            self.calculateheatproduction(model)
+            if self.End_use == EndUseOptions.ELECTRICITY:
+                self.calculateelectricityproduction(model)
         else:
-            err = self.verify(model)
-            if err > 0:
-                model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                sys.exit()
-            self.initialize(model)
+            # Production temperature went below injection temperature
+            self.error_codes = np.append(self.error_codes, 1000)
 
-            self.Linear_production_temperature = model.wellbores.InterpolatedTemperatureArray
-            self.Linear_production_pressure = model.wellbores.InterpolatedPressureArray
-            self.AveProductionTemperature.value = np.average(self.Linear_production_temperature)
-            self.AveProductionPressure.value = np.average(self.Linear_production_pressure) / 1e5  # [bar]
-            if min(self.Linear_production_temperature) > model.wellbores.Tinj.value:
-                self.calculateheatproduction(model)
-                if self.End_use == EndUseOptions.ELECTRICITY:
-                    self.calculateelectricityproduction(model)
-            else:
-                # Production temperature went below injection temperature
-                self.error_codes = np.append(self.error_codes, 1000)
+        # Now transfer the results to the GEOPHIRES-X arrays: Deep Copy the Arrays
+        model.wellbores.ProducedTemperature.value = self.Linear_production_temperature.copy()
+        self.TenteringPP.value = model.wellbores.ProducedTemperature.value
+        model.wellbores.PumpingPower.value = self.Annual_pumping_power.copy()
+        self.HeatExtracted.value = self.Instantaneous_heat_production.copy()
+        # convert to MW because that is what GEOPHIRES expects
+        self.HeatExtracted.value = self.HeatExtracted.value / 1000.0
+        # useful direct-use heat provided to application [MWth]
+        self.HeatProduced.value = self.HeatExtracted.value * self.enduseefficiencyfactor.value
+        for i in range(0, self.plant_lifetime.value):
+            self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
+                                                      (i * model.economics.timestepsperyear.value):((
+                                                        i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                      dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
+            self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
+                                                (i * model.economics.timestepsperyear.value):((
+                                                         i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
 
-            # Now transfer the results to the GEOPHIRES-X arrays: Deep Copy the Arrays
-            model.wellbores.ProducedTemperature.value = self.Linear_production_temperature.copy()
-            self.TenteringPP.value = model.wellbores.ProducedTemperature.value
-            model.wellbores.PumpingPower.value = self.Annual_pumping_power.copy()
-            self.HeatExtracted.value = self.Instantaneous_heat_production.copy()
-            # convert to MW because that is what GEOPHIRES expects
-            self.HeatExtracted.value = self.HeatExtracted.value / 1000.0
-            # useful direct-use heat provided to application [MWth]
-            self.HeatProduced.value = self.HeatExtracted.value * self.enduseefficiencyfactor.value
-            for i in range(0, self.plantlifetime.value):
-                self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
-                                                          (i * model.economics.timestepsperyear.value):((
-                                                            i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
-                self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
-                                                    (i * model.economics.timestepsperyear.value):((
-                                                             i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
+        self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
+            self.HeatkWhExtracted.value) * 3600 * 1E3 / 1E15
 
-            self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
-                self.HeatkWhExtracted.value) * 3600 * 1E3 / 1E15
+        if self.End_use != EndUseOptions.ELECTRICITY:
+            self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
+            for i in range(0, self.plant_lifetime.value):
+                self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
+                                                         (0 + i * model.economics.timestepsperyear.value):((
+                                                              i + 1) * model.economics.timestepsperyear.value) + 1],
+                                                         dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
+        else:
+            # copy some arrays so we have a GEOPHIRES equivalent
+            self.TotalkWhProduced.value = self.Annual_electricity_production.copy()
+            self.ElectricityProduced.value = self.Annual_electricity_production.copy() / 8760.0 / 1000.0
+            f = interp1d(np.arange(0, len(self.ElectricityProduced.value)), self.ElectricityProduced.value,
+                         fill_value="extrapolate")
+            self.ElectricityProduced.value = f(np.arange(0, 40, 1.0))
+            self.NetElectricityProduced.value = self.Inst_Net_Electricity_production.copy()
+            # covert to MW, which is what GEOPHIRES expects
+            self.NetElectricityProduced.value = self.NetElectricityProduced.value / 1000.0
+            f = interp1d(np.arange(0, len(self.NetElectricityProduced.value)), self.NetElectricityProduced.value,
+                         fill_value="extrapolate")
+            self.NetElectricityProduced.value = f(np.arange(0, 40, 1.0))
+            self.NetkWhProduced.value = (self.NetElectricityProduced.value * 1000.0) * 8760.0
 
-            if self.End_use != EndUseOptions.ELECTRICITY:
-                self.HeatkWhProduced.value = np.zeros(self.plantlifetime.value)
-                for i in range(0, self.plantlifetime.value):
-                    self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
-                                                             (0 + i * model.economics.timestepsperyear.value):((
-                                                                  i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                             dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilfactor.value
-            else:
-                # copy some arrays so we have a GEOPHIRES equivalent
-                self.TotalkWhProduced.value = self.Annual_electricity_production.copy()
-                self.ElectricityProduced.value = self.Annual_electricity_production.copy() / 8760.0 / 1000.0
-                f = interp1d(np.arange(0, len(self.ElectricityProduced.value)), self.ElectricityProduced.value,
-                             fill_value="extrapolate")
-                self.ElectricityProduced.value = f(np.arange(0, 40, 1.0))
-                self.NetElectricityProduced.value = self.Inst_Net_Electricity_production.copy()
-                # covert to MW, which is what GEOPHIRES expects
-                self.NetElectricityProduced.value = self.NetElectricityProduced.value / 1000.0
-                f = interp1d(np.arange(0, len(self.NetElectricityProduced.value)), self.NetElectricityProduced.value,
-                             fill_value="extrapolate")
-                self.NetElectricityProduced.value = f(np.arange(0, 40, 1.0))
-                self.NetkWhProduced.value = (self.NetElectricityProduced.value * 1000.0) * 8760.0
-
-                self.FirstLawEfficiency.value = (self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
+            self.FirstLawEfficiency.value = (self.NetElectricityProduced.value * 1000.0) / self.AveInstHeatProduction.value
 
         # handle errors
         if len(self.error_codes) > 0:
@@ -804,6 +785,3 @@ class AGSSurfacePlant(SurfacePlant):
             raise RuntimeError(base_msg)
 
         model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
-
-    def __str__(self):
-        return "AGSSurfacePlant"

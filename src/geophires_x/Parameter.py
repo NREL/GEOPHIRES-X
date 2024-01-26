@@ -916,7 +916,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                 toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
             except BaseException as ex:
                 print(str(ex))
-                print(
+                msg = (
                     "Warning: GEOPHIRES failed to initialize your units for "
                     + oparam.Name
                     + " to something it understands. You gave "
@@ -925,22 +925,15 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                     + " library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
                     + " Continuing without output conversion."
                 )
+                print(msg)
                 model.logger.warning(str(ex))
-                model.logger.warning(
-                    "Warning: GEOPHIRES failed to initialize your units for "
-                    + oparam.Name
-                    + " to something it understands. You gave "
-                    + str(newUnit.value)
-                    + " - Are the units defined for Pint"
-                    + " library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
-                    + " Continuing without output conversion."
-                )
+                model.logger.warning(msg)
                 return
             try:
                 toQ = fromQ.to(toQ)  # update The quantity to the units that the user wanted
             except BaseException as ex:
                 print(str(ex))
-                print(
+                msg = (
                     "Warning: GEOPHIRES failed to convert your units for "
                     + oparam.Name
                     + " to something it understands. You gave "
@@ -949,16 +942,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                     + " library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
                     + " Continuing without output conversion."
                 )
+                print(msg)
                 model.logger.warning(str(ex))
-                model.logger.warning(
-                    "Warning: GEOPHIRES failed to convert your units for "
-                    + oparam.Name
-                    + " to something it understands. You gave "
-                    + str(newUnit.value)
-                    + " - Are the units defined for Pint"
-                    + " library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
-                    + " Continuing without output conversion."
-                )
+                model.logger.warning(msg)
                 return
             # reset the value and current units
             oparam.value = toQ.magnitude
@@ -974,7 +960,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                     toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
                 except BaseException as ex:
                     print(str(ex))
-                    print(
+                    msg = (
                         "Warning: GEOPHIRES failed to initialize your units for "
                         + oparam.Name
                         + " to something it understands. You gave "
@@ -983,22 +969,15 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                         + " Pint library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
                         + " Continuing without output conversion."
                     )
+                    print(msg)
                     model.logger.warning(str(ex))
-                    model.logger.warning(
-                        "Warning: GEOPHIRES failed to initialize your units for "
-                        + oparam.Name
-                        + " to something it understands. You gave "
-                        + str(newUnit.value)
-                        + " - Are the units defined"
-                        + " for Pint library, or have you defined them in the user defined units file (GEOPHIRES3_newunits)?"
-                        + " Continuing without output conversion."
-                    )
+                    model.logger.warning(msg)
                     return
                 try:
                     toQ = fromQ.to(toQ)  # update The quantity to the units that the user wanted
                 except BaseException as ex:
                     print(str(ex))
-                    print(
+                    msg = (
                         "Warning: GEOPHIRES failed to convert your units for "
                         + oparam.Name
                         + " to something it understands. You gave "
@@ -1006,15 +985,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
                         + " - Are the units defined for Pint library, or have you defined them in the user defined"
                         + " units file (GEOPHIRES3_newunits)?    continuing without output conversion."
                     )
+                    print(msg)
                     model.logger.warning(str(ex))
-                    model.logger.warning(
-                        "Warning: GEOPHIRES failed to convert your units for "
-                        + oparam.Name
-                        + " to something it understands. You gave "
-                        + str(newUnit.value)
-                        + " - Are the units defined for Pint library, or have you defined them in the user defined"
-                        + " units file (GEOPHIRES3_newunits)?   continuing without output conversion."
-                    )
+                    model.logger.warning(msg)
                     return
 
                 # reset the value and current units
@@ -1086,26 +1059,15 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         # If we don't try some tricks to make it into something it does do recognize
         symbol = cc.get_symbol(currShort)
         if symbol is None:
-            print(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave "
-                + currType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
+            msg = (
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
+                f'You gave {currType}  - Are these currency units defined for forex-python? '
+                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'to continue. Cannot continue unless you do.  Exiting.'
             )
-            model.logger.critical(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave"
-                + currType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
-            )
+            print(msg)
+            model.logger.critical(msg)
+
             # FIXME raise appropriate exception instead of sys.exit()
             sys.exit()
 
@@ -1113,53 +1075,37 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         # if we have a symbol for a currency type, then the type is known to the library.  If we don't
         # try some tricks to make it into something it does do recognize
         if symbol is None:
-            print(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave "
-                + prefType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
+            msg = (
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
+                f'You gave {prefType}  - Are these currency units defined for forex-python? '
+                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'to continue. Cannot continue unless you do.  Exiting.'
             )
-            model.logger.critical(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave "
-                + prefType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
-            )
+
+            print(msg)
+            model.logger.critical(msg)
+
+            # FIXME raise appropriate exception instead of sys.exit()
             sys.exit()
         try:
             cr = CurrencyRates()
             conv_rate = cr.get_rate(prefShort, currShort)
         except BaseException as ex:
             print(str(ex))
-            print(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave "
-                + currType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
+
+            msg = (
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
+                f'You gave {currType} - Are these currency units defined for forex-python?'
+                f'or perhaps the currency server is down? '
+                f'Please change your units to {oparam.PreferredUnits.value} to continue.'
+                f'Cannot continue unless you do.  Exiting.'
             )
+
+            print(msg)
+
             model.logger.critical(str(ex))
-            model.logger.critical(
-                "Error: GEOPHIRES failed to convert your currency for "
-                + oparam.Name
-                + " to something it understands. You gave "
-                + currType
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + oparam.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
-            )
+            model.logger.critical(msg)
+
             # FIXME raise appropriate exception instead of sys.exit()
             sys.exit()
         oparam.value = Factor * conv_rate * float(oparam.value)

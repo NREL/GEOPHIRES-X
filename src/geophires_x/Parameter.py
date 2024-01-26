@@ -517,8 +517,8 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         if Old_valQ.units != New_valQ.units:  # do the transformation only if the units don't match
             ParamToModify.CurrentUnits = LookupUnits(currType)[0]
             try:
-                # #update The quantity to the preferred units,
-                # so we don't have to change the underlying calculations.  This assumes that PInt recognizes our unit.
+                # update the quantity to the preferred units,
+                # so we don't have to change the underlying calculations.  This assumes that Pint recognizes our unit.
                 # If we have a new unit, we have to add it to the Pint configuration text file
                 New_valQ.ito(Old_valQ)
             except BaseException as ex:

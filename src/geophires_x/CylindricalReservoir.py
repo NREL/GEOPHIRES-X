@@ -50,8 +50,8 @@ class CylindricalReservoir(Reservoir):
             PreferredUnits=LengthUnit.KILOMETERS,
             CurrentUnits=LengthUnit.KILOMETERS,
             Required=True,
-            ErrMessage="assume default cyclindrical reservoir input depth (3 km)",
-            ToolTipText="Depth of the outflow end of a cyclindrical reservoir"
+            ErrMessage="assume default cylindrical reservoir input depth (3 km)",
+            ToolTipText="Depth of the outflow end of a cylindrical reservoir"
         )
         self.Length = self.ParameterDict[self.Length.Name] = floatParameter(
             "Cylindrical Reservoir Length",
@@ -160,7 +160,7 @@ class CylindricalReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
         # for the variables in this class
@@ -183,7 +183,7 @@ class CylindricalReservoir(Reservoir):
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
-                    # just handle special cases for this class - the call to super set all thr values,
+                    # just handle special cases for this class - the call to super set all the values,
                     # including the value unique to this class
                     # if input depth is set and not output, assume output is the same as input
                     if ParameterToModify.Name == "Cylindrical Reservoir Input Depth":

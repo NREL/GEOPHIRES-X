@@ -552,7 +552,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
     return strUnit
 
 
-def ConvertUnitsBack(ParamToModify, model):
+def ConvertUnitsBack(ParamToModify: Parameter, model):
     """
     CovertUnitsBack: Converts units back to what the user specified they as.  It does this so that the user can see them
     in the report as the units they specified. We know that because CurrentUnits contains the desired units
@@ -680,7 +680,8 @@ def ConvertUnitsBack(ParamToModify, model):
                 prefQ = ParamToModify.PreferredUnits
             else:
                 # Make a Pint Quantity out of the old value
-                prefQ = ureg.Quantity(float(val), str(ParamToModify.PreferredUnits.value))
+                # prefQ = ureg.Quantity(float(val), str(ParamToModify.PreferredUnits.value))
+                prefQ = ParamToModify.PreferredUnits # FIXME WIP
             if isinstance(ParamToModify.CurrentUnits, pint.Quantity):
                 currQ = ParamToModify.CurrentUnits
             else:
@@ -688,13 +689,10 @@ def ConvertUnitsBack(ParamToModify, model):
         except BaseException as ex:
             print(str(ex))
             msg = (
-                "Error: GEOPHIRES failed to initialize your units for "
-                + ParamToModify.Name
-                + " to something it understands. You gave "
-                + currType
-                + " - Are the units defined for Pint library,"
-                + " or have you defined them in the user defined units file (GEOPHIRES3_newunits)?  Cannot continue."
-                + " Exiting."
+                f'Error: GEOPHIRES failed to initialize your units for {ParamToModify.Name} to something it understands. '
+                f'You gave {currType} - Are the units defined for Pint library, '
+                f'or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
+                f'Cannot continue. Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))
@@ -705,17 +703,14 @@ def ConvertUnitsBack(ParamToModify, model):
         try:
             # update The quantity back to the current units (the units that we started with) units
             # so the display will be in the right units
-            currQ = prefQ.to(currQ)
+            currQ = currQ.to(prefQ)
         except BaseException as ex:
             print(str(ex))
             msg = (
-                "Error: GEOPHIRES failed to convert your units for "
-                + ParamToModify.Name
-                + " to something it understands. You gave "
-                + currType
-                + " - Are the units defined for Pint library,"
-                + " or have you defined them in the user defined units file (GEOPHIRES3_newunits)?  Cannot continue."
-                + " Exiting."
+                f'Error: GEOPHIRES failed to convert your units for {ParamToModify.Name} to something it understands. '
+                f'You gave {currType}  - Are the units defined for Pint library, '
+                f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
+                f'Cannot continue. Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))

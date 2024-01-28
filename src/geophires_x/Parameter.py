@@ -565,7 +565,10 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
-    ParamToModify = get_param_with_units_converted_back(ParamToModify, model)
+    param_modified:Parameter = get_param_with_units_converted_back(ParamToModify, model)
+    ParamToModify.value = param_modified.value
+    ParamToModify.CurrentUnits = param_modified.CurrentUnits
+    ParamToModify.UnitType = param_modified.UnitsMatch
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 

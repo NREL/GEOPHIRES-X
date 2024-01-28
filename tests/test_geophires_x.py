@@ -165,7 +165,7 @@ class GeophiresXTestCase(BaseTestCase):
 
                     try:
                         self.assertDictEqual(
-                            geophires_result.result, expected_result.result, msg=f'Example test: {example_file_path}'
+                            expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
                         )
                     except AssertionError as ae:
                         # Float deviation is observed across processor architecture in some test cases - see example

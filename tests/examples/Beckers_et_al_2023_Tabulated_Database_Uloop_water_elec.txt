@@ -13,7 +13,7 @@ Number of Injection Wells, 0,		---- No injectors in a closed uloop
 All-in Vertical Drilling Costs, 1000.0
 All-in Nonvertical Drilling Costs, 1000.0
 Production Flow Rate per Well, 20, ---- kg/s for water / 40 kg/s for sCO2
-Cylindrical Reservoir Input Depth, 3000.0 meter, -----meters
+Cylindrical Reservoir Input Depth, 3.0  -----kilometers,
 Reservoir Depth, 3.0, -----kilometers
 Gradient 1, 60.0, ----deg.c/km
 Total Nonvertical Length, 9000, ----- m

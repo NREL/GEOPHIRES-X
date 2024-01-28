@@ -12,7 +12,7 @@ more details on the case study.
 
 Note: The GEOPHIRES v2.0 python code scans the input file for each necessary "parameter,
 value". Therefore, the user cannot change the string before the parameter value and the
-comma is the required delimeter. Each paramater string may only appear once in this
+comma is the required delimiter. Each parameter string may only appear once in this
 input file. However, the parameters can be in any order and comments can be added
 either by including extra lines or by typing it after the parameter value, separated by
 a comma (see examples below). If a necessary parameter is not provided, a default value

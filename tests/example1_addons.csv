@@ -44,8 +44,8 @@ ENGINEERING PARAMETERS,Pump efficiency,,80.0,
 ENGINEERING PARAMETERS,Injection temperature,,50.0,degC
 ENGINEERING PARAMETERS,Average production well temperature drop,,2.9,degC
 ENGINEERING PARAMETERS,Flowrate per production well,,55.0,kg/sec
-ENGINEERING PARAMETERS,Injection well casing ID,,0.005,meter
-ENGINEERING PARAMETERS,Production well casing ID,,0.005,meter
+ENGINEERING PARAMETERS,Injection well casing ID,,7,in
+ENGINEERING PARAMETERS,Production well casing ID,,7,in
 ENGINEERING PARAMETERS,Number of times redrilling,,0,count
 ENGINEERING PARAMETERS,Power plant type,,Supercritical ORC,
 RESOURCE CHARACTERISTICS,Maximum reservoir temperature,,400.0,degC

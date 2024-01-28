@@ -1,4 +1,5 @@
 # copyright, 2023, Malcolm I Ross
+import copy
 import os.path
 import sys
 from array import array
@@ -556,19 +557,25 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     """
     CovertUnitsBack: Converts units back to what the user specified they as.  It does this so that the user can see them
     in the report as the units they specified. We know that because CurrentUnits contains the desired units
-    :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
+    :param param: The Parameter that will be modified (assuming it passes validation and conversion) - this is
         the object that will be modified by this method - see Parameter class for details on the fields in it
-    :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
+    :type param: :class:`~geophires_x.Parameter.Parameter`
     :param model: The container class of the application, giving access to everything else, including the logger
     :type model: :class:`~geophires_x.Model.Model`
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
+    ParamToModify = get_param_with_units_converted_back(ParamToModify, model)
+    model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
+
+
+def get_param_with_units_converted_back(param: Parameter, model) -> Parameter:
+    param_with_units_converted_back = copy.deepcopy(param)
 
     # deal with the currency case
-    if ParamToModify.UnitType in [Units.CURRENCY, Units.CURRENCYFREQUENCY, Units.COSTPERMASS, Units.ENERGYCOST]:
-        prefType = ParamToModify.PreferredUnits.value
-        currType = ParamToModify.CurrentUnits
+    if param.UnitType in [Units.CURRENCY, Units.CURRENCYFREQUENCY, Units.COSTPERMASS, Units.ENERGYCOST]:
+        prefType = param.PreferredUnits.value
+        currType = param.CurrentUnits
 
         # First we need to deal the possibility that there is a suffix on the units (like /yr, kwh, or /tonne)
         # that will make it not be recognized by the currency conversion engine.
@@ -620,10 +627,10 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
         if prefShort == currShort:
             # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
             # so just do the simple factor conversion
-            ParamToModify.value = ParamToModify.value * Factor
-            ParamToModify.UnitsMatch = True
-            ParamToModify.CurrentUnits = currType
-            return
+            param_with_units_converted_back.value = param.value * Factor
+            param_with_units_converted_back.UnitsMatch = True
+            param_with_units_converted_back.CurrentUnits = currType
+            return param_with_units_converted_back
 
         # Now lets deal with the case where the units still don't match, so we have a real currency conversion,
         # like USD to EUR
@@ -636,60 +643,60 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
             print(str(ex))
             print(
                 "Error: GEOPHIRES failed to convert your currency for "
-                + ParamToModify.Name
+                + param.Name
                 + " to something it understands. You gave "
                 + currType
                 + " - Are these currency units defined for"
                 + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + ParamToModify.PreferredUnits.value
+                + param.PreferredUnits.value
                 + "to continue. Cannot continue unless you do.  Exiting."
             )
             model.logger.critical(str(ex))
             model.logger.critical(
                 "Error: GEOPHIRES failed to convert your currency for "
-                + ParamToModify.Name
+                + param.Name
                 + " to something it understands. You gave "
                 + currType
                 + " - Are these currency units defined for"
                 + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + ParamToModify.PreferredUnits.value
+                + param.PreferredUnits.value
                 + "to continue. Cannot continue unless you do.  Exiting."
             )
             # FIXME raise appropriate exception instead of sys.exit()
             sys.exit()
-        ParamToModify.value = (conv_rate * float(ParamToModify.value)) / prefFactor
-        ParamToModify.UnitsMatch = False
-        model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
-        return
+
+        param_with_units_converted_back.value = (conv_rate * float(param.value)) / prefFactor
+        param_with_units_converted_back.UnitsMatch = False
+        return param_with_units_converted_back
 
     else:  # must be something other than currency
-        if isinstance(ParamToModify.CurrentUnits, pint.Quantity):
-            val = ParamToModify.CurrentUnits.value
-            currType = str(ParamToModify.CurrentUnits.value)
+        if isinstance(param.CurrentUnits, pint.Quantity):
+            val = param.CurrentUnits.value
+            currType = str(param.CurrentUnits.value)
         else:
-            if " " in ParamToModify.CurrentUnits.value:
-                parts = ParamToModify.CurrentUnits.value.split(' ')
+            if " " in param.CurrentUnits.value:
+                parts = param.CurrentUnits.value.split(' ')
                 val = parts[0].strip()
                 currType = parts[1].strip()
             else:
-                val = ParamToModify.value
-                currType = ParamToModify.CurrentUnits.value
+                val = param.value
+                currType = param.CurrentUnits.value
 
         try:
-            if isinstance(ParamToModify.PreferredUnits, pint.Quantity):
-                prefQ = ParamToModify.PreferredUnits
+            if isinstance(param.PreferredUnits, pint.Quantity):
+                prefQ = param.PreferredUnits
             else:
                 # Make a Pint Quantity out of the old value
                 # prefQ = ureg.Quantity(float(val), str(ParamToModify.PreferredUnits.value))
-                prefQ = ParamToModify.PreferredUnits # FIXME WIP
-            if isinstance(ParamToModify.CurrentUnits, pint.Quantity):
-                currQ = ParamToModify.CurrentUnits
+                prefQ = param.PreferredUnits # FIXME WIP
+            if isinstance(param.CurrentUnits, pint.Quantity):
+                currQ = param.CurrentUnits
             else:
                 currQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (
-                f'Error: GEOPHIRES failed to initialize your units for {ParamToModify.Name} to something it understands. '
+                f'Error: GEOPHIRES failed to initialize your units for {param.Name} to something it understands. '
                 f'You gave {currType} - Are the units defined for Pint library, '
                 f'or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
                 f'Cannot continue. Exiting.'
@@ -707,7 +714,7 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
         except BaseException as ex:
             print(str(ex))
             msg = (
-                f'Error: GEOPHIRES failed to convert your units for {ParamToModify.Name} to something it understands. '
+                f'Error: GEOPHIRES failed to convert your units for {param.Name} to something it understands. '
                 f'You gave {currType}  - Are the units defined for Pint library, '
                 f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
                 f'Cannot continue. Exiting.'
@@ -720,11 +727,12 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
             sys.exit()
 
         # reset the values
-        if ParamToModify.value != currQ.magnitude:
-            ParamToModify.value = currQ.magnitude
-            ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+        if param.value != currQ.magnitude:
+            param_with_units_converted_back.value = currQ.magnitude
+            param_with_units_converted_back.CurrentUnits = param.PreferredUnits
 
-    model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
+    return param_with_units_converted_back
+
 
 
 def LookupUnits(sUnitText: str):

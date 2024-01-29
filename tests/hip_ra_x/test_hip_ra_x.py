@@ -32,6 +32,7 @@ from hip_ra_x.hip_ra_x import HIP_RA_X
 class HipRaXTestCase(BaseTestCase):
     def test_hip_ra_x_examples(self):
         example_files = self._list_test_files_dir(test_files_dir='./examples')
+        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
 
         client = HipRaXClient()
 
@@ -131,15 +132,15 @@ class HipRaXTestCase(BaseTestCase):
 
         # Assert that the output file is created
         # ruff: noqa: PTH110
-        assert os.path.exists('../HIP.out')
+        assert os.path.exists('HIP.out')
 
         # Assert that the output file is not empty
         # ruff: noqa: PTH202
-        assert os.path.getsize('../HIP.out') > 0
+        assert os.path.getsize('HIP.out') > 0
 
         # Clean up the output file
         # ruff: noqa: PTH107
-        os.remove('../HIP.out')
+        os.remove('HIP.out')
 
     def test_converts_units_back(self):
         """Converts Units back to PreferredUnits, if required"""
@@ -169,7 +170,7 @@ class HipRaXTestCase(BaseTestCase):
         hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
 
-        with open('../HIP.out') as f:
+        with open('HIP.out') as f:
             content = f.readlines()
             for line in content:
                 assert line.count(' ') == 3
@@ -202,7 +203,7 @@ class HipRaXTestCase(BaseTestCase):
         """
         client = HipRaClient()
         result: HipRaResult = client.get_hip_ra_result(
-            HipRaInputParameters(self._get_test_file_path('../examples/HIPexample1.txt'))
+            HipRaInputParameters(self._get_test_file_path('./examples/HIP-RA-X_example1.txt'))
         )
         with open(result.output_file_path) as f:
             content = f.read()

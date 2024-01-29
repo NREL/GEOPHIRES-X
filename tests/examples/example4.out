@@ -44,8 +44,8 @@ Simulation Metadata
       User-provided production well temperature drop
       Constant production well temperature drop:              0.0 degC
       Flowrate per production well:                         110.0 kg/sec
-      Injection well casing ID:                               0.006 meter
-      Production well casing ID:                              0.006 meter
+      Injection well casing ID:                               9.625 in
+      Production well casing ID:                              9.625 in
       Number of times redrilling:                             0
       Power plant type:                                       Subcritical ORC
 

@@ -46,8 +46,8 @@ Simulation Metadata
       User-provided production well temperature drop
       Constant production well temperature drop:              5.0 degC
       Flowrate per production well:                          50.0 kg/sec
-      Injection well casing ID:                               0.005 meter
-      Production well casing ID:                              0.005 meter
+      Injection well casing ID:                               8.5 in
+      Production well casing ID:                              8.5 in
       Number of times redrilling:                             0
 
 

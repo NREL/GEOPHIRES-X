@@ -600,7 +600,7 @@ class Reservoir:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # Deal with all the parameter values that the user has provided.  They should really only provide values
         # that they want to change from the default values, but they can provide a value that is already set
@@ -619,8 +619,12 @@ class Reservoir:
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
+
                     # Before we change the parameter, let's assume that the unit preferences will match -
                     # if they don't, the later code will fix this.
+                    # TODO: refactor GEOPHIRES such that parameters are read in immutably and only accessed with
+                    #  explicit units, with conversion only occurring in the getter as necessary
+
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this handles all non-special cases
 
@@ -651,7 +655,8 @@ class Reservoir:
                             # SUTRA Simulator
                             ParameterToModify.value = ReservoirModel.SUTRA
 
-                    elif ParameterToModify.Name == "Reservoir Depth":
+                    elif ParameterToModify.Name == 'Reservoir Depth':
+                        # FIXME TODO only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
                         ParameterToModify.UnitsMatch = False
@@ -728,7 +733,7 @@ class Reservoir:
         else:
             model.logger.info("No parameters read because no content provided")
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     @lru_cache(maxsize=1024)
     def Calculate(self, model: Model) -> None:
@@ -739,7 +744,7 @@ class Reservoir:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -827,4 +832,4 @@ class Reservoir:
         self.InitialReservoirHeatContent.value = self.resvolcalc.value * self.rhorock.value * self.cprock.value * (
             self.Trock.value - model.wellbores.Tinj.value) / 1E15  # 10^15 J
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

@@ -644,7 +644,7 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the default parameters
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
         # for the variables in this class because the call to the super.readparameters will set all the variables,
@@ -679,28 +679,28 @@ class AGSWellBores(WellBores):
 
         # handle error checking and special cases:
         if model.reserv.numseg.value > 1:
-            print("Warning: CLGS model can only handle a single layer gradient segment. Number of Segments set to 1, \
-                Gradient set to Gradient[0], and Depth set to Reservoir Depth.")
-            model.logger.warning("Warning: CLGS model can only handle a single layer gradient segment. Number of Segments set to 1, \
-                Gradient set to Gradient[0], and Depth set to Reservoir Depth.")
+            msg = "Warning: CLGS model can only handle a single layer gradient segment. Number of Segments set to 1, \
+                Gradient set to Gradient[0], and Depth set to Reservoir Depth."
+            print(msg)
+            model.logger.warning(msg)
             model.reserv.numseg.value = 1
 
         if self.ninj.value > 0:
-            print("Warning: CLGS model considers the only the production wellbore parameters. Anything related to the \
-                injection wellbore is ignored.")
-            model.logger.warning("Warning: CLGS model considers the only the production well bore parameters. Anything related to the \
-                injection wellbore is ignored.")
+            msg = "Warning: CLGS model considers the only the production wellbore parameters. Anything related to the \
+                injection wellbore is ignored."
+            print(msg)
+            model.logger.warning(msg)
 
         if self.nprod.value != 1:
-            print("Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). \
-                Number of production wellboreset set 1.")
-            model.logger.warning("Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). \
-                Number of production wellboreset set 1.")
+            msg = "Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). \
+                Number of production wellboreset set 1."
+            print(msg)
+            model.logger.warning(msg)
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
         self.krock = model.reserv.krock.value  # same units are GEOPHIRES
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     # code from Koenraad
     def calculatedrillinglengths(self, model) -> tuple:

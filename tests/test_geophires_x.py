@@ -165,7 +165,7 @@ class GeophiresXTestCase(BaseTestCase):
 
                     try:
                         self.assertDictEqual(
-                            geophires_result.result, expected_result.result, msg=f'Example test: {example_file_path}'
+                            expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
                         )
                     except AssertionError as ae:
                         # Float deviation is observed across processor architecture in some test cases - see example
@@ -231,3 +231,22 @@ class GeophiresXTestCase(BaseTestCase):
 
     def test_RTES_name(self):
         self.assertEqual(PlantType.RTES.value, 'Reservoir Thermal Energy Storage')
+
+    def test_input_unit_conversion(self):
+        client = GeophiresXClient()
+
+        result_meters_input = client.get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_meters.txt'))
+            )
+        )
+        del result_meters_input.result['metadata']
+
+        result_kilometers_input = client.get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_kilometers.txt'))
+            )
+        )
+        del result_kilometers_input.result['metadata']
+
+        self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)

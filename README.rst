@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.3.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.3.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.3.0...main
+    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.3.1...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -298,3 +298,5 @@ you may want to follow `the Development instructions <CONTRIBUTING.rst#developme
 (You can also create a fork after doing an editable install so don't worry about picking this method if you're unsure.)
 
 .. TODO feedback section - why user feedback is important/valuable, how to file issues/contact authors
+
+.. TODO FAQ/trivia section - "HDR" naming (HDR.out, HDR.json) is for Hot Dry Rock

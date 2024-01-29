@@ -14,7 +14,7 @@ Heat Transfer Fluid, 2, ----sCO2
 Production Flow Rate per Well, 40, ---- kg/s for water / 40 kg/s for sCO2
 All-in Vertical Drilling Costs, 1000.0
 All-in Nonvertical Drilling Costs, 1000.0
-Cylindrical Reservoir Input Depth, 3000.0 meter, -----meters
+Cylindrical Reservoir Input Depth, 3000 meter,
 Reservoir Depth, 3.0, -----kilometers
 Gradient 1, 0.06, ----deg.c/m
 Total Horizontal Length, 9000, ----- m

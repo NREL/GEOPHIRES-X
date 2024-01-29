@@ -45,8 +45,8 @@ Simulation Metadata
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               2.0 degC
       Flowrate per production well:                          40.0 kg/sec
-      Injection well casing ID:                               0.005 meter
-      Production well casing ID:                              0.005 meter
+      Injection well casing ID:                               7 in
+      Production well casing ID:                              7 in
       Number of times redrilling:                             0
 
 

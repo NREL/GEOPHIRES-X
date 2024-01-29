@@ -346,7 +346,7 @@ class GeophiresXClientTestCase(BaseTestCase):
             result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
             with open(result_file, 'w', newline='', encoding='utf-8') as rf:
                 rf.write(as_csv)
-                self.assertFileContentsEqual(result_file, self._get_test_file_path(expected_csv_file_path))
+                self.assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
             ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),

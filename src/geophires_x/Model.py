@@ -56,7 +56,7 @@ class Model(object):
         self.logger = logging.getLogger('root')
 
         if enable_geophires_logging_config:
-            logging.config.fileConfig(Path('logging.conf'))
+            logging.config.fileConfig(Path(Path(__file__).parent,'logging.conf'))
             self.logger.setLevel(logging.INFO)
 
         self.logger.info(f'Init {__class__}: {__name__}')

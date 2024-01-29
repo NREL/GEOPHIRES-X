@@ -298,3 +298,5 @@ you may want to follow `the Development instructions <CONTRIBUTING.rst#developme
 (You can also create a fork after doing an editable install so don't worry about picking this method if you're unsure.)
 
 .. TODO feedback section - why user feedback is important/valuable, how to file issues/contact authors
+
+.. TODO FAQ/trivia section - "HDR" naming (HDR.out, HDR.json) is for Hot Dry Rock

@@ -6,6 +6,7 @@ class CylindricalReservoir(Reservoir):
     The CylindricalReservoir class is a subclass of the Reservoir class in a straightforward conduction-only model.
     It inherits from the primary Reservoir model but offers new parameters and calculations.
     """
+
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -24,7 +25,7 @@ class CylindricalReservoir(Reservoir):
         :return: None
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
-        super().__init__(model)   # initialize the parent parameters and variables
+        super().__init__(model)  # initialize the parent parameters and variables
 
         self.InputDepth = self.ParameterDict[self.InputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Input Depth",
@@ -37,7 +38,7 @@ class CylindricalReservoir(Reservoir):
             CurrentUnits=LengthUnit.KILOMETERS,
             Required=True,
             ErrMessage="assume default cylindrical reservoir depth (3 km)",
-            ToolTipText="Depth of the inflow end of a cylindrical reservoir"
+            ToolTipText="Depth of the inflow end of a cylindrical reservoir",
         )
 
         self.OutputDepth = self.ParameterDict[self.OutputDepth.Name] = floatParameter(
@@ -50,8 +51,8 @@ class CylindricalReservoir(Reservoir):
             PreferredUnits=LengthUnit.KILOMETERS,
             CurrentUnits=LengthUnit.KILOMETERS,
             Required=True,
-            ErrMessage="assume default cyclindrical reservoir input depth (3 km)",
-            ToolTipText="Depth of the outflow end of a cyclindrical reservoir"
+            ErrMessage="assume default cylindrical reservoir input depth (3 km)",
+            ToolTipText="Depth of the outflow end of a cylindrical reservoir",
         )
         self.Length = self.ParameterDict[self.Length.Name] = floatParameter(
             "Cylindrical Reservoir Length",
@@ -64,7 +65,7 @@ class CylindricalReservoir(Reservoir):
             CurrentUnits=LengthUnit.KILOMETERS,
             Required=True,
             ErrMessage="assume default cylindrical reservoir length (4 km)",
-            ToolTipText="Length of cylindrical reservoir"
+            ToolTipText="Length of cylindrical reservoir",
         )
         self.RadiusOfEffect = self.ParameterDict[self.RadiusOfEffect.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect",
@@ -76,20 +77,21 @@ class CylindricalReservoir(Reservoir):
             PreferredUnits=LengthUnit.METERS,
             CurrentUnits=LengthUnit.METERS,
             ErrMessage="assume default cylindrical reservoir radius of effect (30 m)",
-            ToolTipText="The radius of effect - the distance into the rock from the center of the cylinder that will" +
-                        " be perturbed by at least 1 C"
+            ToolTipText="The radius of effect - the distance into the rock from the center of the cylinder that will"
+            + " be perturbed by at least 1 C",
         )
         self.RadiusOfEffectFactor = self.ParameterDict[self.RadiusOfEffectFactor.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect Factor",
             value=1.0,
             DefaultValue=1.0,
-            Min=0.0, Max=10.0,
+            Min=0.0,
+            Max=10.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default cyclindrical reservoir radius of effect reduction factor (0.1)",
-            ToolTipText="The radius of effect reduction factor - to account for the fact that we cannot extract 100%" +
-                        " of the heat in the cylinder."
+            ToolTipText="The radius of effect reduction factor - to account for the fact that we cannot extract 100%"
+            + " of the heat in the cylinder.",
         )
 
         sclass = str(__class__).replace("<class \'", "")
@@ -107,47 +109,46 @@ class CylindricalReservoir(Reservoir):
             CurrentUnits=LengthUnit.KILOMETERS,
             Required=True,
             ErrMessage="assume default cyclindrical reservoir depth (3 km)",
-            ToolTipText="Depth of the inflow end of a cyclindrical reservoir"
+            ToolTipText="Depth of the inflow end of a cyclindrical reservoir",
         )
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
             value=0.0,
             DefaultValue=0.0,
-            Min=0.0, Max=0.99,
+            Min=0.0,
+            Max=0.99,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default water loss fraction (0)",
-            ToolTipText="Fraction of water lost in the reservoir defined as (total geofluid lost)/(total geofluid produced).")
+            ToolTipText="Fraction of water lost in the reservoir defined as (total geofluid lost)/(total geofluid produced).",
+        )
 
         # Results - used by other objects or printed in output downstream
         self.SurfaceArea = self.OutputParameterDict[self.SurfaceArea.Name] = OutputParameter(
             "Cylindrical Reservoir Surface Area",
             UnitType=Units.AREA,
             PreferredUnits=AreaUnit.METERS2,
-            CurrentUnits=AreaUnit.METERS2
+            CurrentUnits=AreaUnit.METERS2,
         )
         self.averagegradient = self.OutputParameterDict[self.averagegradient.Name] = OutputParameter(
-            "averagegradient",
-            UnitType=Units.NONE
+            "averagegradient", UnitType=Units.NONE
         )
         self.timevector = self.OutputParameterDict[self.timevector.Name] = OutputParameter(
-            "Time Vector",
-            value=[],
-            UnitType=Units.NONE
+            "Time Vector", value=[], UnitType=Units.NONE
         )
         self.Tresoutput = self.OutputParameterDict[self.Tresoutput.Name] = OutputParameter(
             "Reservoir Temperature History",
             value=[],
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS
+            CurrentUnits=TemperatureUnit.CELSIUS,
         )
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "CylindricalReservoir"
+        return 'CylindricalReservoir'
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -160,41 +161,31 @@ class CylindricalReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
-        super().read_parameters(model)
-        # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
-        # for the variables in this class
-        # because the call to the super.readparameters will set all the variables, including the ones that are
-        # specific to this class
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-        # Deal with all the parameter values that the user has provided.  They should really only provide values
-        # that they want to change from the default values, but they can provide a value that is already set because
-        # it is a default value set in __init__.  It will ignore those.
-        # This also deals with all the special cases that need to be taken care of after a value has been
-        # read in and checked.
-        # If you choose to subclass this master class, you can also choose to override this method (or not),
-        # and if you do, do it before or after you call you own version of this method.  If you do, you can also
-        # choose to call this method from you class, which can effectively modify all these
-        # superclass parameters in your class.
+        super().read_parameters(model)
+
+        # Deal with special cases that need to be taken care of after a value has been read in and checked.
 
         if len(model.InputParameters) > 0:
-            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
             for item in self.ParameterDict.items():
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
-                    # just handle special cases for this class - the call to super set all thr values,
-                    # including the value unique to this class
-                    # if input depth is set and not output, assume output is the same as input
-                    if ParameterToModify.Name == "Cylindrical Reservoir Input Depth":
-                        if "Cylindrical Reservoir Output Depth" not in model.InputParameters:
+                    # Just handle special cases for this class - the call to super set all the values,
+                    # including the value unique to this class.
+
+                    if ParameterToModify.Name == 'Cylindrical Reservoir Input Depth':
+                        if 'Cylindrical Reservoir Output Depth' not in model.InputParameters:
+                            # If input depth is set and not output, assume output is the same as input
                             self.OutputDepth.value = self.InputDepth.value
         else:
-            model.logger.info("No parameters read because no content provided")
-            model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
+            model.logger.info('No parameters read because no content provided')
+
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     @lru_cache(maxsize=1024)
-    def Calculate(self, model:Model) -> None:
+    def Calculate(self, model: Model) -> None:
         """
         The Calculate function is where all the calculations are done.
         This function can be called multiple times, and will only recalculate what has changed each time it is called.
@@ -213,26 +204,40 @@ class CylindricalReservoir(Reservoir):
         model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
 
         # specify time-stepping vectors
-        self.timevector.value = np.linspace(0, model.surfaceplant.plant_lifetime.value,
-                                            model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value)
+        self.timevector.value = np.linspace(
+            0,
+            model.surfaceplant.plant_lifetime.value,
+            model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value,
+        )
         self.averagegradient.value = self.gradient.value[0]
 
         self.Trock.value = self.Tsurf.value + (self.gradient.value[0] * (self.InputDepth.value * 1000.0))
         # initialize with the Initial reservoir temperature
         self.Tresoutput.value = np.array(len(self.timevector.value) * [self.Trock.value])
         # depth in this case is actually the total length of the drilled assembly
-        self.depth.value = self.InputDepth.value/1000.0 + self.OutputDepth.value + self.Length.value
+        self.depth.value = self.InputDepth.value / 1000.0 + self.OutputDepth.value + self.Length.value
         # Total volume of all laterals but hollow cylinder - doesn't include drilled-out area, units = m3
-        self.resvolcalc.value = model.wellbores.numnonverticalsections.value * math.pi * (self.Length.value * 1000.0) *\
-                                ((pow(self.RadiusOfEffect.value, 2)) - pow(model.wellbores.prodwelldiam.value, 2))
-        self.SurfaceArea.value = (2.0 * math.pi * self.RadiusOfEffect.value * (self.Length.value * 1000.0)) +\
-                                 (2.0 * math.pi * pow(self.RadiusOfEffect.value, 2))    # m3
-        self.InitialReservoirHeatContent.value = (self.RadiusOfEffectFactor.value *
-                                                  self.resvolcalc.value*self.rhorock.value*self.cprock.value*
-                                                  (self.Trock.value-model.wellbores.Tinj.value))/1E15 # 10^15 J
-        self.cpwater.value = heatcapacitywater(model.wellbores.Tinj.value*0.5 +
-                                               (self.Trock.value*0.9+model.wellbores.Tinj.value*0.1)*0.5)
-        self.rhowater.value = densitywater(model.wellbores.Tinj.value*0.5 +
-                                                        (self.Trock.value*0.9+model.wellbores.Tinj.value*0.1)*0.5)
+        self.resvolcalc.value = (
+            model.wellbores.numnonverticalsections.value
+            * math.pi
+            * (self.Length.value * 1000.0)
+            * ((pow(self.RadiusOfEffect.value, 2)) - pow(model.wellbores.prodwelldiam.value, 2))
+        )
+        self.SurfaceArea.value = (2.0 * math.pi * self.RadiusOfEffect.value * (self.Length.value * 1000.0)) + (
+            2.0 * math.pi * pow(self.RadiusOfEffect.value, 2)
+        )  # m3
+        self.InitialReservoirHeatContent.value = (
+            self.RadiusOfEffectFactor.value
+            * self.resvolcalc.value
+            * self.rhorock.value
+            * self.cprock.value
+            * (self.Trock.value - model.wellbores.Tinj.value)
+        ) / 1e15  # 10^15 J
+        self.cpwater.value = heatcapacitywater(
+            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+        )
+        self.rhowater.value = densitywater(
+            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+        )
 
         model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")

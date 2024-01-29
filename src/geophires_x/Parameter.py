@@ -485,10 +485,8 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         try:
             # Make a Pint Quantity out of the old value: the amount of the unit doesn't matter,
             # just the units, so I set the amount to 0
-            from pint.registry import Quantity
-
-            Old_valQ: Quantity = ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
-            New_valQ: Quantity = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
+            Old_valQ = ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
+            New_valQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (

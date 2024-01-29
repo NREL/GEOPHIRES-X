@@ -31,7 +31,7 @@ from hip_ra_x.hip_ra_x import HIP_RA_X
 # noinspection PyTypeChecker
 class HipRaXTestCase(BaseTestCase):
     def test_hip_ra_x_examples(self):
-        example_files = self._list_test_files_dir(test_files_dir='../examples')
+        example_files = self._list_test_files_dir(test_files_dir='./examples')
 
         client = HipRaXClient()
 
@@ -41,7 +41,7 @@ class HipRaXTestCase(BaseTestCase):
         for example_file_path in example_files:
             if example_file_path.startswith('HIP-RA-X_example') and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
-                    input_file_path = self._get_test_file_path(Path('../examples', example_file_path))
+                    input_file_path = self._get_test_file_path(Path('./examples', example_file_path))
                     result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
 
                     assert result is not None

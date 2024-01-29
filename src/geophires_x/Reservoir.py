@@ -651,7 +651,7 @@ class Reservoir:
                             # SUTRA Simulator
                             ParameterToModify.value = ReservoirModel.SUTRA
 
-                    elif ParameterToModify.Name == "Reservoir Depth":
+                    elif ParameterToModify.Name == 'Reservoir Depth':
                         # FIXME only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS

@@ -31,7 +31,7 @@ class HIP_RATestCase(BaseTestCase):
                     self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
 
     def test_result_parsing_1(self):
-        result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))
+        result = HipRaResult(self._get_test_file_path('hip_ra_x/hip-result_example-1.out'))
         self.assertIsNotNone(result.result)
         self.assertDictEqual(
             result.result,
@@ -50,7 +50,7 @@ class HIP_RATestCase(BaseTestCase):
         )
 
     def test_result_parsing_2(self):
-        result = HipRaResult(self._get_test_file_path('hip-result_example-2.out'))
+        result = HipRaResult(self._get_test_file_path('hip_ra_x/hip-result_example-2.out'))
         self.assertIsNotNone(result.result)
         self.assertDictEqual(
             result.result,

@@ -1,3 +1,4 @@
+import inspect
 import os.path
 import unittest
 
@@ -6,7 +7,7 @@ class BaseTestCase(unittest.TestCase):
     maxDiff = None
 
     def _get_test_file_path(self, test_file_name) -> str:
-        return os.path.join(os.path.abspath(os.path.dirname(__file__)), test_file_name)
+        return os.path.join(os.path.abspath(os.path.dirname(inspect.getfile(self.__class__))), test_file_name)
 
     def _get_test_file_content(self, test_file_name):
         with open(self._get_test_file_path(test_file_name)) as f:

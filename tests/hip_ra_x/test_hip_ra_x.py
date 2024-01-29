@@ -7,6 +7,8 @@ import unittest
 import uuid
 from pathlib import Path
 
+from tests.base_test_case import BaseTestCase
+
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import floatParameter
@@ -24,14 +26,12 @@ from hip_ra import HipRaResult
 from hip_ra.HIP_RA import HIP_RA
 from hip_ra_x import HipRaXClient
 from hip_ra_x.hip_ra_x import HIP_RA_X
-from tests.base_test_case import BaseTestCase
 
 
 # noinspection PyTypeChecker
 class HipRaXTestCase(BaseTestCase):
-    @unittest.skip(reason='FIXME HIP-RA-X WIP')
     def test_hip_ra_x_examples(self):
-        example_files = self._list_test_files_dir(test_files_dir='examples')
+        example_files = self._list_test_files_dir(test_files_dir='../examples')
 
         client = HipRaXClient()
 
@@ -41,14 +41,14 @@ class HipRaXTestCase(BaseTestCase):
         for example_file_path in example_files:
             if example_file_path.startswith('HIP-RA-X_example') and '.out' not in example_file_path:
                 with self.subTest(msg=example_file_path):
-                    input_file_path = self._get_test_file_path(Path('examples', example_file_path))
+                    input_file_path = self._get_test_file_path(Path('../examples', example_file_path))
                     result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
 
                     assert result is not None
                     expected_result_output_file_path = get_output_file_for_example(input_file_path)
 
                     expected_result = HipRaResult(expected_result_output_file_path)
-                    self.assertDictEqual(result.result, expected_result.result)
+                    self.assertDictEqual(expected_result.result, result.result)
 
                     # TODO
                     # self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
@@ -131,15 +131,15 @@ class HipRaXTestCase(BaseTestCase):
 
         # Assert that the output file is created
         # ruff: noqa: PTH110
-        assert os.path.exists('HIP.out')
+        assert os.path.exists('../HIP.out')
 
         # Assert that the output file is not empty
         # ruff: noqa: PTH202
-        assert os.path.getsize('HIP.out') > 0
+        assert os.path.getsize('../HIP.out') > 0
 
         # Clean up the output file
         # ruff: noqa: PTH107
-        os.remove('HIP.out')
+        os.remove('../HIP.out')
 
     def test_converts_units_back(self):
         """Converts Units back to PreferredUnits, if required"""
@@ -169,7 +169,7 @@ class HipRaXTestCase(BaseTestCase):
         hip_ra = self._new_hip_ra_test_instance()
         hip_ra.PrintOutputs()
 
-        with open('HIP.out') as f:
+        with open('../HIP.out') as f:
             content = f.readlines()
             for line in content:
                 assert line.count(' ') == 3
@@ -202,7 +202,7 @@ class HipRaXTestCase(BaseTestCase):
         """
         client = HipRaClient()
         result: HipRaResult = client.get_hip_ra_result(
-            HipRaInputParameters(self._get_test_file_path('examples/HIPexample1.txt'))
+            HipRaInputParameters(self._get_test_file_path('../examples/HIPexample1.txt'))
         )
         with open(result.output_file_path) as f:
             content = f.read()

@@ -673,8 +673,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
                 prefQ = param.PreferredUnits
             else:
                 # Make a Pint Quantity out of the old value
-                # prefQ = ureg.Quantity(float(val), str(ParamToModify.PreferredUnits.value))
-                prefQ = param.PreferredUnits  # FIXME WIP
+                prefQ = param.PreferredUnits
             if isinstance(param.CurrentUnits, pint.Quantity):
                 currQ = param.CurrentUnits
             else:

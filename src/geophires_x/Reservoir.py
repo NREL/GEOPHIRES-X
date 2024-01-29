@@ -619,8 +619,12 @@ class Reservoir:
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
+
                     # Before we change the parameter, let's assume that the unit preferences will match -
-                    # if they don't, the later code will fix this. FIXME there is a bug in this fixing
+                    # if they don't, the later code will fix this.
+                    # TODO: refactor GEOPHIRES such that parameters are read in immutably and only accessed with
+                    #  explicit units, with conversion only occurring in the getter as necessary
+
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this handles all non-special cases
 
@@ -652,7 +656,7 @@ class Reservoir:
                             ParameterToModify.value = ReservoirModel.SUTRA
 
                     elif ParameterToModify.Name == 'Reservoir Depth':
-                        # FIXME only convert if current units are km
+                        # FIXME TODO only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
                         ParameterToModify.UnitsMatch = False

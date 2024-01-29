@@ -68,7 +68,6 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir = model.reserv
         self.assertIsNotNone(reservoir.InputDepth)
 
-        # FIXME WIP input files should handle units (they seemingly do not as of 2024-01-28)
         self.assertEqual(3.0, reservoir.InputDepth.value)
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
 

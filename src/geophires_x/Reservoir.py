@@ -620,7 +620,7 @@ class Reservoir:
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
                     # Before we change the parameter, let's assume that the unit preferences will match -
-                    # if they don't, the later code will fix this.
+                    # if they don't, the later code will fix this. FIXME there is a bug in this fixing
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this handles all non-special cases
 
@@ -652,6 +652,7 @@ class Reservoir:
                             ParameterToModify.value = ReservoirModel.SUTRA
 
                     elif ParameterToModify.Name == "Reservoir Depth":
+                        # FIXME only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
                         ParameterToModify.UnitsMatch = False
@@ -739,7 +740,7 @@ class Reservoir:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -827,4 +828,4 @@ class Reservoir:
         self.InitialReservoirHeatContent.value = self.resvolcalc.value * self.rhorock.value * self.cprock.value * (
             self.Trock.value - model.wellbores.Tinj.value) / 1E15  # 10^15 J
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

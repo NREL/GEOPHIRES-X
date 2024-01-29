@@ -7,7 +7,7 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import floatParameter
-from geophires_x.Parameter import get_param_with_units_converted_back
+from geophires_x.Parameter import parameter_with_units_converted_back
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import Units
 
@@ -34,7 +34,7 @@ class ParameterTestCase(BaseTestCase):
             Max=30.0,
         )
 
-        result = get_param_with_units_converted_back(param_to_modify, model)
+        result = parameter_with_units_converted_back(param_to_modify, model)
 
         self.assertEqual(result.value, 7.0)
         self.assertEqual(result.CurrentUnits, LengthUnit.INCHES)

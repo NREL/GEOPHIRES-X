@@ -231,3 +231,18 @@ class GeophiresXTestCase(BaseTestCase):
 
     def test_RTES_name(self):
         self.assertEqual(PlantType.RTES.value, 'Reservoir Thermal Energy Storage')
+
+    def test_input_unit_conversion(self):
+        client = GeophiresXClient()
+
+        result_meters_input = client.get_geophires_result(
+            GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('ags_input_depth_meters.txt')))
+        )
+        del result_meters_input.result['metadata']
+
+        result_kilometers_input = client.get_geophires_result(
+            GeophiresInputParameters(from_file_path=self._get_test_file_path(Path('ags_input_depth_kilometers.txt')))
+        )
+        del result_kilometers_input.result['metadata']
+
+        self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)

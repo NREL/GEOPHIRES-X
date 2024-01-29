@@ -238,18 +238,10 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         if New_val == ParamToModify.DefaultValue:
             if len(ParamToModify.ErrMessage) > 0:
                 msg = (
-                    "Parameter given ("
-                    + str(New_val)
-                    + ") for "
-                    + ParamToModify.Name
-                    + " is being set by"
-                    + " the input file to a value that is the same as the default. No change was made to that value."
-                    + " Recommendation: remove the "
-                    + ParamToModify.Name
-                    + " from the input file unless you wish to"
-                    + " change it from the default value of ("
-                    + str(ParamToModify.DefaultValue)
-                    + ")"
+                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file to a '
+                    f'value that is the same as the default. No change was made to that value. Recommendation: remove '
+                    f'the {ParamToModify.Name} from the input file unless you wish to change it from the default value '
+                    f'of ({str(ParamToModify.DefaultValue)})'
                 )
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)
@@ -273,29 +265,24 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
     elif isinstance(ParamToModify, floatParameter):
         New_val = float(ParameterReadIn.sValue)
-        # Warning - the value read in is the same as the default value, making it superfluous
-        # - add a warning and suggestion
+
         if New_val == ParamToModify.DefaultValue:
+            # Warning - the value read in is the same as the default value, making it superfluous
+            # - add a warning and suggestion
+
             ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:
                 msg = (
-                    "Parameter given ("
-                    + str(New_val)
-                    + ") for "
-                    + ParamToModify.Name
-                    + " is being set by the input file to a value that is the same as the default. No change was"
-                    + " made to that value. Recommendation: remove the "
-                    + ParamToModify.Name
-                    + " from the input file"
-                    + " unless you wish to change it from the default value of ("
-                    + str(ParamToModify.DefaultValue)
-                    + ")"
+                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file'
+                    f'to a value that is the same as the default. No change was made to that value.'
+                    f'Recommendation: remove the {ParamToModify.Name} from the input file unless you wish'
+                    f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
                 )
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
-            # We have nothing to change - user provide value that was the same as the
+            # We have nothing to change - user provided value that was the same as the
             # existing value (likely, the default value)
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
@@ -469,6 +456,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
             # FIXME raise appropriate exception instead of sys.exit()
             sys.exit()
+
         New_val = (conv_rate * float(val)) * Factor
         strUnit = str(New_val)
         ParamToModify.UnitsMatch = False
@@ -500,13 +488,10 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         except BaseException as ex:
             print(str(ex))
             msg = (
-                "Error: GEOPHIRES failed to initialize your units for "
-                + ParamToModify.Name
-                + " to something it understands. You gave "
-                + strUnit
-                + " - Are the units defined for Pint library,"
-                + " or have you defined them in the user defined units file (GEOPHIRES3_newunits)?  Cannot continue."
-                + " Exiting."
+                f'Error: GEOPHIRES failed to initialize your units for {ParamToModify.Name}'
+                f'to something it understands. '
+                f'You gave {strUnit} - Are the units defined for Pint library, or have you defined them in the'
+                f'user-defined units file (GEOPHIRES3_newunits)?  Cannot continue. Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))
@@ -525,13 +510,10 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             except BaseException as ex:
                 print(str(ex))
                 msg = (
-                    "Error: GEOPHIRES failed to convert your units for "
-                    + ParamToModify.Name
-                    + " to something it understands. You gave "
-                    + strUnit
-                    + " - Are the units defined for Pint library,"
-                    + " or have you defined them in the user defined units file (GEOPHIRES3_newunits)?  Cannot continue."
-                    + " Exiting."
+                    f"Error: GEOPHIRES failed to convert your units for {ParamToModify.Name}"
+                    f" to something it understands. You gave {strUnit} - Are the units defined for Pint library,"
+                    f" or have you defined them in the user defined units file (GEOPHIRES3_newunits)? "
+                    f"Cannot continue. Exiting."
                 )
                 print(msg)
                 model.logger.critical(str(ex))
@@ -565,14 +547,14 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
-    param_modified:Parameter = get_param_with_units_converted_back(ParamToModify, model)
+    param_modified:Parameter = parameter_with_units_converted_back(ParamToModify, model)
     ParamToModify.value = param_modified.value
     ParamToModify.CurrentUnits = param_modified.CurrentUnits
     ParamToModify.UnitType = param_modified.UnitsMatch
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
-def get_param_with_units_converted_back(param: Parameter, model) -> Parameter:
+def parameter_with_units_converted_back(param: Parameter, model) -> Parameter:
     param_with_units_converted_back = copy.deepcopy(param)
 
     # deal with the currency case

@@ -44,38 +44,6 @@ _T = np.array(
     ]
 )
 
-# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
-_EntropyH20 = np.array(
-    [
-        0.0,
-        0.15109,
-        0.29648,
-        0.36722,
-        0.43675,
-        0.5724,
-        0.70381,
-        0.83129,
-        0.95513,
-        1.0756,
-        1.1929,
-        1.3072,
-        1.4188,
-        1.5279,
-        1.7392,
-        1.9426,
-        2.1392,
-        2.3305,
-        2.5177,
-        2.702,
-        2.8849,
-        3.0685,
-        3.2552,
-        3.4494,
-        3.6601,
-        3.9167,
-        4.407,
-    ]
-)
 
 # from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _UtilEff = np.array(
@@ -110,7 +78,6 @@ _UtilEff = np.array(
     ]
 )
 
-_interp_entropy_func = interp1d(_T, _EntropyH20)
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 
@@ -271,13 +238,10 @@ def EntropyH20_func(temperature_degC: float) -> float:
     except ValueError:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
-    if temperature_degC < _T[0] or temperature_degC > _T[-1]:
-        raise ValueError(
-            f'Input temperature ({temperature_degC}) must be within the range of {_T[0]} to {_T[-1]} degrees C.'
-        )
-
-    entropy = _interp_entropy_func(temperature_degC)
-    return entropy
+    try:
+        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).s
+    except NotImplementedError as nie:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)

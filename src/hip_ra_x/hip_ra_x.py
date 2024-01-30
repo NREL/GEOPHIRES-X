@@ -121,179 +121,211 @@ class HIP_RA_X:
         self.OutputParameterDict: dict[str, OutputParameter] = {}
         self.InputParameters: dict[str, ParameterEntry] = {}  # input parameters the user wants to change
 
+        def parameter_dict_entry(param: Parameter) -> Parameter:
+            self.ParameterDict[param.Name] = param
+            return param
+
         # inputs
-        self.reservoir_temperature = self.ParameterDict[self.reservoir_temperature.Name] = floatParameter(
-            'Reservoir Temperature',
-            value=150.0,
-            Min=50,
-            Max=1000,
-            UnitType=Units.TEMPERATURE,
-            PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS,
-            Required=True,
-            ErrMessage='assume default reservoir temperature (150 deg-C)',
-            ToolTipText='Reservoir Temperature [150 dec-C]',
+        self.reservoir_temperature: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Temperature',
+                value=150.0,
+                Min=50,
+                Max=1000,
+                UnitType=Units.TEMPERATURE,
+                PreferredUnits=TemperatureUnit.CELSIUS,
+                CurrentUnits=TemperatureUnit.CELSIUS,
+                Required=True,
+                ErrMessage='assume default reservoir temperature (150 deg-C)',
+                ToolTipText='Reservoir Temperature [150 dec-C]',
+            )
         )
-        self.rejection_temperature = self.ParameterDict[self.rejection_temperature.Name] = floatParameter(
-            'Rejection Temperature',
-            value=25.0,
-            Min=0.1,
-            Max=200,
-            UnitType=Units.TEMPERATURE,
-            PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS,
-            Required=True,
-            ErrMessage='assume default rejection temperature (25 deg-C)',
-            ToolTipText='Rejection Temperature [25 dec-C]',
+        self.rejection_temperature: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Rejection Temperature',
+                value=25.0,
+                Min=0.1,
+                Max=200,
+                UnitType=Units.TEMPERATURE,
+                PreferredUnits=TemperatureUnit.CELSIUS,
+                CurrentUnits=TemperatureUnit.CELSIUS,
+                Required=True,
+                ErrMessage='assume default rejection temperature (25 deg-C)',
+                ToolTipText='Rejection Temperature [25 dec-C]',
+            )
         )
-        self.reservoir_porosity = self.ParameterDict[self.reservoir_porosity.Name] = floatParameter(
-            'Reservoir Porosity',
-            value=18.0,
-            Min=0.0,
-            Max=100.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            Required=True,
-            ErrMessage='assume default reservoir porosity (18%)',
-            ToolTipText='Reservoir Porosity [18%]',
+        self.reservoir_porosity = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Porosity',
+                value=18.0,
+                Min=0.0,
+                Max=100.0,
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.PERCENT,
+                CurrentUnits=PercentUnit.PERCENT,
+                Required=True,
+                ErrMessage='assume default reservoir porosity (18%)',
+                ToolTipText='Reservoir Porosity [18%]',
+            )
         )
-        self.reservoir_area = self.ParameterDict[self.reservoir_area.Name] = floatParameter(
-            'Reservoir Area',
-            value=81.0,
-            Min=0.0,
-            Max=10000.0,
-            UnitType=Units.AREA,
-            PreferredUnits=AreaUnit.KILOMETERS2,
-            CurrentUnits=AreaUnit.KILOMETERS2,
-            Required=True,
-            ErrMessage='assume default reservoir area (81 km2)',
-            ToolTipText='Reservoir Area [81 km2]',
+        self.reservoir_area: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Area',
+                value=81.0,
+                Min=0.0,
+                Max=10000.0,
+                UnitType=Units.AREA,
+                PreferredUnits=AreaUnit.KILOMETERS2,
+                CurrentUnits=AreaUnit.KILOMETERS2,
+                Required=True,
+                ErrMessage='assume default reservoir area (81 km2)',
+                ToolTipText='Reservoir Area [81 km2]',
+            )
         )
-        self.reservoir_thickness = self.ParameterDict[self.reservoir_thickness.Name] = floatParameter(
-            'Reservoir Thickness',
-            value=0.286,
-            Min=0.0,
-            Max=10000.0,
-            UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.KILOMETERS,
-            CurrentUnits=LengthUnit.KILOMETERS,
-            Required=True,
-            ErrMessage='assume default reservoir thickness (0.286 km2)',
-            ToolTipText='Reservoir Thickness [0.286 km]',
+        self.reservoir_thickness: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Thickness',
+                value=0.286,
+                Min=0.0,
+                Max=10000.0,
+                UnitType=Units.LENGTH,
+                PreferredUnits=LengthUnit.KILOMETERS,
+                CurrentUnits=LengthUnit.KILOMETERS,
+                Required=True,
+                ErrMessage='assume default reservoir thickness (0.286 km2)',
+                ToolTipText='Reservoir Thickness [0.286 km]',
+            )
         )
-        self.reservoir_life_cycle = self.ParameterDict[self.reservoir_life_cycle.Name] = intParameter(
-            'Reservoir Life Cycle',
-            value=30,
-            UnitType=Units.TIME,
-            PreferredUnits=TimeUnit.YEAR,
-            CurrentUnits=TimeUnit.YEAR,
-            AllowableRange=list(range(1, 101, 1)),
-            Required=True,
-            ErrMessage='assume default Reservoir Life Cycle (25 years)',
-            ToolTipText='Reservoir Life Cycle [30 years]',
+        self.reservoir_life_cycle: Parameter = parameter_dict_entry(
+            intParameter(
+                'Reservoir Life Cycle',
+                value=30,
+                UnitType=Units.TIME,
+                PreferredUnits=TimeUnit.YEAR,
+                CurrentUnits=TimeUnit.YEAR,
+                AllowableRange=list(range(1, 101, 1)),
+                Required=True,
+                ErrMessage='assume default Reservoir Life Cycle (25 years)',
+                ToolTipText='Reservoir Life Cycle [30 years]',
+            )
         )
 
         # user-changeable semi-constants
-        self.rock_heat_capacity = self.ParameterDict[self.rock_heat_capacity.Name] = floatParameter(
-            'Rock Heat Capacity',
-            value=2.84e12,
-            Min=0.0,
-            Max=1e14,
-            UnitType=Units.HEAT_CAPACITY,
-            PreferredUnits=HeatCapacityUnit.KJPERKM3C,
-            CurrentUnits=HeatCapacityUnit.KJPERKM3C,
-            Required=True,
-            ErrMessage='assume default Rock Heat Capacity (2.84E+12 kJ/km3C)',
-            ToolTipText='Rock Heat Capacity [2.84E+12 kJ/km3C]',
+        self.rock_heat_capacity: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Rock Heat Capacity',
+                value=2.84e12,
+                Min=0.0,
+                Max=1e14,
+                UnitType=Units.HEAT_CAPACITY,
+                PreferredUnits=HeatCapacityUnit.KJPERKM3C,
+                CurrentUnits=HeatCapacityUnit.KJPERKM3C,
+                Required=True,
+                ErrMessage='assume default Rock Heat Capacity (2.84E+12 kJ/km3C)',
+                ToolTipText='Rock Heat Capacity [2.84E+12 kJ/km3C]',
+            )
         )
-        self.fluid_heat_capacity = self.ParameterDict[self.fluid_heat_capacity.Name] = floatParameter(
-            'Fluid Heat Capacity',
-            value=-1.0,
-            Min=3.0,
-            Max=10.0,
-            UnitType=Units.HEAT_CAPACITY,
-            PreferredUnits=HeatCapacityUnit.kJPERKGC,
-            CurrentUnits=HeatCapacityUnit.kJPERKGC,
-            Required=True,
-            ErrMessage='calculate a value based on the water temperature',
-            ToolTipText='Heat Capacity Of Water [4.18 kJ/kgC]',
+        self.fluid_heat_capacity: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Fluid Heat Capacity',
+                value=-1.0,
+                Min=3.0,
+                Max=10.0,
+                UnitType=Units.HEAT_CAPACITY,
+                PreferredUnits=HeatCapacityUnit.kJPERKGC,
+                CurrentUnits=HeatCapacityUnit.kJPERKGC,
+                Required=True,
+                ErrMessage='calculate a value based on the water temperature',
+                ToolTipText='Heat Capacity Of Water [4.18 kJ/kgC]',
+            )
         )
-        self.fluid_density = self.ParameterDict[self.fluid_density.Name] = floatParameter(
-            'Density Of Reservoir Fluid',
-            value=-1.0,
-            Min=1.000e11,
-            Max=1.000e13,
-            UnitType=Units.DENSITY,
-            PreferredUnits=DensityUnit.KGPERKILOMETERS3,
-            CurrentUnits=DensityUnit.KGPERKILOMETERS3,
-            Required=True,
-            ErrMessage='calculate a value based on the water temperature',
-            ToolTipText='Density Of Water [1.0E+12 kg/km3]',
+        self.fluid_density: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Density Of Reservoir Fluid',
+                value=-1.0,
+                Min=1.000e11,
+                Max=1.000e13,
+                UnitType=Units.DENSITY,
+                PreferredUnits=DensityUnit.KGPERKILOMETERS3,
+                CurrentUnits=DensityUnit.KGPERKILOMETERS3,
+                Required=True,
+                ErrMessage='calculate a value based on the water temperature',
+                ToolTipText='Density Of Water [1.0E+12 kg/km3]',
+            )
         )
-        self.rock_density = self.ParameterDict[self.rock_density.Name] = floatParameter(
-            'Density Of Reservoir Rock',
-            value=2.55e12,
-            Min=1.000e11,
-            Max=1.000e13,
-            UnitType=Units.DENSITY,
-            PreferredUnits=DensityUnit.KGPERKILOMETERS3,
-            CurrentUnits=DensityUnit.KGPERKILOMETERS3,
-            Required=True,
-            ErrMessage='assume default Density Of Rock (2.55E+12 kg/km3)',
-            ToolTipText='Density Of Rock [2.55E+12 kg/km3]',
+        self.rock_density: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Density Of Reservoir Rock',
+                value=2.55e12,
+                Min=1.000e11,
+                Max=1.000e13,
+                UnitType=Units.DENSITY,
+                PreferredUnits=DensityUnit.KGPERKILOMETERS3,
+                CurrentUnits=DensityUnit.KGPERKILOMETERS3,
+                Required=True,
+                ErrMessage='assume default Density Of Rock (2.55E+12 kg/km3)',
+                ToolTipText='Density Of Rock [2.55E+12 kg/km3]',
+            )
         )
-        self.rock_recoverable_heat = self.ParameterDict[self.rock_recoverable_heat.Name] = floatParameter(
-            'Rock Recoverable Heat',
-            value=-1.0,
-            Min=0.0,
-            Max=1.000,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=False,
-            ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
+        self.rock_recoverable_heat: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Rock Recoverable Heat',
+                value=-1.0,
+                Min=0.0,
+                Max=1.000,
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.TENTH,
+                CurrentUnits=PercentUnit.TENTH,
+                Required=False,
+                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
             (>90, Garg and Combs (2011)',
-            ToolTipText='percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs,\
+                ToolTipText='percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs,\
              0.43 for low-T reservoirs (Garg and Combs (2011)',
+            )
         )
-        self.fluid_recoverable_heat = self.ParameterDict[self.fluid_recoverable_heat.Name] = floatParameter(
-            'Fluid Recoverable Heat',
-            value=-1.0,
-            Min=0.00,
-            Max=1.000,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=False,
-            ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
+        self.fluid_recoverable_heat: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Fluid Recoverable Heat',
+                value=-1.0,
+                Min=0.00,
+                Max=1.000,
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.TENTH,
+                CurrentUnits=PercentUnit.TENTH,
+                Required=False,
+                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
             (>90, Garg and Combs (2011)',
-            ToolTipText='percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs,\
+                ToolTipText='percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs,\
              0.43 for low-T reservoirs (Garg and Combs (2011)',
+            )
         )
-        self.recoverable_fluid_factor = self.ParameterDict[self.recoverable_fluid_factor.Name] = floatParameter(
-            'Recoverable Fluid Factor',
-            value=0.5,
-            Min=0.00,
-            Max=1.000,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=False,
-            ErrMessage='assume 0.5 (50%) of fluid from the reservoir is recoverable',
-            ToolTipText='percent of fluid that is recoverable from the reservoir (0.5 = 50%)',
+        self.recoverable_fluid_factor: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Recoverable Fluid Factor',
+                value=0.5,
+                Min=0.00,
+                Max=1.000,
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.TENTH,
+                CurrentUnits=PercentUnit.TENTH,
+                Required=False,
+                ErrMessage='assume 0.5 (50%) of fluid from the reservoir is recoverable',
+                ToolTipText='percent of fluid that is recoverable from the reservoir (0.5 = 50%)',
+            )
         )
-        self.recoverable_rock_heat = self.ParameterDict[self.recoverable_rock_heat.Name] = floatParameter(
-            'Recoverable Heat from Rock',
-            value=0.75,
-            Min=0.00,
-            Max=1.000,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=False,
-            ErrMessage='assume 0.75 (75%) of fluid from the reservoir is recoverable',
-            ToolTipText='percent of fluid that is recoverable from the reservoir (0.75 = 75%)',
+        self.recoverable_rock_heat: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Recoverable Heat from Rock',
+                value=0.75,
+                Min=0.00,
+                Max=1.000,
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.TENTH,
+                CurrentUnits=PercentUnit.TENTH,
+                Required=False,
+                ErrMessage='assume 0.75 (75%) of fluid from the reservoir is recoverable',
+                ToolTipText='percent of fluid that is recoverable from the reservoir (0.75 = 75%)',
+            )
         )
 
         # Output parameters

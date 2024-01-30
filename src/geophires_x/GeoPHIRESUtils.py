@@ -224,12 +224,11 @@ def VaporPressureWater(Twater_degC: float) -> float:
 def EntropyH20_func(temperature_degC: float) -> float:
     """
     the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
-    TODO switch to IAPWS instead of custom interpolation
 
     Args:
         temperature_degC: the temperature of water in degrees C
     Returns:
-        the entropy of water as a function of temperature in kJ/kg-K
+        the entropy of water as a function of temperature in kJ/(kg·K)
     Raises:
 
     """

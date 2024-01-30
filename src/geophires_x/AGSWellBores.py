@@ -12,7 +12,6 @@ import os
 import math
 import numpy as np
 import geophires_x.Model as Model
-from geophires_x.WellBores import *
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter
 from .Reservoir import densitywater, heatcapacitywater
 from .Units import *
@@ -23,6 +22,9 @@ import scipy
 from scipy.interpolate import interpn, interp1d
 from scipy import signal
 import itertools as itern
+
+from .WellBores import WellBores, RameyCalc, ProdPressureDropAndPumpingPowerUsingIndexes, WellPressureDrop, \
+    ProdPressureDropsAndPumpingPowerUsingImpedenceModel
 
 esp2 = 10.0e-10
 
@@ -1047,9 +1049,13 @@ class AGSWellBores(WellBores):
         else:  # do the CLGS-style calculation
             err = self.verify(model)
             if err > 0:
-                model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
+                msg = 'Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....'
+                model.logger.fatal(msg)
+                print(msg)
+
+                # FIXME raise appropriate exception instead of system exit
                 sys.exit()
+
             self.initialize(model)
             self.getTandP(model)
 
@@ -1071,9 +1077,9 @@ class AGSWellBores(WellBores):
             self.DPOverall.value = f(np.arange(0, len(self.DPOverall.value), 1))
 
             # calculate water values based on initial temperature
-            rhowater = densitywater(self.Tout[0])
+            rhowater = densitywater(self.Tout[0], enable_fallback_calculation=True)
             model.reserv.cpwater.value = heatcapacitywater(
-                self.Tout[0])  # Need this for surface plant output calculation
+                self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary

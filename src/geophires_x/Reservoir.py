@@ -8,54 +8,8 @@ from .Parameter import intParameter, floatParameter, listParameter, OutputParame
 from .Units import *
 import geophires_x.Model as Model
 
-
-# user-defined functions
-def densitywater(Twater) -> float:
-    """
-    This function calculates the density of water as a function of temperature.
-    :param Twater: The temperature of the water in Celsius degrees (°C)
-    :type Twater: float
-    :return: The density of the water in kg/m3
-    :rtype: float
-    """
-    T = Twater + 273.15
-    # water density correlation as used in Geophires v1.2 [kg/m3]
-    rhowater = (.7983223 + (1.50896E-3 - 2.9104E-6 * T) * T) * 1E3
-    return rhowater
-
-
-def viscositywater(Twater) -> float:
-    """
-    This function calculates the viscosity of water as a function of temperature.
-    :param Twater: The temperature of the water in Celsius degrees (°C)
-    :type Twater: float
-    :return: The viscosity of the water in Ns/m2
-    :rtype: float
-    """
-    # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
-    muwater = 2.414E-5 * np.power(10, 247.8 / (Twater + 273.15 - 140))
-    return muwater
-
-
-def heatcapacitywater(Twater) -> float:
-    """
-    This function calculates the heat capacity of water as a function of temperature.
-    :param Twater: The temperature of the water in Celsius degrees (°C)
-    :type Twater: float
-    :return: The heat capacity of the water in J/kg/K
-    :rtype: float
-    """
-    # J/kg/K (based on TARB in Geophires v1.2)
-    Twater = (Twater + 273.15) / 1000
-    A = -203.6060
-    B = 1523.290
-    C = -3196.413
-    D = 2474.455
-    E = 3.855326
-    # water specific heat capacity in J/kg-K
-    cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
-    return cpwater
-
+from geophires_x.GeoPHIRESUtils import HeatCapacityWater as heatcapacitywater
+from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
 
 class Reservoir:
     """

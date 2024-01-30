@@ -1,32 +1,12 @@
-import sys
-import os
 import math
 import numpy as np
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from .Reservoir import densitywater, viscositywater
+from geophires_x.GeoPHIRESUtils import VaporPressureWater as vaporpressurewater
+from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
+from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
 from .Units import *
 import geophires_x.Model as Model
 from .OptionList import ReservoirModel
-
-
-# user-defined functions
-def vaporpressurewater(Twater: float) -> float:
-    """
-    calculate the vapor pressure of water based on the temperature of the water
-    :param Twater: temperature of the water [C] (can be a vector)
-    :type Twater: float
-    :return: vapor pressure of the water [kPa] (can be a vector)
-    """
-    if Twater < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
-    vp = 133.322 * (10 ** (A - B / (C + Twater))) / 1000  # water vapor pressure in kPa using Antione Equation
-    return vp
 
 
 def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, utilfactor: float, flowrate: float,
@@ -102,8 +82,9 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = densitywater(Taverage)  # replace with correlation based on Tprodaverage
-    muwater = viscositywater(Taverage)  # replace with correlation based on Tprodaverage
+    rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
+                         Taverage])  # replace with correlation based on Tprodaverage
+    muwater = np.array([viscositywater(t) for t in Taverage])  # replace with correlation based on Tprodaverage
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
     Rewateraverage = np.average(Rewater)
@@ -334,7 +315,8 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = 0 + 1. / CP * (
+                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -450,7 +432,8 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = 0 + 1. / CP * (
+                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -950,7 +933,8 @@ class WellBores:
                                                 model.reserv.rhorock.value,
                                                 model.reserv.cprock.value,
                                                 self.prodwelldiam.value, model.reserv.timevector.value,
-                                                model.surfaceplant.utilization_factor.value, self.prodwellflowrate.value,
+                                                model.surfaceplant.utilization_factor.value,
+                                                self.prodwellflowrate.value,
                                                 model.reserv.cpwater.value, model.reserv.Trock.value,
                                                 model.reserv.Tresoutput.value, model.reserv.averagegradient.value,
                                                 d)
@@ -970,7 +954,7 @@ class WellBores:
                                                        self.redrill.value + 1)
                 self.ProducedTemperature.value = ProducedTemperatureRepeatead[0:len(self.ProducedTemperature.value)]
                 TResOutputRepeated = np.tile(model.reserv.Tresoutput.value[0:indexfirstmaxdrawdown],
-                                                       self.redrill.value + 1)
+                                             self.redrill.value + 1)
                 model.reserv.Tresoutput.value = TResOutputRepeated[0:len(self.ProducedTemperature.value)]
 
         # calculate pressure drops and pumping power

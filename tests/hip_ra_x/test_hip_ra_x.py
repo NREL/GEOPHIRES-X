@@ -344,7 +344,7 @@ class HipRaXTestCase(BaseTestCase):
         assert hip_ra.OutputParameterDict['Producible Electricity (reservoir)'].CurrentUnits == PowerUnit.MW
 
     def test_initialization_with_default_parameters(self):
-        hip_ra: HIP_RA = self._new_hip_ra_test_instance()
+        hip_ra: HIP_RA_X = self._new_hip_ra_test_instance()
 
         assert isinstance(hip_ra.reservoir_temperature, floatParameter)
         assert isinstance(hip_ra.rejection_temperature, floatParameter)
@@ -365,7 +365,7 @@ class HipRaXTestCase(BaseTestCase):
 
         assert isinstance(hip_ra.reservoir_life_cycle, intParameter)
 
-        assert isinstance(hip_ra.volume_fluid, OutputParameter)
+        assert isinstance(hip_ra.volume_recoverable_fluid, OutputParameter)
         assert isinstance(hip_ra.volume_rock, OutputParameter)
         assert isinstance(hip_ra.reservoir_volume, OutputParameter)
         assert isinstance(hip_ra.reservoir_stored_heat, OutputParameter)

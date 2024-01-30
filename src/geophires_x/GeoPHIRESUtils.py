@@ -91,7 +91,7 @@ def DensityWater(Twater_degC: float) -> float:
     Returns:
         The density of water in kg/m³.
     Raises:
-        ValueError: If Twater is not a float or convertible to float.
+        ValueError: If Twater_degC is not a float or convertible to float.
     """
     if not np.can_cast(Twater_degC, float):
         raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
@@ -147,7 +147,7 @@ def HeatCapacityWater(Twater_degC: float) -> float:
     Args:
         Twater_degC: The temperature of water in degrees C.
     Returns:
-        The isobaric specific heat capacity of water as a function of temperature in J/kg-K.
+        The isobaric specific heat capacity of water as a function of temperature in J/(kg·K).
     Raises:
         ValueError: If Twater_degC is not a float or convertible to float.
     """

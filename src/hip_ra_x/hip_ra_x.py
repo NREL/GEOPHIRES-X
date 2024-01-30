@@ -576,10 +576,11 @@ class HIP_RA_X:
             )
 
             # calculate the mass of the rock and the fluid in the reservoir
-            if self.fluid_density.value < self.fluid_density.Min:
+            if not self.fluid_density.Provided:
                 self.fluid_density.value = (
                     DensityWater(self.reservoir_temperature.value) * 1_000_000_000.0
                 )  # converted to kj/km3
+
             self.mass_rock.value = self.volume_rock.value * self.rock_density.value
             self.mass_recoverable_fluid.value = self.volume_recoverable_fluid.value * self.fluid_density.value
             self.reservoir_mass.value = self.mass_rock.value + self.mass_recoverable_fluid.value
@@ -588,7 +589,7 @@ class HIP_RA_X:
             if not self.fluid_heat_capacity.Provided:
                 self.fluid_heat_capacity.value = (
                     HeatCapacityWater(self.reservoir_temperature.value) / 1000.0
-                )  # converted to kJ/kg-K
+                )  # converted to kJ/(kg·K)
 
             rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
             reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
@@ -635,10 +636,10 @@ class HIP_RA_X:
             self.wellhead_heat_recovery_fluid.value = self.stored_heat_fluid.value
             self.wellhead_heat.value = self.wellhead_heat_recovery_rock.value + self.wellhead_heat_recovery_fluid.value
 
-            # calculate the Recoverable heat: if the user supplied -1 as the Recoverable Heat, they want us to calculate it.
-            if self.rock_recoverable_heat.value < self.rock_recoverable_heat.Min:
+            # calculate the Recoverable heat: if the user didn't supply Recoverable Heat, they want us to calculate it.
+            if not self.rock_recoverable_heat.Provided:
                 self.rock_recoverable_heat.value = RecoverableHeat(self.reservoir_temperature.value)
-            if self.fluid_recoverable_heat.value < self.fluid_recoverable_heat.Min:
+            if not self.fluid_recoverable_heat.Provided:
                 self.fluid_recoverable_heat.value = RecoverableHeat(self.reservoir_temperature.value)
 
             # calculate the available heat

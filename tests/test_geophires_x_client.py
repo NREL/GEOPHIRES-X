@@ -99,6 +99,13 @@ class GeophiresXClientTestCase(BaseTestCase):
             assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 0.0500
             assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/m'
 
+    def test_example_absorption_chiller_result(self):
+        test_result_path = self._get_test_file_path('examples/example11_AC.out')
+        result = GeophiresXResult(test_result_path).result
+
+        assert result['CAPITAL COSTS (M$)']['of which Absorption Chiller Cost']['value'] == 3.74
+        assert result['CAPITAL COSTS (M$)']['of which Absorption Chiller Cost']['unit'] == 'MUSD'
+
     def test_geophires_x_result_generation_profiles(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')
         result = GeophiresXResult(test_result_path)

@@ -1,7 +1,6 @@
 import sys
 import unittest
 
-from geophires_x.GeoPHIRESUtils import _T
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
@@ -10,7 +9,6 @@ from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import VaporPressureWater
 from geophires_x.GeoPHIRESUtils import ViscosityWater
-from geophires_x.GeoPHIRESUtils import _interp_entropy_func
 from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
 
@@ -322,41 +320,41 @@ class TestEntropyh20Func(unittest.TestCase):
         """Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]"""
 
         temperature = 50.0
-        expected_entropy = _interp_entropy_func(temperature)
+        expected_entropy = 0.7037939046604744
         assert EntropyH20_func(temperature) == expected_entropy
 
     def test_minimum_temperature_input(self):
         """Returns the correct entropy value for the minimum temperature input (T[0])"""
 
-        temperature = _T[0]
-        expected_entropy = _interp_entropy_func(temperature)
+        temperature = 0.01
+        expected_entropy = -6.161029060094028e-08
         assert EntropyH20_func(temperature) == expected_entropy
 
-    def test_maximum_temperature_input(self):
+    def test_h20_critical_point_temperature_input(self):
         """Returns the correct entropy value for the maximum temperature input (T[-1])"""
 
-        temperature = _T[-1]
-        expected_entropy = _interp_entropy_func(temperature)
+        temperature = 373.946
+        expected_entropy = 4.412021482236347
         assert EntropyH20_func(temperature) == expected_entropy
 
-    def test_temperature_input_in_T(self):
+    def test_temperature_input_25C(self):
         """Returns the correct entropy value for a temperature input that is an element of T"""
 
-        temperature = _T[3]
-        expected_entropy = _interp_entropy_func(temperature)
+        temperature = 25.0
+        expected_entropy = 0.3672563027910093
         assert EntropyH20_func(temperature) == expected_entropy
 
-    def test_temperature_input_within_range(self):
+    def test_temperature_input_150C(self):
         """
         Returns the correct entropy value for a temperature input that is not an element of T but within the range of
         T[0] to T[-1]
         """
 
         temperature = 150.0
-        expected_entropy = _interp_entropy_func(temperature)
+        expected_entropy = 1.8419520427817053
         assert EntropyH20_func(temperature) == expected_entropy
 
-    def test_temperature_input_less_than_T0(self):
+    def test_temperature_input_minus10C(self):
         """Raises a ValueError if the temperature input is less than T[0]"""
 
         temperature = -10.0
@@ -369,20 +367,6 @@ class TestEntropyh20Func(unittest.TestCase):
         temperature = 400.0
         with self.assertRaises(ValueError):
             EntropyH20_func(temperature)
-
-    def test_temperature_input_equal_to_T0(self):
-        """Returns the correct entropy value for a temperature input that is equal to the minimum temperature input (T[0])"""
-
-        temperature = _T[0]
-        expected_entropy = _interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
-
-    def test_temperature_input_equal_to_Tn(self):
-        """Returns the correct entropy value for a temperature input that is equal to the maximum temperature input (T[-1])"""
-
-        temperature = _T[-1]
-        expected_entropy = _interp_entropy_func(temperature)
-        assert EntropyH20_func(temperature) == expected_entropy
 
 
 class TestRecoverableHeat(unittest.TestCase):

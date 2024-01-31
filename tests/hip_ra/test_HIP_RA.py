@@ -1,15 +1,23 @@
 from pathlib import Path
 
+from tests.base_test_case import BaseTestCase
+
 from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
-from tests.base_test_case import BaseTestCase
 
 
 # noinspection PyTypeChecker
 class HIP_RATestCase(BaseTestCase):
     def test_HIP_RA_examples(self):
-        example_files = self._list_test_files_dir(test_files_dir='examples')
+        example_files = list(
+            filter(
+                lambda example_file_path: example_file_path.startswith('HIPexample')
+                and '.out' not in example_file_path,
+                self._list_test_files_dir(test_files_dir='./examples'),
+            )
+        )
+        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
 
         client = HipRaClient()
 
@@ -17,24 +25,22 @@ class HIP_RATestCase(BaseTestCase):
             return self._get_test_file_path(Path(example_file).with_suffix('.out'))
 
         for example_file_path in example_files:
-            if example_file_path.startswith('HIPexample') and '.out' not in example_file_path:
-                with self.subTest(msg=example_file_path):
-                    input_file_path = self._get_test_file_path(Path('examples', example_file_path))
-                    result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
+            with self.subTest(msg=example_file_path):
+                input_file_path = self._get_test_file_path(Path('./examples', example_file_path))
+                result = client.get_hip_ra_result(HipRaInputParameters(input_file_path))
 
-                    assert result is not None
-                    expected_result_output_file_path = get_output_file_for_example(input_file_path)
+                assert result is not None
+                expected_result_output_file_path = get_output_file_for_example(input_file_path)
 
-                    expected_result = HipRaResult(expected_result_output_file_path)
-                    self.assertDictEqual(result.result, expected_result.result)
+                expected_result = HipRaResult(expected_result_output_file_path)
+                self.assertDictEqual(expected_result.result, result.result)
 
-                    self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
+                self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
 
     def test_result_parsing_1(self):
-        result = HipRaResult(self._get_test_file_path('hip_ra_x/hip-result_example-1.out'))
+        result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))
         self.assertIsNotNone(result.result)
         self.assertDictEqual(
-            result.result,
             {
                 'Reservoir Temperature': {'value': 250.0, 'unit': 'degC'},
                 'Reservoir Volume': {'value': 13.75, 'unit': 'km**3'},
@@ -47,13 +53,13 @@ class HIP_RATestCase(BaseTestCase):
                 'Producible Heat': {'value': 5860000000000.0, 'unit': 'kJ'},
                 'Producible Electricity': {'value': 185.85, 'unit': 'MW'},
             },
+            result.result,
         )
 
     def test_result_parsing_2(self):
-        result = HipRaResult(self._get_test_file_path('hip_ra_x/hip-result_example-2.out'))
+        result = HipRaResult(self._get_test_file_path('hip-result_example-2.out'))
         self.assertIsNotNone(result.result)
         self.assertDictEqual(
-            result.result,
             {
                 'Reservoir Temperature': {'value': 250.00, 'unit': 'degC'},
                 'Reservoir Volume (reservoir)': {'value': 13.75, 'unit': 'km**3'},
@@ -90,4 +96,5 @@ class HIP_RATestCase(BaseTestCase):
                 'Producible Electricity/Unit Area (rock)': {'value': -1602.90, 'unit': 'MW/km**2'},
                 'Producible Electricity/Unit Area (fluid)': {'value': 32.01, 'unit': 'MW/km**2'},
             },
+            result.result,
         )

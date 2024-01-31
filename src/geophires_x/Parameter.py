@@ -12,20 +12,16 @@ from pint.registry import Quantity
 
 from geophires_x.Units import *
 
-ureg = pint.UnitRegistry()
+ureg = pint.get_application_registry()
 ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
 
 
-from abc import ABC, abstractmethod
-
+from abc import ABC
 
 class HasQuantity(ABC):
-    # @abstractmethod
-    # def value(self) -> Any:
-    #     pass
 
     def quantity(self) -> Quantity:
-        return ureg.Quantity(self.value, str(self.CurrentUnits))
+        return ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
 
 @dataclass

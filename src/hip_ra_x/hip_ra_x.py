@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import logging.config
-import math
 import os
 import sys
 import traceback
@@ -48,46 +47,6 @@ Geothermics 7.2-4 (1978): 53-89.
 and: Garg, S.K. and J. Combs. 2011.  A Reexamination of the USGS Volumetric "Heat in Place" Method.
 Stanford University, 36th Workshop on Geothermal Reservoir Engineering; SGP-TR-191, 5 pp.
 """
-
-
-def rock_enthalpy_func(mass, specific_heat_capacity_kj, delta_temperature_k):
-    """
-    Calculate the enthalpy change for a rock.
-
-    Parameters:
-    - mass: Mass of the rock (in kg)
-    - specific_heat_capacity_kj: Specific heat capacity of the rock material (in kJ/(kg·K))
-    - delta_temperature_celsius: Change in temperature (in degrees Celsius)
-
-    Returns:
-    - Enthalpy change (in kJ/kg)
-    """
-    #    enthalpy_change = mass * specific_heat_capacity_kj * delta_temperature_celsius
-    enthalpy_change = (specific_heat_capacity_kj * delta_temperature_k) / mass
-    return enthalpy_change
-
-
-def rock_entropy_func():
-    """
-    Calculate the information entropy of a rock based on its composition.
-
-    Parameters:
-    - composition: A dictionary representing the composition of the rock,
-                   where keys are mineral names and values are their abundances.
-
-    Returns:
-    - entropy: The information entropy of the rock.
-    """
-    composition = {'quartz': 30, 'feldspar': 40, 'mica': 20, 'amphibole': 10}
-    total_abundance = sum(composition.values())
-
-    # Calculate the probability of each mineral in the rock
-    probabilities = [abundance / total_abundance for abundance in composition.values()]
-
-    # Calculate the entropy using the Shannon entropy formula
-    entropy = -sum(p * math.log2(p) for p in probabilities if p > 0)
-
-    return entropy
 
 
 class HIP_RA_X:
@@ -154,7 +113,7 @@ class HIP_RA_X:
                 ToolTipText='Rejection Temperature [25 dec-C]',
             )
         )
-        self.reservoir_porosity = parameter_dict_entry(
+        self.reservoir_porosity: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Porosity',
                 value=18.0,
@@ -609,9 +568,9 @@ class HIP_RA_X:
 
             # calculate the mass of the rock and the fluid in the reservoir
             if not self.fluid_density.Provided:
-                self.fluid_density.value = (
-                    DensityWater(self.reservoir_temperature.value) * 1_000_000_000.0
-                )  # converted to kj/km3
+                density_water = DensityWater(self.reservoir_temperature.value)
+
+                self.fluid_density.value = density_water * 1_000_000_000.0  # converted to kJ/km3
 
             self.mass_rock.value = self.volume_rock.value * self.rock_density.value
             self.mass_recoverable_fluid.value = self.volume_recoverable_fluid.value * self.fluid_density.value
@@ -620,8 +579,10 @@ class HIP_RA_X:
             # do all the simple calculations and look-ups only once
             if not self.fluid_heat_capacity.Provided:
                 self.fluid_heat_capacity.value = (
-                    HeatCapacityWater(self.reservoir_temperature.value) / 1000.0
-                )  # converted to kJ/(kg·K)
+                    # converted to kJ/(kg·K)
+                    HeatCapacityWater(self.reservoir_temperature.value)
+                    / 1000.0
+                )
 
             rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
             reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
@@ -631,10 +592,12 @@ class HIP_RA_X:
             # rejection_enthalpy = EnthalpyH20_func(self.rejection_temperature.value)
             fluid_net_enthalpy = EnthalpyH20_func(delta_temperature_k)
             fluid_net_entropy = EntropyH20_func(delta_temperature_k)
-            rock_net_enthalpy = rock_enthalpy_func(
-                self.mass_rock.value, self.rock_heat_capacity.value, delta_temperature_k
-            )
-            rock_net_entropy = rock_entropy_func()
+
+            # fmt: off
+            self.enthalpy_rock.value = (
+                self.rock_heat_capacity.value * delta_temperature_k * self.volume_rock.value
+            ) / self.mass_rock.value
+            # fmt: on
 
             """
             Calculate the stored heat of the rock and the fluid in the reservoir (in kJ)
@@ -652,7 +615,7 @@ class HIP_RA_X:
 
             # Calculate the maximum energy out per unit of mass (in kJ/kg)
             # self.enthalpy_rock.value = fluid_net_enthalpy - (delta_temperature_k * rock_net_entropy)
-            self.enthalpy_rock.value = rock_net_enthalpy - (delta_temperature_k * rock_net_entropy)
+            # self.enthalpy_rock.value = rock_net_enthalpy # - (delta_temperature_k * rock_net_entropy)
             self.enthalpy_fluid.value = fluid_net_enthalpy - (delta_temperature_k * fluid_net_entropy)
             # self.enthalpy_rock.value = self.stored_heat_rock.value/self.mass_rock.value
             # self.enthalpy_fluid.value = self.stored_heat_fluid.value/self.mass_fluid.value
@@ -686,7 +649,10 @@ class HIP_RA_X:
             # calculate the producible heat given the utilization efficiency of producing electricity at that temperature
             # This uses a function from Garg and Coombs that assumes ORC for low temperature and flash for high temperature
             utilization_effectiveness = UtilEff_func(self.reservoir_temperature.value)
+
+            # FIXME - `available_heat_rock` should be exergy - possibly not synonymous with available heat, as calculated, per @kfbeckers
             self.producible_heat_rock.value = self.available_heat_rock.value * utilization_effectiveness
+
             self.producible_heat_fluid.value = self.available_heat_fluid.value * utilization_effectiveness
             self.reservoir_producible_heat.value = self.producible_heat_rock.value + self.producible_heat_fluid.value
 

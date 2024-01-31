@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from forex_python.converter import CurrencyRates, CurrencyCodes
 import pint
-from pint.registry import Quantity
+
 from abc import ABC
 
 from geophires_x.Units import *
@@ -19,7 +19,12 @@ ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), '
 
 class HasQuantity(ABC):
 
-    def quantity(self) -> Quantity:
+    def quantity(self) -> Any:
+        """
+        :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
+            due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
+            documentation to specify rtype for now.
+        """
         return ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
 

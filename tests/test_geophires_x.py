@@ -143,7 +143,9 @@ class GeophiresXTestCase(BaseTestCase):
     def test_geophires_examples(self):
         log = _get_logger()
         client = GeophiresXClient()
+
         example_files = self._list_test_files_dir(test_files_dir='examples')
+        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
 
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))

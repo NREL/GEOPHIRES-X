@@ -3,15 +3,29 @@ import copy
 import os.path
 import sys
 from array import array
-from typing import List, Optional
+from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from enum import IntEnum
 from forex_python.converter import CurrencyRates, CurrencyCodes
 import pint
+
+from abc import ABC
+
 from geophires_x.Units import *
 
-ureg = pint.UnitRegistry()
+ureg = pint.get_application_registry()
 ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+
+
+class HasQuantity(ABC):
+
+    def quantity(self) -> Any:
+        """
+        :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
+            due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
+            documentation to specify rtype for now.
+        """
+        return ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
 
 @dataclass
@@ -30,7 +44,7 @@ class ParameterEntry:
 
 
 @dataclass
-class OutputParameter:
+class OutputParameter(HasQuantity):
     """A dataclass that is the holder values that are provided to the user as output
      but are calculated internally by GEOPHIRES
 
@@ -56,7 +70,7 @@ class OutputParameter:
 
 
 @dataclass
-class Parameter:
+class Parameter(HasQuantity):
     """
      A dataclass that is the holder values that are provided (optionally) by the user.  These are all the inout values
      to the model.  They all must have a default value that is reasonable and will

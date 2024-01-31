@@ -186,7 +186,9 @@ class GeophiresXResult:
                 'Drilling and completion costs per well',
                 'Stimulation costs',
                 'Surface power plant costs',
-                # TODO 'of which [...] costs'
+                'of which Absorption Chiller Cost',
+                'of which Heat Pump Cost',
+                'of which Peaking Boiler Cost',
                 'District Heating System Cost',
                 'Field gathering system costs',
                 'Total surface equipment costs',

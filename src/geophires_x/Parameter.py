@@ -291,9 +291,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
             ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:
                 msg = (
-                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file'
-                    f'to a value that is the same as the default. No change was made to that value.'
-                    f'Recommendation: remove the {ParamToModify.Name} from the input file unless you wish'
+                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file '
+                    f'to a value that is the same as the default. No change was made to that value. '
+                    f'Recommendation: remove the {ParamToModify.Name} from the input file unless you wish '
                     f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
                 )
                 print(f'Warning: {msg}')

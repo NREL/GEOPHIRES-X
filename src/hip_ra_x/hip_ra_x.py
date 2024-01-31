@@ -615,7 +615,6 @@ class HIP_RA_X:
 
             # Calculate the maximum energy out per unit of mass (in kJ/kg)
             # self.enthalpy_rock.value = fluid_net_enthalpy - (delta_temperature_k * rock_net_entropy)
-            # self.enthalpy_rock.value = rock_net_enthalpy # - (delta_temperature_k * rock_net_entropy)
             self.enthalpy_fluid.value = fluid_net_enthalpy - (delta_temperature_k * fluid_net_entropy)
             # self.enthalpy_rock.value = self.stored_heat_rock.value/self.mass_rock.value
             # self.enthalpy_fluid.value = self.stored_heat_fluid.value/self.mass_fluid.value
@@ -646,11 +645,13 @@ class HIP_RA_X:
             )
             self.reservoir_available_heat.value = self.available_heat_rock.value + self.available_heat_fluid.value
 
-            # calculate the producible heat given the utilization efficiency of producing electricity at that temperature
-            # This uses a function from Garg and Coombs that assumes ORC for low temperature and flash for high temperature
+            # calculate the producible heat given the utilization efficiency of producing electricity at that
+            # temperature. This uses a function from Garg and Coombs that assumes ORC for low temperature and flash for
+            # high temperature.
             utilization_effectiveness = UtilEff_func(self.reservoir_temperature.value)
 
-            # FIXME - `available_heat_rock` should be exergy - possibly not synonymous with available heat, as calculated, per @kfbeckers
+            # FIXME/TODO - `available_heat_rock` should be exergy - possibly not synonymous with available heat,
+            #  as calculated, per @kfbeckers
             self.producible_heat_rock.value = self.available_heat_rock.value * utilization_effectiveness
 
             self.producible_heat_fluid.value = self.available_heat_fluid.value * utilization_effectiveness

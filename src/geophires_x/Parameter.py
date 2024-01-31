@@ -9,14 +9,13 @@ from enum import IntEnum
 from forex_python.converter import CurrencyRates, CurrencyCodes
 import pint
 from pint.registry import Quantity
+from abc import ABC
 
 from geophires_x.Units import *
 
 ureg = pint.get_application_registry()
 ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
 
-
-from abc import ABC
 
 class HasQuantity(ABC):
 

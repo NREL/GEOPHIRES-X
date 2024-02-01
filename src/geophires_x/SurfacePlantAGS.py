@@ -1,4 +1,5 @@
-import numpy as np
+import os
+import sys
 from geophires_x.WellBores import *
 from geophires_x.Parameter import floatParameter, OutputParameter
 from geophires_x.Units import *

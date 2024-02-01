@@ -44,7 +44,6 @@ _T = np.array(
     ]
 )
 
-
 # from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _UtilEff = np.array(
     [
@@ -82,7 +81,7 @@ _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 
 @lru_cache(maxsize=None)
-def DensityWater(Twater_degC: float) -> float:
+def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the density of water as a function of temperature.
 
@@ -94,11 +93,17 @@ def DensityWater(Twater_degC: float) -> float:
         ValueError: If Twater_degC is not a float or convertible to float.
     """
     if not np.can_cast(Twater_degC, float):
-        raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
+        raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            Twater_K = celsius_to_kelvin(Twater_degC)
+            # water density correlation as used in Geophires v1.2 [kg/m3]
+            rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
+            return rho_water
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
@@ -140,7 +145,7 @@ def ViscosityWater(Twater_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def HeatCapacityWater(Twater_degC: float) -> float:
+def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
 
@@ -161,6 +166,18 @@ def HeatCapacityWater(Twater_degC: float) -> float:
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            Twater = (Twater_degC + 273.15) / 1000
+            A = -203.6060
+            B = 1523.290
+            C = -3196.413
+            D = 2474.455
+            E = 3.855326
+            # water specific heat capacity in J/(kg·K)
+            cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
+
+            return cpwater
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 

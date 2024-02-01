@@ -44,7 +44,6 @@ _T = np.array(
     ]
 )
 
-
 # from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _UtilEff = np.array(
     [
@@ -174,7 +173,7 @@ def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> 
             C = -3196.413
             D = 2474.455
             E = 3.855326
-            # water specific heat capacity in J/kg-K
+            # water specific heat capacity in J/(kg·K)
             cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
 
             return cpwater

@@ -162,6 +162,9 @@ To run all the test environments in *parallel*::
 
     tox -p auto
 
+Use Unittests runner in Pycharm
+-------------------------------
+Configure Pycharm to use Unittests runner instead of pytest runner in order to see subtests. See https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000024199-Python-SubTest?page=1#community_comment_14435372699538
 
 VS Code
 -------

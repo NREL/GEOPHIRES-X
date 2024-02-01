@@ -16,39 +16,39 @@ class BaseTestCase(unittest.TestCase):
     def _list_test_files_dir(self, test_files_dir: str):
         return os.listdir(self._get_test_file_path(test_files_dir))
 
-    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
+    def assertDictAlmostEqual(self, expected, actual, msg=None, places=7):
         """
         https://stackoverflow.com/a/53081544/21380804
         """
 
         # check if both inputs are dicts
-        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
-        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
+        self.assertIsInstance(expected, dict, 'First argument is not a dictionary')
+        self.assertIsInstance(actual, dict, 'Second argument is not a dictionary')
 
         # check if both inputs have the same keys
-        self.assertEqual(d1.keys(), d2.keys())
+        self.assertEqual(expected.keys(), actual.keys())
 
         # check each key
-        for key, value in d1.items():
+        for key, value in expected.items():
             if isinstance(value, dict):
-                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+                self.assertDictAlmostEqual(expected[key], actual[key], msg=msg, places=places)
             elif isinstance(value, list):
-                self.assertListAlmostEqual(d1[key], d2[key], msg=msg, places=places)
+                self.assertListAlmostEqual(expected[key], actual[key], msg=msg, places=places)
             else:
-                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
+                self.assertAlmostEqual(expected[key], actual[key], places=places, msg=msg)
 
-    def assertListAlmostEqual(self, l1, l2, msg=None, places=7):
+    def assertListAlmostEqual(self, expected, actual, msg=None, places=7):
         # check if both inputs are dicts
-        self.assertIsInstance(l1, list, 'First argument is not a list')
-        self.assertIsInstance(l2, list, 'Second argument is not a list')
+        self.assertIsInstance(expected, list, 'First argument is not a list')
+        self.assertIsInstance(actual, list, 'Second argument is not a list')
 
         # check if both inputs have the same keys
-        self.assertEqual(len(l1), len(l2))
+        self.assertEqual(len(expected), len(actual))
 
         # check each key
-        for i in range(len(l1)):
-            v1 = l1[i]
-            v2 = l2[i]
+        for i in range(len(expected)):
+            v1 = expected[i]
+            v2 = actual[i]
             if isinstance(v1, dict):
                 self.assertDictAlmostEqual(v1, v2, msg=msg, places=places)
             elif isinstance(v1, list):
@@ -56,9 +56,11 @@ class BaseTestCase(unittest.TestCase):
             else:
                 self.assertAlmostEqual(v1, v2, places=places, msg=msg)
 
-    def assertFileContentsEqual(self, f1, f2):
-        with open(f1, newline=None) as f1_o:  # newline=None enables universal line endings which is required by Windows
-            with open(f2, newline=None) as f2_o:
+    def assertFileContentsEqual(self, expected, actual):
+        with open(
+            expected, newline=None
+        ) as f1_o:  # newline=None enables universal line endings which is required by Windows
+            with open(actual, newline=None) as f2_o:
                 f1_lines = f1_o.readlines()
                 f2_lines = f2_o.readlines()
-                self.assertListEqual(f1_lines, f2_lines, msg=f'{f1}, {f2}')
+                self.assertListEqual(f1_lines, f2_lines, msg=f'{expected}, {actual}')

@@ -144,52 +144,55 @@ class GeophiresXTestCase(BaseTestCase):
         log = _get_logger()
         client = GeophiresXClient()
 
-        example_files = self._list_test_files_dir(test_files_dir='examples')
+        example_files = list(
+            filter(
+                lambda example_file_path: example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
+                and '.out' not in example_file_path,
+                self._list_test_files_dir(test_files_dir='examples'),
+            )
+        )
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
 
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
 
         for example_file_path in example_files:
-            if (
-                example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
-            ) and '.out' not in example_file_path:
-                with self.subTest(msg=example_file_path):
-                    print(f'Running example test {example_file_path}')
-                    input_params = GeophiresInputParameters(
-                        from_file_path=self._get_test_file_path(Path('examples', example_file_path))
+            with self.subTest(msg=example_file_path):
+                print(f'Running example test {example_file_path}')
+                input_params = GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('examples', example_file_path))
+                )
+                geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
+                del geophires_result.result['metadata']
+
+                expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
+                del expected_result.result['metadata']
+
+                try:
+                    self.assertDictEqual(
+                        expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
                     )
-                    geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
-                    del geophires_result.result['metadata']
-
-                    expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
-                    del expected_result.result['metadata']
-
-                    try:
-                        self.assertDictEqual(
-                            expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
+                except AssertionError as ae:
+                    # Float deviation is observed across processor architecture in some test cases - see example
+                    # https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/actions/runs/6475850654/job/17588523571
+                    # Adding additional test cases that require this fallback should be avoided if possible.
+                    cases_to_allow_almost_equal = [
+                        'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
+                        'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
+                    ]
+                    allow_almost_equal = example_file_path in cases_to_allow_almost_equal
+                    if allow_almost_equal:
+                        log.warning(
+                            f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual..."
                         )
-                    except AssertionError as ae:
-                        # Float deviation is observed across processor architecture in some test cases - see example
-                        # https://github.com/softwareengineerprogrammer/python-geophires-x-nrel/actions/runs/6475850654/job/17588523571
-                        # Adding additional test cases that require this fallback should be avoided if possible.
-                        cases_to_allow_almost_equal = [
-                            'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
-                            'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
-                        ]
-                        allow_almost_equal = example_file_path in cases_to_allow_almost_equal
-                        if allow_almost_equal:
-                            log.warning(
-                                f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual..."
-                            )
-                            self.assertDictAlmostEqual(
-                                geophires_result.result,
-                                expected_result.result,
-                                places=2,
-                                msg=f'Example test: {example_file_path}',
-                            )
-                        else:
-                            raise ae
+                        self.assertDictAlmostEqual(
+                            geophires_result.result,
+                            expected_result.result,
+                            places=2,
+                            msg=f'Example test: {example_file_path}',
+                        )
+                    else:
+                        raise ae
 
     def test_runtime_error_with_error_code(self):
         client = GeophiresXClient()

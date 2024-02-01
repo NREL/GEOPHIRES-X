@@ -12,7 +12,7 @@ from .OptionList import ReservoirModel
 def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, utilfactor: float, flowrate: float,
               cpwater: float, Trock: float, Tresoutput: float, averagegradient: float, depth: float) -> float:
     """
-    Calculate teh temperature drop along the length of a well
+    Calculate the temperature drop along the length of a well
     this code is only valid so far for 1 gradient and deviation = 0
     For multiple gradients, use Ramey's model for every layer
     assume outside diameter of casing is 10% larger than inside diameter of production pipe (=prodwelldiam)

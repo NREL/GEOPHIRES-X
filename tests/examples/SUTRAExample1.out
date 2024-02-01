@@ -33,7 +33,7 @@ Simulation Metadata
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
       Well Depth:                                         600.0 meter
-      Pump efficiency:                                     80.0
+      Pump efficiency:                                      0.8
       Lifetime Average Well Flow Rate:                     16.2 kg/sec
       Injection well casing ID:                           0.198 meter
       Production well casing ID:                          0.198 meter

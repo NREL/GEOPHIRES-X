@@ -94,7 +94,7 @@ def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float
         ValueError: If Twater_degC is not a float or convertible to float.
     """
     if not np.can_cast(Twater_degC, float):
-        raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
+        raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
@@ -102,8 +102,8 @@ def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float
         if enable_fallback_calculation:
             Twater_K = celsius_to_kelvin(Twater_degC)
             # water density correlation as used in Geophires v1.2 [kg/m3]
-            rhowater = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
-            return rhowater
+            rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
+            return rho_water
 
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 

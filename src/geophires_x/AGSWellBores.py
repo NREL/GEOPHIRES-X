@@ -26,6 +26,8 @@ import itertools as itern
 from .WellBores import WellBores, RameyCalc, ProdPressureDropAndPumpingPowerUsingIndexes, WellPressureDrop, \
     ProdPressureDropsAndPumpingPowerUsingImpedenceModel
 
+from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
+
 esp2 = 10.0e-10
 
 
@@ -1077,18 +1079,21 @@ class AGSWellBores(WellBores):
             self.DPOverall.value = f(np.arange(0, len(self.DPOverall.value), 1))
 
             # calculate water values based on initial temperature
-            rhowater = densitywater(self.Tout[0], enable_fallback_calculation=True)
+
+            # FIXME TODO - get rid of fallback calculations
+            rho_water = densitywater(self.Tout[0], enable_fallback_calculation=True)
             model.reserv.cpwater.value = heatcapacitywater(
                 self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary
             self.PumpingPower.value = [0.0] * (len(self.DPOverall.value))
-            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pump_efficiency.value / 1E3
-            # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity) = thermosiphon is happening!
+            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rho_water / model.surfaceplant.pump_efficiency.value / 1E3
+            # in GEOPHIRES v1.2, negative pumping power values become zero
+            # (b/c we are not generating electricity) = thermosiphon is happening!
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "AGSWellBores"
+        return 'AGSWellBores'

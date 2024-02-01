@@ -82,6 +82,8 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
+
+    # FIXME TODO - get rid of fallback calculations
     rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
                          Taverage])  # replace with correlation based on Tprodaverage
     muwater = np.array([viscositywater(t) for t in Taverage])  # replace with correlation based on Tprodaverage
@@ -966,7 +968,6 @@ class WellBores:
             model.reserv.depth.value, self.nprod.value, self.ninj.value, model.reserv.waterloss.value)
 
         if self.impedancemodelused.value:  # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
-            rhowaterreservoir = densitywater(0.1 * self.Tinj.value + 0.9 * model.reserv.Tresoutput.value)
             self.DPOverall.value, self.PumpingPower.value, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                 ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3, vprod, self.rhowaterinj, self.rhowaterprod,
                                                                     model.reserv.rhowater.value,

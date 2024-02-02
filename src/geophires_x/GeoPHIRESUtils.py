@@ -375,8 +375,8 @@ def read_input_file(return_dict_1, logger=None):
 
     else:
         logger.warning(
-            'No input parameter file specified on the command line. \
-        Proceeding with default parameter run... '
+            'No input parameter file specified on the command line. '
+            'Proceeding with default parameter run...'
         )
 
     logger.info(f'Complete {__name__}: {sys._getframe().f_code.co_name}')

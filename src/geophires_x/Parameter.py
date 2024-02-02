@@ -441,37 +441,34 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             prefShort = prefType[1:]
         if currPrefix:
             currShort = currType[1:]
-        # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
-        # so just do the simple factor conversion
+
         if prefShort == currShort:
+            # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
+            # so just do the simple factor conversion
+
             val = float(val) * Factor
             strUnit = str(val)
             ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
-        # if we come here, we have a currency conversion to do (USD->EUR, etc.).
         try:
+            # if we come here, we have a currency conversion to do (USD->EUR, etc.).
             cr = CurrencyRates()
             conv_rate = cr.get_rate(currShort, prefShort)
         except BaseException as ex:
             print(str(ex))
             msg = (
-                "Error: GEOPHIRES failed to convert your currency for"
-                + ParamToModify.Name
-                + " to something it understands. You gave"
-                + strUnit
-                + " - Are these currency units defined for"
-                + " forex-python?  or perhaps the currency server is down?  Please change your units to"
-                + ParamToModify.PreferredUnits.value
-                + "to continue. Cannot continue unless you do.  Exiting."
+                f'Error: GEOPHIRES failed to convert your currency for {ParamToModify.Name} to something it '
+                f'understands. You gave {strUnit} - Are these currency units defined for forex-python? or perhaps the '
+                f'currency server is down?  Please change your units to {ParamToModify.PreferredUnits.value} to '
+                f'continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
 
         New_val = (conv_rate * float(val)) * Factor
         strUnit = str(New_val)
@@ -513,8 +510,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             model.logger.critical(str(ex))
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
 
         if Old_valQ.units != New_valQ.units:  # do the transformation only if the units don't match
             ParamToModify.CurrentUnits = LookupUnits(currType)[0]
@@ -535,8 +531,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
                 model.logger.critical(str(ex))
                 model.logger.critical(msg)
 
-                # FIXME raise appropriate exception instead of sys.exit()
-                sys.exit()
+                raise RuntimeError(msg)
 
             # set sValue to the value based on the new units - don't add units to it - it should just be a raw number
             strUnit = str(New_valQ.magnitude)
@@ -647,27 +642,24 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             conv_rate = cr.get_rate(currType, prefType)
         except BaseException as ex:
             print(str(ex))
-            print(
+            msg = (
                 f'Error: GEOPHIRES failed to convert your currency for {param.Name} to something it understands.'
                 f'You gave {currType} - Are these currency units defined for forex-python? '
                 f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value}'
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical(
-                f'Error: GEOPHIRES failed to convert your currency for {param.Name} to something it understands. '
-                f'You gave {currType} - Are these currency units defined for forex-python?  '
-                f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value} '
-                f'to continue. Cannot continue unless you do.  Exiting.'
-            )
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            model.logger.critical(msg)
+
+            raise RuntimeError(msg, ex)
 
         param_with_units_converted_back.value = (conv_rate * float(param.value)) / prefFactor
         param_with_units_converted_back.UnitsMatch = False
         return param_with_units_converted_back
 
-    else:  # must be something other than currency
+    else:
+        # must be something other than currency
         if isinstance(param.CurrentUnits, pint.Quantity):
             val = param.CurrentUnits.value
             currType = str(param.CurrentUnits.value)
@@ -702,8 +694,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             model.logger.critical(str(ex))
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
         try:
             # update The quantity back to the current units (the units that we started with) units
             # so the display will be in the right units
@@ -720,8 +711,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             model.logger.critical(str(ex))
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
 
         # reset the values
         if param.value != currQ.magnitude:
@@ -1009,8 +999,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             print(msg)
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
 
         symbol = cc.get_symbol(prefShort)
         # if we have a symbol for a currency type, then the type is known to the library.  If we don't
@@ -1026,8 +1015,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             print(msg)
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
         try:
             cr = CurrencyRates()
             conv_rate = cr.get_rate(prefShort, currShort)
@@ -1047,8 +1035,8 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             model.logger.critical(str(ex))
             model.logger.critical(msg)
 
-            # FIXME raise appropriate exception instead of sys.exit()
-            sys.exit()
+            raise RuntimeError(msg)
+
         oparam.value = Factor * conv_rate * float(oparam.value)
         oparam.CurrentUnits = DefUnit
         oparam.UnitsMatch = False

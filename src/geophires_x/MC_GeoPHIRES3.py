@@ -65,60 +65,60 @@ def WorkPackage(pass_list):
     working_dir = pass_list[4]
     PythonPath = pass_list[5]
 
-    tmpoutputfile = tmpfilename = ""
+    tmpoutputfile = tmpfilename = ''
     # get random values for each of the INPUTS based on the distributions and boundary values
     rando = 0.0
-    s = ""
-    print("#", end="")
+    s = ''
+    print('#', end='')
     for input_value in Inputs:
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + "\n"
+            s += input_value[0] + ", " + str(rando) + "\n"
         elif input_value[1].strip().startswith('uniform'):
             rando = np.random.uniform(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + "\n"
+            s += input_value[0] + ", " + str(rando) + "\n"
         elif input_value[1].strip().startswith('triangular'):
             rando = np.random.triangular(float(input_value[2]), float(input_value[3]), float(input_value[4]))
-            s = s + input_value[0] + ", " + str(rando) + "\n"
+            s += input_value[0] + ", " + str(rando) + "\n"
         if input_value[1].strip().startswith('lognormal'):
             rando = np.random.lognormal(float(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + "\n"
+            s += input_value[0] + ", " + str(rando) + "\n"
         if input_value[1].strip().startswith('binomial'):
             rando = np.random.binomial(int(input_value[2]), float(input_value[3]))
-            s = s + input_value[0] + ", " + str(rando) + "\n"
+            s += input_value[0] + ", " + str(rando) + "\n"
 
     # make up a temporary file name that will be shared among files for this iteration
-    tmpfilename = working_dir + str(uuid.uuid4()) + ".txt"
-    tmpoutputfile = tmpfilename.replace(".txt", "_result.txt")
+    tmpfilename = f'{working_dir}{str(uuid.uuid4())}.txt'
+    tmpoutputfile = tmpfilename.replace('.txt', '_result.txt')
 
     # copy the contents of the Input_file into a new input file
     shutil.copyfile(args.Input_file, tmpfilename)
 
     # append those values to the new input file in the format "variable name, new_random_value".
     # This will cause GeoPHIRES/HIP-RA to replace the value in the file with this random value in the calculation
-    # if it exists in that fiole already, or it will set it to the value as if it was a new value set by the user.
-    with open(tmpfilename, "a") as f:
+    # if it exists in that file already, or it will set it to the value as if it was a new value set by the user.
+    with open(tmpfilename, 'a') as f:
         f.write(s)
 
-    # start the passed in program name (usually GeoPHIRES or HIP-RA) with the supplied input file.
+    # start the passed in program name (usually GEOPHIRES or HIP-RA) with the supplied input file.
     # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
     sprocess = subprocess.Popen([PythonPath, args.Code_File, tmpfilename, tmpoutputfile], stdout=subprocess.DEVNULL)
     sprocess.wait()
 
-    # look thru "_result.txt" file for the OUTPUT variables that the user asked for.
+    # look group "_result.txt" file for the OUTPUT variables that the user asked for.
     # For each of them, write them as a column in results file
-    s1 = ""
+    s1 = ''
     s2 = {}
-    result_s = ""
+    result_s = ''
     localOutputs = Outputs
 
     # make sure a key file exists. If not, exit
     if not os.path.exists(tmpoutputfile):
-        print("Timed out waiting for: " + tmpoutputfile)
+        print(f'Timed out waiting for: {tmpoutputfile}')
         #        logger.warning("Timed out waiting for: " + tmpoutputfile)
         exit(-33)
 
-    with open(tmpoutputfile, "r") as f:
+    with open(tmpoutputfile, 'r') as f:
         s1 = f.readline()
         i = 0
         while s1:  # read until the end of the file
@@ -127,7 +127,8 @@ def WorkPackage(pass_list):
                     localOutputs.remove(out)  # as an optimization, drop the output from the list once we have found it
                     s2 = s1.split(":")  # colon marks the split between the title and the data
                     s2 = s2[1].strip()  # remove leading and trailing spaces
-                    s2 = s2.split(" ")  # split on space because there is a unit string after the value we are looking for
+                    s2 = s2.split(
+                        " ")  # split on space because there is a unit string after the value we are looking for
                     s2 = s2[0].strip()  # we finally have the result we were looking for
                     result_s = result_s + s2 + ", "
                     i = i + 1
@@ -140,17 +141,17 @@ def WorkPackage(pass_list):
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."
-        result_s = result_s + "(" + s.replace("\n", ";", -1).replace(", ", ":", -1) + ")"
+        result_s += '(' + s.replace("\n", ";", -1).replace(", ", ":", -1) + ')'
 
     # delete temporary files
     os.remove(tmpfilename)
     os.remove(tmpoutputfile)
 
     # write out the results
-    result_s = result_s.strip(" ")  # get rid of last space
-    result_s = result_s.strip(",")  # et rid of last comma
-    result_s = result_s + "\n"
-    with open(Outputfile, "a") as f:
+    result_s = result_s.strip(' ')  # get rid of last space
+    result_s = result_s.strip(',')  # get rid of last comma
+    result_s += '\n'
+    with open(Outputfile, 'a') as f:
         f.write(result_s)
 
 
@@ -190,7 +191,7 @@ def main(enable_geophires_logging_config=True):
         # set up logging.
         logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('root')
-    logger.info("Init " + str(__name__))
+    logger.info(f'Init {str(__name__)}')
     # keep track of execution time
     tic = time.time()
 
@@ -201,9 +202,9 @@ def main(enable_geophires_logging_config=True):
 
     # get the values off the command line
     parser = argparse.ArgumentParser()
-    parser.add_argument("Code_File", help="Code_File")
-    parser.add_argument("Input_file", help="Input file")
-    parser.add_argument("MC_Settings_file", help="MC Settings file")
+    parser.add_argument('Code_File', help='Code_File')
+    parser.add_argument('Input_file', help='Input file')
+    parser.add_argument('MC_Settings_file', help='MC Settings file')
     args = parser.parse_args()
 
     # make a list of the INPUTS, distribution functions, and the inputs for that distribution function.
@@ -242,17 +243,17 @@ def main(enable_geophires_logging_config=True):
     # - we include the INPUT and OUTPUT variables in the output file so that we can track the results and tell which
     # combination of variables produced the interesting values (like lowest or highest, or mean)
     # start by creating the string we will write as header
-    s = ""
+    s = ''
     for output in Outputs:
-        s = s + output + ", "
+        s += output + ", "
     for input in Inputs:
-        s = s + input[0] + ", "
+        s += input[0] + ", "
     s = "".join(s.rsplit(" ", 1))  # get rid of last space
     s = "".join(s.rsplit(",", 1))  # get rid of last comma
-    s = s + "\n"
+    s += '\n'
 
     # write the header so it is easy to import and analyze in Excel
-    with open(Outputfile, "w") as f:
+    with open(Outputfile,'w') as f:
         f.write(s)
 
     # TODO Use a scratch directory to minimize the mess: https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory
@@ -269,11 +270,11 @@ def main(enable_geophires_logging_config=True):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.map(WorkPackage, args)
 
-    print("\n" + "Done with calculations! Summarizing..." + "\n")
-    logger.info("Done with calculations! Summarizing...")
+    print('\nDone with calculations! Summarizing...\n')
+    logger.info('Done with calculations! Summarizing...')
 
     # read the results into an array
-    with open(Outputfile, "r") as f:
+    with open(Outputfile, 'r') as f:
         s = f.readline()  # skip the first line
         all_results = f.readlines()
 
@@ -291,7 +292,7 @@ def main(enable_geophires_logging_config=True):
 
     actual_records_count = len(Results)
 
-    # Load the results into  a pandas dataframe
+    # Load the results into a pandas dataframe
     results_pd = pd.read_csv(Outputfile)
     df = pd.DataFrame(results_pd)
 
@@ -305,18 +306,23 @@ def main(enable_geophires_logging_config=True):
 
     print(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
     logger.info(" Calculation Time: " + "{0:10.3f}".format((time.time() - tic)) + " sec\n")
-    print(" Calculation Time per iteration: " + "{0:10.3f}".format(((time.time() - tic)) / actual_records_count) + " sec\n")
-    logger.info(" Calculation Time per iteration: " + "{0:10.3f}".format(((time.time() - tic)) / actual_records_count) + " sec\n")
+    print(" Calculation Time per iteration: " + "{0:10.3f}".format(
+        ((time.time() - tic)) / actual_records_count) + " sec\n")
+    logger.info(" Calculation Time per iteration: " + "{0:10.3f}".format(
+        ((time.time() - tic)) / actual_records_count) + " sec\n")
     if Iterations != actual_records_count:
-        print("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
-        logger.warning("\n\nNOTE:" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
+        print("\n\nNOTE:" + str(
+            actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
+        logger.warning("\n\nNOTE:" + str(
+            actual_records_count) + " iterations finished successfully and were used to calculate the statistics.\n\n")
 
     # write them out
     annotations = ""
     with open(Outputfile, "a") as f:
         i = 0
         if Iterations != actual_records_count:
-            f.write("\n\n" + str(actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
+            f.write("\n\n" + str(
+                actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
         for output in Outputs:
             f.write(output + ":" + "\n")
             f.write(f"     minimum: {mins[i]:,.2f}\n")

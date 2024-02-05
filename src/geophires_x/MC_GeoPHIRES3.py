@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tempfile
 
+
 def CheckAndReplaceMean(input_value, args) -> list:
     """
     CheckAndReplaceMean - check to see if the user has requested that a value be replaced by a mean value by specifying
@@ -38,7 +39,7 @@ def CheckAndReplaceMean(input_value, args) -> list:
     """
     i = 0
     for inputx in input_value:
-        if "#" in inputx:
+        if '#' in inputx:
             # found one we have to process.
             VariName = input_value[0]
             # find it in the Input_file
@@ -46,7 +47,7 @@ def CheckAndReplaceMean(input_value, args) -> list:
                 ss = f.readlines()
             for s in ss:
                 if str(s).startswith(VariName):
-                    s2 = s.split(",")
+                    s2 = s.split(',')
                     input_value[i] = s2[1]
                     break
             break
@@ -73,7 +74,7 @@ def WorkPackage(pass_list):
     # get random values for each of the INPUTS based on the distributions and boundary values
     rando = 0.0
     s = ''
-    print('#', end='')
+    print('#', end='')  # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
     for input_value in Inputs:
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
@@ -119,7 +120,7 @@ def WorkPackage(pass_list):
     # make sure a key file exists. If not, exit
     if not os.path.exists(tmpoutputfile):
         print(f'Timed out waiting for: {tmpoutputfile}')
-        #        logger.warning("Timed out waiting for: " + tmpoutputfile)
+        # logger.warning(f'Timed out waiting for: {tmpoutputfile}')
         exit(-33)
 
     with open(tmpoutputfile, 'r') as f:
@@ -129,13 +130,13 @@ def WorkPackage(pass_list):
             for out in localOutputs:  # check for each requested output
                 if out in s1:  # If true, we found the output value that the user requested, so process it
                     localOutputs.remove(out)  # as an optimization, drop the output from the list once we have found it
-                    s2 = s1.split(":")  # colon marks the split between the title and the data
+                    s2 = s1.split(':')  # colon marks the split between the title and the data
                     s2 = s2[1].strip()  # remove leading and trailing spaces
                     s2 = s2.split(
-                        " ")  # split on space because there is a unit string after the value we are looking for
+                        ' ')  # split on space because there is a unit string after the value we are looking for
                     s2 = s2[0].strip()  # we finally have the result we were looking for
-                    result_s = result_s + s2 + ", "
-                    i = i + 1
+                    result_s += s2 + ", "
+                    i += 1
                     if i < (len(Outputs) - 1):
                         # go back to the beginning of the file in case the outputs that the user specified are not
                         # in the order that they appear in the file.
@@ -222,21 +223,21 @@ def main(enable_geophires_logging_config=True):
     Inputs = []
     Outputs = []
     Iterations = 0
-    Outputfile = ""
-    PythonPath = "python"
+    Outputfile = ''
+    PythonPath = 'python'
     for line in flist:
         clean = line.strip()
-        pair = clean.split(",")
+        pair = clean.split(',')
         pair[1] = pair[1].strip()
-        if pair[0].startswith("INPUT"):
+        if pair[0].startswith('INPUT'):
             Inputs.append(pair[1:])
-        elif pair[0].startswith("OUTPUT"):
+        elif pair[0].startswith('OUTPUT'):
             Outputs.append(pair[1])
-        elif pair[0].startswith("ITERATIONS"):
+        elif pair[0].startswith('ITERATIONS'):
             Iterations = int(pair[1])
-        elif pair[0].startswith("MC_OUTPUT_FILE"):
+        elif pair[0].startswith('MC_OUTPUT_FILE'):
             Outputfile = pair[1]
-        elif pair[0].startswith("PYTHON_PATH"):
+        elif pair[0].startswith('PYTHON_PATH'):
             PythonPath = pair[1]
 
     # check to see if there is a "#" in an input, if so, use the results file to replace it with the value
@@ -250,18 +251,17 @@ def main(enable_geophires_logging_config=True):
     # start by creating the string we will write as header
     s = ''
     for output in Outputs:
-        s += output + ", "
+        s += output + ', '
     for input in Inputs:
-        s += input[0] + ", "
-    s = "".join(s.rsplit(" ", 1))  # get rid of last space
-    s = "".join(s.rsplit(",", 1))  # get rid of last comma
+        s += input[0] + ', '
+    s = ''.join(s.rsplit(' ', 1))  # get rid of last space
+    s = ''.join(s.rsplit(',', 1))  # get rid of last comma
     s += '\n'
 
     # write the header so it is easy to import and analyze in Excel
-    with open(Outputfile,'w') as f:
+    with open(Outputfile, 'w') as f:
         f.write(s)
 
-    # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
     # build the args list
     pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
 
@@ -286,13 +286,13 @@ def main(enable_geophires_logging_config=True):
     Results = []
     for line in all_results:
         result_count = result_count + 1
-        if "-9999.0" not in line and len(s) > 1:
+        if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
-                Results.append([float(y) for y in line.split(",")])
+                Results.append([float(y) for y in line.split(',')])
         else:
-            logger.warning("-9999.0 or space found in line " + str(result_count))
+            logger.warning(f'-9999.0 or space found in line {str(result_count)}')
 
     actual_records_count = len(Results)
 
@@ -325,37 +325,37 @@ def main(enable_geophires_logging_config=True):
     with open(Outputfile, "a") as f:
         i = 0
         if Iterations != actual_records_count:
-            f.write("\n\n" + str(
-                actual_records_count) + " iterations finished successfully and were used to calculate the statistics\n\n")
+            f.write(f'\n\n{str(actual_records_count)} iterations finished successfully and were used to calculate the '
+                    f'statistics\n\n')
         for output in Outputs:
-            f.write(output + ":" + "\n")
-            f.write(f"     minimum: {mins[i]:,.2f}\n")
-            annotations = annotations + f"     minimum: {mins[i]:,.2f}\n"
-            f.write(f"     maximum: {maxs[i]:,.2f}\n")
-            annotations = annotations + f"     maximum: {maxs[i]:,.2f}\n"
-            f.write(f"     median: {medians[i]:,.2f}\n")
-            annotations = annotations + f"     median: {medians[i]:,.2f}\n"
-            f.write(f"     average: {averages[i]:,.2f}\n")
-            annotations = annotations + f"     average: {averages[i]:,.2f}\n"
-            f.write(f"     mean: {means[i]:,.2f}\n")
-            annotations = annotations + f"     mean: {means[i]:,.2f}\n"
-            f.write(f"     standard deviation: {std[i]:,.2f}\n")
-            annotations = annotations + f"     standard deviation: {std[i]:,.2f}\n"
+            f.write(f'{output}:\n')
+            f.write(f'     minimum: {mins[i]:,.2f}\n')
+            annotations += f'     minimum: {mins[i]:,.2f}\n'
+            f.write(f'     maximum: {maxs[i]:,.2f}\n')
+            annotations += f'     maximum: {maxs[i]:,.2f}\n'
+            f.write(f'     median: {medians[i]:,.2f}\n')
+            annotations += f"     median: {medians[i]:,.2f}\n"
+            f.write(f'     average: {averages[i]:,.2f}\n')
+            annotations += f'     average: {averages[i]:,.2f}\n'
+            f.write(f'     mean: {means[i]:,.2f}\n')
+            annotations += f'     mean: {means[i]:,.2f}\n'
+            f.write(f'     standard deviation: {std[i]:,.2f}\n')
+            annotations += f'     standard deviation: {std[i]:,.2f}\n'
 
             plt.figure(figsize=(8, 6))
             ax = plt.subplot()
             ax.set_title(output)
-            ax.set_xlabel("Output units")
-            ax.set_ylabel("Probability")
+            ax.set_xlabel('Output units')
+            ax.set_ylabel('Probability')
 
             plt.figtext(0.11, 0.74, annotations, fontsize=8)
             ret = plt.hist(df[df.columns[i]].tolist(), bins=50, density=True)
             f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
             f.write('bin edges: ' + str(ret[1]) + '\n')
-            fname = df.columns[i].strip().replace("/", "-")
+            fname = df.columns[i].strip().replace('/', '-')
             plt.savefig(Path(Path(Outputfile).parent, f'{fname}.png'))
-            i = i + 1
-            annotations = ""
+            i += 1
+            annotations = ''
 
     logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 

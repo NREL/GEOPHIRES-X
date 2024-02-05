@@ -7,8 +7,6 @@ import unittest
 import uuid
 from pathlib import Path
 
-from tests.base_test_case import BaseTestCase
-
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import floatParameter
@@ -26,6 +24,7 @@ from hip_ra import HipRaResult
 from hip_ra.HIP_RA import HIP_RA
 from hip_ra_x import HipRaXClient
 from hip_ra_x.hip_ra_x import HIP_RA_X
+from tests.base_test_case import BaseTestCase
 
 
 # noinspection PyTypeChecker

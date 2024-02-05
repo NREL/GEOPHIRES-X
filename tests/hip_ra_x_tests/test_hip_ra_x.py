@@ -317,10 +317,8 @@ class HipRaXTestCase(BaseTestCase):
         hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].PreferredUnits = VolumeUnit.METERS3
         hip_ra.OutputParameterDict['Stored Heat (reservoir)'].PreferredUnits = HeatUnit.J
 
-        # FIXME WIP
-        # hip_ra.OutputParameterDict['Fluid Produced'].PreferredUnits = MassUnit.GRAM
+        hip_ra.OutputParameterDict['Specific Enthalpy (reservoir)'].PreferredUnits = EnthalpyUnit.KJPERKG
 
-        hip_ra.OutputParameterDict['Enthalpy (reservoir)'].PreferredUnits = EnthalpyUnit.KJPERKG
         hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].PreferredUnits = HeatUnit.J
         hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].PreferredUnits = PercentUnit.PERCENT
         hip_ra.OutputParameterDict['Available Heat (reservoir)'].PreferredUnits = HeatUnit.J
@@ -332,11 +330,7 @@ class HipRaXTestCase(BaseTestCase):
         assert hip_ra.OutputParameterDict['Reservoir Volume (reservoir)'].CurrentUnits == VolumeUnit.KILOMETERS3
         assert hip_ra.OutputParameterDict['Stored Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
 
-        # FIXME WIP
-        # assert hip_ra.OutputParameterDict['Fluid Produced'].CurrentUnits == MassUnit.KILOGRAM
-
-        assert hip_ra.OutputParameterDict['Enthalpy (reservoir)'].CurrentUnits == EnthalpyUnit.KJPERKG
-        assert hip_ra.OutputParameterDict['Wellhead Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
+        assert hip_ra.OutputParameterDict['Specific Enthalpy (reservoir)'].CurrentUnits == EnthalpyUnit.KJPERKG
         assert hip_ra.OutputParameterDict['Recovery Factor (reservoir)'].CurrentUnits == PercentUnit.PERCENT
         assert hip_ra.OutputParameterDict['Available Heat (reservoir)'].CurrentUnits == HeatUnit.KJ
         assert hip_ra.OutputParameterDict['Producible Heat (reservoir)'].CurrentUnits == HeatUnit.KJ

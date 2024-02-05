@@ -5,6 +5,7 @@ Framework for running Monte Carlo simulations using GEOPHIRES v3.0 & HIP-RA 1.0
 build date: September 2023
 Created on Wed November  16 10:43:04 2017
 @author: Malcolm Ross V3
+@author: softwareengineerprogrammer
 """
 
 import os
@@ -12,6 +13,8 @@ import sys
 import time
 import logging
 import logging.config
+from pathlib import Path
+
 import numpy as np
 import argparse
 import uuid
@@ -20,7 +23,7 @@ import concurrent.futures
 import subprocess
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import tempfile
 
 def CheckAndReplaceMean(input_value, args) -> list:
     """
@@ -66,6 +69,7 @@ def WorkPackage(pass_list):
     PythonPath = pass_list[5]
 
     tmpoutputfile = tmpfilename = ''
+
     # get random values for each of the INPUTS based on the distributions and boundary values
     rando = 0.0
     s = ''
@@ -88,7 +92,7 @@ def WorkPackage(pass_list):
             s += input_value[0] + ", " + str(rando) + "\n"
 
     # make up a temporary file name that will be shared among files for this iteration
-    tmpfilename = f'{working_dir}{str(uuid.uuid4())}.txt'
+    tmpfilename = str(Path(tempfile.gettempdir(), f'{str(uuid.uuid4())}.txt'))
     tmpoutputfile = tmpfilename.replace('.txt', '_result.txt')
 
     # copy the contents of the Input_file into a new input file
@@ -151,6 +155,7 @@ def WorkPackage(pass_list):
     result_s = result_s.strip(' ')  # get rid of last space
     result_s = result_s.strip(',')  # get rid of last comma
     result_s += '\n'
+
     with open(Outputfile, 'a') as f:
         f.write(result_s)
 
@@ -256,7 +261,6 @@ def main(enable_geophires_logging_config=True):
     with open(Outputfile,'w') as f:
         f.write(s)
 
-    # TODO Use a scratch directory to minimize the mess: https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory
     # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
     # build the args list
     pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
@@ -349,16 +353,16 @@ def main(enable_geophires_logging_config=True):
             f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
             f.write('bin edges: ' + str(ret[1]) + '\n')
             fname = df.columns[i].strip().replace("/", "-")
-            plt.savefig(working_dir + fname + '.png')
+            plt.savefig(Path(Path(Outputfile).parent, f'{fname}.png'))
             i = i + 1
             annotations = ""
 
-    logger.info("Complete " + str(__name__) + ": " + sys._getframe().f_code.co_name)
+    logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # set up logging.
     logger = logging.getLogger('root')
-    logger.info("Init " + str(__name__))
+    logger.info(f'Init {str(__name__)}')
 
     main()

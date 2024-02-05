@@ -1089,8 +1089,10 @@ class AGSWellBores(WellBores):
 
             # calculate water values based on initial temperature
 
-            # FIXME TODO - get rid of fallback calculations
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
             rho_water = densitywater(self.Tout[0], enable_fallback_calculation=True)
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
             model.reserv.cpwater.value = heatcapacitywater(
                 self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
 

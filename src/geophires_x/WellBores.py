@@ -83,10 +83,13 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
 
-    # FIXME TODO - get rid of fallback calculations
+    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
     rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
                          Taverage])  # replace with correlation based on Tprodaverage
-    muwater = np.array([viscositywater(t) for t in Taverage])  # replace with correlation based on Tprodaverage
+
+    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+    muwater = np.array([viscositywater(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
+
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
     Rewateraverage = np.average(Rewater)
@@ -323,8 +326,11 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess = 344.7
+
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum = vaporpressurewater(Trock) + Pexcess
+        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
         else:
@@ -440,8 +446,11 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess = 344.7
+
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum = vaporpressurewater(Trock) + Pexcess
+        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
         else:

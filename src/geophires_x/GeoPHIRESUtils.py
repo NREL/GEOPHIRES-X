@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import logging
 from os.path import exists
 import dataclasses
 import json
@@ -11,6 +13,8 @@ import numpy as np
 from geophires_x.Parameter import *
 
 from iapws.iapws97 import IAPWS97
+
+_logger = logging.getLogger('root')
 
 _T = np.array(
     [
@@ -43,7 +47,6 @@ _T = np.array(
         373.946,
     ]
 )
-
 
 # from https://www.engineeringtoolbox.com/water-properties-d_1508.html
 _UtilEff = np.array(
@@ -82,7 +85,7 @@ _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 
 @lru_cache(maxsize=None)
-def DensityWater(Twater_degC: float) -> float:
+def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the density of water as a function of temperature.
 
@@ -94,11 +97,19 @@ def DensityWater(Twater_degC: float) -> float:
         ValueError: If Twater_degC is not a float or convertible to float.
     """
     if not np.can_cast(Twater_degC, float):
-        raise ValueError(f'Twater ({Twater_degC}) must be a float or convertible to float.')
+        raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            _logger.warning(f'DensityWater: Fallback calculation triggered for {Twater_degC}C')
+
+            Twater_K = celsius_to_kelvin(Twater_degC)
+            # water density correlation as used in Geophires v1.2 [kg/m3]
+            rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
+            return rho_water
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
@@ -122,7 +133,7 @@ def celsius_to_kelvin(celsius: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def ViscosityWater(Twater_degC: float) -> float:
+def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
     Args:
@@ -136,11 +147,18 @@ def ViscosityWater(Twater_degC: float) -> float:
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).mu
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            _logger.warning(f'ViscosityWater: Fallback calculation triggered for {Twater_degC}C')
+
+            # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
+            muwater = 2.414E-5 * np.power(10, 247.8 / (Twater_degC + 273.15 - 140))
+            return muwater
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
 @lru_cache(maxsize=None)
-def HeatCapacityWater(Twater_degC: float) -> float:
+def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
 
@@ -161,6 +179,20 @@ def HeatCapacityWater(Twater_degC: float) -> float:
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            _logger.warning(f'HeatCapacityWater: Fallback calculation triggered for {Twater_degC}C')
+
+            Twater = (Twater_degC + 273.15) / 1000
+            A = -203.6060
+            B = 1523.290
+            C = -3196.413
+            D = 2474.455
+            E = 3.855326
+            # water specific heat capacity in J/(kg·K)
+            cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
+
+            return cpwater
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
@@ -196,7 +228,7 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def VaporPressureWater(Twater_degC: float) -> float:
+def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     The VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature.
 
@@ -217,6 +249,20 @@ def VaporPressureWater(Twater_degC: float) -> float:
     try:
         return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).P * 1e3
     except NotImplementedError as nie:
+        if enable_fallback_calculation:
+            _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')
+
+            if Twater_degC < 100:
+                A = 8.07131
+                B = 1730.63
+                C = 233.426
+            else:
+                A = 8.14019
+                B = 1810.94
+                C = 244.485
+            vp = 133.322 * (10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
+            return vp
+
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
 
 
@@ -358,8 +404,8 @@ def read_input_file(return_dict_1, logger=None):
 
     else:
         logger.warning(
-            'No input parameter file specified on the command line. \
-        Proceeding with default parameter run... '
+            'No input parameter file specified on the command line. '
+            'Proceeding with default parameter run...'
         )
 
     logger.info(f'Complete {__name__}: {sys._getframe().f_code.co_name}')

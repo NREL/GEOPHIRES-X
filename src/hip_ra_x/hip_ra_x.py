@@ -7,6 +7,8 @@ import sys
 import traceback
 from pathlib import Path
 
+import pint
+
 from geophires_x.GeoPHIRESUtils import DensityWater
 from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
 from geophires_x.GeoPHIRESUtils import EntropyH20_func
@@ -53,6 +55,8 @@ class HIP_RA_X:
     """
     HIP_RA_X is the container class of the HIP-RA-X application, giving access to everything else, including the logger
     """
+
+    _ureg = pint.get_application_registry()
 
     def __init__(self, enable_hip_ra_logging_config=True):
         # get logging started
@@ -186,7 +190,7 @@ class HIP_RA_X:
         )
         self.fluid_heat_capacity: Parameter = parameter_dict_entry(
             floatParameter(
-                'Fluid Heat Capacity',
+                'Fluid Specific Heat Capacity',
                 value=-1.0,
                 Min=3.0,
                 Max=10.0,
@@ -195,7 +199,7 @@ class HIP_RA_X:
                 CurrentUnits=HeatCapacityUnit.kJPERKGC,
                 Required=True,
                 ErrMessage='calculate a value based on the water temperature',
-                ToolTipText='Heat Capacity Of Water [4.18 kJ/kgC]',
+                ToolTipText='Specific Heat Capacity Of Water [4.18 kJ/kgC]',
             )
         )
         self.fluid_density: Parameter = parameter_dict_entry(
@@ -343,19 +347,19 @@ class HIP_RA_X:
             CurrentUnits=MassUnit.KILOGRAM,
         )
         self.reservoir_enthalpy = self.OutputParameterDict[self.reservoir_enthalpy.Name] = OutputParameter(
-            Name='Enthalpy (reservoir)',
+            Name='Specific Enthalpy (reservoir)',
             UnitType=Units.ENTHALPY,
             PreferredUnits=EnthalpyUnit.KJPERKG,
             CurrentUnits=EnthalpyUnit.KJPERKG,
         )
         self.enthalpy_rock = self.OutputParameterDict[self.enthalpy_rock.Name] = OutputParameter(
-            Name='Enthalpy (rock)',
+            Name='Specific Enthalpy (rock)',
             UnitType=Units.ENTHALPY,
             PreferredUnits=EnthalpyUnit.KJPERKG,
             CurrentUnits=EnthalpyUnit.KJPERKG,
         )
         self.enthalpy_fluid = self.OutputParameterDict[self.enthalpy_fluid.Name] = OutputParameter(
-            Name='Enthalpy (fluid)',
+            Name='Specific Enthalpy (fluid)',
             UnitType=Units.ENTHALPY,
             PreferredUnits=EnthalpyUnit.KJPERKG,
             CurrentUnits=EnthalpyUnit.KJPERKG,
@@ -556,140 +560,109 @@ class HIP_RA_X:
 
         try:
             # Calculate the volume of rock and fluid in the reservoir.
-            # Note that we can't recover all the fluid from the reservoir,
-            # so we multiply by the recoverable fluid factor
+
             self.reservoir_volume.value = self.reservoir_area.value * self.reservoir_thickness.value
             self.volume_rock.value = self.reservoir_volume.value * (1.0 - (self.reservoir_porosity.value / 100.0))
             self.volume_recoverable_fluid.value = (
                 self.reservoir_volume.value
                 * (self.reservoir_porosity.value / 100.0)
                 * self.recoverable_fluid_factor.value
+                # Note that we can't recover all the fluid from the reservoir,
+                # so we multiply by the recoverable fluid factor
             )
 
-            # calculate the mass of the rock and the fluid in the reservoir
-            if not self.fluid_density.Provided:
-                density_water = DensityWater(self.reservoir_temperature.value)
+            if self.fluid_density.value < self.fluid_density.Min:
+                self.logger.info(
+                    f'Deriving value of {self.fluid_density.Name} because provided value '
+                    f'({self.fluid_density.value}) was less than min ({self.fluid_density.Min})'
+                )
 
-                self.fluid_density.value = density_water * 1_000_000_000.0  # converted to kJ/km3
+                density_water_kg_per_m3 = DensityWater(self.reservoir_temperature.value)
+
+                self.fluid_density.value = density_water_kg_per_m3 * 1_000_000_000.0  # converted to kg/km3
 
             self.mass_rock.value = self.volume_rock.value * self.rock_density.value
             self.mass_recoverable_fluid.value = self.volume_recoverable_fluid.value * self.fluid_density.value
             self.reservoir_mass.value = self.mass_rock.value + self.mass_recoverable_fluid.value
 
-            # do all the simple calculations and look-ups only once
-            if not self.fluid_heat_capacity.Provided:
+            if self.fluid_heat_capacity.value < self.fluid_heat_capacity.Min:
+                self.logger.info(
+                    f'Deriving value of {self.fluid_heat_capacity.Name} because provided value '
+                    f'({self.fluid_heat_capacity.value}) was less than min ({self.fluid_heat_capacity.Min})'
+                )
+
                 self.fluid_heat_capacity.value = (
-                    # converted to kJ/(kg·K)
                     HeatCapacityWater(self.reservoir_temperature.value)
                     / 1000.0
+                    # converted to kJ/(kg·K)
                 )
 
             rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
             reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
-            # delta_temperature = self.reservoir_temperature.value - self.rejection_temperature.value
             delta_temperature_k = reservoir_temperature_k - rejection_temperature_k
-            # rejection_entropy = EntropyH20_func(self.rejection_temperature.value)
-            # rejection_enthalpy = EnthalpyH20_func(self.rejection_temperature.value)
-            fluid_net_enthalpy = EnthalpyH20_func(delta_temperature_k)
-            fluid_net_entropy = EntropyH20_func(delta_temperature_k)
+            fluid_net_enthalpy = fluid_net_enthalpy = EnthalpyH20_func(
+                self.reservoir_temperature.value
+            ) - EnthalpyH20_func(self.rejection_temperature.value)
+            fluid_net_entropy = EntropyH20_func(self.reservoir_temperature.value) - EntropyH20_func(
+                self.rejection_temperature.value
+            )
 
             # fmt: off
             self.enthalpy_rock.value = (
-                self.rock_heat_capacity.value * delta_temperature_k * self.volume_rock.value
-            ) / self.mass_rock.value
+                                           self.rock_heat_capacity.value * delta_temperature_k * self.volume_rock.value
+                                       ) / self.mass_rock.value
             # fmt: on
 
-            """
-            Calculate the stored heat of the rock and the fluid in the reservoir (in kJ)
-            Note that the rock stored heat is a function of the volume, so we multiply by the volume of the rock
-            (in km**3) and the fluid stored heat is a function of the mass of the fluid, so we multiply times the mass
-            of the fluid (in kg).
-            Also note that we can't recover all the heat from the rock, so we multiply by the recoverable rock heat factor
-            """
-            self.stored_heat_rock.value = self.volume_rock.value * self.rock_heat_capacity.value * delta_temperature_k
-            self.stored_heat_rock.value *= self.recoverable_rock_heat.value
-            self.stored_heat_fluid.value = (
-                self.mass_recoverable_fluid.value * self.fluid_heat_capacity.value * delta_temperature_k
+            self.stored_heat_rock.value = (
+                self.recoverable_rock_heat.value
+                * self.enthalpy_rock.value
+                * self.mass_rock.value
+                # result in kJ
             )
+            self.stored_heat_fluid.value = fluid_net_enthalpy * self.mass_recoverable_fluid.value  # result in kJ
             self.reservoir_stored_heat.value = self.stored_heat_rock.value + self.stored_heat_fluid.value
 
-            # Calculate the maximum energy out per unit of mass (in kJ/kg)
-            # self.enthalpy_rock.value = fluid_net_enthalpy - (delta_temperature_k * rock_net_entropy)
-            self.enthalpy_fluid.value = fluid_net_enthalpy - (delta_temperature_k * fluid_net_entropy)
-            # self.enthalpy_rock.value = self.stored_heat_rock.value/self.mass_rock.value
-            # self.enthalpy_fluid.value = self.stored_heat_fluid.value/self.mass_fluid.value
+            # equation 4 in Garg and Combs(2011)
+            amount_fluid_produced_kg = self.reservoir_stored_heat.value / fluid_net_enthalpy
+            self.mass_recoverable_fluid.value = amount_fluid_produced_kg
+
+            fluid_exergy_kJ_per_kg = (
+                # equation 7 in Garg and Combs(2011)
+                fluid_net_enthalpy
+                - celsius_to_kelvin(self.rejection_temperature.value) * fluid_net_entropy
+            )
+            self.enthalpy_fluid.value = fluid_exergy_kJ_per_kg
+
             self.reservoir_enthalpy.value = self.enthalpy_rock.value + self.enthalpy_fluid.value
 
-            # calculate the heat recovery at the wellhead (in kJ)
-            # this assumes negligible heat loss as the heat is transferred to the surface (i.e., no heat loss in the well)
-            # self.wellhead_heat_recovery_rock.value = self.mass_rock.value * rock_net_enthalpy
-            # self.wellhead_heat_recovery_fluid.value = self.mass_fluid.value * fluid_net_enthalpy
-            # rockx = self.mass_rock.value * self.enthalpy_rock.value
-            # fluidx = self.mass_fluid.value * self.enthalpy_fluid.value
-            self.wellhead_heat_recovery_rock.value = self.stored_heat_rock.value
-            self.wellhead_heat_recovery_fluid.value = self.stored_heat_fluid.value
-            self.wellhead_heat.value = self.wellhead_heat_recovery_rock.value + self.wellhead_heat_recovery_fluid.value
+            # (equation 8 in Garg and Combs(2011))
+            maximum_lifetime_electricity_kJ = amount_fluid_produced_kg * fluid_exergy_kJ_per_kg
+            self.reservoir_available_heat.value = maximum_lifetime_electricity_kJ
 
-            # calculate the Recoverable heat: if the user didn't supply Recoverable Heat, they want us to calculate it.
-            if not self.rock_recoverable_heat.Provided:
-                self.rock_recoverable_heat.value = RecoverableHeat(self.reservoir_temperature.value)
-            if not self.fluid_recoverable_heat.Provided:
-                self.fluid_recoverable_heat.value = RecoverableHeat(self.reservoir_temperature.value)
+            # (with conversion efficiency obtained from the function “RecoverableHeat” [however, note that I find
+            # RecoverableHeat a confusing name as it represents the amount of exergy that can be converted to
+            # electricity with a power plant not the amount of heat that can be recovered. See figure 2 in this
+            # paper: https://geothermal-energy-journal.springeropen.com/articles/10.1186/s40517-019-0119-6
+            # which is the basis for the “RecoverableHeat” function. They also call this property
+            # utilization_efficiency or 2nd law based efficiency)
+            conversion_efficiency = RecoverableHeat(self.reservoir_temperature.value)
+            producible_lifetime_electricity_kJ = maximum_lifetime_electricity_kJ * conversion_efficiency
+            self.reservoir_producible_heat.value = producible_lifetime_electricity_kJ
 
-            # calculate the available heat
-            self.available_heat_rock.value = (
-                self.mass_rock.value * self.enthalpy_rock.value * self.rock_recoverable_heat.value
-            )
-            self.available_heat_fluid.value = (
-                self.mass_recoverable_fluid.value * self.enthalpy_fluid.value * self.fluid_recoverable_heat.value
-            )
-            self.reservoir_available_heat.value = self.available_heat_rock.value + self.available_heat_fluid.value
-
-            # calculate the producible heat given the utilization efficiency of producing electricity at that
-            # temperature. This uses a function from Garg and Coombs that assumes ORC for low temperature and flash for
-            # high temperature.
-            utilization_effectiveness = UtilEff_func(self.reservoir_temperature.value)
-
-            # FIXME/TODO - `available_heat_rock` should be exergy - possibly not synonymous with available heat,
-            #  as calculated, per @kfbeckers
-            self.producible_heat_rock.value = self.available_heat_rock.value * utilization_effectiveness
-
-            self.producible_heat_fluid.value = self.available_heat_fluid.value * utilization_effectiveness
-            self.reservoir_producible_heat.value = self.producible_heat_rock.value + self.producible_heat_fluid.value
-
-            # calculate the recovery factor
-            self.recovery_factor_rock.value = self.producible_heat_rock.value / self.stored_heat_rock.value
-            self.recovery_factor_fluid.value = self.producible_heat_fluid.value / self.stored_heat_fluid.value
             self.reservoir_recovery_factor.value = (
                 self.reservoir_producible_heat.value / self.reservoir_stored_heat.value
             )
 
-            # calculate the producible heat per unit area
-            self.heat_per_unit_area_rock.value = self.producible_heat_rock.value / self.reservoir_area.value
-            self.heat_per_unit_area_fluid.value = self.producible_heat_fluid.value / self.reservoir_area.value
-            self.producible_heat_per_unit_area.value = self.reservoir_producible_heat.value / self.reservoir_area.value
+            # Now assuming a 30-year lifetime:
+            plant_lifetime_years = 30
+            maximum_power_kW = maximum_lifetime_electricity_kJ / (plant_lifetime_years * 365 * 24 * 3600)
 
-            # calculate the producible electricity by converting Kilojoules of heat to MWe of electricity
-            # kJ_to_Mwe = 3.156e+7 #seconds in a year
-            # self.We.value = (self.WE.value / 3_600_000) / 8_760  # convert Kilojoules of heat to MWe of electricity
-            self.producible_electricity_rock.value = (self.producible_heat_rock.value / 3_600_000) / 8_760
-            self.producible_electricity_fluid.value = (self.producible_heat_fluid.value / 3_600_000) / 8_760
-            #            self.producible_electricity_fluid.value = self.producible_heat_fluid.value / kJ_to_Mwe
+            electricity_with_actual_power_plant_kW = UtilEff_func(self.reservoir_temperature.value) * maximum_power_kW
+            producible_power_kW = electricity_with_actual_power_plant_kW
             self.reservoir_producible_electricity.value = (
-                self.producible_electricity_rock.value + self.producible_electricity_fluid.value
+                HIP_RA_X._ureg.Quantity(producible_power_kW, 'kW').to('MW').magnitude
             )
 
-            # calculate the producible electricity by converting Kilojoules of heat to MWh of electricity
-            #            kJ_to_Mwhe = 2.7778E-7
-            #            self.producible_electricity_rock.value = self.producible_heat_rock.value * kJ_to_Mwhe
-            #            self.producible_electricity_fluid.value = self.producible_heat_fluid.value * kJ_to_Mwhe
-            #            self.reservoir_producible_electricity.value = self.producible_electricity_rock.value + self.producible_electricity_fluid.value
-            # self.reservoir_producible_electricity.value = (self.reservoir_producible_heat.value / 3_600_000) / 8_760  # convert Kilojoules of heat to MWe of electricity
-
-            # calculate the producible electricity per unit area
-            self.electricity_per_unit_area_rock.value = (
-                self.producible_electricity_rock.value / self.reservoir_area.value
-            )
             self.electricity_per_unit_area_fluid.value = (
                 self.producible_electricity_fluid.value / self.reservoir_area.value
             )
@@ -697,10 +670,15 @@ class HIP_RA_X:
                 self.reservoir_producible_electricity.value / self.reservoir_area.value
             )
 
+            self.producible_heat_per_unit_area.value = self.reservoir_producible_heat.value / self.reservoir_area.value
+
             self.logger.info(f'Complete {__class__!s}: {__class__.__name__!s}: {__name__}')
         except Exception as e:
-            self.logger.error(f'Error occurred during calculations: {e!s}')
+            msg = f'Error occurred during calculations: {e!s}'
+            self.logger.error(msg)
             traceback.print_exc()
+
+            raise RuntimeError(msg) from e
 
     def PrintOutputs(self):
         """
@@ -742,6 +720,8 @@ class HIP_RA_X:
             summary_of_results = {}
 
             for param, render in [
+                # TODO: Commented parameters are defined in initialization but not calculated - either calculate or
+                #   remove entirely
                 (self.reservoir_temperature, render_default),
                 (self.reservoir_volume, render_default),
                 (self.volume_rock, render_default),
@@ -749,42 +729,42 @@ class HIP_RA_X:
                 (self.reservoir_stored_heat, render_scientific),
                 (self.stored_heat_rock, render_scientific),
                 (self.stored_heat_fluid, render_scientific),
-                (self.reservoir_mass, render_scientific),
+                # (self.reservoir_mass, render_scientific),
                 (self.mass_rock, render_scientific),
                 (self.mass_recoverable_fluid, render_scientific),
                 (self.reservoir_enthalpy, render_default),
                 (self.enthalpy_rock, render_default),
                 (self.enthalpy_fluid, render_default),
-                (self.wellhead_heat, render_scientific),
-                (self.wellhead_heat_recovery_rock, render_scientific),
-                (self.wellhead_heat_recovery_fluid, render_scientific),
+                # (self.wellhead_heat, render_scientific),
+                # (self.wellhead_heat_recovery_rock, render_scientific),
+                # (self.wellhead_heat_recovery_fluid, render_scientific),
                 (
                     self.reservoir_recovery_factor,
                     lambda rg: f'{(100 * rg.value):10.2f} {self.reservoir_recovery_factor.CurrentUnits.value}',
                 ),
-                (
-                    self.recovery_factor_rock,
-                    lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_rock.CurrentUnits.value}',
-                ),
-                (
-                    self.recovery_factor_fluid,
-                    lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_fluid.CurrentUnits.value}',
-                ),
+                # (
+                #     self.recovery_factor_rock,
+                #     lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_rock.CurrentUnits.value}',
+                # ),
+                # (
+                #     self.recovery_factor_fluid,
+                #     lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_fluid.CurrentUnits.value}',
+                # ),
                 (self.reservoir_available_heat, render_scientific),
-                (self.available_heat_rock, render_scientific),
-                (self.available_heat_fluid, render_scientific),
+                # (self.available_heat_rock, render_scientific),
+                # (self.available_heat_fluid, render_scientific),
                 (self.reservoir_producible_heat, render_scientific),
-                (self.producible_heat_rock, render_scientific),
-                (self.producible_heat_fluid, render_scientific),
+                # (self.producible_heat_rock, render_scientific),
+                # (self.producible_heat_fluid, render_scientific),
                 (self.producible_heat_per_unit_area, render_scientific),
-                (self.heat_per_unit_area_rock, render_scientific),
-                (self.heat_per_unit_area_fluid, render_scientific),
+                # (self.heat_per_unit_area_rock, render_scientific),
+                # (self.heat_per_unit_area_fluid, render_scientific),
                 (self.reservoir_producible_electricity, render_default),
-                (self.producible_electricity_rock, render_default),
-                (self.producible_electricity_fluid, render_default),
+                # (self.producible_electricity_rock, render_default),
+                # (self.producible_electricity_fluid, render_default),
                 (self.producible_electricity_per_unit_area, render_default),
-                (self.electricity_per_unit_area_rock, render_default),
-                (self.electricity_per_unit_area_fluid, render_default),
+                # (self.electricity_per_unit_area_rock, render_default),
+                # (self.electricity_per_unit_area_fluid, render_default),
             ]:
                 summary_of_results[param.Name] = render(param)
 

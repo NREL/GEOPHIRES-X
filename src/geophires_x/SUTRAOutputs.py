@@ -86,7 +86,7 @@ class SUTRAOutputs:
         # to the units that the user entered the data in
         # We do this because the value may be displayed in the output, and we want the user to recognize their value,
         # not some converted value
-        #for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
+        # for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
         #    for key in obj.ParameterDict:
         #        param = obj.ParameterDict[key]
         #        if not param.UnitsMatch: ConvertUnitsBack(param, model)
@@ -157,8 +157,9 @@ class SUTRAOutputs:
                 f.write(f"      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}" + NL)
                 f.write(f"      Well Depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
 
-                # FIXME should be rendered with percent unit (%) but isn't
-                f.write(f"      Pump efficiency:                               {model.surfaceplant.pump_efficiency.value * 100:10.1f} " + model.surfaceplant.pump_efficiency.PreferredUnits.value + NL)
+                pump_efficiency_display_unit = model.surfaceplant.pump_efficiency.CurrentUnits.value
+                pump_efficiency_display = f'{model.surfaceplant.pump_efficiency.value:10.1f} {pump_efficiency_display_unit}'
+                f.write(f'      Pump efficiency:                               {pump_efficiency_display}{NL}')
 
                 f.write(f"      Lifetime Average Well Flow Rate:               {np.average(abs(model.wellbores.ProductionWellFlowRates.value)):10.1f} "  + model.wellbores.ProductionWellFlowRates.CurrentUnits.value + NL)
                 f.write(f"      Injection well casing ID:                      {model.wellbores.injwelldiam.value:10.3f} " + model.wellbores.injwelldiam.CurrentUnits.value + NL)

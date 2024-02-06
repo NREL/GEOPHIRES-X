@@ -22,7 +22,7 @@ AddOn OPEX 1, 0.1
 AddOn Electricity Gained 1, -100
 AddOn Heat Gained 1, 0.0
 AddOn Profit Gained 1, 0.05
-AddOn Nickname 2, Methane Extration
+AddOn Nickname 2, Methane Extraction
 AddOn CAPEX 2, 20
 AddOn OPEX 2, 1
 AddOn Electricity Gained 2, 26000.0

@@ -12,7 +12,6 @@ import os
 import math
 import numpy as np
 import geophires_x.Model as Model
-from geophires_x.WellBores import *
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter
 from .Reservoir import densitywater, heatcapacitywater
 from .Units import *
@@ -23,6 +22,11 @@ import scipy
 from scipy.interpolate import interpn, interp1d
 from scipy import signal
 import itertools as itern
+
+from .WellBores import WellBores, RameyCalc, ProdPressureDropAndPumpingPowerUsingIndexes, WellPressureDrop, \
+    ProdPressureDropsAndPumpingPowerUsingImpedenceModel
+
+from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
 
 esp2 = 10.0e-10
 
@@ -781,7 +785,7 @@ class AGSWellBores(WellBores):
             self.TPh = self.additional_mat['TPh']
             self.hPs = self.additional_mat['hPs']
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def getTandP(self, model: Model) -> None:
         """
@@ -790,7 +794,8 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
+
         # code from Koenraad
         self.point = (
             self.prodwellflowrate.value, self.Nonvertical_length.value, model.reserv.InputDepth.value * 1000.0,
@@ -805,7 +810,7 @@ class AGSWellBores(WellBores):
         self.Tout[0] = self.Tout[1]
         self.Pout[0] = self.Pout[1]
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def verify(self, model: Model) -> int:
         """
@@ -816,7 +821,7 @@ class AGSWellBores(WellBores):
         :return: 0 if all OK, 1 if error.
         :rtype: int
         """
-        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         self.error = 0
         errors = []
@@ -828,16 +833,24 @@ class AGSWellBores(WellBores):
             self.error = 1
 
         if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Nonvertical length must be \
-            between 1,000 and 20,000 m. Simulation terminated.")
-        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: Injection temperature\
-             must be between 30 and 60 C. Simulation terminated.")
-        if self.krock < 1.5 or self.krock > 4.5:
-            on_invalid_parameter_value("Error: CLGS model database imposes additional range restrictions: \
-            Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.")
+            on_invalid_parameter_value(
+                'Error: CLGS model database imposes additional range restrictions: Nonvertical length must be '
+                'between 1,000 and 20,000 m. Simulation terminated.'
+            )
 
-        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
+        if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
+            on_invalid_parameter_value(
+                'Error: CLGS model database imposes additional range restrictions: Injection temperature '
+                'must be between 30 and 60 C. Simulation terminated.'
+            )
+
+        if self.krock < 1.5 or self.krock > 4.5:
+            on_invalid_parameter_value(
+                'Error: CLGS model database imposes additional range restrictions: '
+                'Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.'
+            )
+
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         return self.error
 
@@ -1044,12 +1057,16 @@ class AGSWellBores(WellBores):
                 self.PumpingPower.value = [0. if x < 0. else x for x in
                                            self.PumpingPower.value]  # cannot be negative, so set to 0
 
-        else:  # do the CLGS-style calculation
+        else:
+            # do the CLGS-style calculation
             err = self.verify(model)
             if err > 0:
-                model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                sys.exit()
+                msg = 'Error: GEOPHIRES failed to Failed to validate CLGS input value. Exiting....'
+                model.logger.fatal(msg)
+                print(msg)
+
+                raise RuntimeError(msg)
+
             self.initialize(model)
             self.getTandP(model)
 
@@ -1071,18 +1088,23 @@ class AGSWellBores(WellBores):
             self.DPOverall.value = f(np.arange(0, len(self.DPOverall.value), 1))
 
             # calculate water values based on initial temperature
-            rhowater = densitywater(self.Tout[0])
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+            rho_water = densitywater(self.Tout[0], enable_fallback_calculation=True)
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
             model.reserv.cpwater.value = heatcapacitywater(
-                self.Tout[0])  # Need this for surface plant output calculation
+                self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary
             self.PumpingPower.value = [0.0] * (len(self.DPOverall.value))
-            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rhowater / model.surfaceplant.pump_efficiency.value / 1E3
-            # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity) = thermosiphon is happening!
+            self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rho_water / model.surfaceplant.pump_efficiency.value / 1E3
+            # in GEOPHIRES v1.2, negative pumping power values become zero
+            # (b/c we are not generating electricity) = thermosiphon is happening!
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "AGSWellBores"
+        return 'AGSWellBores'

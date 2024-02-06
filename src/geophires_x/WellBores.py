@@ -1,38 +1,18 @@
-import sys
-import os
 import math
 import numpy as np
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from .Reservoir import densitywater, viscositywater
+from geophires_x.GeoPHIRESUtils import VaporPressureWater as vaporpressurewater
+from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
+from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
 from .Units import *
 import geophires_x.Model as Model
 from .OptionList import ReservoirModel
 
 
-# user-defined functions
-def vaporpressurewater(Twater: float) -> float:
-    """
-    calculate the vapor pressure of water based on the temperature of the water
-    :param Twater: temperature of the water [C] (can be a vector)
-    :type Twater: float
-    :return: vapor pressure of the water [kPa] (can be a vector)
-    """
-    if Twater < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
-    vp = 133.322 * (10 ** (A - B / (C + Twater))) / 1000  # water vapor pressure in kPa using Antione Equation
-    return vp
-
-
 def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, utilfactor: float, flowrate: float,
               cpwater: float, Trock: float, Tresoutput: float, averagegradient: float, depth: float) -> float:
     """
-    Calculate teh temperature drop along the length of a well
+    Calculate the temperature drop along the length of a well
     this code is only valid so far for 1 gradient and deviation = 0
     For multiple gradients, use Ramey's model for every layer
     assume outside diameter of casing is 10% larger than inside diameter of production pipe (=prodwelldiam)
@@ -102,8 +82,14 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = densitywater(Taverage)  # replace with correlation based on Tprodaverage
-    muwater = viscositywater(Taverage)  # replace with correlation based on Tprodaverage
+
+    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+    rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
+                         Taverage])  # replace with correlation based on Tprodaverage
+
+    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+    muwater = np.array([viscositywater(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
+
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
     Rewateraverage = np.average(Rewater)
@@ -334,13 +320,17 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = 0 + 1. / CP * (
+                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess = 344.7
+
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum = vaporpressurewater(Trock) + Pexcess
+        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
         else:
@@ -450,13 +440,17 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = 0 + 1. / CP * (
+                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess = 344.7
+
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum = vaporpressurewater(Trock) + Pexcess
+        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
         else:
@@ -950,7 +944,8 @@ class WellBores:
                                                 model.reserv.rhorock.value,
                                                 model.reserv.cprock.value,
                                                 self.prodwelldiam.value, model.reserv.timevector.value,
-                                                model.surfaceplant.utilization_factor.value, self.prodwellflowrate.value,
+                                                model.surfaceplant.utilization_factor.value,
+                                                self.prodwellflowrate.value,
                                                 model.reserv.cpwater.value, model.reserv.Trock.value,
                                                 model.reserv.Tresoutput.value, model.reserv.averagegradient.value,
                                                 d)
@@ -970,7 +965,7 @@ class WellBores:
                                                        self.redrill.value + 1)
                 self.ProducedTemperature.value = ProducedTemperatureRepeatead[0:len(self.ProducedTemperature.value)]
                 TResOutputRepeated = np.tile(model.reserv.Tresoutput.value[0:indexfirstmaxdrawdown],
-                                                       self.redrill.value + 1)
+                                             self.redrill.value + 1)
                 model.reserv.Tresoutput.value = TResOutputRepeated[0:len(self.ProducedTemperature.value)]
 
         # calculate pressure drops and pumping power
@@ -982,7 +977,6 @@ class WellBores:
             model.reserv.depth.value, self.nprod.value, self.ninj.value, model.reserv.waterloss.value)
 
         if self.impedancemodelused.value:  # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
-            rhowaterreservoir = densitywater(0.1 * self.Tinj.value + 0.9 * model.reserv.Tresoutput.value)
             self.DPOverall.value, self.PumpingPower.value, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                 ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3, vprod, self.rhowaterinj, self.rhowaterprod,
                                                                     model.reserv.rhowater.value,

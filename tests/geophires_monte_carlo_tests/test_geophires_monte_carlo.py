@@ -30,6 +30,10 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
             result_content = '\n'.join(f.readlines())
             self.assertIn('Electricity', result_content)
 
+    def test_hip_ra_monte_carlo(self):
+        # TODO
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

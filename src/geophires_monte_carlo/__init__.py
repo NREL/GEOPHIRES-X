@@ -49,8 +49,8 @@ class MonteCarloRequest:
         if output_file is not None:
             self.output_file: Path = output_file
         else:
-            self._output_dir: TemporaryDirectory = TemporaryDirectory(prefix='geophires_monte_carlo-')
-            self.output_file: Path = Path(self._output_dir.name, 'MC_GEOPHIRES_Result.txt').absolute()
+            self._temp_output_dir: TemporaryDirectory = TemporaryDirectory(prefix='geophires_monte_carlo-')
+            self.output_file: Path = Path(self._temp_output_dir.name, 'MC_GEOPHIRES_Result.txt').absolute()
 
         if not self.output_file.is_absolute():
             raise ValueError(f'Output file path ({output_file}) must be absolute')
@@ -58,6 +58,10 @@ class MonteCarloRequest:
     @property
     def code_file_path(self) -> Path:
         return self._simulation_program.code_file_path
+
+    def __del__(self):
+        if hasattr(self, '_temp_output_dir'):
+            self._temp_output_dir.cleanup()
 
 
 class MonteCarloResult:
@@ -67,6 +71,8 @@ class MonteCarloResult:
     @property
     def output_file_path(self) -> Path:
         return self._request.output_file
+
+    # TODO expose properties in result
 
 
 class GeophiresMonteCarloClient:

@@ -119,8 +119,7 @@ def work_package(pass_list: list):
 
     # make sure a key file exists. If not, exit
     if not Path(tmp_output_file).exists():
-        print(f'Timed out waiting for: {tmp_output_file}')
-        # logger.warning(f'Timed out waiting for: {tmp_output_file}')
+        logger.warning(f'Timed out waiting for: {tmp_output_file}')
         exit(-33)
 
     with open(tmp_output_file) as f:
@@ -282,7 +281,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.map(work_package, args)
 
-    print('\nDone with calculations! Summarizing...\n')
+    print('\n')  # See TODO re: tqdm
     logger.info('Done with calculations! Summarizing...')
 
     # read the results into an array
@@ -316,20 +315,12 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     means = np.nanmean(results, 0)
     std = np.nanstd(results, 0)
 
-    print(f' Calculation Time: {time.time() - tic:10.3f} sec\n')
-    logger.info(f' Calculation Time: {time.time() - tic:10.3f} sec\n')
-    print(f' Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec\n')
-    logger.info(f' Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec\n')
+    logger.info(f'Calculation Time: {time.time() - tic:10.3f} sec')
+    logger.info(f'Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec')
     if iterations != actual_records_count:
-        print(
-            '\n\nNOTE:'
-            + str(actual_records_count)
-            + ' iterations finished successfully and were used to calculate the statistics.\n\n'
-        )
         logger.warning(
-            '\n\nNOTE:'
-            + str(actual_records_count)
-            + ' iterations finished successfully and were used to calculate the statistics.\n\n'
+            f'NOTE: {actual_records_count!s} iterations finished successfully and were used to calculate the '
+            f'statistics.'
         )
 
     # write them out

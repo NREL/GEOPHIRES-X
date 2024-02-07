@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 
-def CheckAndReplaceMean(input_value, args) -> list:
+def check_and_replace_mean(input_value, args) -> list:
     """
     CheckAndReplaceMean - check to see if the user has requested that a value be replaced by a mean value by specifying
     a value as "#"
@@ -36,62 +36,60 @@ def CheckAndReplaceMean(input_value, args) -> list:
     :return: the input_value, with the mean value replaced if necessary
     :rtype: list
     """
+
     i = 0
-    for inputx in input_value:
-        if '#' in inputx:
+    for input_x in input_value:
+        if '#' in input_x:
             # found one we have to process.
-            VariName = input_value[0]
+            vari_name = input_value[0]
             # find it in the Input_file
             with open(args.Input_file) as f:
                 ss = f.readlines()
             for s in ss:
-                if str(s).startswith(VariName):
+                if str(s).startswith(vari_name):
                     s2 = s.split(',')
                     input_value[i] = s2[1]
                     break
             break
-        i = i + 1
+        i += 1
+
     return input_value
 
 
-def WorkPackage(pass_list):
+def work_package(pass_list: list):
     """
-    WorkPackage - this is the function that is called by the executor. It does the work of running the simulation
+    Function that is called by the executor. It does the work of running the simulation.
     :param pass_list: the list of arguments passed in from the command line
-    :type pass_list: list
-    :return: None
     """
-    Inputs = pass_list[0]
-    Outputs = pass_list[1]
-    args = pass_list[2]
-    Outputfile = pass_list[3]
-    working_dir = pass_list[4]  # noqa: F841
-    PythonPath = pass_list[5]
 
-    tmp_output_file = tmp_filename = ''
-
-    # get random values for each of the INPUTS based on the distributions and boundary values
-
-    rando = 0.0
-    s = ''
     print('#', end='')  # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
 
-    for input_value in Inputs:
+    inputs = pass_list[0]
+    outputs = pass_list[1]
+    args = pass_list[2]
+    outputfile = pass_list[3]
+    working_dir = pass_list[4]  # noqa: F841
+    python_path = pass_list[5]
+
+    input_file_entries = ''
+
+    for input_value in inputs:
+        # get random values for each of the INPUTS based on the distributions and boundary values
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
-            s += input_value[0] + ', ' + str(rando) + '\n'
+            input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
         elif input_value[1].strip().startswith('uniform'):
             rando = np.random.uniform(float(input_value[2]), float(input_value[3]))
-            s += input_value[0] + ', ' + str(rando) + '\n'
+            input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
         elif input_value[1].strip().startswith('triangular'):
             rando = np.random.triangular(float(input_value[2]), float(input_value[3]), float(input_value[4]))
-            s += input_value[0] + ', ' + str(rando) + '\n'
+            input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
         if input_value[1].strip().startswith('lognormal'):
             rando = np.random.lognormal(float(input_value[2]), float(input_value[3]))
-            s += input_value[0] + ', ' + str(rando) + '\n'
+            input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
         if input_value[1].strip().startswith('binomial'):
             rando = np.random.binomial(int(input_value[2]), float(input_value[3]))
-            s += input_value[0] + ', ' + str(rando) + '\n'
+            input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
 
     # make up a temporary file name that will be shared among files for this iteration
     tmp_filename = str(Path(tempfile.gettempdir(), f'{uuid.uuid4()!s}.txt'))
@@ -104,12 +102,12 @@ def WorkPackage(pass_list):
     # This will cause GeoPHIRES/HIP-RA to replace the value in the file with this random value in the calculation
     # if it exists in that file already, or it will set it to the value as if it was a new value set by the user.
     with open(tmp_filename, 'a') as f:
-        f.write(s)
+        f.write(input_file_entries)
 
     # start the passed in program name (usually GEOPHIRES or HIP-RA) with the supplied input file.
     # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
     # ruff: noqa: S603 # FIXME re-enable QA and address
-    sprocess = subprocess.Popen([PythonPath, args.Code_File, tmp_filename, tmp_output_file], stdout=subprocess.DEVNULL)
+    sprocess = subprocess.Popen([python_path, args.Code_File, tmp_filename, tmp_output_file], stdout=subprocess.DEVNULL)
     sprocess.wait()
 
     # look group "_result.txt" file for the OUTPUT variables that the user asked for.
@@ -117,10 +115,10 @@ def WorkPackage(pass_list):
     s1 = ''
     s2 = {}
     result_s = ''
-    localOutputs = Outputs
+    local_outputs = outputs
 
     # make sure a key file exists. If not, exit
-    if not Path.exists(tmp_output_file):
+    if not Path(tmp_output_file).exists():
         print(f'Timed out waiting for: {tmp_output_file}')
         # logger.warning(f'Timed out waiting for: {tmp_output_file}')
         exit(-33)
@@ -129,9 +127,9 @@ def WorkPackage(pass_list):
         s1 = f.readline()
         i = 0
         while s1:  # read until the end of the file
-            for out in localOutputs:  # check for each requested output
+            for out in local_outputs:  # check for each requested output
                 if out in s1:  # If true, we found the output value that the user requested, so process it
-                    localOutputs.remove(out)  # as an optimization, drop the output from the list once we have found it
+                    local_outputs.remove(out)  # as an optimization, drop the output from the list once we have found it
                     s2 = s1.split(':')  # colon marks the split between the title and the data
                     s2 = s2[1].strip()  # remove leading and trailing spaces
                     s2 = s2.split(
@@ -140,27 +138,27 @@ def WorkPackage(pass_list):
                     s2 = s2[0].strip()  # we finally have the result we were looking for
                     result_s += s2 + ', '
                     i += 1
-                    if i < (len(Outputs) - 1):
+                    if i < (len(outputs) - 1):
                         # go back to the beginning of the file in case the outputs that the user specified are not
                         # in the order that they appear in the file.
                         f.seek(0)
                     break
+
             s1 = f.readline()
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."
-        result_s += '(' + s.replace('\n', ';', -1).replace(', ', ':', -1) + ')'
+        result_s += '(' + input_file_entries.replace('\n', ';', -1).replace(', ', ':', -1) + ')'
 
     # delete temporary files
     Path.unlink(tmp_filename)
     Path.unlink(tmp_output_file)
 
     # write out the results
-    result_s = result_s.strip(' ')  # get rid of last space
-    result_s = result_s.strip(',')  # get rid of last comma
+    result_s = result_s.strip(' ').strip(',')  # get rid of last space and comma
     result_s += '\n'
 
-    with open(Outputfile, 'a') as f:
+    with open(outputfile, 'a') as f:
         f.write(result_s)
 
 
@@ -191,11 +189,11 @@ def main(enable_geophires_monte_carlo_logging_config=True):
                    PYTHON_PATH, /user/local/bin/python3
     :param enable_geophires_monte_carlo_logging_config: if True, use the logging.conf file to configure logging
     :type enable_geophires_monte_carlo_logging_config: bool
-    :return: None
     """
+
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    # set up logging.
+
     if enable_geophires_monte_carlo_logging_config:
         # set up logging.
         logging.config.fileConfig('logging.conf')
@@ -224,29 +222,30 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     with open(args.MC_Settings_file, encoding='UTF-8') as f:
         flist = f.readlines()
 
-    Inputs = []
-    Outputs = []
-    Iterations = 0
-    Outputfile = ''
-    PythonPath = 'python'
+    inputs = []
+    outputs = []
+    iterations = 0
+    outputfile = ''
+    python_path = 'python'
     for line in flist:
         clean = line.strip()
         pair = clean.split(',')
         pair[1] = pair[1].strip()
         if pair[0].startswith('INPUT'):
-            Inputs.append(pair[1:])
+            inputs.append(pair[1:])
         elif pair[0].startswith('OUTPUT'):
-            Outputs.append(pair[1])
+            outputs.append(pair[1])
         elif pair[0].startswith('ITERATIONS'):
-            Iterations = int(pair[1])
+            iterations = int(pair[1])
         elif pair[0].startswith('MC_OUTPUT_FILE'):
-            Outputfile = pair[1]
+            outputfile = pair[1]
         elif pair[0].startswith('PYTHON_PATH'):
-            PythonPath = pair[1]
+            python_path = pair[1]
 
     # check to see if there is a "#" in an input, if so, use the results file to replace it with the value
-    for input_value in Inputs:
-        input_value = CheckAndReplaceMean(input_value, args)
+    for input_value in inputs:
+        # FIXME assign via index instead of reference
+        input_value = check_and_replace_mean(input_value, args)
 
     # create the file output_file. Put headers in it for each of the INPUT and OUTPUT variables
     # - these form the column headings when importing into Excel
@@ -254,69 +253,69 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     # combination of variables produced the interesting values (like lowest or highest, or mean)
     # start by creating the string we will write as header
     s = ''
-    for output in Outputs:
+    for output in outputs:
         s += output + ', '
-    for input in Inputs:
+    for input in inputs:
         s += input[0] + ', '
     s = ''.join(s.rsplit(' ', 1))  # get rid of last space
     s = ''.join(s.rsplit(',', 1))  # get rid of last comma
     s += '\n'
 
     # write the header so it is easy to import and analyze in Excel
-    with open(Outputfile, 'w') as f:
+    with open(outputfile, 'w') as f:
         f.write(s)
 
     # build the args list
-    pass_list = [Inputs, Outputs, args, Outputfile, working_dir, PythonPath]  # this list never changes
+    pass_list = [inputs, outputs, args, outputfile, working_dir, python_path]  # this list never changes
 
     args = []
-    for _ in range(Iterations):
+    for _ in range(iterations):
         args.append(pass_list)  # we need to make Iterations number of copies of this list fr the map
     args = tuple(args)  # convert to a tuple
 
     # Now run the executor with the map - that will run it Iterations number of times
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        executor.map(WorkPackage, args)
+        executor.map(work_package, args)
 
     print('\nDone with calculations! Summarizing...\n')
     logger.info('Done with calculations! Summarizing...')
 
     # read the results into an array
-    with open(Outputfile) as f:
+    with open(outputfile) as f:
         s = f.readline()  # skip the first line
         all_results = f.readlines()
 
     result_count = 0
-    Results = []
+    results = []
     for line in all_results:
         result_count = result_count + 1
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
-                Results.append([float(y) for y in line.split(',')])
+                results.append([float(y) for y in line.split(',')])
         else:
             logger.warning(f'-9999.0 or space found in line {result_count!s}')
 
-    actual_records_count = len(Results)
+    actual_records_count = len(results)
 
     # Load the results into a pandas dataframe
-    results_pd = pd.read_csv(Outputfile)
+    results_pd = pd.read_csv(outputfile)
     df = pd.DataFrame(results_pd)
 
     # Compute the stats along the specified axes.
-    mins = np.nanmin(Results, 0)
-    maxs = np.nanmax(Results, 0)
-    medians = np.nanmedian(Results, 0)
-    averages = np.average(Results, 0)
-    means = np.nanmean(Results, 0)
-    std = np.nanstd(Results, 0)
+    mins = np.nanmin(results, 0)
+    maxs = np.nanmax(results, 0)
+    medians = np.nanmedian(results, 0)
+    averages = np.average(results, 0)
+    means = np.nanmean(results, 0)
+    std = np.nanstd(results, 0)
 
-    print(' Calculation Time: ' + f'{time.time() - tic:10.3f}' + ' sec\n')
-    logger.info(' Calculation Time: ' + f'{time.time() - tic:10.3f}' + ' sec\n')
-    print(' Calculation Time per iteration: ' + f'{(time.time() - tic) / actual_records_count:10.3f}' + ' sec\n')
-    logger.info(' Calculation Time per iteration: ' + f'{(time.time() - tic) / actual_records_count:10.3f}' + ' sec\n')
-    if Iterations != actual_records_count:
+    print(f' Calculation Time: {time.time() - tic:10.3f} sec\n')
+    logger.info(f' Calculation Time: {time.time() - tic:10.3f} sec\n')
+    print(f' Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec\n')
+    logger.info(f' Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec\n')
+    if iterations != actual_records_count:
         print(
             '\n\nNOTE:'
             + str(actual_records_count)
@@ -330,14 +329,14 @@ def main(enable_geophires_monte_carlo_logging_config=True):
 
     # write them out
     annotations = ''
-    with open(Outputfile, 'a') as f:
+    with open(outputfile, 'a') as f:
         i = 0
-        if Iterations != actual_records_count:
+        if iterations != actual_records_count:
             f.write(
                 f'\n\n{actual_records_count!s} iterations finished successfully and were used to calculate the '
                 f'statistics\n\n'
             )
-        for output in Outputs:
+        for output in outputs:
             f.write(f'{output}:\n')
             f.write(f'     minimum: {mins[i]:,.2f}\n')
             annotations += f'     minimum: {mins[i]:,.2f}\n'
@@ -363,7 +362,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
             f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
             f.write('bin edges: ' + str(ret[1]) + '\n')
             fname = df.columns[i].strip().replace('/', '-')
-            plt.savefig(Path(Path(Outputfile).parent, f'{fname}.png'))
+            plt.savefig(Path(Path(outputfile).parent, f'{fname}.png'))
             i += 1
             annotations = ''
 

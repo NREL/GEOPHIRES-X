@@ -9,8 +9,6 @@ Created on Wed November  16 10:43:04 2017
 
 import argparse
 import concurrent.futures
-import logging
-import logging.config
 import os
 import shutil
 import subprocess
@@ -23,6 +21,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from geophires_monte_carlo.common import _get_logger
 
 
 def check_and_replace_mean(input_value, args) -> list:
@@ -161,7 +161,7 @@ def work_package(pass_list: list):
         f.write(result_s)
 
 
-def main(enable_geophires_monte_carlo_logging_config=True):
+def main():
     r"""
     main - this is the main function that is called when the program is run
     It gets most of its key values from the command line:
@@ -193,11 +193,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    if enable_geophires_monte_carlo_logging_config:
-        # set up logging.
-        logging.config.fileConfig('logging.conf')
-
-    logger = logging.getLogger('root')
+    logger = _get_logger()
     logger.info(f'Init {__name__!s}')
     # keep track of execution time
     tic = time.time()
@@ -366,8 +362,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
 
 
 if __name__ == '__main__':
-    # set up logging.
-    logger = logging.getLogger('root')
+    logger = _get_logger()
     logger.info(f'Init {__name__!s}')
 
     main()

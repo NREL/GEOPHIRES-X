@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 from enum import Enum
@@ -7,6 +6,7 @@ from tempfile import TemporaryDirectory
 from typing import Optional
 
 from geophires_monte_carlo import MC_GeoPHIRES3
+from geophires_monte_carlo.common import _get_logger
 
 
 class SimulationProgram(str, Enum):
@@ -76,8 +76,8 @@ class MonteCarloResult:
 
 
 class GeophiresMonteCarloClient:
-    def __init__(self, logger_name='root'):
-        self._logger = logging.getLogger(logger_name)
+    def __init__(self):
+        self._logger = _get_logger()
 
     def get_monte_carlo_result(self, request: MonteCarloRequest) -> MonteCarloResult:
         stash_cwd = Path.cwd()

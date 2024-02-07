@@ -3,6 +3,7 @@ import os
 import sys
 from enum import Enum
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Optional
 
 from geophires_monte_carlo import MC_GeoPHIRES3
@@ -45,11 +46,14 @@ class MonteCarloRequest:
             raise ValueError(f'Monte Carlo settings file path ({monte_carlo_settings_file}) must be absolute')
         self.monte_carlo_settings_file = monte_carlo_settings_file
 
-        self.output_file = None
         if output_file is not None:
-            if not output_file.is_absolute():
-                raise ValueError(f'Output file path ({output_file}) must be absolute')
-            self.output_file = output_file
+            self.output_file: Path = output_file
+        else:
+            self._output_dir: TemporaryDirectory = TemporaryDirectory(prefix='geophires_monte_carlo-')
+            self.output_file: Path = Path(self._output_dir.name, 'MC_GEOPHIRES_Result.txt').absolute()
+
+        if not self.output_file.is_absolute():
+            raise ValueError(f'Output file path ({output_file}) must be absolute')
 
     @property
     def code_file_path(self) -> Path:
@@ -57,14 +61,17 @@ class MonteCarloRequest:
 
 
 class MonteCarloResult:
-    def __init__(self):
-        # FIXME TODO
-        pass
+    def __init__(self, request: MonteCarloRequest):
+        self._request: MonteCarloRequest = request
+
+    @property
+    def output_file_path(self) -> Path:
+        return self._request.output_file
 
 
 class GeophiresMonteCarloClient:
-    def __init__(self, enable_caching=True, logger_name='root'):
-        self._logger = logging.getLogger('root')
+    def __init__(self, logger_name='root'):
+        self._logger = logging.getLogger(logger_name)
 
     def get_monte_carlo_result(self, request: MonteCarloRequest) -> MonteCarloResult:
         stash_cwd = Path.cwd()
@@ -85,4 +92,4 @@ class GeophiresMonteCarloClient:
             sys.argv = stash_sys_argv
             os.chdir(stash_cwd)
 
-        return MonteCarloResult()
+        return MonteCarloResult(request)

@@ -228,6 +228,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     iterations = 0
     output_file = args.MC_OUTPUT_FILE if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None else ''
     python_path = 'python'
+
     for line in flist:
         clean = line.strip()
         pair = clean.split(',')
@@ -363,8 +364,8 @@ def main(enable_geophires_monte_carlo_logging_config=True):
 
             plt.figtext(0.11, 0.74, annotations, fontsize=8)
             ret = plt.hist(df[df.columns[i]].tolist(), bins=50, density=True)
-            f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
-            f.write('bin edges: ' + str(ret[1]) + '\n')
+            f.write(f'bin values (as percentage): {ret[0]!s}\n')
+            f.write(f'bin edges: {ret[1]!s}\n')
             fname = df.columns[i].strip().replace('/', '-')
             plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
             i += 1

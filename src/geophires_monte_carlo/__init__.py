@@ -3,6 +3,7 @@ import os
 import sys
 from enum import Enum
 from pathlib import Path
+from typing import Optional
 
 from geophires_monte_carlo import MC_GeoPHIRES3
 
@@ -27,7 +28,13 @@ class SimulationProgram(str, Enum):
 
 
 class MonteCarloRequest:
-    def __init__(self, simulation_program: SimulationProgram, input_file: Path, monte_carlo_settings_file: Path):
+    def __init__(
+        self,
+        simulation_program: SimulationProgram,
+        input_file: Path,
+        monte_carlo_settings_file: Path,
+        output_file: Optional[Path] = None,
+    ):
         self._simulation_program: SimulationProgram = simulation_program
 
         if not input_file.is_absolute():
@@ -38,6 +45,12 @@ class MonteCarloRequest:
             raise ValueError(f'Monte Carlo settings file path ({monte_carlo_settings_file}) must be absolute')
         self.monte_carlo_settings_file = monte_carlo_settings_file
 
+        self.output_file = None
+        if output_file is not None:
+            if not output_file.is_absolute():
+                raise ValueError(f'Output file path ({output_file}) must be absolute')
+            self.output_file = output_file
+
     @property
     def code_file_path(self) -> Path:
         return self._simulation_program.code_file_path
@@ -45,6 +58,7 @@ class MonteCarloRequest:
 
 class MonteCarloResult:
     def __init__(self):
+        # FIXME TODO
         pass
 
 
@@ -57,6 +71,9 @@ class GeophiresMonteCarloClient:
         stash_sys_argv = sys.argv
 
         sys.argv = ['', str(request.code_file_path), str(request.input_file), str(request.monte_carlo_settings_file)]
+        if request.output_file is not None:
+            sys.argv.append(str(request.output_file))
+
         try:
             MC_GeoPHIRES3.main()
         except Exception as e:

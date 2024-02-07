@@ -213,6 +213,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     parser.add_argument('Code_File', help='Code File')
     parser.add_argument('Input_file', help='Input file')
     parser.add_argument('MC_Settings_file', help='MC Settings file')
+    parser.add_argument('MC_OUTPUT_FILE', help='Output file', nargs='?')
     args = parser.parse_args()
 
     # make a list of the INPUTS, distribution functions, and the inputs for that distribution function.
@@ -225,7 +226,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     inputs = []
     outputs = []
     iterations = 0
-    outputfile = ''
+    output_file = args.MC_OUTPUT_FILE if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None else ''
     python_path = 'python'
     for line in flist:
         clean = line.strip()
@@ -238,7 +239,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
         elif pair[0].startswith('ITERATIONS'):
             iterations = int(pair[1])
         elif pair[0].startswith('MC_OUTPUT_FILE'):
-            outputfile = pair[1]
+            output_file = pair[1]
         elif pair[0].startswith('PYTHON_PATH'):
             python_path = pair[1]
 
@@ -253,20 +254,23 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     # combination of variables produced the interesting values (like lowest or highest, or mean)
     # start by creating the string we will write as header
     s = ''
+
     for output in outputs:
         s += output + ', '
+
     for input in inputs:
         s += input[0] + ', '
+
     s = ''.join(s.rsplit(' ', 1))  # get rid of last space
     s = ''.join(s.rsplit(',', 1))  # get rid of last comma
     s += '\n'
 
     # write the header so it is easy to import and analyze in Excel
-    with open(outputfile, 'w') as f:
+    with open(output_file, 'w') as f:
         f.write(s)
 
     # build the args list
-    pass_list = [inputs, outputs, args, outputfile, working_dir, python_path]  # this list never changes
+    pass_list = [inputs, outputs, args, output_file, working_dir, python_path]  # this list never changes
 
     args = []
     for _ in range(iterations):
@@ -281,7 +285,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     logger.info('Done with calculations! Summarizing...')
 
     # read the results into an array
-    with open(outputfile) as f:
+    with open(output_file) as f:
         s = f.readline()  # skip the first line
         all_results = f.readlines()
 
@@ -300,7 +304,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
     actual_records_count = len(results)
 
     # Load the results into a pandas dataframe
-    results_pd = pd.read_csv(outputfile)
+    results_pd = pd.read_csv(output_file)
     df = pd.DataFrame(results_pd)
 
     # Compute the stats along the specified axes.
@@ -329,7 +333,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
 
     # write them out
     annotations = ''
-    with open(outputfile, 'a') as f:
+    with open(output_file, 'a') as f:
         i = 0
         if iterations != actual_records_count:
             f.write(
@@ -362,7 +366,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
             f.write('bin values (as percentage): ' + str(ret[0]) + '\n')
             f.write('bin edges: ' + str(ret[1]) + '\n')
             fname = df.columns[i].strip().replace('/', '-')
-            plt.savefig(Path(Path(outputfile).parent, f'{fname}.png'))
+            plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
             i += 1
             annotations = ''
 

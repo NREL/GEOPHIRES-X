@@ -210,7 +210,7 @@ def main(enable_geophires_monte_carlo_logging_config=True):
 
     # get the values off the command line
     parser = argparse.ArgumentParser()
-    parser.add_argument('Code_File', help='Code_File')
+    parser.add_argument('Code_File', help='Code File')
     parser.add_argument('Input_file', help='Input file')
     parser.add_argument('MC_Settings_file', help='MC Settings file')
     args = parser.parse_args()

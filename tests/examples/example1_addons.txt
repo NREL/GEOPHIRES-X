@@ -28,7 +28,7 @@ AddOn OPEX 2, 1
 AddOn Electricity Gained 2, 26000.0
 AddOn Heat Gained 2, 0
 AddOn Profit Gained 2, 2.786
-AddOn Nickname 3, CO2 point capture from methane buring
+AddOn Nickname 3, CO2 point capture from methane burning
 AddOn CAPEX 3, 40
 AddOn OPEX 3, 0.6
 AddOn Electricity Gained 3, 0.0

@@ -26,6 +26,10 @@ from geophires_monte_carlo.common import _get_logger
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+from hip_ra import HipRaClient
+from hip_ra import HipRaInputParameters
+from hip_ra import HipRaResult
+from hip_ra_x import HipRaXClient
 
 
 def check_and_replace_mean(input_value, args) -> list:
@@ -64,6 +68,8 @@ def work_package(pass_list: list):
     Function that is called by the executor. It does the work of running the simulation.
     :param pass_list: the list of arguments passed in from the command line
     """
+
+    log = _get_logger()
 
     print('#', end='')  # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
 
@@ -108,12 +114,30 @@ def work_package(pass_list: list):
         f.write(input_file_entries)
 
     if args.Code_File.split('/')[-1] == 'GEOPHIRESv3.py':
-        client = GeophiresXClient()
-        result: GeophiresXResult = client.get_geophires_result(
+        # FIXME verify client manipulation of sys.argv is threadsafe
+        geophires_client: GeophiresXClient = GeophiresXClient()
+        result: GeophiresXResult = geophires_client.get_geophires_result(
             GeophiresInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
+    elif args.Code_File.split('/')[-1] == 'HIP_RA.py':
+        # FIXME verify client manipulation of sys.argv is threadsafe
+        hip_ra_client: HipRaClient = HipRaClient()
+        result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
+        shutil.copyfile(result.output_file_path, tmp_output_file)
+    elif args.Code_File.split('/')[-1] == 'hip_ra_x.py':
+        # FIXME verify client manipulation of sys.argv is threadsafe
+        hip_ra_x_client: HipRaXClient = HipRaXClient()
+        result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
+            HipRaInputParameters(from_file_path=Path(tmp_input_file))
+        )
+        shutil.copyfile(result.output_file_path, tmp_output_file)
     else:
+        log.warning(
+            f'Code file from args ({args.Code_File}) is not a known program, '
+            f'using subprocess instead of dedicated client...'
+        )
+
         # start the passed in program name (usually GEOPHIRES or HIP-RA) with the supplied input file.
         # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
         # ruff: noqa: S603
@@ -305,6 +329,7 @@ def main():
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
+                # FIXME doesn't work for HIP RA results
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 results.append([float(y) for y in line.split(',')])
         else:

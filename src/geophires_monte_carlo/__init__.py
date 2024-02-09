@@ -12,6 +12,7 @@ from geophires_monte_carlo.common import _get_logger
 class SimulationProgram(str, Enum):
     GEOPHIRES = 'GEOPHIRES', 'geophires_x/GEOPHIRESv3.py'
     HIP_RA = 'HIP-RA', 'hip_ra/HIP_RA.py'
+    HIP_RA_X = 'HIP-RA-X', 'hip_ra_x/hip_ra_x.py'
 
     def __new__(cls, *args, **kwds):
         obj = str.__new__(cls)

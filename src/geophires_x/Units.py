@@ -44,6 +44,8 @@ class Units(IntEnum):
     POPDENSITY = auto()
     HEATPERUNITAREA = auto()
     POWERPERUNITAREA = auto()
+    HEATPERUNITVOLUME = auto()
+    POWERPERUNITVOLUME = auto()
 
 
 class TemperatureUnit(str, Enum):
@@ -313,3 +315,13 @@ class HeatPerUnitAreaUnit(str,Enum):
 class PowerPerUnitAreaUnit(str,Enum):
     """Population Density Units"""
     MWPERSQKM = "MW/km**2"
+
+
+class HeatPerUnitVolumeUnit(str,Enum):
+    """Population Density Units"""
+    KJPERCUBICKM = "KJ/km**3"
+
+
+class PowerPerUnitVolumeUnit(str,Enum):
+    """Population Density Units"""
+    MWPERCUBICKM = "MW/km**3"

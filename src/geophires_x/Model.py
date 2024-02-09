@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 import logging
 import time
@@ -47,16 +48,12 @@ class Model(object):
     """
 
     def __init__(self, enable_geophires_logging_config=True):
-        """
-        The __init__ function is called automatically every time the class is being used to create a new object.
-        :return: Nothing
-        """
 
         # get logging started
-        self.logger = logging.getLogger('root')
+        self.logger = logging.getLogger('root') # TODO should be getting __name__ logger instead of root
 
         if enable_geophires_logging_config:
-            logging.config.fileConfig(Path(Path(__file__).parent,'logging.conf'))
+            logging.config.fileConfig(Path(Path(__file__).parent, 'logging.conf'))
             self.logger.setLevel(logging.INFO)
 
         self.logger.info(f'Init {__class__}: {__name__}')
@@ -106,7 +103,12 @@ class Model(object):
         self.wellbores = WellBores(self)
         self.surfaceplant = SurfacePlant(self)
         self.economics = Economics(self)
-        self.outputs = Outputs(self)
+
+        output_file = 'HDR.out'
+        if len(sys.argv) > 2:
+            output_file = sys.argv[2]
+
+        self.outputs = Outputs(self, output_file=output_file)
 
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '7':
@@ -114,7 +116,7 @@ class Model(object):
                 self.wellbores = SUTRAWellBores(self)
                 self.surfaceplant = SurfacePlantSUTRA(self)
                 self.economics = SUTRAEconomics(self)
-                self.outputs = SUTRAOutputs(self)
+                self.outputs = SUTRAOutputs(self, output_file=output_file)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue in ['True', 'true', 'TRUE', 'T', '1']:
@@ -127,27 +129,27 @@ class Model(object):
                 self.wellbores = AGSWellBores(self)
                 self.surfaceplant = SurfacePlantAGS(self)
                 self.economics = AGSEconomics(self)
-                self.outputs = AGSOutputs(self)
+                self.outputs = AGSOutputs(self, output_file=output_file)
                 self.wellbores.IsAGS.value = True
 
         # if we find out we have an add-ons, we need to instantiate it, then read for the parameters
         if 'AddOn Nickname 1' in self.InputParameters:
             self.logger.info("Initiate the Add-on elements")
             self.addeconomics = EconomicsAddOns(self)
-            self.addoutputs = OutputsAddOns(self)
+            self.addoutputs = OutputsAddOns(self, output_file=output_file)
 
         # if we find out we have a ccus, we need to instantiate it, then read for the parameters
         if 'Ending CCUS Credit Value' in self.InputParameters:
             self.logger.info("Initiate the CCUS elements")
             self.ccuseconomics = EconomicsCCUS(self)
-            self.ccusoutputs = OutputsCCUS(self)
+            self.ccusoutputs = OutputsCCUS(self, output_file=output_file)
 
         # if we find out we have an S-DAC-GT calculation, we need to instantiate it
         if 'S-DAC-GT' in self.InputParameters:
             if self.InputParameters['S-DAC-GT'].sValue == 'On':
                 self.logger.info("Initiate the S-DAC-GT elements")
                 self.sdacgteconomics = EconomicsS_DAC_GT(self)
-                self.sdacgtoutputs = OutputsS_DAC_GT(self)
+                self.sdacgtoutputs = OutputsS_DAC_GT(self, output_file=output_file)
 
         self.logger.info(f'Complete {__class__}: {__name__}')
 

@@ -1,5 +1,4 @@
 import os
-import sys
 from enum import Enum
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -82,21 +81,19 @@ class GeophiresMonteCarloClient:
 
     def get_monte_carlo_result(self, request: MonteCarloRequest) -> MonteCarloResult:
         stash_cwd = Path.cwd()
-        stash_sys_argv = sys.argv
 
-        sys.argv = ['', str(request.code_file_path), str(request.input_file), str(request.monte_carlo_settings_file)]
+        args = [str(request.code_file_path), str(request.input_file), str(request.monte_carlo_settings_file)]
         if request.output_file is not None:
-            sys.argv.append(str(request.output_file))
+            args.append(str(request.output_file))
 
         try:
-            MC_GeoPHIRES3.main()
+            MC_GeoPHIRES3.main(command_line_args=args)
         except Exception as e:
             raise RuntimeError(f'Monte Carlo encountered an exception: {e!s}') from e
         except SystemExit:
             raise RuntimeError('Monte Carlo exited without giving a reason') from None
         finally:
             # Undo MC internal global settings changes
-            sys.argv = stash_sys_argv
             os.chdir(stash_cwd)
 
         return MonteCarloResult(request)

@@ -198,7 +198,7 @@ def work_package(pass_list: list):
         f.write(result_s)
 
 
-def main():
+def main(command_line_args=None):
     r"""
     main - this is the main function that is called when the program is run
     It gets most of its key values from the command line:
@@ -246,7 +246,12 @@ def main():
     parser.add_argument('Input_file', help='Input file')
     parser.add_argument('MC_Settings_file', help='MC Settings file')
     parser.add_argument('MC_OUTPUT_FILE', help='Output file', nargs='?')
-    args = parser.parse_args()
+
+    if command_line_args is None:
+        logger.warn('Command line args were not passed explicitly, falling back to sys.argv')
+        command_line_args = sys.argv[1:]
+
+    args = parser.parse_args(command_line_args)
 
     # make a list of the INPUTS, distribution functions, and the inputs for that distribution function.
     # Make a list of the OUTPUTs
@@ -403,4 +408,4 @@ if __name__ == '__main__':
     logger = _get_logger()
     logger.info(f'Init {__name__!s}')
 
-    main()
+    main(command_line_args=sys.argv[1:])

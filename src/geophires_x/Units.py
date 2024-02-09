@@ -309,7 +309,7 @@ class PopDensityUnit(str,Enum):
 
 class HeatPerUnitAreaUnit(str,Enum):
     """Population Density Units"""
-    KJPERSQKM = "KJ/km**2"
+    KJPERSQKM = "kJ/km**2"
 
 
 class PowerPerUnitAreaUnit(str,Enum):
@@ -319,7 +319,7 @@ class PowerPerUnitAreaUnit(str,Enum):
 
 class HeatPerUnitVolumeUnit(str,Enum):
     """Population Density Units"""
-    KJPERCUBICKM = "KJ/km**3"
+    KJPERCUBICKM = "kJ/km**3"
 
 
 class PowerPerUnitVolumeUnit(str,Enum):

@@ -31,18 +31,18 @@ from geophires_x.Units import DensityUnit
 from geophires_x.Units import EnthalpyUnit
 from geophires_x.Units import HeatCapacityUnit
 from geophires_x.Units import HeatPerUnitAreaUnit
+from geophires_x.Units import HeatPerUnitVolumeUnit
 from geophires_x.Units import HeatUnit
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import MassUnit
 from geophires_x.Units import PercentUnit
 from geophires_x.Units import PowerPerUnitAreaUnit
+from geophires_x.Units import PowerPerUnitVolumeUnit
 from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import TimeUnit
 from geophires_x.Units import Units
 from geophires_x.Units import VolumeUnit
-from geophires_x.Units import HeatPerUnitVolumeUnit
-from geophires_x.Units import PowerPerUnitVolumeUnit
 
 """
 Heat in Place calculation: Muffler, P., and Raffaele Cataldi.
@@ -490,8 +490,10 @@ class HIP_RA_X:
             PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
             CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
         )
-        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[self.heat_per_unit_volume_reservoir.Name] = OutputParameter(
-            Name='Producible Heat/Unit volume (reservoir)',
+        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[
+            self.heat_per_unit_volume_reservoir.Name
+        ] = OutputParameter(
+            Name='Producible Heat/Unit Volume (reservoir)',
             UnitType=Units.HEATPERUNITVOLUME,
             PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
             CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
@@ -523,7 +525,7 @@ class HIP_RA_X:
         self.electricity_per_unit_volume_reservoir = self.OutputParameterDict[
             self.electricity_per_unit_volume_reservoir.Name
         ] = OutputParameter(
-            Name='Producible Electricity/Unit volume (reservoir)',
+            Name='Producible Electricity/Unit Volume (reservoir)',
             UnitType=Units.POWERPERUNITVOLUME,
             PreferredUnits=PowerPerUnitVolumeUnit.MWPERCUBICKM,
             CurrentUnits=PowerPerUnitVolumeUnit.MWPERCUBICKM,
@@ -675,14 +677,24 @@ class HIP_RA_X:
 
             electricity_with_actual_power_plant_kW = UtilEff_func(self.reservoir_temperature.value) * maximum_power_kW
             producible_power_kW = electricity_with_actual_power_plant_kW
-            self.reservoir_producible_electricity.value = HIP_RA_X._ureg.Quantity(producible_power_kW, 'kW').to('MW').magnitude
+            self.reservoir_producible_electricity.value = (
+                HIP_RA_X._ureg.Quantity(producible_power_kW, 'kW').to('MW').magnitude
+            )
 
-            self.electricity_per_unit_area_fluid.value = self.producible_electricity_fluid.value / self.reservoir_area.value
-            self.producible_electricity_per_unit_area.value = self.reservoir_producible_electricity.value / self.reservoir_area.value
-            self.electricity_per_unit_volume_reservoir.value = self.reservoir_producible_electricity.value / self.reservoir_volume.value
+            self.electricity_per_unit_area_fluid.value = (
+                self.producible_electricity_fluid.value / self.reservoir_area.value
+            )
+            self.producible_electricity_per_unit_area.value = (
+                self.reservoir_producible_electricity.value / self.reservoir_area.value
+            )
+            self.electricity_per_unit_volume_reservoir.value = (
+                self.reservoir_producible_electricity.value / self.reservoir_volume.value
+            )
 
             self.producible_heat_per_unit_area.value = self.reservoir_producible_heat.value / self.reservoir_area.value
-            self.heat_per_unit_volume_reservoir.value = self.reservoir_producible_heat.value / self.reservoir_volume.value
+            self.heat_per_unit_volume_reservoir.value = (
+                self.reservoir_producible_heat.value / self.reservoir_volume.value
+            )
 
             self.logger.info(f'Complete {__class__!s}: {__class__.__name__!s}: {__name__}')
         except Exception as e:
@@ -741,12 +753,12 @@ class HIP_RA_X:
                 (self.reservoir_area, render_default),
                 (self.reservoir_thickness, render_default),
                 (self.reservoir_life_cycle, render_default),
-                (self.rock_heat_capacity, render_default),
+                (self.rock_heat_capacity, render_scientific),
                 (self.fluid_heat_capacity, render_default),
-                (self.fluid_density, render_default),
-                (self.rock_density, render_default),
-#                (self.rock_recoverable_heat, render_default),
-#                (self.fluid_recoverable_heat, render_default),
+                (self.fluid_density, render_scientific),
+                (self.rock_density, render_scientific),
+                #                (self.rock_recoverable_heat, render_default),
+                #                (self.fluid_recoverable_heat, render_default),
                 (self.recoverable_fluid_factor, render_default),
                 (self.recoverable_rock_heat, render_default),
             ]:
@@ -822,7 +834,7 @@ class HIP_RA_X:
                     f.write(f'      {k}:{kv_spaces}{v}{nl}')
 
                 f.write(nl)
-                f.write(f'      **SUMMARY OF RESULTS***{nl}')
+                f.write(f'      ***SUMMARY OF RESULTS***{nl}')
                 for k, v in case_data_results['SUMMARY OF RESULTS'].items():
                     # align space between value and units to same column
                     kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '

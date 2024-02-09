@@ -113,19 +113,19 @@ def work_package(pass_list: list):
     with open(tmp_input_file, 'a') as f:
         f.write(input_file_entries)
 
-    if args.Code_File.split('/')[-1] == 'GEOPHIRESv3.py':
+    if args.Code_File.endswith('GEOPHIRESv3.py'):
         # FIXME verify client manipulation of sys.argv is threadsafe
         geophires_client: GeophiresXClient = GeophiresXClient()
         result: GeophiresXResult = geophires_client.get_geophires_result(
             GeophiresInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
-    elif args.Code_File.split('/')[-1] == 'HIP_RA.py':
+    elif args.Code_File.endswith('HIP_RA.py'):
         # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_client: HipRaClient = HipRaClient()
         result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
         shutil.copyfile(result.output_file_path, tmp_output_file)
-    elif args.Code_File.split('/')[-1] == 'hip_ra_x.py':
+    elif args.Code_File.endswith('hip_ra_x.py'):
         # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(

@@ -23,6 +23,9 @@ import numpy as np
 import pandas as pd
 
 from geophires_monte_carlo.common import _get_logger
+from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresXClient
+from geophires_x_client import GeophiresXResult
 
 
 def check_and_replace_mean(input_value, args) -> list:
@@ -64,16 +67,16 @@ def work_package(pass_list: list):
 
     print('#', end='')  # TODO Use tdqm library to show progress bar on screen: https://github.com/tqdm/tqdm
 
-    inputs = pass_list[0]
-    outputs = pass_list[1]
-    args = pass_list[2]
-    outputfile = pass_list[3]
-    working_dir = pass_list[4]  # noqa: F841
-    python_path = pass_list[5]
+    input_values: list[list] = pass_list[0]
+    outputs: list = pass_list[1]
+    args: argparse.Namespace = pass_list[2]
+    output_file: str = pass_list[3]
+    working_dir: str = pass_list[4]  # noqa: F841
+    python_path: str = pass_list[5]
 
     input_file_entries = ''
 
-    for input_value in inputs:
+    for input_value in input_values:
         # get random values for each of the INPUTS based on the distributions and boundary values
         if input_value[1].strip().startswith('normal'):
             rando = np.random.normal(float(input_value[2]), float(input_value[3]))
@@ -92,23 +95,33 @@ def work_package(pass_list: list):
             input_file_entries += input_value[0] + ', ' + str(rando) + '\n'
 
     # make up a temporary file name that will be shared among files for this iteration
-    tmp_filename = str(Path(tempfile.gettempdir(), f'{uuid.uuid4()!s}.txt'))
-    tmp_output_file = tmp_filename.replace('.txt', '_result.txt')
+    tmp_input_file: str = str(Path(tempfile.gettempdir(), f'{uuid.uuid4()!s}.txt'))
+    tmp_output_file: str = tmp_input_file.replace('.txt', '_result.txt')
 
     # copy the contents of the Input_file into a new input file
-    shutil.copyfile(args.Input_file, tmp_filename)
+    shutil.copyfile(args.Input_file, tmp_input_file)
 
     # append those values to the new input file in the format "variable name, new_random_value".
     # This will cause GeoPHIRES/HIP-RA to replace the value in the file with this random value in the calculation
     # if it exists in that file already, or it will set it to the value as if it was a new value set by the user.
-    with open(tmp_filename, 'a') as f:
+    with open(tmp_input_file, 'a') as f:
         f.write(input_file_entries)
 
-    # start the passed in program name (usually GEOPHIRES or HIP-RA) with the supplied input file.
-    # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
-    # ruff: noqa: S603 # FIXME re-enable QA and address
-    sprocess = subprocess.Popen([python_path, args.Code_File, tmp_filename, tmp_output_file], stdout=subprocess.DEVNULL)
-    sprocess.wait()
+    if args.Code_File.split('/')[-1] == 'GEOPHIRESv3.py':
+        client = GeophiresXClient()
+        result: GeophiresXResult = client.get_geophires_result(
+            GeophiresInputParameters(from_file_path=Path(tmp_input_file))
+        )
+        shutil.copyfile(result.output_file_path, tmp_output_file)
+    else:
+        # start the passed in program name (usually GEOPHIRES or HIP-RA) with the supplied input file.
+        # Capture the output into a filename that is the same as the input file but has the suffix "_result.txt".
+        # ruff: noqa: S603
+        # FIXME re-enable QA and address
+        sprocess = subprocess.Popen(
+            [python_path, args.Code_File, tmp_input_file, tmp_output_file], stdout=subprocess.DEVNULL
+        )
+        sprocess.wait()
 
     # look group "_result.txt" file for the OUTPUT variables that the user asked for.
     # For each of them, write them as a column in results file
@@ -150,14 +163,14 @@ def work_package(pass_list: list):
         result_s += '(' + input_file_entries.replace('\n', ';', -1).replace(', ', ':', -1) + ')'
 
     # delete temporary files
-    Path.unlink(tmp_filename)
-    Path.unlink(tmp_output_file)
+    Path.unlink(Path(tmp_input_file))
+    Path.unlink(Path(tmp_output_file))
 
     # write out the results
     result_s = result_s.strip(' ').strip(',')  # get rid of last space and comma
     result_s += '\n'
 
-    with open(outputfile, 'a') as f:
+    with open(output_file, 'a') as f:
         f.write(result_s)
 
 

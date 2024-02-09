@@ -75,6 +75,7 @@ def main(enable_geophires_logging_config=True):
         outputfile = 'HDR.out'
         if len(sys.argv) > 2:
             outputfile = sys.argv[2]
+
         with open(outputfile, 'r', encoding='UTF-8') as f:
             content = f.readlines()  # store all output in one long list
 

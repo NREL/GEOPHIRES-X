@@ -47,7 +47,7 @@ class Model(object):
     Model is the container class of the application, giving access to everything else, including the logger
     """
 
-    def __init__(self, enable_geophires_logging_config=True):
+    def __init__(self, enable_geophires_logging_config=True, input_file=None):
 
         # get logging started
         self.logger = logging.getLogger('root') # TODO should be getting __name__ logger instead of root
@@ -67,7 +67,10 @@ class Model(object):
         # we do this as soon as possible because what we instantiate may depend on settings in this file
         self.InputParameters = {}
 
-        read_input_file(self.InputParameters, logger=self.logger)
+        if input_file is None and len(sys.argv) > 1:
+            input_file = sys.argv[1]
+
+        read_input_file(self.InputParameters, logger=self.logger, input_file_name=input_file)
 
         self.ccuseconomics = None
         self.ccusoutputs = None

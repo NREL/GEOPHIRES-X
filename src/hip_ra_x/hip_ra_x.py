@@ -31,11 +31,13 @@ from geophires_x.Units import DensityUnit
 from geophires_x.Units import EnthalpyUnit
 from geophires_x.Units import HeatCapacityUnit
 from geophires_x.Units import HeatPerUnitAreaUnit
+from geophires_x.Units import HeatPerUnitVolumeUnit
 from geophires_x.Units import HeatUnit
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import MassUnit
 from geophires_x.Units import PercentUnit
 from geophires_x.Units import PowerPerUnitAreaUnit
+from geophires_x.Units import PowerPerUnitVolumeUnit
 from geophires_x.Units import PowerUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import TimeUnit
@@ -305,7 +307,7 @@ class HIP_RA_X:
             CurrentUnits=VolumeUnit.KILOMETERS3,
         )
         self.volume_recoverable_fluid = self.OutputParameterDict[self.volume_recoverable_fluid.Name] = OutputParameter(
-            Name='Recoverable Fluid Volume',
+            Name='Recoverable Volume (recoverable fluid)',
             UnitType=Units.VOLUME,
             PreferredUnits=VolumeUnit.KILOMETERS3,
             CurrentUnits=VolumeUnit.KILOMETERS3,
@@ -488,6 +490,14 @@ class HIP_RA_X:
             PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
             CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
         )
+        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[
+            self.heat_per_unit_volume_reservoir.Name
+        ] = OutputParameter(
+            Name='Producible Heat/Unit Volume (reservoir)',
+            UnitType=Units.HEATPERUNITVOLUME,
+            PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+            CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+        )
         self.producible_electricity_per_unit_area = self.OutputParameterDict[
             self.producible_electricity_per_unit_area.Name
         ] = OutputParameter(
@@ -511,6 +521,14 @@ class HIP_RA_X:
             UnitType=Units.POWERPERUNITAREA,
             PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
             CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+        )
+        self.electricity_per_unit_volume_reservoir = self.OutputParameterDict[
+            self.electricity_per_unit_volume_reservoir.Name
+        ] = OutputParameter(
+            Name='Producible Electricity/Unit Volume (reservoir)',
+            UnitType=Units.POWERPERUNITVOLUME,
+            PreferredUnits=PowerPerUnitVolumeUnit.MWPERCUBICKM,
+            CurrentUnits=PowerPerUnitVolumeUnit.MWPERCUBICKM,
         )
 
         self.logger.info(f'Complete {__class__.__name__!s}: {__name__}')
@@ -669,8 +687,14 @@ class HIP_RA_X:
             self.producible_electricity_per_unit_area.value = (
                 self.reservoir_producible_electricity.value / self.reservoir_area.value
             )
+            self.electricity_per_unit_volume_reservoir.value = (
+                self.reservoir_producible_electricity.value / self.reservoir_volume.value
+            )
 
             self.producible_heat_per_unit_area.value = self.reservoir_producible_heat.value / self.reservoir_area.value
+            self.heat_per_unit_volume_reservoir.value = (
+                self.reservoir_producible_heat.value / self.reservoir_volume.value
+            )
 
             self.logger.info(f'Complete {__class__!s}: {__class__.__name__!s}: {__name__}')
         except Exception as e:
@@ -717,12 +741,34 @@ class HIP_RA_X:
             def render_scientific(p: floatParameter | OutputParameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
+            summary_of_inputs = {}
             summary_of_results = {}
 
             for param, render in [
                 # TODO: Commented parameters are defined in initialization but not calculated - either calculate or
                 #   remove entirely
                 (self.reservoir_temperature, render_default),
+                (self.rejection_temperature, render_default),
+                (self.reservoir_porosity, render_default),
+                (self.reservoir_area, render_default),
+                (self.reservoir_thickness, render_default),
+                (self.reservoir_life_cycle, render_default),
+                (self.rock_heat_capacity, render_scientific),
+                (self.fluid_heat_capacity, render_default),
+                (self.fluid_density, render_scientific),
+                (self.rock_density, render_scientific),
+                #                (self.rock_recoverable_heat, render_default),
+                #                (self.fluid_recoverable_heat, render_default),
+                (self.recoverable_fluid_factor, render_default),
+                (self.recoverable_rock_heat, render_default),
+            ]:
+                summary_of_inputs[param.Name] = render(param)
+
+            case_data_inputs = {'SUMMARY OF INPUTS': summary_of_inputs}
+
+            for param, render in [
+                # TODO: Commented parameters are defined in initialization but not calculated - either calculate or
+                #   remove entirely
                 (self.reservoir_volume, render_default),
                 (self.volume_rock, render_default),
                 (self.volume_recoverable_fluid, render_default),
@@ -757,18 +803,20 @@ class HIP_RA_X:
                 # (self.producible_heat_rock, render_scientific),
                 # (self.producible_heat_fluid, render_scientific),
                 (self.producible_heat_per_unit_area, render_scientific),
+                (self.heat_per_unit_volume_reservoir, render_scientific),
                 # (self.heat_per_unit_area_rock, render_scientific),
                 # (self.heat_per_unit_area_fluid, render_scientific),
                 (self.reservoir_producible_electricity, render_default),
                 # (self.producible_electricity_rock, render_default),
                 # (self.producible_electricity_fluid, render_default),
                 (self.producible_electricity_per_unit_area, render_default),
+                (self.electricity_per_unit_volume_reservoir, render_default),
                 # (self.electricity_per_unit_area_rock, render_default),
                 # (self.electricity_per_unit_area_fluid, render_default),
             ]:
                 summary_of_results[param.Name] = render(param)
 
-            case_data = {'SUMMARY OF RESULTS': summary_of_results}
+            case_data_results = {'SUMMARY OF RESULTS': summary_of_results}
 
             with open(outputfile, 'w', encoding='UTF-8') as f:
                 nl = '\n'
@@ -777,10 +825,17 @@ class HIP_RA_X:
                 f.write(f'                               ***HIP CASE REPORT***{nl}')
                 f.write(f'                               *********************{nl}')
                 f.write(nl)
-                f.write(f'                           ***SUMMARY OF RESULTS***{nl}')
-                f.write(nl)
+                f.write(f'      ***SUMMARY OF INPUTS***{nl}')
 
-                for k, v in case_data['SUMMARY OF RESULTS'].items():
+                for k, v in case_data_inputs['SUMMARY OF INPUTS'].items():
+                    # align space between value and units to same column
+                    kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '
+
+                    f.write(f'      {k}:{kv_spaces}{v}{nl}')
+
+                f.write(nl)
+                f.write(f'      ***SUMMARY OF RESULTS***{nl}')
+                for k, v in case_data_results['SUMMARY OF RESULTS'].items():
                     # align space between value and units to same column
                     kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '
 

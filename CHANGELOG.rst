@@ -5,6 +5,13 @@ Changelog
 GEOPHIRES-X (2023-2024)
 ------------------------
 
+3.4
+^^^
+Monte Carlo moved to dedicated module
+
+`diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.3.0...v3.4.0>`__
+
+
 3.3
 ^^^
 

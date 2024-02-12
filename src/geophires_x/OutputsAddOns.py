@@ -22,10 +22,7 @@ class OutputsAddOns(Outputs):
         # now do AddOn output, which will append to the original output
         # write results to output file and screen
         try:
-            outputfile = "HDR.out"
-            if len(sys.argv) > 2:
-                outputfile = sys.argv[2]
-            with open(outputfile, 'a', encoding='UTF-8') as f:
+            with open(self.output_file, 'a', encoding='UTF-8') as f:
                 f.write(NL)
                 f.write(NL)
                 f.write("                                ***EXTENDED ECONOMICS***\n")

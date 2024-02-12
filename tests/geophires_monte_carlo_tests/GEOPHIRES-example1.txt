@@ -1,39 +1,15 @@
-Starting CCUS Credit Value,0.015
-Ending CCUS Credit Value, 0.1
-CCUS Escalation Start Year, 5
-CCUS Escalation Rate Per Year, 0.01
-Current Grid CO2 production,0.82
-Starting Heat Sale Price,0.0123
-Ending Heat Sale Price,0.0359
-Heat Escalation Start Year,7
-Heat Escalation Rate Per Year,0.01
-Starting Electricity Sale Price,0.09
-Ending Electricity Sale Price,0.15
-Electricity Escalation Start Year,5
-Electricity Escalation Rate Per Year,0.012
-Annual License Etc,0
-Flat License Etc,0
-Other Incentives,2.112
-Tax Relief Per Year,2.212
-One-time Grants Etc,20.212
-AddOn Nickname 1, Desalinization
-AddOn CAPEX 1, 10
-AddOn OPEX 1, 0.1
-AddOn Electricity Gained 1, -100
-AddOn Heat Gained 1, 0.0
-AddOn Profit Gained 1, 0.05
-AddOn Nickname 2, Methane Extraction
-AddOn CAPEX 2, 20
-AddOn OPEX 2, 1
-AddOn Electricity Gained 2, 26000.0
-AddOn Heat Gained 2, 0
-AddOn Profit Gained 2, 2.786
-AddOn Nickname 3, CO2 point capture from methane burning
-AddOn CAPEX 3, 40
-AddOn OPEX 3, 0.6
-AddOn Electricity Gained 3, 0.0
-AddOn Heat Gained 3, 0
-AddOn Profit Gained 3, 0
+GEOPHIRES v2.0 Input File
+Created on 6/11/2018
+Last modified on 6/12/2018
+Geothermal Electricity Problem using a Multiple Parallel Fractures Model
+
+Example 1 Description: This problem considers an EGS reservoir at 3km depth.
+Ramey's model is applied to simulate production wellbore heat losses. The heat
+is used in for electricity application with a reinjection temperature of 50deg.C.
+
+
+***Subsurface technical parameters***
+*************************************
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
 Reservoir Depth,3,                     				---[km]
 Number of Segments,1,                  				---[-]
@@ -43,15 +19,15 @@ Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]
 Production Well Diameter,7,		     			---[inch]
 Injection Well Diameter,7,					---[inch]
-Ramey Production Wellbore Model,1,       			---
+Ramey Production Wellbore Model,1,       			---0 if disabled  1 if enabled
 Production Wellbore Temperature Drop,.5,			---[deg.C]
 Injection Wellbore Temperature Gain,0,   			---[deg.C]
 Production Flow Rate per Well,55,       			---[kg/s]
-Fracture Shape,3,                       			---[-]
+Fracture Shape,3,                       			---[-] Should be 1 2 3 or 4. See manual for details
 Fracture Height,900, 						---[m]
-Reservoir Volume Option,3,              			---[-]
-Reservoir Volume,1000000000,		 			---[m^3]
+Reservoir Volume Option,3,              			---[-] Should be 1 2 3 or 4. See manual for details
 Number of Fractures,20,		  				---[-]
+Reservoir Volume,1000000000,		 			---[m^3]
 Water Loss Fraction,.02,					---[-]
 Productivity Index,5,						---[kg/s/bar]
 Injectivity Index,5,						---[kg/s/bar]
@@ -64,7 +40,6 @@ Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
 ***SURFACE TECHNICAL PARAMETERS***
 **********************************
 End-Use Option,1,			  			---[-] Electricity
-Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Power Plant Type,2,			  			---[-] Supercritcal ORC
 Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
 Utilization Factor,.9,			  			---[-] between .1 and 1
@@ -74,8 +49,22 @@ Ambient Temperature,20,		 				---[deg.C]
 ***FINANCIAL PARAMETERS***
 **************************
 Plant Lifetime,30,			  			---[years]
+Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
+
+***CAPITAL AND O&M COST PARAMETERS***
+*************************************
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
+Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
+Surface Plant Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Field Gathering System Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Exploration Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Wellfield O&M Cost Adjustment Factor,1,				---[-] Use built-in correlations
+Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
+
 
 ***Simulation Parameters***
 ***************************

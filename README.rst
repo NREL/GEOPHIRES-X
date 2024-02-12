@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.3.4.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.4.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.3.4...main
+    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -280,6 +280,11 @@ Extending GEOPHIRES-X
 * `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
 
   - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
+
+Monte Carlo
+-----------
+
+`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
 Other Documentation:
 --------------------

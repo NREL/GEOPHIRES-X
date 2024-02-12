@@ -336,14 +336,20 @@ def UtilEff_func(temperature_degC: float) -> float:
     return util_eff
 
 
-def read_input_file(return_dict_1, logger=None):
+def read_input_file(return_dict_1, logger=None, input_file_name=None):
     """
     Read input file and return a dictionary of parameters
     :param return_dict_1: dictionary of parameters
     :param logger: logger object
     :return: dictionary of parameters
     :rtype: dict
+
+    FIXME modifies dict instead of returning it - it should do what the doc says it does and return a dict instead,
+      relying on mutation of parameters is Bad
     """
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
 
     logger.info(f'Init {__name__}')
 
@@ -351,17 +357,22 @@ def read_input_file(return_dict_1, logger=None):
     # If it doesn't exist, simply run the default model without any inputs
 
     # read input data (except input from optional filenames)
-    if len(sys.argv) > 1:
-        f_name = sys.argv[1]
+    if input_file_name is None:
+        logger.warning('Input file name not provided, checking sys.argv')
+        if len(sys.argv) > 1:
+            input_file_name = sys.argv[1]
+            logger.warning(f'Using input file from sys.argv: {input_file_name}')
+
+    if input_file_name is not None:
         content = []
-        if exists(f_name):
-            logger.info(f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
-            with open(f_name, encoding='UTF-8') as f:
+        if exists(input_file_name):
+            logger.info(f'Found filename: {input_file_name}. Proceeding with run using input parameters from that file')
+            with open(input_file_name, encoding='UTF-8') as f:
                 # store all input in one long string that will be passed to all objects
                 # so they can parse out their specific parameters (and ignore the rest)
                 content = f.readlines()
         else:
-            raise FileNotFoundError(f'Unable to read input file: File {f_name} not found')
+            raise FileNotFoundError(f'Unable to read input file: File {input_file_name} not found')
 
         # successful read of data into list.  Now make a dictionary with all the parameter entries.
         # Index will be the unique name of the parameter.

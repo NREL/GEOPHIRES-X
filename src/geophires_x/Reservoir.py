@@ -8,8 +8,8 @@ from .Parameter import intParameter, floatParameter, listParameter, OutputParame
 from .Units import *
 import geophires_x.Model as Model
 
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater
-from geophires_x.GeoPHIRESUtils import DensityWater
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
 class Reservoir:
     """
@@ -774,9 +774,9 @@ class Reservoir:
 
         if self.resoption.value != ReservoirModel.SUTRA:
             # calculate reservoir water properties
-            self.cpwater.value = HeatCapacityWater(
+            self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
-            self.rhowater.value = DensityWater(
+            self.rhowater.value = density_water_kg_per_m3(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
 
             # temperature gain in injection wells

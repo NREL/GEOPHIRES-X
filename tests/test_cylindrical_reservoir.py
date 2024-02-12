@@ -9,9 +9,9 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Parameter import ParameterEntry
 
-from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3 as densitywater
 
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater as heatcapacitywater
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K as heatcapacitywater
 
 # ruff: noqa: I001
 from geophires_x.CylindricalReservoir import CylindricalReservoir

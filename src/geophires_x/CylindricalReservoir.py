@@ -5,9 +5,9 @@ from functools import lru_cache
 
 import numpy as np
 
-from geophires_x.GeoPHIRESUtils import DensityWater
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 import geophires_x.Model as Model
 from geophires_x.Parameter import floatParameter, OutputParameter
 from geophires_x.Reservoir import Reservoir
@@ -246,10 +246,10 @@ class CylindricalReservoir(Reservoir):
                                                      * self.cprock.value
                                                      * (self.Trock.value - model.wellbores.Tinj.value)
                                                  ) / 1e15  # 10^15 J
-        self.cpwater.value = HeatCapacityWater(
+        self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
         )
-        self.rhowater.value = DensityWater(
+        self.rhowater.value = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
         )
 

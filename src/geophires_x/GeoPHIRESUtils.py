@@ -85,7 +85,7 @@ _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 
 @lru_cache(maxsize=None)
-def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def density_water_kg_per_m3(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the density of water as a function of temperature.
 
@@ -133,7 +133,7 @@ def celsius_to_kelvin(celsius: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def viscosity_water_Pa_sec(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
     Args:
@@ -158,7 +158,7 @@ def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> flo
 
 
 @lru_cache(maxsize=None)
-def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def heat_capacity_water_J_per_kg_per_K(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
 
@@ -228,7 +228,7 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
     The VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature.
 
@@ -267,7 +267,7 @@ def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) ->
 
 
 @lru_cache(maxsize=None)
-def EntropyH20_func(temperature_degC: float) -> float:
+def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
     """
     the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
 
@@ -290,7 +290,7 @@ def EntropyH20_func(temperature_degC: float) -> float:
 
 
 @lru_cache(maxsize=None)
-def EnthalpyH20_func(temperature_degC: float) -> float:
+def enthalpy_water_kJ_per_kg(temperature_degC: float) -> float:
     """
     the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
 

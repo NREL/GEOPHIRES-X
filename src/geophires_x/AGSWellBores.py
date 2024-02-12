@@ -13,8 +13,8 @@ import math
 import numpy as np
 import geophires_x.Model as Model
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter
-from geophires_x.GeoPHIRESUtils import DensityWater
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 from .Units import *
 from .OptionList import WorkingFluid, Configuration
 
@@ -27,7 +27,7 @@ import itertools as itern
 from .WellBores import WellBores, RameyCalc, ProdPressureDropAndPumpingPowerUsingIndexes, WellPressureDrop, \
     ProdPressureDropsAndPumpingPowerUsingImpedenceModel
 
-from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
+from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec as viscositywater
 
 esp2 = 10.0e-10
 
@@ -253,8 +253,8 @@ def laplace_solution(self, sp) -> float:
                                         self.y_boundary, self.z_boundary, self.alpha_rock, sp)
 
     Toutletl = (self.Tini - self.Tinj.value) / sp * np.exp(
-        -sp * ss / self.q_circulation / 24.0 / DensityWater(
-            self.Tini) / HeatCapacityWater(
+        -sp * ss / self.q_circulation / 24.0 / density_water_kg_per_m3(
+            self.Tini) / heat_capacity_water_J_per_kg_per_K(
             self.Tini) * self.Nonvertical_length.value - sp / self.velocity * self.Nonvertical_length.value)
     return Toutletl
 
@@ -877,7 +877,7 @@ class AGSWellBores(WellBores):
             year = math.trunc(time_operation / al)
 
             # nonvertical wellbore fluid conditions based on current temperature
-            rhowater = DensityWater(self.NonverticalProducedTemperature.value[year])
+            rhowater = density_water_kg_per_m3(self.NonverticalProducedTemperature.value[year])
             muwater = viscositywater(self.NonverticalProducedTemperature.value[year])
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
@@ -960,8 +960,8 @@ class AGSWellBores(WellBores):
                 year = math.trunc(self.time_operation.value / self.al)
                 self.NonverticalProducedTemperature.value[year] = inverselaplace(self, 16, 0)
                 # update alpha_fluid value based on next temperature of reservoir
-                self.alpha_fluid = self.WaterThermalConductivity.value / DensityWater(
-                    self.NonverticalProducedTemperature.value[year]) / HeatCapacityWater(
+                self.alpha_fluid = self.WaterThermalConductivity.value / density_water_kg_per_m3(
+                    self.NonverticalProducedTemperature.value[year]) / heat_capacity_water_J_per_kg_per_K(
                     self.NonverticalProducedTemperature.value[year]) * 24.0 * 3600.0
                 self.time_operation.value += self.al
 
@@ -973,7 +973,7 @@ class AGSWellBores(WellBores):
             # Calculate the temperature drop as the fluid makes it way to the surface (or use a constant value)
             # if not Ramey, hard code a user-supplied temperature drop.
             self.ProdTempDrop.value = self.tempdropprod.value
-            model.reserv.cpwater.value = HeatCapacityWater(self.NonverticalProducedTemperature.value[0])
+            model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(self.NonverticalProducedTemperature.value[0])
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
                                                     model.reserv.rhorock.value,
@@ -993,10 +993,10 @@ class AGSWellBores(WellBores):
             # Now use the parent's calculation to calculate the upgoing and downgoing pressure drops and pumping power
             self.PumpingPower.value = [0.0] * len(self.ProducedTemperature.value)  # initialize the array
             if self.productionwellpumping.value:
-                self.rhowaterinj = DensityWater(model.reserv.Tsurf.value) * np.linspace(1, 1,
-                                                                                        len(self.ProducedTemperature.value))
-                self.rhowaterprod = DensityWater(model.reserv.Trock.value) * np.linspace(1, 1,
-                                                                                         len(self.ProducedTemperature.value))
+                self.rhowaterinj = density_water_kg_per_m3(model.reserv.Tsurf.value) * np.linspace(1, 1,
+                                                                                                   len(self.ProducedTemperature.value))
+                self.rhowaterprod = density_water_kg_per_m3(model.reserv.Trock.value) * np.linspace(1, 1,
+                                                                                                    len(self.ProducedTemperature.value))
                 self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
                                                                                        model.reserv.Tresoutput.value - self.ProdTempDrop.value / 4.0,
                                                                                        self.prodwellflowrate.value,
@@ -1091,10 +1091,10 @@ class AGSWellBores(WellBores):
             # calculate water values based on initial temperature
 
             # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-            rho_water = DensityWater(self.Tout[0], enable_fallback_calculation=True)
+            rho_water = density_water_kg_per_m3(self.Tout[0], enable_fallback_calculation=True)
 
             # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-            model.reserv.cpwater.value = HeatCapacityWater(
+            model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always

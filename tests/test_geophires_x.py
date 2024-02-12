@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from geophires_x.OptionList import PlantType
 from geophires_x_client import GeophiresXClient
@@ -192,7 +193,25 @@ class GeophiresXTestCase(BaseTestCase):
                             msg=f'Example test: {example_file_path}',
                         )
                     else:
-                        raise ae
+                        msg = 'Dicts are not approximately equal within any percentage'
+                        percent_diff = self._get_unequal_dicts_approximate_percent_difference(
+                            expected_result.result, geophires_result.result
+                        )
+
+                        if percent_diff is not None:
+                            msg = f'Dicts are approximately equal within {percent_diff}%'
+
+                        raise AssertionError(msg) from ae
+
+    def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
+        for i in range(99):
+            try:
+                self.assertDictAlmostEqual(d1, d2, percent=i)
+                return i
+            except AssertionError:
+                pass
+
+        return None
 
     def test_runtime_error_with_error_code(self):
         client = GeophiresXClient()

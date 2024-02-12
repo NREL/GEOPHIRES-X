@@ -451,7 +451,7 @@ class TestEnthalpyh20Func(unittest.TestCase):
     def test_valid_temperature(self):
         temperature = 50.0
         result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 209.3362003948904, places=3)
+        self.assertAlmostEqual(result, 209.34176132671735, places=3)
 
     def test_minimum_temperature(self):
         temperature = 0.01
@@ -461,7 +461,7 @@ class TestEnthalpyh20Func(unittest.TestCase):
     def test_maximum_temperature(self):
         temperature = 373.946
         result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 2087.5468451171537, places=3)
+        self.assertAlmostEqual(result, 2084.256255907945, places=3)
 
     def test_same_temperature(self):
         temperature = 50.0
@@ -472,7 +472,7 @@ class TestEnthalpyh20Func(unittest.TestCase):
     def test_middle_temperature(self):
         temperature = 15.0
         result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 62.98365208053001, places=3)
+        self.assertAlmostEqual(result, 62.98145105731618, places=3)
 
     def test_non_float_temperature(self):
         temperature = 'abc123'
@@ -492,12 +492,12 @@ class TestEnthalpyh20Func(unittest.TestCase):
     def test_known_temperature(self):
         temperature = 100.0
         result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 419.09915499770307, places=3)
+        self.assertAlmostEqual(result, 419.1661628928869, places=3)
 
     def test_close_temperature(self):
         temperature = 100.001
         result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 419.1033743616401, places=3)
+        self.assertAlmostEqual(result, 419.1703812859442, places=3)
 
 
 if __name__ == '__main__':

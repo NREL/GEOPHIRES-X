@@ -12,7 +12,6 @@ import numpy as np
 
 from geophires_x.Parameter import *
 
-from iapws.iapws97 import IAPWS97
 import CoolProp.CoolProp as CP
 
 _logger = logging.getLogger('root') # TODO use __name__ instead of root
@@ -309,9 +308,9 @@ def EnthalpyH20_func(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).h
-    except NotImplementedError as nie:
-        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
+        return CP.PropsSI('H', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)

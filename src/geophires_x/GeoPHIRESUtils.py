@@ -101,8 +101,8 @@ def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float
         raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
-    except NotImplementedError as nie:
+        return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+    except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'DensityWater: Fallback calculation triggered for {Twater_degC}C')
 
@@ -111,7 +111,7 @@ def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float
             rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
             return rho_water
 
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)
@@ -249,7 +249,7 @@ def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) ->
 
     try:
         return CP.PropsSI('P','T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water') * 1e-3
-    except NotImplementedError as nie:
+    except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')
 
@@ -264,7 +264,7 @@ def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) ->
             vp = 133.322 * (10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
             return vp
 
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)

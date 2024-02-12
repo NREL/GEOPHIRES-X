@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.3.3
+ GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-01
- Simulation Time:  11:28
- Calculation Time:      0.729 sec
+ Simulation Date: 2024-02-12
+ Simulation Time:  09:55
+ Calculation Time:      0.603 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -83,11 +83,11 @@ Simulation Metadata
       Average Reservoir Heat Extraction:                     10.80 MW
       Production Wellbore Heat Transmission Model = Ramey Model
       Average Production Well Temperature Drop:               2.0 degC
-      Total Average Pressure Drop:                         1855.1 kPa
+      Total Average Pressure Drop:                         1855.0 kPa
       Average Injection Well Pressure Drop:                 391.4 kPa
       Average Reservoir Pressure Drop:                     2035.1 kPa
       Average Production Well Pressure Drop:                374.8 kPa
-      Average Buoyancy Pressure Drop:                      -946.2 kPa
+      Average Buoyancy Pressure Drop:                      -946.3 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -143,7 +143,7 @@ Simulation Metadata
   13           1.0065                 95.70               0.0939            9.8946
   14           1.0045                 95.52               0.0941            9.8666
   15           1.0023                 95.30               0.0943            9.8348
-  16           0.9998                 95.07               0.0946            9.7996
+  16           0.9998                 95.07               0.0945            9.7996
   17           0.9972                 94.82               0.0948            9.7614
   18           0.9943                 94.55               0.0951            9.7204
   19           0.9913                 94.26               0.0954            9.6772

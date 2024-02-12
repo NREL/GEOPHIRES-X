@@ -234,13 +234,13 @@ class TestDensityWater(unittest.TestCase):
         """Returns the correct density of water for a given temperature."""
         input_expected_val_pairs = [
             (25, 997.0038346094865),
-            (25.5, 996.8746788233803),
-            (50, 988.0087757351533),
-            (50.5, 987.7821218479756),
-            (75, 974.8288462197903),
-            (75.5, 974.5296342180826),
-            (100, 958.3542772858901),
-            (100.5, 957.9946917721559),
+            (25.5, 996.8740021273935),
+            (50, 987.996210611189),
+            (50.5, 987.7693810541228),
+            (75, 974.8149605673345),
+            (75.5, 974.5158622099481),
+            (100, 958.3490516048568),
+            (100.5, 957.9896566787988),
         ]
 
         for pair in input_expected_val_pairs:
@@ -257,13 +257,13 @@ class TestDensityWater(unittest.TestCase):
         assert isinstance(DensityWater(100), float)
 
     def test_small_temperature_values(self):
-        self.assertAlmostEqual(DensityWater(0.01), 999.7937454059017, places=3)
-        self.assertAlmostEqual(DensityWater(0.0), 999.793065506329, places=3)
+        self.assertAlmostEqual(DensityWater(0.01), 999.7925200315555, places=3)
+        self.assertAlmostEqual(DensityWater(0.0), 999.7918393845667, places=3)
         self.assertIsNotNone(DensityWater(sys.float_info.min))
 
     def test_handles_maximum_temperature_value(self):
         """Handles the maximum temperature value in T."""
-        assert DensityWater(373.946) == 322
+        self.assertAlmostEqual(DensityWater(373.946), 322, places=5)
 
     def test_raises_value_error_outside_valid_input_range(self):
         """Handles the minimum and maximum float values for Twater."""

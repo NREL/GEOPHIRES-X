@@ -281,6 +281,11 @@ Extending GEOPHIRES-X
 
   - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
+Monte Carlo
+-----------
+
+`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
+
 Other Documentation:
 --------------------
 The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.

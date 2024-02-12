@@ -1,9 +1,5 @@
 # GEOPHIRES Monte Carlo User Guide
 
-## Documentation
-
-See [module documentation](reference/geophires_monte_carlo.html)
-
 ## Example Setup
 
 Create a project with the following structure, including GEOPHIRES in `requirements.txt` and setting up `venv` with `virtualenv`:
@@ -112,3 +108,7 @@ bin edges: [-43.34   -43.2258 -43.1116 -42.9974 -42.8832 -42.769  -42.6548 -42.5
  -37.8584 -37.7442 -37.63  ]
 
 ```
+
+## Documentation
+
+See [module documentation](reference/geophires_monte_carlo.html)

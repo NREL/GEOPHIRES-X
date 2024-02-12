@@ -76,6 +76,7 @@ setup(
         'h5py',
         'scipy',
         'iapws',
+        'coolprop',
     ],
     extras_require={
         # eg:

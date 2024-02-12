@@ -146,8 +146,8 @@ def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> flo
     """
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).mu
-    except NotImplementedError as nie:
+        return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+    except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'ViscosityWater: Fallback calculation triggered for {Twater_degC}C')
 
@@ -155,7 +155,7 @@ def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> flo
             muwater = 2.414E-5 * np.power(10, 247.8 / (Twater_degC + 273.15 - 140))
             return muwater
 
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)

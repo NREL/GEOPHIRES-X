@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.3.3
+ GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-01
- Simulation Time:  11:23
- Calculation Time:      0.698 sec
+ Simulation Date: 2024-02-12
+ Simulation Time:  09:40
+ Calculation Time:      0.633 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -67,8 +67,8 @@ Simulation Metadata
       Fracture area:                                     810000.00 m**2
       Reservoir volume:                              1000000000 m**3
       Reservoir hydrostatic pressure:                       100.00 kPa
-      Plant outlet pressure:                               1067.80 kPa
-      Production wellhead pressure:                        1136.75 kPa
+      Plant outlet pressure:                               1067.94 kPa
+      Production wellhead pressure:                        1136.89 kPa
       Productivity Index:                                     5.00 kg/sec/bar
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   2700.00 kg/m**3
@@ -85,8 +85,8 @@ Simulation Metadata
       Average Reservoir Heat Extraction:                     54.37 MW
       Production Wellbore Heat Transmission Model = Ramey Model
       Average Production Well Temperature Drop:               2.9 degC
-      Average Injection Well Pump Pressure Drop:            217.6 kPa
-      Average Production Well Pump Pressure Drop:          1004.5 kPa
+      Average Injection Well Pump Pressure Drop:            217.5 kPa
+      Average Production Well Pump Pressure Drop:          1004.6 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -147,7 +147,7 @@ Simulation Metadata
   13           1.0104                167.13               0.1846            5.4143                9.9539
   14           1.0105                167.15               0.1846            5.4163                9.9559
   15           1.0106                167.16               0.1846            5.4182                9.9577
-  16           1.0107                167.18               0.1845            5.4199                9.9594
+  16           1.0107                167.18               0.1846            5.4199                9.9594
   17           1.0108                167.20               0.1845            5.4214                9.9610
   18           1.0109                167.21               0.1845            5.4229                9.9624
   19           1.0110                167.22               0.1845            5.4242                9.9638
@@ -160,7 +160,7 @@ Simulation Metadata
   26           1.0114                167.30               0.1844            5.4318                9.9712
   27           1.0115                167.31               0.1844            5.4326                9.9721
   28           1.0115                167.32               0.1844            5.4334                9.9729
-  29           1.0116                167.32               0.1844            5.4342                9.9737
+  29           1.0116                167.32               0.1844            5.4342                9.9736
   30           1.0116                167.33               0.1844            5.4349                9.9744
 
 

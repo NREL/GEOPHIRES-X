@@ -403,11 +403,11 @@ class TestRecoverableHeat(unittest.TestCase):
 class TestVaporPressureWater(unittest.TestCase):
     def test_below_100_degrees(self):
         result = VaporPressureWater(42)
-        self.assertAlmostEqual(result, 8.209010116448697, places=3)
+        self.assertAlmostEqual(result, 8.209563332516748, places=3)
 
     def test_above_100_degrees(self):
         result = VaporPressureWater(150)
-        self.assertAlmostEqual(result, 476.10138108149204, places=3)
+        self.assertAlmostEqual(result, 476.16453796900316, places=3)
 
     def test_100_degrees(self):
         result = VaporPressureWater(100)
@@ -435,7 +435,7 @@ class TestVaporPressureWater(unittest.TestCase):
 
     def test_50_degrees(self):
         result = VaporPressureWater(50)
-        self.assertAlmostEqual(result, 12.351270434023352, places=3)
+        self.assertAlmostEqual(result, 12.351945857074021, places=3)
 
     def test_75_degrees(self):
         result = VaporPressureWater(75)

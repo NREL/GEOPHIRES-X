@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.3.3
+ GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-01
- Simulation Time:  11:21
- Calculation Time:      0.043 sec
+ Simulation Date: 2024-02-12
+ Simulation Time:  09:40
+ Calculation Time:      0.040 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -68,8 +68,8 @@ Simulation Metadata
       Reservoir volume provided as input
       Reservoir volume:                              1000000000 m**3
       Reservoir hydrostatic pressure:                       100.00 kPa
-      Plant outlet pressure:                                691.38 kPa
-      Production wellhead pressure:                         760.33 kPa
+      Plant outlet pressure:                                691.43 kPa
+      Production wellhead pressure:                         760.38 kPa
       Productivity Index:                                    10.00 kg/sec/bar
       Injectivity Index:                                     10.00 kg/sec/bar
       Reservoir density:                                   2700.00 kg/m**3
@@ -84,8 +84,8 @@ Simulation Metadata
       Initial Production Temperature:                       145.0 degC
       Average Reservoir Heat Extraction:                     96.65 MW
       Wellbore Heat Transmission Model = Constant Temperature Drop:       0.0 degC
-      Average Injection Well Pump Pressure Drop:           1720.3 kPa
-      Average Production Well Pump Pressure Drop:          1328.9 kPa
+      Average Injection Well Pump Pressure Drop:           1720.2 kPa
+      Average Production Well Pump Pressure Drop:          1329.0 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -142,7 +142,7 @@ Simulation Metadata
   10           0.9765                141.60               1.3017            7.4398                7.4591
   11           0.9739                141.22               1.3044            7.3598                7.4181
   12           0.9713                140.84               1.3071            7.2803                7.3771
-  13           0.9687                140.46               1.3098            7.2012                7.3360
+  13           0.9687                140.46               1.3098            7.2011                7.3360
   14           0.9661                140.08               1.3125            7.1225                7.2950
   15           0.9635                139.71               1.3152            7.0442                7.2540
   16           0.9609                139.33               1.3178            6.9664                7.2131

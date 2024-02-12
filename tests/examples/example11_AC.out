@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.3.3
+ GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-01
- Simulation Time:  11:25
- Calculation Time:      0.090 sec
+ Simulation Date: 2024-02-12
+ Simulation Time:  09:41
+ Calculation Time:      0.084 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -68,8 +68,8 @@ Simulation Metadata
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
       Reservoir hydrostatic pressure:                       100.00 kPa
-      Plant outlet pressure:                                416.73 kPa
-      Production wellhead pressure:                         485.68 kPa
+      Plant outlet pressure:                                416.74 kPa
+      Production wellhead pressure:                         485.69 kPa
       Productivity Index:                                    10.00 kg/sec/bar
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   3000.00 kg/m**3

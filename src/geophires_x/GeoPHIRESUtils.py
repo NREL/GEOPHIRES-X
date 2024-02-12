@@ -13,8 +13,9 @@ import numpy as np
 from geophires_x.Parameter import *
 
 from iapws.iapws97 import IAPWS97
+import CoolProp.CoolProp as CP
 
-_logger = logging.getLogger('root')
+_logger = logging.getLogger('root') # TODO use __name__ instead of root
 
 _T = np.array(
     [
@@ -247,7 +248,7 @@ def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) ->
         raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).P * 1e3
+        return CP.PropsSI('P','T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water') * 1e-3
     except NotImplementedError as nie:
         if enable_fallback_calculation:
             _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')

@@ -178,8 +178,8 @@ def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> 
         )
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
-    except NotImplementedError as nie:
+        return CP.PropsSI('C', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+    except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'HeatCapacityWater: Fallback calculation triggered for {Twater_degC}C')
 
@@ -194,7 +194,7 @@ def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> 
 
             return cpwater
 
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)

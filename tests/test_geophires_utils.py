@@ -280,23 +280,23 @@ class TestDensityWater(unittest.TestCase):
 class TestHeatCapacityWater(unittest.TestCase):
     def test_valid_input_within_range(self):
         result = HeatCapacityWater(100)
-        assert result == 4216.645118923585
+        self.assertAlmostEqual(4215.673616815784, result, places=3)
 
     def test_valid_input_minimum_range(self):
         result = HeatCapacityWater(0.01)
-        assert result == 4219.897711106461
+        self.assertAlmostEqual(4219.911516371655, result, places=3)
 
     def test_valid_input_maximum_range(self):
         result = HeatCapacityWater(370)
-        assert result == 47095.500723768
+        self.assertAlmostEqual(45155.17556557058, result, places=3)
 
     def test_valid_input_midpoint_range(self):
         result = HeatCapacityWater(185)
-        assert result == 4425.471257522954
+        self.assertAlmostEqual(4425.481049192385, result, places=3)
 
     def test_valid_input_exact_match(self):
         result = HeatCapacityWater(25)
-        assert result == 4182.179909825829
+        assert result == 4181.599569862515
 
     def test_invalid_input_less_than_minimum(self):
         with self.assertRaises(ValueError):

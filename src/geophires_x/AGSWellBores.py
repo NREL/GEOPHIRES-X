@@ -163,7 +163,6 @@ class data:
         return self.GWhr * interpn(ivars, self.Wt, point) / (1000. * self.time[-1] * 86400. * 365.)
 
 
-# #############################point source/sink solution functions################################
 
 def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     """
@@ -201,7 +200,6 @@ def pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp, t):
     return z
 
 
-# #####Chebyshev approximation for numerical Laplace transformation integration from 1e-8 to 1e30###################
 
 def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     """
@@ -238,7 +236,7 @@ def chebeve_pointsource(self, yy, zz, yt, zt, ye, ze, alpha, sp) -> float:
     return temp + (1 / sp * (math.exp(-sp * 1.0e5) - math.exp(-sp * 1.0e30))) / (ye * ze) / self.rhorock / self.cprock
 
 
-# ############################Duhamerl convolution method for closed-loop system######################################
+
 def laplace_solution(self, sp) -> float:
     """
     Duhamel convolution method for closed-loop system
@@ -259,7 +257,6 @@ def laplace_solution(self, sp) -> float:
     return Toutletl
 
 
-# ###############################Numerical Laplace transformation algorithm#########################
 def inverselaplace(self, NL, MM):
     """
     Numerical Laplace transformation algorithm
@@ -450,7 +447,7 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # Initialize the superclass first to gain access to those variables
         super().__init__(model)
@@ -960,6 +957,8 @@ class AGSWellBores(WellBores):
                 year = math.trunc(self.time_operation.value / self.al)
                 self.NonverticalProducedTemperature.value[year] = inverselaplace(self, 16, 0)
                 # update alpha_fluid value based on next temperature of reservoir
+
+                # TODO provide pressure to density_water
                 self.alpha_fluid = self.WaterThermalConductivity.value / density_water_kg_per_m3(
                     self.NonverticalProducedTemperature.value[year]) / heat_capacity_water_J_per_kg_per_K(
                     self.NonverticalProducedTemperature.value[year]) * 24.0 * 3600.0

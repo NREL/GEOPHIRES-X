@@ -337,10 +337,11 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum:
                 Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+                msg = ('Provided production wellhead pressure under minimum pressure. '
+                       'GEOPHIRES will assume minimum wellhead pressure')
+
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
         PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
@@ -350,16 +351,15 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         pumpdepthfinal = np.max(pumpdepth)
         if pumpdepthfinal < 0.0:
             pumpdepthfinal = 0.0
-            print("Warning: GEOPHIRES calculates negative production well pumping depth. \
-            No production well pumps will be assumed")
-            model.logger.warning(
-                "GEOPHIRES calculates negative production well pumping depth. \
-                No production well pumps will be assumed")
+            msg = ('GEOPHIRES calculates negative production well pumping depth. '
+                   'No production well pumps will be assumed')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
         elif pumpdepthfinal > 600.0:
-            print("Warning: GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
-            model.logger.warning("GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
+            msg = ('GEOPHIRES calculates production pump depth to be deeper than 600 m. '
+                   'Verify reservoir pressure, production well flow rate and production well dimensions')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
         DPProdWell = Pprodwellhead - (Phydrostaticcalc - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth / 1E3 - f3 *

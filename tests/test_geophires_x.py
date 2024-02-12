@@ -193,7 +193,7 @@ class GeophiresXTestCase(BaseTestCase):
                             msg=f'Example test: {example_file_path}',
                         )
                     else:
-                        msg = 'Dicts are not approximately equal within any percentage'
+                        msg = 'Dicts are not approximately equal within any percentage <100'
                         percent_diff = self._get_unequal_dicts_approximate_percent_difference(
                             expected_result.result, geophires_result.result
                         )

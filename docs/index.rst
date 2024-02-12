@@ -8,6 +8,7 @@ Contents
    overview
    parameters
    How-to-extend-GEOPHIRES-X
+   Monte-Carlo-User-Guide
 ..   reference/index
 
 Indices and tables

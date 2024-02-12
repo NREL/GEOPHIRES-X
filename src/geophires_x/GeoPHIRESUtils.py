@@ -1,20 +1,24 @@
 from __future__ import annotations
 
 import logging
+import os
+import sys
 from os.path import exists
 import dataclasses
 import json
 import numbers
 from functools import lru_cache
+from typing import Any
 
+import pint
 from scipy.interpolate import interp1d
 import numpy as np
 
-from geophires_x.Parameter import *
-
 import CoolProp.CoolProp as CP
 
-_logger = logging.getLogger('root') # TODO use __name__ instead of root
+from geophires_x.Parameter import ParameterEntry
+
+_logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
 _T = np.array(
     [
@@ -83,9 +87,24 @@ _UtilEff = np.array(
 
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
+_ureg = pint.get_application_registry()
+_ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+
+
+def quantity(value: float, unit: str) -> Any:
+    """
+    :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
+        due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
+        documentation to specify rtype for now.
+    """
+    return _ureg.Quantity(value, unit)
+
 
 @lru_cache(maxsize=None)
-def density_water_kg_per_m3(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def density_water_kg_per_m3(
+    Twater_degC: float,
+    pressure=None,
+    enable_fallback_calculation=False) -> float:
     """
     Calculate the density of water as a function of temperature.
 
@@ -100,7 +119,12 @@ def density_water_kg_per_m3(Twater_degC: float, enable_fallback_calculation=Fals
         raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
-        return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+        if pressure is not None:
+            return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water')
+        else:
+            _logger.warning(f'DensityWater: No pressure provided, using vapor quality=0 instead')
+            return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+
     except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'DensityWater: Fallback calculation triggered for {Twater_degC}C')
@@ -247,7 +271,7 @@ def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=Fal
         raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
     try:
-        return CP.PropsSI('P','T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water') * 1e-3
+        return CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water') * 1e-3
     except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')
@@ -260,7 +284,8 @@ def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=Fal
                 A = 8.14019
                 B = 1810.94
                 C = 244.485
-            vp = 133.322 * (10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
+            vp = 133.322 * (
+                10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
             return vp
 
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
@@ -284,7 +309,7 @@ def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return CP.PropsSI('S','T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+        return CP.PropsSI('S', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 

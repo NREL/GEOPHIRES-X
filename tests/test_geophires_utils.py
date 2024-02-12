@@ -320,29 +320,33 @@ class TestEntropyh20Func(unittest.TestCase):
         """Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]"""
 
         temperature = 50.0
-        expected_entropy = 0.7037939046604744
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 0.7038086259330144
+        result_entropy = EntropyH20_func(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_minimum_temperature_input(self):
         """Returns the correct entropy value for the minimum temperature input (T[0])"""
 
         temperature = 0.01
-        expected_entropy = -6.161029060094028e-08
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = -1.4592809254309467e-13
+        result_entropy = EntropyH20_func(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_h20_critical_point_temperature_input(self):
         """Returns the correct entropy value for the maximum temperature input (T[-1])"""
 
         temperature = 373.946
-        expected_entropy = 4.412021482236347
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 4.406961892363361
+        result_entropy = EntropyH20_func(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_25C(self):
         """Returns the correct entropy value for a temperature input that is an element of T"""
 
         temperature = 25.0
-        expected_entropy = 0.3672563027910093
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 0.36722496627639006
+        result_entropy = EntropyH20_func(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_150C(self):
         """
@@ -351,8 +355,9 @@ class TestEntropyh20Func(unittest.TestCase):
         """
 
         temperature = 150.0
-        expected_entropy = 1.8419520427817053
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 1.8418018983902633
+        result_entropy = EntropyH20_func(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_minus10C(self):
         """Raises a ValueError if the temperature input is less than T[0]"""

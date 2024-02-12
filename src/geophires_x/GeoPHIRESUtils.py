@@ -285,9 +285,9 @@ def EntropyH20_func(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).s
-    except NotImplementedError as nie:
-        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
+        return CP.PropsSI('S','T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache(maxsize=None)

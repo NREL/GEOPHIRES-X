@@ -261,14 +261,18 @@ class GeophiresXTestCase(BaseTestCase):
 
         result_meters_input = client.get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_meters.txt'))
+                from_file_path=self._get_test_file_path(
+                    Path('geophires_x_tests/cylindrical_reservoir_input_depth_meters.txt')
+                )
             )
         )
         del result_meters_input.result['metadata']
 
         result_kilometers_input = client.get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_kilometers.txt'))
+                from_file_path=self._get_test_file_path(
+                    Path('geophires_x_tests/cylindrical_reservoir_input_depth_kilometers.txt')
+                )
             )
         )
         del result_kilometers_input.result['metadata']

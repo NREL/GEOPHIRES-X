@@ -51,7 +51,9 @@ class CylindricalReservoirTestCase(BaseTestCase):
 
     def test_read_inputs(self):
         model = self._new_model_with_cylindrical_reservoir(
-            input_file=self._get_test_file_path('examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt')
+            input_file=self._get_test_file_path(
+                '../examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt'
+            )
         )
         reservoir = model.reserv
         self.assertIsNotNone(reservoir.InputDepth)

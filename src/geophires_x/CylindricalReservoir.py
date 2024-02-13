@@ -214,7 +214,7 @@ class CylindricalReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # specify time-stepping vectors
         self.timevector.value = np.linspace(
@@ -250,7 +250,8 @@ class CylindricalReservoir(Reservoir):
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
         )
         self.rhowater.value = density_water_kg_per_m3(
-            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+            pressure=model.reserv.lithostatic_pressure()
         )
 
-        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

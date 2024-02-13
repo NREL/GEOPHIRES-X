@@ -3,12 +3,14 @@ import os
 import math
 from functools import lru_cache
 import numpy as np
+import scipy
+
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
 from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter
 from .Units import *
 import geophires_x.Model as Model
 
-from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
 class Reservoir:
@@ -787,3 +789,28 @@ class Reservoir:
             self.Trock.value - model.wellbores.Tinj.value) / 1E15  # 10^15 J
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+    def lithostatic_pressure_MPa(self):
+        return lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                        self.depth.quantity().to('m').magnitude)
+
+
+def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
+    """
+    Calculate lithostatic pressure in a reservoir.
+
+    Args:
+        rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
+        depth_m (float): Depth of the reservoir in meters.
+    Returns:
+        float: Lithostatic pressure in megapascals (MPa).
+    """
+
+    g = scipy.constants.g  # Acceleration due to gravity (m/s^2)
+
+    # Calculate lithostatic pressure
+    pressure_Pa = rho_kg_per_m3 * g * depth_m
+
+    pressure_mpa = quantity(pressure_Pa, 'Pa').to('MPa').magnitude
+
+    return pressure_mpa

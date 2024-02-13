@@ -2,6 +2,8 @@ import os
 import sys
 from pathlib import Path
 
+from pint.facets.plain import PlainQuantity
+
 from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
@@ -15,8 +17,11 @@ class ReservoirTestCase(BaseTestCase):
 
     def test_reservoir_lithostatic_pressure(self):
         reservoir = Reservoir(self._new_model())
-        p = reservoir.lithostatic_pressure_MPa()
-        self.assertEqual(79.433865, p)  # Assumes Reservoir default values of rho=2700, depth=3km
+        p: PlainQuantity = reservoir.lithostatic_pressure()
+
+        # Assumes Reservoir default values of rho=2700, depth=3km
+        self.assertAlmostEqual(79.433865, p.magnitude, places=3)
+        self.assertEqual('megapascal', p.units)
 
     def _new_model(self, input_file=None) -> Model:
         stash_cwd = Path.cwd()

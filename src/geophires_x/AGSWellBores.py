@@ -27,7 +27,7 @@ import itertools as itern
 from .WellBores import WellBores, RameyCalc, ProdPressureDropAndPumpingPowerUsingIndexes, WellPressureDrop, \
     ProdPressureDropsAndPumpingPowerUsingImpedenceModel
 
-from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec as viscositywater
+from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 
 esp2 = 10.0e-10
 
@@ -875,7 +875,7 @@ class AGSWellBores(WellBores):
 
             # nonvertical wellbore fluid conditions based on current temperature
             rhowater = density_water_kg_per_m3(self.NonverticalProducedTemperature.value[year])
-            muwater = viscositywater(self.NonverticalProducedTemperature.value[year])
+            muwater = viscosity_water_Pa_sec(self.NonverticalProducedTemperature.value[year])
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
             # assume turbulent flow.

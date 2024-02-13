@@ -11,6 +11,7 @@ from functools import lru_cache
 from typing import Any
 
 import pint
+from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
 import numpy as np
 
@@ -91,11 +92,10 @@ _ureg = pint.get_application_registry()
 _ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
 
 
-def quantity(value: float, unit: str) -> Any:
+def quantity(value: float, unit: str) -> PlainQuantity:
     """
-    :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
-        due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
-        documentation to specify rtype for now.
+    :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
+        to import the Quantity TypeAlias
     """
     return _ureg.Quantity(value, unit)
 

@@ -4,6 +4,7 @@ import math
 from functools import lru_cache
 import numpy as np
 import scipy
+from pint.facets.plain import PlainQuantity
 
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
 from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter
@@ -777,9 +778,12 @@ class Reservoir:
         if self.resoption.value != ReservoirModel.SUTRA:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
-                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+            )
             self.rhowater.value = density_water_kg_per_m3(
-                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+                # pressure=self.lithostatic_pressure() # TODO WIP
+            )
 
             # temperature gain in injection wells
             model.wellbores.Tinj.value = model.wellbores.Tinj.value + model.wellbores.tempgaininj.value
@@ -790,9 +794,9 @@ class Reservoir:
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def lithostatic_pressure_MPa(self):
-        return lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                        self.depth.quantity().to('m').magnitude)
+    def lithostatic_pressure(self) -> PlainQuantity:
+        return quantity(lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                        self.depth.quantity().to('m').magnitude), 'MPa')
 
 
 def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:

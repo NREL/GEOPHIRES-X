@@ -247,7 +247,8 @@ class CylindricalReservoir(Reservoir):
                                                      * (self.Trock.value - model.wellbores.Tinj.value)
                                                  ) / 1e15  # 10^15 J
         self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
-            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+            model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+            pressure=model.reserv.lithostatic_pressure()
         )
         self.rhowater.value = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,

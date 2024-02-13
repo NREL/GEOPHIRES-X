@@ -256,7 +256,7 @@ def laplace_solution(cls:WellBores, sp, pressure:PlainQuantity) -> float:
     Toutletl = (cls.Tini - cls.Tinj.value) / sp * np.exp(
         -sp * ss / cls.q_circulation / 24.0 / density_water_kg_per_m3(
             cls.Tini, pressure=pressure) / heat_capacity_water_J_per_kg_per_K(
-            cls.Tini) * cls.Nonvertical_length.value - sp / cls.velocity * cls.Nonvertical_length.value)
+            cls.Tini, pressure=pressure) * cls.Nonvertical_length.value - sp / cls.velocity * cls.Nonvertical_length.value)
     return Toutletl
 
 
@@ -970,7 +970,9 @@ class AGSWellBores(WellBores):
                     self.NonverticalProducedTemperature.value[year],
                     pressure=model.reserv.lithostatic_pressure()
                 ) / heat_capacity_water_J_per_kg_per_K(
-                    self.NonverticalProducedTemperature.value[year]) * 24.0 * 3600.0
+                    self.NonverticalProducedTemperature.value[year],
+                    pressure=model.reserv.lithostatic_pressure()
+                ) * 24.0 * 3600.0
                 self.time_operation.value += self.al
 
             self.time_operation.value = t  # set it back for use in later loop
@@ -981,7 +983,10 @@ class AGSWellBores(WellBores):
             # Calculate the temperature drop as the fluid makes it way to the surface (or use a constant value)
             # if not Ramey, hard code a user-supplied temperature drop.
             self.ProdTempDrop.value = self.tempdropprod.value
-            model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(self.NonverticalProducedTemperature.value[0])
+            model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
+                self.NonverticalProducedTemperature.value[0],
+                pressure=model.reserv.lithostatic_pressure()
+            )
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
                                                     model.reserv.rhorock.value,
@@ -1113,9 +1118,15 @@ class AGSWellBores(WellBores):
                 enable_fallback_calculation=True
             )
 
-            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
-                self.Tout[0], enable_fallback_calculation=True)  # Need this for surface plant output calculation
+                self.Tout[0],
+
+                pressure=model.reserv.lithostatic_pressure(),
+
+                # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+                enable_fallback_calculation=True
+            )  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
             # make pumping of working fluid unnecessary

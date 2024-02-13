@@ -110,7 +110,8 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir = model.reserv
         reservoir.Calculate(model)
         expected_heat_capacity = heatcapacitywater(
-            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+            pressure=model.reserv.lithostatic_pressure(),
         )
         assert reservoir.cpwater.value == expected_heat_capacity
 

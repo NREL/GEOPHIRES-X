@@ -777,8 +777,10 @@ class Reservoir:
         if self.resoption.value != ReservoirModel.SUTRA:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
-                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+                pressure=self.lithostatic_pressure()
             )
+
             self.rhowater.value = density_water_kg_per_m3(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
                 pressure=self.lithostatic_pressure()

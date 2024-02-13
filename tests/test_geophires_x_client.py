@@ -189,7 +189,7 @@ class GeophiresXClientTestCase(BaseTestCase):
 
     def test_extended_economic_profile(self):
         """
-        TODO make this less tedious to update when expected result values are updated
+        TODO make this less tedious to update when expected result values change
             (https://github.com/NREL/GEOPHIRES-X/issues/107)
         """
 
@@ -247,7 +247,7 @@ class GeophiresXClientTestCase(BaseTestCase):
 
     def test_ccus_profile(self):
         """
-        TODO make this less tedious to update when expected result values are updated
+        TODO make this less tedious to update when expected result values change
             (https://github.com/NREL/GEOPHIRES-X/issues/107)
         """
 
@@ -355,7 +355,7 @@ class GeophiresXClientTestCase(BaseTestCase):
 
     def test_csv(self):
         """
-        TODO make this less tedious to update when expected result values are updated
+        TODO make this less tedious to update when expected result values change
             (https://github.com/NREL/GEOPHIRES-X/issues/107)
         """
 

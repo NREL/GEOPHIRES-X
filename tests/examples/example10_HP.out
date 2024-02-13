@@ -6,15 +6,15 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-12
- Simulation Time:  10:56
- Calculation Time:      0.042 sec
+ Simulation Date: 2024-02-13
+ Simulation Time:  07:48
+ Calculation Time:      0.094 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Average Direct-Use Heat Production:                    17.04 MW
-      Direct-Use heat breakeven price:                       14.38 USD/MMBTU
+      Direct-Use heat breakeven price:                       14.37 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          70.0 kg/sec
@@ -29,7 +29,7 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                           6.28 MUSD
+      Project NPV:                                           6.29 MUSD
       Project IRR:                                           0.08 %
       Project VIR=PI=PIR:                                    1.20
       Project MOIC:                                          1.01
@@ -84,8 +84,8 @@ Simulation Metadata
       Initial Production Temperature:                       104.5 degC
       Average Reservoir Heat Extraction:                     12.17 MW
       Wellbore Heat Transmission Model = Constant Temperature Drop:       5.0 degC
-      Average Injection Well Pump Pressure Drop:           1649.2 kPa
-      Average Production Well Pump Pressure Drop:           832.5 kPa
+      Average Injection Well Pump Pressure Drop:           1661.0 kPa
+      Average Production Well Pump Pressure Drop:           831.3 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -95,10 +95,10 @@ Simulation Metadata
          Stimulation costs:                                   3.02 MUSD
          Surface power plant costs:                           7.82 MUSD
             of which Heat Pump Cost:                          3.74 MUSD
-         Field gathering system costs:                        2.56 MUSD
+         Field gathering system costs:                        2.55 MUSD
          Total surface equipment costs:                      10.37 MUSD
          Exploration costs:                                   3.85 MUSD
-      Total capital costs:                                   31.15 MUSD
+      Total capital costs:                                   31.14 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
@@ -119,7 +119,7 @@ Simulation Metadata
       Initial Net Heat Production:                           17.73 MW
       Average Annual Heat Production:                       133.89 GWh
       Average Annual Heat Pump Electricity Use:              53.13 GWh/year
-      Average Pumping Power:                                  0.46 MW
+      Average Pumping Power:                                  0.45 MW
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
@@ -127,36 +127,36 @@ Simulation Metadata
   YEAR         THERMAL              GEOFLUID               PUMP               NET             HEAT PUMP
                DRAWDOWN            TEMPERATURE             POWER              HEAT         ELECTRICITY USE
                                     (deg C)                (MWe)              (MWt)             (MWe)
-   0            1.0000               104.50                0.4541            17.7344            7.0375
-   1            1.0000               104.50                0.4541            17.7344            7.0375
-   2            1.0000               104.50                0.4541            17.7344            7.0375
-   3            1.0000               104.50                0.4541            17.7344            7.0375
-   4            1.0000               104.50                0.4541            17.7342            7.0374
-   5            1.0000               104.50                0.4541            17.7331            7.0369
-   6            0.9999               104.49                0.4542            17.7289            7.0353
-   7            0.9998               104.48                0.4542            17.7190            7.0313
-   8            0.9996               104.46                0.4542            17.7009            7.0242
-   9            0.9993               104.43                0.4543            17.6728            7.0130
-  10            0.9988               104.38                0.4545            17.6338            6.9976
-  11            0.9983               104.32                0.4546            17.5837            6.9776
-  12            0.9975               104.24                0.4548            17.5227            6.9534
-  13            0.9967               104.16                0.4551            17.4515            6.9252
-  14            0.9958               104.06                0.4553            17.3710            6.8933
-  15            0.9948               103.95                0.4556            17.2823            6.8581
-  16            0.9936               103.84                0.4559            17.1863            6.8200
-  17            0.9925               103.71                0.4563            17.0840            6.7794
-  18            0.9912               103.58                0.4566            16.9764            6.7367
-  19            0.9899               103.45                0.4570            16.8644            6.6922
-  20            0.9886               103.30                0.4574            16.7486            6.6463
-  21            0.9872               103.16                0.4577            16.6299            6.5992
-  22            0.9858               103.01                0.4581            16.5088            6.5511
-  23            0.9844               102.87                0.4585            16.3859            6.5023
-  24            0.9829               102.71                0.4589            16.2616            6.4530
-  25            0.9815               102.56                0.4593            16.1365            6.4034
-  26            0.9800               102.41                0.4597            16.0108            6.3535
-  27            0.9785               102.26                0.4601            15.8849            6.3035
-  28            0.9771               102.11                0.4606            15.7591            6.2536
-  29            0.9756               101.95                0.4610            15.6336            6.2038
+   0            1.0000               104.50                0.4442            17.7344            7.0375
+   1            1.0000               104.50                0.4442            17.7344            7.0375
+   2            1.0000               104.50                0.4442            17.7344            7.0375
+   3            1.0000               104.50                0.4442            17.7344            7.0375
+   4            1.0000               104.50                0.4442            17.7342            7.0374
+   5            1.0000               104.50                0.4442            17.7331            7.0369
+   6            0.9999               104.49                0.4442            17.7289            7.0353
+   7            0.9998               104.48                0.4442            17.7190            7.0313
+   8            0.9996               104.46                0.4443            17.7009            7.0242
+   9            0.9993               104.43                0.4444            17.6728            7.0130
+  10            0.9988               104.38                0.4445            17.6338            6.9976
+  11            0.9983               104.32                0.4446            17.5837            6.9776
+  12            0.9975               104.24                0.4448            17.5227            6.9534
+  13            0.9967               104.16                0.4450            17.4515            6.9252
+  14            0.9958               104.06                0.4452            17.3710            6.8933
+  15            0.9948               103.95                0.4455            17.2823            6.8581
+  16            0.9936               103.84                0.4458            17.1863            6.8200
+  17            0.9925               103.71                0.4461            17.0840            6.7794
+  18            0.9912               103.58                0.4464            16.9764            6.7367
+  19            0.9899               103.45                0.4467            16.8644            6.6922
+  20            0.9886               103.30                0.4470            16.7486            6.6463
+  21            0.9872               103.16                0.4474            16.6299            6.5992
+  22            0.9858               103.01                0.4477            16.5088            6.5511
+  23            0.9844               102.87                0.4481            16.3859            6.5023
+  24            0.9829               102.71                0.4484            16.2616            6.4530
+  25            0.9815               102.56                0.4488            16.1365            6.4034
+  26            0.9800               102.41                0.4492            16.0108            6.3535
+  27            0.9785               102.26                0.4495            15.8849            6.3035
+  28            0.9771               102.11                0.4499            15.7591            6.2536
+  29            0.9756               101.95                0.4502            15.6336            6.2038
 
 
                               *******************************************************************

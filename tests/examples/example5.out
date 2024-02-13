@@ -6,15 +6,15 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-12
- Simulation Time:  10:56
- Calculation Time:      0.019 sec
+ Simulation Date: 2024-02-13
+ Simulation Time:  07:40
+ Calculation Time:      0.043 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Average Direct-Use Heat Production:                    20.01 MW
-      Direct-Use heat breakeven price:                        8.77 USD/MMBTU
+      Direct-Use heat breakeven price:                        8.74 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          50.0 kg/sec
@@ -28,7 +28,7 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                          -0.83 MUSD
+      Project NPV:                                          -0.81 MUSD
       Project IRR:                                           0.06 %
       Project VIR=PI=PIR:                                    0.98
       Project MOIC:                                          0.50
@@ -80,11 +80,11 @@ Simulation Metadata
       Average Reservoir Heat Extraction:                     22.24 MW
       Production Wellbore Heat Transmission Model = Ramey Model
       Average Production Well Temperature Drop:               2.7 degC
-      Total Average Pressure Drop:                         4303.6 kPa
-      Average Injection Well Pressure Drop:                 124.7 kPa
-      Average Reservoir Pressure Drop:                     5264.3 kPa
-      Average Production Well Pressure Drop:                123.0 kPa
-      Average Buoyancy Pressure Drop:                     -1208.3 kPa
+      Total Average Pressure Drop:                         4246.2 kPa
+      Average Injection Well Pressure Drop:                 120.7 kPa
+      Average Reservoir Pressure Drop:                     5079.3 kPa
+      Average Production Well Pressure Drop:                118.3 kPa
+      Average Buoyancy Pressure Drop:                     -1072.1 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -93,10 +93,10 @@ Simulation Metadata
          Drilling and completion costs per well:              5.49 MUSD
          Stimulation costs:                                   3.02 MUSD
          Surface power plant costs:                           8.99 MUSD
-         Field gathering system costs:                        2.46 MUSD
-         Total surface equipment costs:                      11.46 MUSD
+         Field gathering system costs:                        2.45 MUSD
+         Total surface equipment costs:                      11.44 MUSD
          Exploration costs:                                   5.33 MUSD
-      Total capital costs:                                   41.74 MUSD
+      Total capital costs:                                   41.73 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
@@ -104,8 +104,8 @@ Simulation Metadata
          Wellfield maintenance costs:                         0.44 MUSD/yr
          Power plant maintenance costs:                       0.72 MUSD/yr
          Water costs:                                         0.05 MUSD/yr
-         Average Reservoir Pumping Cost:                      0.31 MUSD/yr
-      Total operating and maintenance costs:                  1.52 MUSD/yr
+         Average Reservoir Pumping Cost:                      0.30 MUSD/yr
+      Total operating and maintenance costs:                  1.51 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -115,7 +115,7 @@ Simulation Metadata
       Minimum Net Heat Production:                           14.89 MW
       Initial Net Heat Production:                           24.70 MW
       Average Annual Heat Production:                       156.49 GWh
-      Average Pumping Power:                                  0.56 MW
+      Average Pumping Power:                                  0.54 MW
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
@@ -123,36 +123,36 @@ Simulation Metadata
   YEAR       THERMAL               GEOFLUID               PUMP               NET
              DRAWDOWN             TEMPERATURE             POWER              HEAT
                                    (deg C)                (MW)               (MW)
-   0           1.0000                144.86               0.5165           24.6952
-   1           1.0058                145.71               0.5158           25.0176
-   2           1.0079                146.00               0.5156           25.1288
-   3           1.0070                145.88               0.5165           25.0838
-   4           1.0031                145.31               0.5190           24.8649
-   5           0.9966                144.36               0.5227           24.5054
-   6           0.9884                143.18               0.5273           24.0541
-   7           0.9793                141.86               0.5322           23.5512
-   8           0.9697                140.47               0.5373           23.0246
-   9           0.9601                139.08               0.5425           22.4926
-  10           0.9505                137.69               0.5475           21.9664
-  11           0.9412                136.35               0.5523           21.4528
-  12           0.9322                135.04               0.5570           20.9557
-  13           0.9235                133.78               0.5615           20.4773
-  14           0.9152                132.58               0.5657           20.0181
-  15           0.9072                131.42               0.5697           19.5784
-  16           0.8996                130.32               0.5736           19.1579
-  17           0.8923                129.26               0.5772           18.7559
-  18           0.8853                128.25               0.5807           18.3715
-  19           0.8787                127.29               0.5839           18.0040
-  20           0.8723                126.36               0.5871           17.6524
-  21           0.8662                125.48               0.5900           17.3159
-  22           0.8604                124.63               0.5929           16.9936
-  23           0.8548                123.82               0.5956           16.6847
-  24           0.8494                123.04               0.5982           16.3884
-  25           0.8442                122.30               0.6006           16.1039
-  26           0.8393                121.58               0.6030           15.8306
-  27           0.8345                120.89               0.6053           15.5677
-  28           0.8299                120.22               0.6074           15.3148
-  29           0.8255                119.58               0.6095           15.0713
+   0           1.0000                144.86               0.4993           24.6952
+   1           1.0058                145.71               0.4987           25.0176
+   2           1.0079                146.00               0.4985           25.1288
+   3           1.0070                145.88               0.4993           25.0838
+   4           1.0031                145.31               0.5013           24.8649
+   5           0.9966                144.36               0.5043           24.5054
+   6           0.9884                143.18               0.5081           24.0541
+   7           0.9793                141.86               0.5121           23.5512
+   8           0.9697                140.47               0.5164           23.0246
+   9           0.9601                139.08               0.5206           22.4926
+  10           0.9505                137.69               0.5247           21.9664
+  11           0.9412                136.35               0.5287           21.4528
+  12           0.9322                135.04               0.5326           20.9557
+  13           0.9235                133.78               0.5363           20.4773
+  14           0.9152                132.58               0.5398           20.0181
+  15           0.9072                131.42               0.5432           19.5784
+  16           0.8996                130.32               0.5464           19.1579
+  17           0.8923                129.26               0.5494           18.7559
+  18           0.8853                128.25               0.5523           18.3715
+  19           0.8787                127.29               0.5550           18.0040
+  20           0.8723                126.36               0.5577           17.6524
+  21           0.8662                125.48               0.5602           17.3159
+  22           0.8604                124.63               0.5625           16.9936
+  23           0.8548                123.82               0.5648           16.6847
+  24           0.8494                123.04               0.5670           16.3884
+  25           0.8442                122.30               0.5691           16.1039
+  26           0.8393                121.58               0.5711           15.8306
+  27           0.8345                120.89               0.5730           15.5677
+  28           0.8299                120.22               0.5748           15.3148
+  29           0.8255                119.58               0.5766           15.0713
 
 
                               *******************************************************************

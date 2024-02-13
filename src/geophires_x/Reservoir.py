@@ -3,7 +3,6 @@ import os
 import math
 from functools import lru_cache
 import numpy as np
-import scipy
 from pint.facets.plain import PlainQuantity
 
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
@@ -11,7 +10,7 @@ from .Parameter import intParameter, floatParameter, listParameter, OutputParame
 from .Units import *
 import geophires_x.Model as Model
 
-from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, lithostatic_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
 class Reservoir:
@@ -782,7 +781,7 @@ class Reservoir:
             )
             self.rhowater.value = density_water_kg_per_m3(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-                # pressure=self.lithostatic_pressure() # TODO WIP
+                pressure=self.lithostatic_pressure()
             )
 
             # temperature gain in injection wells
@@ -796,25 +795,6 @@ class Reservoir:
 
     def lithostatic_pressure(self) -> PlainQuantity:
         return quantity(lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                        self.depth.quantity().to('m').magnitude), 'MPa')
+                                                 self.depth.quantity().to('m').magnitude), 'MPa')
 
 
-def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
-    """
-    Calculate lithostatic pressure in a reservoir.
-
-    Args:
-        rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
-        depth_m (float): Depth of the reservoir in meters.
-    Returns:
-        float: Lithostatic pressure in megapascals (MPa).
-    """
-
-    g = scipy.constants.g  # Acceleration due to gravity (m/s^2)
-
-    # Calculate lithostatic pressure
-    pressure_Pa = rho_kg_per_m3 * g * depth_m
-
-    pressure_mpa = quantity(pressure_Pa, 'Pa').to('MPa').magnitude
-
-    return pressure_mpa

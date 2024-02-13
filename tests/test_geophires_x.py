@@ -193,13 +193,17 @@ class GeophiresXTestCase(BaseTestCase):
                             msg=f'Example test: {example_file_path}',
                         )
                     else:
-                        msg = 'Dicts are not approximately equal within any percentage <100'
+                        msg = 'Results are not approximately equal within any percentage <100'
                         percent_diff = self._get_unequal_dicts_approximate_percent_difference(
                             expected_result.result, geophires_result.result
                         )
 
                         if percent_diff is not None:
-                            msg = f'Dicts are approximately equal within {percent_diff}%'
+                            msg = (
+                                f'Results are approximately equal within {percent_diff}%. '
+                                f'(Run `regenerate-example-result.sh {example_file_path.split(".")[0]}` '
+                                f'from tests/ if this difference is expected due to calculation updates)'
+                            )
 
                         raise AssertionError(msg) from ae
 

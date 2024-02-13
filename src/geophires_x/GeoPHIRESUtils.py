@@ -8,9 +8,10 @@ import dataclasses
 import json
 import numbers
 from functools import lru_cache
-from typing import Any
+from typing import Optional
 
 import pint
+import scipy
 from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
 import numpy as np
@@ -103,13 +104,15 @@ def quantity(value: float, unit: str) -> PlainQuantity:
 @lru_cache(maxsize=None)
 def density_water_kg_per_m3(
     Twater_degC: float,
-    pressure=None,
+    pressure: Optional[PlainQuantity] = None,
     enable_fallback_calculation=False) -> float:
     """
     Calculate the density of water as a function of temperature.
 
     Args:
         Twater_degC: The temperature of water in degrees C.
+        pressure: Pressure - should be provided
+        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
     Returns:
         The density of water in kg/m³.
     Raises:
@@ -463,3 +466,24 @@ class _EnhancedJSONEncoder(json.JSONEncoder):
 
 def json_dumpse(obj) -> str:
     return json.dumps(obj, cls=_EnhancedJSONEncoder)
+
+
+def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
+    """
+    Calculate lithostatic pressure in a reservoir.
+
+    Args:
+        rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
+        depth_m (float): Depth of the reservoir in meters.
+    Returns:
+        float: Lithostatic pressure in megapascals (MPa).
+    """
+
+    g = scipy.constants.g  # Acceleration due to gravity (m/s^2)
+
+    # Calculate lithostatic pressure
+    pressure_Pa = rho_kg_per_m3 * g * depth_m
+
+    pressure_mpa = quantity(pressure_Pa, 'Pa').to('MPa').magnitude
+
+    return pressure_mpa

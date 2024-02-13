@@ -6,15 +6,15 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-12
- Simulation Time:  10:56
- Calculation Time:      0.562 sec
+ Simulation Date: 2024-02-13
+ Simulation Time:  07:52
+ Calculation Time:      0.585 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
-      Average Net Electricity Production:                     5.41 MW
-      Electricity breakeven price:                            9.59 cents/kWh
+      Average Net Electricity Production:                     5.38 MW
+      Electricity breakeven price:                            9.64 cents/kWh
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          55.0 kg/sec
@@ -29,9 +29,9 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -40.81 MUSD
+      Project NPV:                                         -41.00 MUSD
       Project IRR:                                          -0.04 %
-      Project VIR=PI=PIR:                                    0.24
+      Project VIR=PI=PIR:                                    0.23
       Project MOIC:                                         -0.27
 
                           ***ENGINEERING PARAMETERS***
@@ -85,8 +85,8 @@ Simulation Metadata
       Average Reservoir Heat Extraction:                     54.35 MW
       Production Wellbore Heat Transmission Model = Ramey Model
       Average Production Well Temperature Drop:               2.9 degC
-      Average Injection Well Pump Pressure Drop:            217.9 kPa
-      Average Production Well Pump Pressure Drop:          1004.5 kPa
+      Average Injection Well Pump Pressure Drop:            218.3 kPa
+      Average Production Well Pump Pressure Drop:          1246.6 kPa
 
 
                           ***CAPITAL COSTS (M$)***
@@ -95,10 +95,10 @@ Simulation Metadata
          Drilling and completion costs per well:              5.49 MUSD
          Stimulation costs:                                   3.02 MUSD
          Surface power plant costs:                          20.81 MUSD
-         Field gathering system costs:                        2.29 MUSD
-         Total surface equipment costs:                      23.10 MUSD
+         Field gathering system costs:                        2.32 MUSD
+         Total surface equipment costs:                      23.13 MUSD
          Exploration costs:                                   5.33 MUSD
-      Total capital costs:                                   53.39 MUSD
+      Total capital costs:                                   53.42 MUSD
       Annualized capital costs:                               2.67 MUSD
 
 
@@ -117,14 +117,14 @@ Simulation Metadata
       Average Total Electricity Generation:                   5.59 MW
       Minimum Total Electricity Generation:                   5.43 MW
       Initial Total Electricity Generation:                   5.43 MW
-      Maximum Net Electricity Generation:                     5.44 MW
-      Average Net Electricity Generation:                     5.41 MW
-      Minimum Net Electricity Generation:                     5.24 MW
-      Initial Net Electricity Generation:                     5.24 MW
+      Maximum Net Electricity Generation:                     5.41 MW
+      Average Net Electricity Generation:                     5.38 MW
+      Minimum Net Electricity Generation:                     5.22 MW
+      Initial Net Electricity Generation:                     5.22 MW
       Average Annual Total Electricity Generation:           43.86 GWh
-      Average Annual Net Electricity Generation:             42.41 GWh
+      Average Annual Net Electricity Generation:             42.20 GWh
       Initial pumping power/net installed power:            100.00 %
-      Average Pumping Power:                                  0.18 MW
+      Average Pumping Power:                                  0.21 MW
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *
@@ -132,36 +132,36 @@ Simulation Metadata
   YEAR       THERMAL               GEOFLUID               PUMP               NET               FIRST LAW
              DRAWDOWN             TEMPERATURE             POWER             POWER              EFFICIENCY
                                      (degC)               (MW)              (MW)                  (%)
-   1           1.0000                165.41               0.1865            5.2425                9.7847
-   2           1.0056                166.33               0.1855            5.3341                9.8771
-   3           1.0071                166.59               0.1852            5.3605                9.9036
-   4           1.0080                166.73               0.1851            5.3743                9.9174
-   5           1.0085                166.82               0.1850            5.3835                9.9265
-   6           1.0089                166.89               0.1849            5.3902                9.9332
-   7           1.0093                166.94               0.1848            5.3955                9.9385
-   8           1.0095                166.98               0.1848            5.3999                9.9428
-   9           1.0097                167.02               0.1848            5.4036                9.9465
-  10           1.0099                167.05               0.1847            5.4067                9.9497
-  11           1.0101                167.08               0.1847            5.4095                9.9524
-  12           1.0102                167.10               0.1847            5.4120                9.9549
-  13           1.0104                167.12               0.1846            5.4142                9.9571
-  14           1.0105                167.14               0.1846            5.4162                9.9591
-  15           1.0106                167.16               0.1846            5.4180                9.9609
-  16           1.0107                167.18               0.1846            5.4197                9.9626
-  17           1.0108                167.20               0.1846            5.4213                9.9641
-  18           1.0109                167.21               0.1846            5.4227                9.9656
-  19           1.0110                167.22               0.1845            5.4241                9.9669
-  20           1.0110                167.24               0.1845            5.4254                9.9682
-  21           1.0111                167.25               0.1845            5.4266                9.9694
-  22           1.0112                167.26               0.1845            5.4277                9.9705
-  23           1.0113                167.27               0.1845            5.4288                9.9716
-  24           1.0113                167.28               0.1845            5.4298                9.9726
-  25           1.0114                167.29               0.1845            5.4307                9.9735
-  26           1.0114                167.30               0.1845            5.4316                9.9744
-  27           1.0115                167.31               0.1845            5.4325                9.9753
-  28           1.0115                167.31               0.1844            5.4333                9.9761
-  29           1.0116                167.32               0.1844            5.4341                9.9768
-  30           1.0116                167.33               0.1844            5.4348                9.9776
+   1           1.0000                165.41               0.2137            5.2153                9.7340
+   2           1.0056                166.33               0.2129            5.3067                9.8263
+   3           1.0071                166.59               0.2127            5.3331                9.8528
+   4           1.0080                166.73               0.2126            5.3468                9.8666
+   5           1.0085                166.82               0.2125            5.3559                9.8757
+   6           1.0089                166.89               0.2124            5.3627                9.8825
+   7           1.0093                166.94               0.2124            5.3680                9.8878
+   8           1.0095                166.98               0.2124            5.3723                9.8921
+   9           1.0097                167.02               0.2123            5.3760                9.8958
+  10           1.0099                167.05               0.2123            5.3791                9.8989
+  11           1.0101                167.08               0.2123            5.3819                9.9017
+  12           1.0102                167.10               0.2123            5.3844                9.9041
+  13           1.0104                167.12               0.2122            5.3866                9.9063
+  14           1.0105                167.14               0.2122            5.3886                9.9083
+  15           1.0106                167.16               0.2122            5.3904                9.9102
+  16           1.0107                167.18               0.2122            5.3921                9.9119
+  17           1.0108                167.20               0.2122            5.3937                9.9134
+  18           1.0109                167.21               0.2122            5.3951                9.9148
+  19           1.0110                167.22               0.2122            5.3965                9.9162
+  20           1.0110                167.24               0.2121            5.3978                9.9175
+  21           1.0111                167.25               0.2121            5.3989                9.9186
+  22           1.0112                167.26               0.2121            5.4001                9.9198
+  23           1.0113                167.27               0.2121            5.4011                9.9208
+  24           1.0113                167.28               0.2121            5.4021                9.9218
+  25           1.0114                167.29               0.2121            5.4031                9.9228
+  26           1.0114                167.30               0.2121            5.4040                9.9237
+  27           1.0115                167.31               0.2121            5.4048                9.9245
+  28           1.0115                167.31               0.2121            5.4057                9.9253
+  29           1.0116                167.32               0.2121            5.4064                9.9261
+  30           1.0116                167.33               0.2121            5.4072                9.9268
 
 
                               *******************************************************************
@@ -170,33 +170,33 @@ Simulation Metadata
   YEAR             ELECTRICITY                   HEAT                RESERVOIR            PERCENTAGE OF
                     PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED
                    (GWh/year)                  (GWh/year)            (10^15 J)                 (%)
-   1                  41.7                       424.3                322.47                   0.47
-   2                  42.2                       426.3                320.94                   0.95
-   3                  42.3                       427.0                319.40                   1.42
-   4                  42.4                       427.4                317.86                   1.89
-   5                  42.5                       427.7                316.32                   2.37
-   6                  42.5                       427.9                314.78                   2.85
-   7                  42.6                       428.1                313.24                   3.32
-   8                  42.6                       428.2                311.70                   3.80
-   9                  42.6                       428.4                310.16                   4.27
-  10                  42.6                       428.5                308.61                   4.75
-  11                  42.7                       428.6                307.07                   5.22
-  12                  42.7                       428.7                305.53                   5.70
-  13                  42.7                       428.7                303.98                   6.18
-  14                  42.7                       428.8                302.44                   6.65
-  15                  42.7                       428.9                300.90                   7.13
-  16                  42.7                       428.9                299.35                   7.61
-  17                  42.7                       429.0                297.81                   8.08
-  18                  42.8                       429.0                296.26                   8.56
-  19                  42.8                       429.1                294.72                   9.04
-  20                  42.8                       429.1                293.17                   9.51
-  21                  42.8                       429.2                291.63                   9.99
-  22                  42.8                       429.2                290.08                  10.47
-  23                  42.8                       429.2                288.54                  10.94
-  24                  42.8                       429.3                286.99                  11.42
-  25                  42.8                       429.3                285.45                  11.90
-  26                  42.8                       429.3                283.90                  12.38
-  27                  42.8                       429.4                282.36                  12.85
-  28                  42.8                       429.4                280.81                  13.33
-  29                  42.8                       429.4                279.27                  13.81
-  30                  35.7                       357.9                277.98                  14.20
+   1                  41.5                       424.3                322.47                   0.47
+   2                  42.0                       426.3                320.94                   0.95
+   3                  42.1                       427.0                319.40                   1.42
+   4                  42.2                       427.4                317.86                   1.89
+   5                  42.3                       427.7                316.32                   2.37
+   6                  42.3                       427.9                314.78                   2.85
+   7                  42.3                       428.1                313.24                   3.32
+   8                  42.4                       428.2                311.70                   3.80
+   9                  42.4                       428.4                310.16                   4.27
+  10                  42.4                       428.5                308.61                   4.75
+  11                  42.4                       428.6                307.07                   5.22
+  12                  42.5                       428.7                305.53                   5.70
+  13                  42.5                       428.7                303.98                   6.18
+  14                  42.5                       428.8                302.44                   6.65
+  15                  42.5                       428.9                300.90                   7.13
+  16                  42.5                       428.9                299.35                   7.61
+  17                  42.5                       429.0                297.81                   8.08
+  18                  42.5                       429.0                296.26                   8.56
+  19                  42.6                       429.1                294.72                   9.04
+  20                  42.6                       429.1                293.17                   9.51
+  21                  42.6                       429.2                291.63                   9.99
+  22                  42.6                       429.2                290.08                  10.47
+  23                  42.6                       429.2                288.54                  10.94
+  24                  42.6                       429.3                286.99                  11.42
+  25                  42.6                       429.3                285.45                  11.90
+  26                  42.6                       429.3                283.90                  12.38
+  27                  42.6                       429.4                282.36                  12.85
+  28                  42.6                       429.4                280.81                  13.33
+  29                  42.6                       429.4                279.27                  13.81
+  30                  35.5                       357.9                277.98                  14.20

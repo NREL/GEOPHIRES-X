@@ -5,9 +5,9 @@ from pathlib import Path
 from pint.facets.plain import PlainQuantity
 
 from base_test_case import BaseTestCase
+from geophires_x.GeoPHIRESUtils import lithostatic_pressure_MPa
 from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
-from geophires_x.Reservoir import lithostatic_pressure_MPa
 
 
 class ReservoirTestCase(BaseTestCase):

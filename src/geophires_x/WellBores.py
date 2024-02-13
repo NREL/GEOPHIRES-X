@@ -83,9 +83,16 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    rhowater = np.array([density_water_kg_per_m3(t, enable_fallback_calculation=True) for t in
-                         Taverage])  # replace with correlation based on Tprodaverage
+    rhowater = np.array([
+        density_water_kg_per_m3(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+            enable_fallback_calculation=True,
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
 
     # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
     muwater = np.array([viscosity_water_Pa_sec(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
@@ -141,7 +148,9 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = density_water_kg_per_m3(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
+                * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
+
     # replace with correlation based on Tinjaverage
     muwater = viscosity_water_Pa_sec(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
@@ -321,7 +330,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
         Phydrostaticcalc = 0 + 1. / CP * (
-            math.exp(density_water_kg_per_m3(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -441,7 +450,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
         Phydrostaticcalc = 0 + 1. / CP * (
-            math.exp(density_water_kg_per_m3(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump

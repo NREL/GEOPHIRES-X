@@ -474,10 +474,10 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum:
                 Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead}) under minimum pressure ({Pminimum}). '
+                       f'GEOPHIRES will assume minimum wellhead pressure')
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
     IIkPa = II / 100.0  # convert II from kg/s/bar to kg/s/kPa
 

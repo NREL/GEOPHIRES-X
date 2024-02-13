@@ -9,6 +9,7 @@ from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import enthalpy_water_kJ_per_kg
 from geophires_x.GeoPHIRESUtils import entropy_water_kJ_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 
@@ -206,7 +207,26 @@ class TestViscosityWater(unittest.TestCase):
         ]
 
         for temp, expected_viscosity in temp_expected_viscosities:
-            self.assertAlmostEqual(viscosity_water_Pa_sec(temp), expected_viscosity, places=6)
+            with self.subTest(msg=f'temp={temp}C'):
+                result = viscosity_water_Pa_sec(temp)
+                self.assertAlmostEqual(expected_viscosity, result, places=6)
+
+    def test_valid_input_temperature_with_pressure(self):
+        default_pressure = quantity(100, 'MPa')
+        temp_expected_viscosities = [
+            (0, 0.0016605697996519605),
+            (20, 0.0009931446334997267),
+            (50, 0.0005700650220542674),
+            (100, 0.00030771769221054013),
+            (200, 0.00015651052722636592),
+            (300, 0.00010960513118375302),
+            (370, 9.119570911769341e-05),
+        ]
+
+        for temp, expected_viscosity in temp_expected_viscosities:
+            with self.subTest(msg=f'temp={temp}C'):
+                result = viscosity_water_Pa_sec(temp, pressure=default_pressure)
+                self.assertAlmostEqual(expected_viscosity, result, places=6)
 
     def test_negative_input_temperature(self):
         """The function raises a ValueError if the input temperature is less than 0 degrees Celsius."""
@@ -230,6 +250,8 @@ class TestViscosityWater(unittest.TestCase):
 
 
 class TestDensityWater(unittest.TestCase):
+    """TODO add tests with pressure"""
+
     def test_correct_density(self):
         """Returns the correct density of water for a given temperature."""
         input_expected_val_pairs = [
@@ -278,6 +300,8 @@ class TestDensityWater(unittest.TestCase):
 
 
 class TestHeatCapacityWater(unittest.TestCase):
+    """TODO add tests with pressure"""
+
     def test_valid_input_within_range(self):
         result = heat_capacity_water_J_per_kg_per_K(100)
         self.assertAlmostEqual(4215.673616815784, result, places=3)

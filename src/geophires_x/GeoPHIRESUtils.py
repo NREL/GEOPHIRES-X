@@ -159,7 +159,10 @@ def celsius_to_kelvin(celsius: float) -> float:
 
 
 @lru_cache
-def viscosity_water_Pa_sec(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def viscosity_water_Pa_sec(
+        Twater_degC: float,
+        pressure: Optional[PlainQuantity] = None,
+        enable_fallback_calculation=False) -> float:
     """
     The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
     Args:
@@ -171,7 +174,12 @@ def viscosity_water_Pa_sec(Twater_degC: float, enable_fallback_calculation=False
     """
 
     try:
-        return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+        if pressure is not None:
+            return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water')
+        else:
+            _logger.warning(f'viscosity_water: No pressure provided, using vapor quality=0 instead')
+            return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
+
     except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
             _logger.warning(f'viscosity_water: Fallback calculation triggered for {Twater_degC}C')

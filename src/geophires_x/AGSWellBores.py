@@ -882,7 +882,10 @@ class AGSWellBores(WellBores):
                 pressure=model.reserv.lithostatic_pressure()
             )
 
-            muwater = viscosity_water_Pa_sec(self.NonverticalProducedTemperature.value[year])
+            muwater = viscosity_water_Pa_sec(
+                self.NonverticalProducedTemperature.value[year],
+                pressure=model.reserv.lithostatic_pressure()
+            )
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
             # assume turbulent flow.

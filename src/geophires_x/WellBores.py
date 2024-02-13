@@ -94,8 +94,16 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    muwater = np.array([viscosity_water_Pa_sec(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
+    muwater = np.array([
+        viscosity_water_Pa_sec(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+            enable_fallback_calculation=True
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
 
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -152,7 +160,7 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
                 * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
 
     # replace with correlation based on Tinjaverage
-    muwater = viscosity_water_Pa_sec(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?

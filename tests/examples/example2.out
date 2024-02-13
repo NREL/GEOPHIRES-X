@@ -7,8 +7,8 @@ Simulation Metadata
  GEOPHIRES Version: 3.4.0
  GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2024-02-13
- Simulation Time:  08:59
- Calculation Time:      0.200 sec
+ Simulation Time:  09:44
+ Calculation Time:      0.215 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -84,10 +84,10 @@ Simulation Metadata
       Average Reservoir Heat Extraction:                     23.36 MW
       Production Wellbore Heat Transmission Model = Ramey Model
       Average Production Well Temperature Drop:               6.7 degC
-      Total Average Pressure Drop:                        10382.6 kPa
-      Average Injection Well Pressure Drop:                 110.2 kPa
+      Total Average Pressure Drop:                        10383.3 kPa
+      Average Injection Well Pressure Drop:                 110.6 kPa
       Average Reservoir Pressure Drop:                    12215.4 kPa
-      Average Production Well Pressure Drop:                114.4 kPa
+      Average Production Well Pressure Drop:                114.7 kPa
       Average Buoyancy Pressure Drop:                     -2057.4 kPa
 
 
@@ -127,31 +127,31 @@ Simulation Metadata
   YEAR       THERMAL               GEOFLUID               PUMP               NET
              DRAWDOWN             TEMPERATURE             POWER              HEAT
                                    (deg C)                (MW)               (MW)
-   0           1.0000                169.64               0.7566           21.8934
-   1           1.0075                170.91               0.7560           22.1720
-   2           1.0113                171.56               0.7557           22.3152
+   0           1.0000                169.64               0.7567           21.8934
+   1           1.0075                170.91               0.7561           22.1720
+   2           1.0113                171.56               0.7558           22.3152
    3           1.0133                171.90               0.7556           22.3898
    4           1.0146                172.13               0.7555           22.4392
-   5           1.0156                172.29               0.7554           22.4757
-   6           1.0164                172.42               0.7553           22.5043
-   7           1.0170                172.53               0.7553           22.5278
+   5           1.0156                172.29               0.7555           22.4757
+   6           1.0164                172.42               0.7554           22.5043
+   7           1.0170                172.53               0.7554           22.5278
    8           1.0176                172.62               0.7553           22.5477
    9           0.9956                168.90               0.7627           21.7304
-  10           0.9916                168.22               0.7641           21.5798
+  10           0.9916                168.22               0.7642           21.5798
   11           0.9873                167.49               0.7656           21.4207
-  12           0.9828                166.73               0.7671           21.2536
-  13           0.9782                165.94               0.7687           21.0793
+  12           0.9828                166.73               0.7672           21.2536
+  13           0.9782                165.94               0.7688           21.0793
   14           0.9733                165.11               0.7704           20.8980
   15           0.9683                164.26               0.7721           20.7103
-  16           0.9631                163.38               0.7738           20.5167
+  16           0.9631                163.38               0.7739           20.5167
   17           0.9577                162.47               0.7756           20.3174
   18           0.9522                161.54               0.7774           20.1129
-  19           0.9466                160.59               0.7792           19.9035
-  20           0.9409                159.61               0.7811           19.6896
-  21           0.9350                158.62               0.7830           19.4715
-  22           0.9291                157.61               0.7849           19.2495
+  19           0.9466                160.59               0.7793           19.9035
+  20           0.9409                159.61               0.7812           19.6896
+  21           0.9350                158.62               0.7831           19.4715
+  22           0.9291                157.61               0.7850           19.2495
   23           0.9230                156.58               0.7869           19.0239
-  24           0.9169                155.54               0.7888           18.7951
+  24           0.9169                155.54               0.7889           18.7951
 
 
                               *******************************************************************

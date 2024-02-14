@@ -246,16 +246,13 @@ def RecoverableHeat(Twater_degC: float) -> float:
 @lru_cache
 def vapor_pressure_water_kPa(
     Twater_degC: float,
-    pressure: Optional[PlainQuantity] = None,
-    enable_fallback_calculation=False) -> float:
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the vapor pressure of water as a function of temperature.
 
-    TODO accept pressure as parameter https://github.com/NREL/GEOPHIRES-X/issues/118
-
     Args:
         Twater_degC: the temperature of water in degrees C
-        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
+        pressure: Pressure - should be provided
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
@@ -280,30 +277,7 @@ def vapor_pressure_water_kPa(
 
 
     except (NotImplementedError, ValueError) as e:
-        if enable_fallback_calculation:
-            _logger.warning(f'vapor_pressure_water: Fallback calculation triggered for {Twater_degC}C')
-            return _vapor_pressure_antoine_equation_kPa(Twater_degC)
-
-
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
-
-def _vapor_pressure_antoine_equation_kPa(Twater_degC: float) -> float:
-    """
-    water vapor pressure in kPa using Antione Equation
-    Do not add additional consumers, use geophires_x.GeoPHIRESUtils.vapor_pressure_water_kPa instead.
-    """
-
-    if Twater_degC < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
-    vp = 133.322 * (
-        10 ** (A - B / (C + Twater_degC))) / 1000
-    return vp
 
 
 @lru_cache

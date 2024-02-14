@@ -87,9 +87,6 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
         density_water_kg_per_m3(
             t,
             pressure=model.reserv.lithostatic_pressure(),
-
-            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-            enable_fallback_calculation=True,
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -98,9 +95,6 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
         viscosity_water_Pa_sec(
             t,
             pressure=model.reserv.lithostatic_pressure(),
-
-            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-            enable_fallback_calculation=True
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage

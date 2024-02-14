@@ -60,6 +60,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
 
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
         self.assertEqual(3.0, reservoir.InputDepth.value)
+        self.assertEqual(3000.0, reservoir.depth.quantity().to('m').magnitude)
 
     def test_read_inputs_depth_in_meters(self):
         model = self._new_model_with_cylindrical_reservoir(

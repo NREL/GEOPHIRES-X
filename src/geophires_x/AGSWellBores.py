@@ -1102,7 +1102,10 @@ class AGSWellBores(WellBores):
             self.ProducedTemperature.value = self.InterpolatedTemperatureArray.copy()
 
             tot_length, vert_length, horizontal_lengths = self.calculatedrillinglengths(model)
-            model.reserv.depth.value = model.reserv.InputDepth.value * 1000.0  # in this case, reserv.depth is just the vertical drill depth
+
+            # in this case, reserv.depth is just the vertical drill depth
+            # FIXME earlier calculations use depth before this value is set, meaning they're using the wrong value
+            model.reserv.depth.value = model.reserv.InputDepth.quantity().to(model.reserv.depth.CurrentUnits).magnitude
 
             # getTandP results must be rejiggered to match wellbores expected output. Once done,
             # the surfaceplant and economics models should just work
@@ -1116,19 +1119,12 @@ class AGSWellBores(WellBores):
             rho_water = density_water_kg_per_m3(
                 self.Tout[0],
                 pressure = model.reserv.lithostatic_pressure(),
-
-                # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-                enable_fallback_calculation=True
             )
 
 
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.Tout[0],
-
                 pressure=model.reserv.lithostatic_pressure(),
-
-                # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-                enable_fallback_calculation=True
             )  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always

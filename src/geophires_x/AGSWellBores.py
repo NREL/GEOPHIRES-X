@@ -1044,19 +1044,19 @@ class AGSWellBores(WellBores):
                 else:  # PI is used for both the verticals
                     UpgoingPumpingPower, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
                         ProdPressureDropAndPumpingPowerUsingIndexes(
-                            model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
+                            model, self.productionwellpumping.value,
                             self.usebuiltinppwellheadcorrelation,
-                            model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
-                            model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
+                            model.reserv.Trock.value, model.reserv.depth.value,
+                            self.ppwellhead.value, self.PI.value,
                             self.prodwellflowrate.value, f3, vprod,
                             self.prodwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,
                             self.rhowaterprod)
 
                     DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
-                        model, self.usebuiltinhydrostaticpressurecorrelation, self.productionwellpumping.value,
+                        model, self.productionwellpumping.value,
                         self.usebuiltinppwellheadcorrelation,
-                        model.reserv.Trock.value, model.reserv.Tsurf.value, model.reserv.depth.value,
-                        model.reserv.averagegradient.value, self.ppwellhead.value, self.PI.value,
+                        model.reserv.Trock.value, model.reserv.depth.value,
+                        self.ppwellhead.value, self.PI.value,
                         self.prodwellflowrate.value, f3, vprod,
                         self.injwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,
                         self.rhowaterinj)

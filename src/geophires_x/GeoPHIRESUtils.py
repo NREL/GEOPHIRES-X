@@ -327,7 +327,8 @@ def _vapor_pressure_antoine_equation_kPa(Twater_degC: float) -> float:
 @lru_cache
 def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
     """
-    the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
+    Calculate the entropy of water as a function of temperature
+    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C
@@ -350,7 +351,8 @@ def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
 @lru_cache
 def enthalpy_water_kJ_per_kg(temperature_degC: float) -> float:
     """
-    the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
+    Calculate the enthalpy of water as a function of temperature
+    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C (float)

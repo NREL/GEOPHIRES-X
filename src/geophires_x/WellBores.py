@@ -335,19 +335,18 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
             math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
-        # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
-        Pexcess = 344.7
+        # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
+        Pexcess_kPa = 344.7  # = 50 psi
 
-        # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vapor_pressure_water_kPa(Trock, enable_fallback_calculation=True) + Pexcess
+        # Minimum production pump inlet pressure and minimum wellhead pressure
+        Pminimum_kPa = vapor_pressure_water_kPa(Trock) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
-            Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
+            Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
             Pprodwellhead = ppwellhead
-            if Pprodwellhead < Pminimum:
-                Pprodwellhead = Pminimum
+            if Pprodwellhead < Pminimum_kPa:
+                Pprodwellhead = Pminimum_kPa
                 msg = ('Provided production wellhead pressure under minimum pressure. '
                        'GEOPHIRES will assume minimum wellhead pressure')
 
@@ -357,7 +356,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth = depth + (Pminimum - Phydrostaticcalc + wellflowrate / PIkPa) / (
+        pumpdepth = depth + (Pminimum_kPa - Phydrostaticcalc + wellflowrate / PIkPa) / (
             f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
         pumpdepthfinal = np.max(pumpdepth)
         if pumpdepthfinal < 0.0:
@@ -455,20 +454,19 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
             math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
-        # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
-        Pexcess = 344.7
+        # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
+        Pexcess_kPa = 344.7 # = 50 psi
 
-        # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vapor_pressure_water_kPa(Trock, enable_fallback_calculation=True) + Pexcess
+        # Minimum production pump inlet pressure and minimum wellhead pressure
+        Pminimum_kPa = vapor_pressure_water_kPa(Trock) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
-            Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
+            Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
             Pprodwellhead = ppwellhead
-            if Pprodwellhead < Pminimum:
-                Pprodwellhead = Pminimum
-                msg = (f'Provided production wellhead pressure ({Pprodwellhead}) under minimum pressure ({Pminimum}). '
+            if Pprodwellhead < Pminimum_kPa:
+                Pprodwellhead = Pminimum_kPa
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead}) under minimum pressure ({Pminimum_kPa}). '
                        f'GEOPHIRES will assume minimum wellhead pressure')
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)

@@ -4,8 +4,9 @@ import sys
 from functools import lru_cache
 
 import numpy as np
+from pint.facets.plain import PlainQuantity
 
-from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3, lithostatic_pressure_MPa, quantity
 
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 import geophires_x.Model as Model
@@ -228,7 +229,9 @@ class CylindricalReservoir(Reservoir):
         # initialize with the Initial reservoir temperature
         self.Tresoutput.value = np.array(len(self.timevector.value) * [self.Trock.value])
         # depth in this case is actually the total length of the drilled assembly
-        self.depth.value = self.InputDepth.value / 1000.0 + self.OutputDepth.value + self.Length.value
+        self.depth.value = ((self.InputDepth.quantity() + self.OutputDepth.quantity() + self.Length.quantity()
+             ).to(self.depth.CurrentUnits).magnitude)
+
         # Total volume of all laterals but hollow cylinder - doesn't include drilled-out area, units = m3
         self.resvolcalc.value = (
             model.wellbores.numnonverticalsections.value
@@ -256,3 +259,12 @@ class CylindricalReservoir(Reservoir):
         )
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+    def lithostatic_pressure(self) -> PlainQuantity:
+        """
+        @override
+
+        Standard reservoir implementation uses depth but CylindricalReservoir sets depth to total drilled length
+        """
+        return quantity(lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                                 self.InputDepth.quantity().to('m').magnitude), 'MPa')

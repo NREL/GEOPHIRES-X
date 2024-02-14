@@ -719,8 +719,7 @@ class WellBores:
         )
         self.Phydrostatic = self.ParameterDict[self.Phydrostatic.Name] = floatParameter(
             "Reservoir Hydrostatic Pressure",
-            value=1E2,
-            DefaultValue=29430.205791987686, # Calculated from example1
+            DefaultValue=29430, # Calculated from example1
             Min=1E2,
             Max=1E5,
             UnitType=Units.PRESSURE,
@@ -912,7 +911,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # Deal with all the parameter values that the user has provided. They should really only provide values that
         # they want to change from the default values, but they can provide a value that is already set because it is a
@@ -984,6 +983,8 @@ class WellBores:
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
         # making all thr values available to your methods. but you had better have set all the parameters!
 
+        self.Phydrostaticcalc.value = self.Phydrostatic.quantity().to(self.Phydrostaticcalc.CurrentUnits).magnitude
+
         # special case: production and injection well diameters are input as inches and call calculations
         # assume meters! Check and change if needed, assuming anything > 2 must be talking about inches
         if self.injwelldiam.value > 2.0:
@@ -998,7 +999,7 @@ class WellBores:
         # calculate wellbore temperature drop
         self.ProdTempDrop.value = self.tempdropprod.value  # if not Ramey, hard code a user-supplied temperature drop.
         if self.rameyoptionprod.value:
-            if hasattr(model.reserv, "InputDepth"):
+            if hasattr(model.reserv, 'InputDepth'):
                 d = model.reserv.InputDepth.value
             else:
                 d = model.reserv.depth.value
@@ -1082,4 +1083,4 @@ class WellBores:
                                                            model.surfaceplant.plant_outlet_pressure.value,
                                                            self.PumpingPowerProd.value)
 
-        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'complete {self.__class__.__name__}: {__name__}')

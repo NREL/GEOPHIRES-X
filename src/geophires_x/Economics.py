@@ -292,7 +292,7 @@ def CalculateLCOELCOH(self, model: Model) -> tuple:
                 LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc - np.sum(
                     annualelectricityincome * inflationvector * discountvector)) / np.sum(
                     model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
-                LCOH = self.LCOELCOHCombined.value * 2.931  # $/MMBTU
+                LCOH = LCOH * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6

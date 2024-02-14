@@ -107,7 +107,6 @@ class CylindricalReservoirTestCase(BaseTestCase):
         assert reservoir.SurfaceArea.value == expected_surface_area
 
     def test_calculate_depth_as_total_drilled_length(self):
-        """Calculates the surface area of the cylindrical reservoir"""
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)

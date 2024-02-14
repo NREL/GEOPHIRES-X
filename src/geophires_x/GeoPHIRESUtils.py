@@ -271,7 +271,7 @@ def vapor_pressure_water_kPa(
                 CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water'), 'Pa')
                     .to('kPa').magnitude)
         else:
-            _logger.warning(f'heat_capacity_water: No pressure provided, using vapor quality=0 instead')
+            _logger.warning(f'vapor_pressure_water: No pressure provided, using vapor quality=0 instead')
             return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
                     .to('kPa').magnitude)
 

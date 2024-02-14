@@ -720,7 +720,7 @@ class WellBores:
         self.Phydrostatic = self.ParameterDict[self.Phydrostatic.Name] = floatParameter(
             "Reservoir Hydrostatic Pressure",
             value=1E2,
-            DefaultValue=1E2, # FIXME WIP not a reasonable hydrostatic pressure
+            DefaultValue=29430.205791987686, # Calculated from example1
             Min=1E2,
             Max=1E5,
             UnitType=Units.PRESSURE,
@@ -974,7 +974,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,

@@ -57,7 +57,7 @@ RESERVOIR PARAMETERS,Bottom-hole temperature,,170.0,degC
 RESERVOIR PARAMETERS,Well seperation: fracture height,,900.0,meter
 RESERVOIR PARAMETERS,Fracture area,,810000.0,m**2
 RESERVOIR PARAMETERS,Reservoir volume,,1000000000,m**3
-RESERVOIR PARAMETERS,Reservoir hydrostatic pressure,,29430.0,kPa
+RESERVOIR PARAMETERS,Reservoir hydrostatic pressure,,29430.21,kPa
 RESERVOIR PARAMETERS,Plant outlet pressure,,1067.94,kPa
 RESERVOIR PARAMETERS,Production wellhead pressure,,1136.89,kPa
 RESERVOIR PARAMETERS,Productivity Index,,5.0,kg/sec/bar

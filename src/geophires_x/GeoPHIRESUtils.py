@@ -275,10 +275,13 @@ def RecoverableHeat(Twater_degC: float) -> float:
 @lru_cache
 def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=False) -> float:
     """
-    The VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature.
+    Calculate the vapor pressure of water as a function of temperature.
+
+    TODO accept pressure as parameter https://github.com/NREL/GEOPHIRES-X/issues/118
 
     Args:
         Twater_degC: the temperature of water in degrees C
+        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
@@ -292,24 +295,33 @@ def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=Fal
         raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
     try:
-        return CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water') * 1e-3
+        return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
+                .to('kPa').magnitude)
     except (NotImplementedError, ValueError) as e:
         if enable_fallback_calculation:
-            _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')
+            _logger.warning(f'vapor_pressure_water: Fallback calculation triggered for {Twater_degC}C')
+            return _vapor_pressure_antoine_equation_kPa(Twater_degC)
 
-            if Twater_degC < 100:
-                A = 8.07131
-                B = 1730.63
-                C = 233.426
-            else:
-                A = 8.14019
-                B = 1810.94
-                C = 244.485
-            vp = 133.322 * (
-                10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
-            return vp
 
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+
+def _vapor_pressure_antoine_equation_kPa(Twater_degC: float) -> float:
+    """
+    water vapor pressure in kPa using Antione Equation
+    Do not add additional consumers, use geophires_x.GeoPHIRESUtils.vapor_pressure_water_kPa instead.
+    """
+
+    if Twater_degC < 100:
+        A = 8.07131
+        B = 1730.63
+        C = 233.426
+    else:
+        A = 8.14019
+        B = 1810.94
+        C = 244.485
+    vp = 133.322 * (
+        10 ** (A - B / (C + Twater_degC))) / 1000
+    return vp
 
 
 @lru_cache

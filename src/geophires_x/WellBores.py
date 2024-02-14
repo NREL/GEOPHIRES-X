@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
@@ -328,6 +328,9 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod))
 
     # reservoir hydrostatic pressure [kPa]
+    # FIXME rest of function appears to incorrectly assume Phydrostaticcalc is declared if
+    #   !usebuiltinhydrostaticpressurecorrelation (guessing it's meant to have referenced or passed
+    #   self.Phydrostaticcalc...)
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
@@ -339,7 +342,10 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         Pexcess_kPa = 344.7  # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(Trock) + Pexcess_kPa
+        Pminimum_kPa = vapor_pressure_water_kPa(
+            Trock,
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+        ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
@@ -447,6 +453,9 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     PumpingPowerInj = DPInjWell = Pprodwellhead = [0.0]  # initialize value in case it doesn't get set.
 
     # reservoir hydrostatic pressure [kPa]
+    # FIXME rest of function appears to incorrectly assume Phydrostaticcalc is declared if
+    #   !usebuiltinhydrostaticpressurecorrelation (guessing it's meant to have referenced or passed
+    #   self.Phydrostaticcalc...)
     if usebuiltinhydrostaticpressurecorrelation:
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
@@ -458,7 +467,10 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         Pexcess_kPa = 344.7 # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(Trock) + Pexcess_kPa
+        Pminimum_kPa = vapor_pressure_water_kPa(
+            Trock,
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+        ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]

@@ -983,7 +983,11 @@ class WellBores:
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
         # making all thr values available to your methods. but you had better have set all the parameters!
 
-        self.Phydrostaticcalc.value = self.Phydrostatic.quantity().to(self.Phydrostaticcalc.CurrentUnits).magnitude
+        self.Phydrostaticcalc.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
+                                                                   model.reserv.depth.quantity().to('m').magnitude,
+                                                                   model.reserv.averagegradient.value,
+                                                                   model.reserv.lithostatic_pressure()) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
+            self.Phydrostaticcalc.CurrentUnits).magnitude
 
         # special case: production and injection well diameters are input as inches and call calculations
         # assume meters! Check and change if needed, assuming anything > 2 must be talking about inches

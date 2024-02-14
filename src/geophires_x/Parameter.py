@@ -11,6 +11,8 @@ import pint
 
 from abc import ABC
 
+from pint.facets.plain import PlainQuantity
+
 from geophires_x.Units import *
 
 ureg = pint.get_application_registry()
@@ -19,11 +21,10 @@ ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), '
 
 class HasQuantity(ABC):
 
-    def quantity(self) -> Any:
+    def quantity(self) -> PlainQuantity:
         """
-        :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
-            due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
-            documentation to specify rtype for now.
+        :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
+            to import the Quantity TypeAlias
         """
         return ureg.Quantity(self.value, str(self.CurrentUnits.value))
 

@@ -4,6 +4,7 @@ import logging
 import time
 import logging.config
 
+from geophires_x.Reservoir import Reservoir
 from geophires_x.EconomicsCCUS import EconomicsCCUS
 from geophires_x.EconomicsS_DAC_GT import EconomicsS_DAC_GT
 from geophires_x.GeoPHIRESUtils import read_input_file
@@ -85,22 +86,22 @@ class Model(object):
         # we need to decide which reservoir to instantiate based on the user input (InputParameters),
         # which we just read above for the first time
         # Default is Thermal drawdown percentage model (GETEM)
-        self.reserv = TDPReservoir(self)
+        self.reserv: Reservoir = TDPReservoir(self)
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '0':
-                self.reserv = CylindricalReservoir(self)  # Simple Cylindrical Reservoir
+                self.reserv: Reservoir = CylindricalReservoir(self)  # Simple Cylindrical Reservoir
             elif self.InputParameters['Reservoir Model'].sValue == '1':
-                self.reserv = MPFReservoir(self)  # Multiple parallel fractures model (LANL)
+                self.reserv: Reservoir = MPFReservoir(self)  # Multiple parallel fractures model (LANL)
             elif self.InputParameters['Reservoir Model'].sValue == '2':
-                self.reserv = LHSReservoir(self)  # Multiple parallel fractures model (LANL)
+                self.reserv: Reservoir = LHSReservoir(self)  # Multiple parallel fractures model (LANL)
             elif self.InputParameters['Reservoir Model'].sValue == '3':
-                self.reserv = SFReservoir(self)  # Drawdown parameter model (Tester)
+                self.reserv: Reservoir = SFReservoir(self)  # Drawdown parameter model (Tester)
             elif self.InputParameters['Reservoir Model'].sValue == '5':
-                self.reserv = UPPReservoir(self)  # Generic user-provided temperature profile
+                self.reserv: Reservoir = UPPReservoir(self)  # Generic user-provided temperature profile
             elif self.InputParameters['Reservoir Model'].sValue == '6':
-                self.reserv = TOUGH2Reservoir(self)  # Tough2 is called
+                self.reserv: Reservoir = TOUGH2Reservoir(self)  # Tough2 is called
             elif self.InputParameters['Reservoir Model'].sValue == '7':
-                self.reserv = SUTRAReservoir(self)  # SUTRA output is created
+                self.reserv: Reservoir = SUTRAReservoir(self)  # SUTRA output is created
 
         # initialize the default objects
         self.wellbores = WellBores(self)
@@ -128,7 +129,7 @@ class Model(object):
                 # that have AGS functionality.
                 # that means importing them, initializing them, then reading their parameters
                 # use the simple cylindrical reservoir for all AGS systems.
-                self.reserv = CylindricalReservoir(self)
+                self.reserv: Reservoir = CylindricalReservoir(self)
                 self.wellbores = AGSWellBores(self)
                 self.surfaceplant = SurfacePlantAGS(self)
                 self.economics = AGSEconomics(self)

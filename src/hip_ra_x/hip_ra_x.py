@@ -9,13 +9,13 @@ from pathlib import Path
 
 import pint
 
-from geophires_x.GeoPHIRESUtils import DensityWater
-from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
-from geophires_x.GeoPHIRESUtils import EntropyH20_func
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import enthalpy_water_kJ_per_kg
+from geophires_x.GeoPHIRESUtils import entropy_water_kJ_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import read_input_file
 from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
@@ -595,9 +595,9 @@ class HIP_RA_X:
                     f'({self.fluid_density.value}) was less than min ({self.fluid_density.Min})'
                 )
 
-                density_water_kg_per_m3 = DensityWater(self.reservoir_temperature.value)
+                density_h20_kg_per_m3 = density_water_kg_per_m3(self.reservoir_temperature.value)
 
-                self.fluid_density.value = density_water_kg_per_m3 * 1_000_000_000.0  # converted to kg/km3
+                self.fluid_density.value = density_h20_kg_per_m3 * 1_000_000_000.0  # converted to kg/km3
 
             self.mass_rock.value = self.volume_rock.value * self.rock_density.value
             self.mass_recoverable_fluid.value = self.volume_recoverable_fluid.value * self.fluid_density.value
@@ -610,7 +610,7 @@ class HIP_RA_X:
                 )
 
                 self.fluid_heat_capacity.value = (
-                    HeatCapacityWater(self.reservoir_temperature.value)
+                    heat_capacity_water_J_per_kg_per_K(self.reservoir_temperature.value)
                     / 1000.0
                     # converted to kJ/(kg·K)
                 )
@@ -618,12 +618,12 @@ class HIP_RA_X:
             rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
             reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
             delta_temperature_k = reservoir_temperature_k - rejection_temperature_k
-            fluid_net_enthalpy = fluid_net_enthalpy = EnthalpyH20_func(
+            fluid_net_enthalpy = fluid_net_enthalpy = enthalpy_water_kJ_per_kg(
                 self.reservoir_temperature.value
-            ) - EnthalpyH20_func(self.rejection_temperature.value)
-            fluid_net_entropy = EntropyH20_func(self.reservoir_temperature.value) - EntropyH20_func(
-                self.rejection_temperature.value
-            )
+            ) - enthalpy_water_kJ_per_kg(self.rejection_temperature.value)
+            fluid_net_entropy = entropy_water_kJ_per_kg_per_K(
+                self.reservoir_temperature.value
+            ) - entropy_water_kJ_per_kg_per_K(self.rejection_temperature.value)
 
             # fmt: off
             self.enthalpy_rock.value = (

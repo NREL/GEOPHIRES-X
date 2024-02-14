@@ -1,16 +1,17 @@
 import sys
 import unittest
 
-from geophires_x.GeoPHIRESUtils import DensityWater
-from geophires_x.GeoPHIRESUtils import EnthalpyH20_func
-from geophires_x.GeoPHIRESUtils import EntropyH20_func
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
-from geophires_x.GeoPHIRESUtils import VaporPressureWater
-from geophires_x.GeoPHIRESUtils import ViscosityWater
 from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import enthalpy_water_kJ_per_kg
+from geophires_x.GeoPHIRESUtils import entropy_water_kJ_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import quantity
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
+from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 
 
 class TestCelsiusToKelvin(unittest.TestCase):
@@ -206,64 +207,85 @@ class TestViscosityWater(unittest.TestCase):
         ]
 
         for temp, expected_viscosity in temp_expected_viscosities:
-            self.assertAlmostEqual(ViscosityWater(temp), expected_viscosity, places=6)
+            with self.subTest(msg=f'temp={temp}C'):
+                result = viscosity_water_Pa_sec(temp)
+                self.assertAlmostEqual(expected_viscosity, result, places=6)
+
+    def test_valid_input_temperature_with_pressure(self):
+        default_pressure = quantity(100, 'MPa')
+        temp_expected_viscosities = [
+            (0, 0.0016605697996519605),
+            (20, 0.0009931446334997267),
+            (50, 0.0005700650220542674),
+            (100, 0.00030771769221054013),
+            (200, 0.00015651052722636592),
+            (300, 0.00010960513118375302),
+            (370, 9.119570911769341e-05),
+        ]
+
+        for temp, expected_viscosity in temp_expected_viscosities:
+            with self.subTest(msg=f'temp={temp}C'):
+                result = viscosity_water_Pa_sec(temp, pressure=default_pressure)
+                self.assertAlmostEqual(expected_viscosity, result, places=6)
 
     def test_negative_input_temperature(self):
         """The function raises a ValueError if the input temperature is less than 0 degrees Celsius."""
         with self.assertRaises(ValueError):
-            ViscosityWater(-10)
+            viscosity_water_Pa_sec(-10)
 
     def test_high_input_temperature(self):
         """The function raises a ValueError if the input temperature is greater than 370 degrees Celsius."""
         with self.assertRaises(ValueError):
-            ViscosityWater(400)
+            viscosity_water_Pa_sec(400)
 
     def test_none_input_temperature(self):
         """The function raises a ValueError if the input temperature is None."""
         with self.assertRaises(ValueError):
-            ViscosityWater(None)
+            viscosity_water_Pa_sec(None)
 
     def test_string_input_temperature(self):
         """The function raises a ValueError if the input temperature is a string."""
         with self.assertRaises(ValueError):
-            ViscosityWater('water')
+            viscosity_water_Pa_sec('water')
 
 
 class TestDensityWater(unittest.TestCase):
+    """TODO add tests with pressure"""
+
     def test_correct_density(self):
         """Returns the correct density of water for a given temperature."""
         input_expected_val_pairs = [
             (25, 997.0038346094865),
-            (25.5, 996.8746788233803),
-            (50, 988.0087757351533),
-            (50.5, 987.7821218479756),
-            (75, 974.8288462197903),
-            (75.5, 974.5296342180826),
-            (100, 958.3542772858901),
-            (100.5, 957.9946917721559),
+            (25.5, 996.8740021273935),
+            (50, 987.996210611189),
+            (50.5, 987.7693810541228),
+            (75, 974.8149605673345),
+            (75.5, 974.5158622099481),
+            (100, 958.3490516048568),
+            (100.5, 957.9896566787988),
         ]
 
         for pair in input_expected_val_pairs:
             t_water_deg_c = pair[0]
-            calc_density = DensityWater(t_water_deg_c)
+            calc_density = density_water_kg_per_m3(t_water_deg_c)
             expected_density = pair[1]
             self.assertAlmostEqual(calc_density, expected_density, places=3)
 
     def test_returns_density_in_kg_per_m3(self):
         """Returns the density in kg/m3."""
-        assert isinstance(DensityWater(25), float)
-        assert isinstance(DensityWater(50), float)
-        assert isinstance(DensityWater(75), float)
-        assert isinstance(DensityWater(100), float)
+        assert isinstance(density_water_kg_per_m3(25), float)
+        assert isinstance(density_water_kg_per_m3(50), float)
+        assert isinstance(density_water_kg_per_m3(75), float)
+        assert isinstance(density_water_kg_per_m3(100), float)
 
     def test_small_temperature_values(self):
-        self.assertAlmostEqual(DensityWater(0.01), 999.7937454059017, places=3)
-        self.assertAlmostEqual(DensityWater(0.0), 999.793065506329, places=3)
-        self.assertIsNotNone(DensityWater(sys.float_info.min))
+        self.assertAlmostEqual(density_water_kg_per_m3(0.01), 999.7925200315555, places=3)
+        self.assertAlmostEqual(density_water_kg_per_m3(0.0), 999.7918393845667, places=3)
+        self.assertIsNotNone(density_water_kg_per_m3(sys.float_info.min))
 
     def test_handles_maximum_temperature_value(self):
         """Handles the maximum temperature value in T."""
-        assert DensityWater(373.946) == 322
+        self.assertAlmostEqual(density_water_kg_per_m3(373.946), 322, places=5)
 
     def test_raises_value_error_outside_valid_input_range(self):
         """Handles the minimum and maximum float values for Twater."""
@@ -274,75 +296,81 @@ class TestDensityWater(unittest.TestCase):
 
         for invalid_val in invalid_range_vals:
             with self.assertRaises(ValueError):
-                DensityWater(invalid_val)
+                density_water_kg_per_m3(invalid_val)
 
 
 class TestHeatCapacityWater(unittest.TestCase):
+    """TODO add tests with pressure"""
+
     def test_valid_input_within_range(self):
-        result = HeatCapacityWater(100)
-        assert result == 4216.645118923585
+        result = heat_capacity_water_J_per_kg_per_K(100)
+        self.assertAlmostEqual(4215.673616815784, result, places=3)
 
     def test_valid_input_minimum_range(self):
-        result = HeatCapacityWater(0.01)
-        assert result == 4219.897711106461
+        result = heat_capacity_water_J_per_kg_per_K(0.01)
+        self.assertAlmostEqual(4219.911516371655, result, places=3)
 
     def test_valid_input_maximum_range(self):
-        result = HeatCapacityWater(370)
-        assert result == 47095.500723768
+        result = heat_capacity_water_J_per_kg_per_K(370)
+        self.assertAlmostEqual(45155.17556557058, result, places=3)
 
     def test_valid_input_midpoint_range(self):
-        result = HeatCapacityWater(185)
-        assert result == 4425.471257522954
+        result = heat_capacity_water_J_per_kg_per_K(185)
+        self.assertAlmostEqual(4425.481049192385, result, places=3)
 
     def test_valid_input_exact_match(self):
-        result = HeatCapacityWater(25)
-        assert result == 4182.179909825829
+        result = heat_capacity_water_J_per_kg_per_K(25)
+        assert result == 4181.599569862515
 
     def test_invalid_input_less_than_minimum(self):
         with self.assertRaises(ValueError):
-            HeatCapacityWater(-10)
+            heat_capacity_water_J_per_kg_per_K(-10)
 
     def test_invalid_input_not_number(self):
         with self.assertRaises(ValueError):
-            HeatCapacityWater('abc')
+            heat_capacity_water_J_per_kg_per_K('abc')
 
     def test_invalid_input_negative(self):
         with self.assertRaises(ValueError):
-            HeatCapacityWater(-50)
+            heat_capacity_water_J_per_kg_per_K(-50)
 
     def test_invalid_input_greater_than_500(self):
         with self.assertRaises(ValueError):
-            HeatCapacityWater(501)
+            heat_capacity_water_J_per_kg_per_K(501)
 
 
-class TestEntropyh20Func(unittest.TestCase):
+class TestEntropyWater(unittest.TestCase):
     def test_valid_temperature_within_range(self):
         """Returns the correct entropy value for a valid temperature input within the range of T[0] to T[-1]"""
 
         temperature = 50.0
-        expected_entropy = 0.7037939046604744
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 0.7038086259330144
+        result_entropy = entropy_water_kJ_per_kg_per_K(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_minimum_temperature_input(self):
         """Returns the correct entropy value for the minimum temperature input (T[0])"""
 
         temperature = 0.01
-        expected_entropy = -6.161029060094028e-08
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = -1.4592809254309467e-13
+        result_entropy = entropy_water_kJ_per_kg_per_K(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_h20_critical_point_temperature_input(self):
         """Returns the correct entropy value for the maximum temperature input (T[-1])"""
 
         temperature = 373.946
-        expected_entropy = 4.412021482236347
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 4.406961892363361
+        result_entropy = entropy_water_kJ_per_kg_per_K(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_25C(self):
         """Returns the correct entropy value for a temperature input that is an element of T"""
 
         temperature = 25.0
-        expected_entropy = 0.3672563027910093
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 0.36722496627639006
+        result_entropy = entropy_water_kJ_per_kg_per_K(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_150C(self):
         """
@@ -351,22 +379,23 @@ class TestEntropyh20Func(unittest.TestCase):
         """
 
         temperature = 150.0
-        expected_entropy = 1.8419520427817053
-        assert EntropyH20_func(temperature) == expected_entropy
+        expected_entropy = 1.8418018983902633
+        result_entropy = entropy_water_kJ_per_kg_per_K(temperature)
+        self.assertAlmostEqual(expected_entropy, result_entropy, places=3)
 
     def test_temperature_input_minus10C(self):
         """Raises a ValueError if the temperature input is less than T[0]"""
 
         temperature = -10.0
         with self.assertRaises(ValueError):
-            EntropyH20_func(temperature)
+            entropy_water_kJ_per_kg_per_K(temperature)
 
     def test_temperature_input_greater_than_Tn(self):
         """Raises a ValueError if the temperature input is greater than T[-1]"""
 
         temperature = 400.0
         with self.assertRaises(ValueError):
-            EntropyH20_func(temperature)
+            entropy_water_kJ_per_kg_per_K(temperature)
 
 
 class TestRecoverableHeat(unittest.TestCase):
@@ -402,97 +431,97 @@ class TestRecoverableHeat(unittest.TestCase):
 
 class TestVaporPressureWater(unittest.TestCase):
     def test_below_100_degrees(self):
-        result = VaporPressureWater(42)
-        self.assertAlmostEqual(result, 8.209010116448697, places=3)
+        result = vapor_pressure_water_kPa(42)
+        self.assertAlmostEqual(result, 8.209563332516748, places=3)
 
     def test_above_100_degrees(self):
-        result = VaporPressureWater(150)
-        self.assertAlmostEqual(result, 476.10138108149204, places=3)
+        result = vapor_pressure_water_kPa(150)
+        self.assertAlmostEqual(result, 476.16453796900316, places=3)
 
     def test_100_degrees(self):
-        result = VaporPressureWater(100)
+        result = vapor_pressure_water_kPa(100)
         self.assertAlmostEqual(result, 101.41797792131013, places=3)
 
     def test_0_degrees(self):
-        result = VaporPressureWater(0)
+        result = vapor_pressure_water_kPa(0)
         self.assertAlmostEqual(result, 0.6112126774443449, places=3)
 
     def test_25_degrees(self):
-        result = VaporPressureWater(25)
+        result = vapor_pressure_water_kPa(25)
         self.assertAlmostEqual(result, 3.1697468549523626, places=3)
 
     def test_value_error(self):
         with self.assertRaises(ValueError):
-            VaporPressureWater('abc')
+            vapor_pressure_water_kPa('abc')
 
     def test_minimum_temperature(self):
         with self.assertRaises(ValueError):
-            VaporPressureWater(-273.15)
+            vapor_pressure_water_kPa(-273.15)
 
     def test_maximum_temperature(self):
         with self.assertRaises(ValueError):
-            VaporPressureWater(float('inf'))
+            vapor_pressure_water_kPa(float('inf'))
 
     def test_50_degrees(self):
-        result = VaporPressureWater(50)
-        self.assertAlmostEqual(result, 12.351270434023352, places=3)
+        result = vapor_pressure_water_kPa(50)
+        self.assertAlmostEqual(result, 12.351945857074021, places=3)
 
     def test_75_degrees(self):
-        result = VaporPressureWater(75)
+        result = vapor_pressure_water_kPa(75)
         self.assertAlmostEqual(result, 38.59536268655676, places=3)
 
 
-class TestEnthalpyh20Func(unittest.TestCase):
+class TestEnthalpyWater(unittest.TestCase):
     def test_valid_temperature(self):
         temperature = 50.0
-        result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 209.3362003948904, places=3)
+        result = enthalpy_water_kJ_per_kg(temperature)
+        self.assertAlmostEqual(result, 209.34176132671735, places=3)
 
     def test_minimum_temperature(self):
         temperature = 0.01
-        result = EnthalpyH20_func(temperature)
+        result = enthalpy_water_kJ_per_kg(temperature)
         self.assertAlmostEqual(result, 0.0006117830490730841, places=5)
 
     def test_maximum_temperature(self):
         temperature = 373.946
-        result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 2087.5468451171537, places=3)
+        result = enthalpy_water_kJ_per_kg(temperature)
+        self.assertAlmostEqual(result, 2084.256255907945, places=3)
 
     def test_same_temperature(self):
         temperature = 50.0
-        enthalpy1 = EnthalpyH20_func(temperature)
-        enthalpy2 = EnthalpyH20_func(temperature)
+        enthalpy1 = enthalpy_water_kJ_per_kg(temperature)
+        enthalpy2 = enthalpy_water_kJ_per_kg(temperature)
         assert enthalpy1 == enthalpy2
 
     def test_middle_temperature(self):
         temperature = 15.0
-        result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 62.98365208053001, places=3)
+        result = enthalpy_water_kJ_per_kg(temperature)
+        self.assertAlmostEqual(result, 62.98145105731618, places=3)
 
     def test_non_float_temperature(self):
         temperature = 'abc123'
         with self.assertRaises(TypeError):
-            EnthalpyH20_func(temperature)
+            enthalpy_water_kJ_per_kg(temperature)
 
     def test_below_minimum_temperature(self):
         temperature = -10.0
         with self.assertRaises(ValueError):
-            EnthalpyH20_func(temperature)
+            enthalpy_water_kJ_per_kg(temperature)
 
     def test_above_maximum_temperature(self):
         temperature = 400.0
         with self.assertRaises(ValueError):
-            EnthalpyH20_func(temperature)
+            enthalpy_water_kJ_per_kg(temperature)
 
     def test_known_temperature(self):
         temperature = 100.0
-        result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 419.09915499770307, places=3)
+        result = enthalpy_water_kJ_per_kg(temperature)
+        self.assertAlmostEqual(result, 419.1661628928869, places=3)
 
     def test_close_temperature(self):
         temperature = 100.001
-        result = EnthalpyH20_func(temperature)
-        self.assertAlmostEqual(result, 419.1033743616401, places=3)
+        result = enthalpy_water_kJ_per_kg(temperature)
+        self.assertAlmostEqual(result, 419.1703812859442, places=3)
 
 
 if __name__ == '__main__':

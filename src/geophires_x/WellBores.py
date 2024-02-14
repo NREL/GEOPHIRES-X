@@ -1,9 +1,9 @@
 import math
 import numpy as np
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from geophires_x.GeoPHIRESUtils import VaporPressureWater as vaporpressurewater
-from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
-from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
 import geophires_x.Model as Model
 from .OptionList import ReservoirModel
@@ -83,12 +83,27 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
-                         Taverage])  # replace with correlation based on Tprodaverage
+    rhowater = np.array([
+        density_water_kg_per_m3(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    muwater = np.array([viscositywater(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+            enable_fallback_calculation=True,
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
+
+    muwater = np.array([
+        viscosity_water_Pa_sec(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
+
+            # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
+            enable_fallback_calculation=True
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
 
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -141,9 +156,11 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = densitywater(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
+                * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
+
     # replace with correlation based on Tinjaverage
-    muwater = viscositywater(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -321,7 +338,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
         Phydrostaticcalc = 0 + 1. / CP * (
-                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -329,7 +346,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
 
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
         # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+        Pminimum = vapor_pressure_water_kPa(Trock, enable_fallback_calculation=True) + Pexcess
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
@@ -337,10 +354,11 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum:
                 Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+                msg = ('Provided production wellhead pressure under minimum pressure. '
+                       'GEOPHIRES will assume minimum wellhead pressure')
+
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
         PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
@@ -350,16 +368,15 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         pumpdepthfinal = np.max(pumpdepth)
         if pumpdepthfinal < 0.0:
             pumpdepthfinal = 0.0
-            print("Warning: GEOPHIRES calculates negative production well pumping depth. \
-            No production well pumps will be assumed")
-            model.logger.warning(
-                "GEOPHIRES calculates negative production well pumping depth. \
-                No production well pumps will be assumed")
+            msg = ('GEOPHIRES calculates negative production well pumping depth. '
+                   'No production well pumps will be assumed')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
         elif pumpdepthfinal > 600.0:
-            print("Warning: GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
-            model.logger.warning("GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
+            msg = ('GEOPHIRES calculates production pump depth to be deeper than 600 m. '
+                   'Verify reservoir pressure, production well flow rate and production well dimensions')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
         DPProdWell = Pprodwellhead - (Phydrostaticcalc - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth / 1E3 - f3 *
@@ -441,7 +458,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         CP = 4.64E-7
         CT = 9E-4 / (30.796 * Trock ** (-0.552))
         Phydrostaticcalc = 0 + 1. / CP * (
-                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
 
     if productionwellpumping:
         # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -449,7 +466,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
 
         # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
         # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+        Pminimum = vapor_pressure_water_kPa(Trock, enable_fallback_calculation=True) + Pexcess
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
@@ -457,10 +474,10 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum:
                 Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead}) under minimum pressure ({Pminimum}). '
+                       f'GEOPHIRES will assume minimum wellhead pressure')
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
     IIkPa = II / 100.0  # convert II from kg/s/bar to kg/s/kPa
 

@@ -1,7 +1,9 @@
 import math
 import numpy as np
+from pint.facets.plain import PlainQuantity
+
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, lithostatic_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
@@ -279,13 +281,41 @@ def InjPressureDropsAndPumpingPowerUsingImpedenceModel(f1: float, vinj: float, r
 
     return newDPOverall, PumpingPower, DPInjWell
 
+def get_hydrostatic_pressure_kPa(
+        Trock_degC: float,
+        Tsurf_degC: float,
+        depth_m: float,
+        gradient_C_per_km: float,
+        lithostatic_pressure: PlainQuantity) -> float:
+    """
+    Correlation cited as being from Xie, Bloomfield, and Shook in
+    https://workingincaes.inl.gov/SiteAssets/CAES%20Files/FORGE/inl_ext-16-38751%20GETEM%20User%20Manual%20Final.pdf
+    """
+    CP = 4.64E-7
+    CT = 9E-4 / (30.796 * Trock_degC ** (-0.552))
+    return 0 + 1. / CP * (math.exp(
+        density_water_kg_per_m3(Tsurf_degC, pressure=lithostatic_pressure) * 9.81 * CP / 1000 * (
+            depth_m - CT / 2 * gradient_C_per_km * depth_m ** 2)) - 1)
 
-def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostaticpressurecorrelation: bool,
-                                                productionwellpumping: bool, usebuiltinppwellheadcorrelation: bool,
-                                                Trock: float, Tsurf: float, depth: float, gradient: float,
-                                                ppwellhead: float, PI: float, wellflowrate: float, f3: float,
-                                                vprod: float, prodwelldiam: float, nprod: int, pumpeff: float,
-                                                rhowaterprod: float) -> tuple:
+
+def ProdPressureDropAndPumpingPowerUsingIndexes(
+        model: Model,
+        usebuiltinhydrostaticpressurecorrelation: bool,
+        productionwellpumping: bool,
+        usebuiltinppwellheadcorrelation: bool,
+        Trock_degC: float,
+        Tsurf_degC: float,
+        depth_m: float,
+        gradient_C_per_km: float,
+        ppwellhead: float,
+        PI: float,
+        wellflowrate: float,
+        f3: float,
+        vprod: float,
+        prodwelldiam: float,
+        nprod: int,
+        pumpeff: float,
+        rhowaterprod: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using indexes
         :param model: The container class of the application, giving access to everything else, including the logger
@@ -296,13 +326,13 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         :type productionwellpumping: bool
         :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
-        :param Trock: rock temperature [C]
-        :type Trock: float
-        :param Tsurf: surface temperature [C]
-        :type Tsurf: float
-        :param depth: depth of the well [m]
-        :type depth: float
-        :param gradient: geothermal gradient [C/km]
+        :param Trock_degC: rock temperature [C]
+        :type Trock_degC: float
+        :param Tsurf_degC: surface temperature [C]
+        :type Tsurf_degC: float
+        :param depth_m: depth of the well [m]
+        :type depth_m: float
+        :param gradient_C_per_km: geothermal gradient [C/km]
         :param ppwellhead: production wellhead pressure [kPa]
         :type ppwellhead: float
         :param PI: productivity index [kg/s/bar]
@@ -332,10 +362,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     #   !usebuiltinhydrostaticpressurecorrelation (guessing it's meant to have referenced or passed
     #   self.Phydrostaticcalc...)
     if usebuiltinhydrostaticpressurecorrelation:
-        CP = 4.64E-7
-        CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (
-            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = get_hydrostatic_pressure_kPa(Trock_degC, Tsurf_degC, depth_m, gradient_C_per_km, model.reserv.lithostatic_pressure())
 
     if productionwellpumping:
         # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -343,7 +370,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock,
+            Trock_degC,
             # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
         ) + Pexcess_kPa
 
@@ -362,7 +389,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth = depth + (Pminimum_kPa - Phydrostaticcalc + wellflowrate / PIkPa) / (
+        pumpdepth = depth_m + (Pminimum_kPa - Phydrostaticcalc + wellflowrate / PIkPa) / (
             f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
         pumpdepthfinal = np.max(pumpdepth)
         if pumpdepthfinal < 0.0:
@@ -378,8 +405,8 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
             model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
-        DPProdWell = Pprodwellhead - (Phydrostaticcalc - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth / 1E3 - f3 *
-                                      (rhowaterprod * vprod ** 2 / 2.) * (depth / prodwelldiam) / 1E3)
+        DPProdWell = Pprodwellhead - (Phydrostaticcalc - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
+                                      (rhowaterprod * vprod ** 2 / 2.) * (depth_m / prodwelldiam) / 1E3)
         # [MWe] total pumping power for production wells
         PumpingPowerProd = DPProdWell * nprod * wellflowrate / rhowaterprod / pumpeff / 1E3
         PumpingPowerProd = np.array([0. if x < 0. else x for x in PumpingPowerProd])
@@ -394,17 +421,33 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     return PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead
 
 
-def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostaticpressurecorrelation: bool,
-                                               productionwellpumping: bool, usebuiltinppwellheadcorrelation: bool,
-                                               usebuiltinoutletplantcorrelation: bool, Trock: float, Tsurf: float,
-                                               depth: float, gradient: float, ppwellhead: float, II: float,
-                                               wellflowrate: float, f1: float, vinj: float, injwelldiam: float,
-                                               nprod: int, ninj: int, waterloss: float, pumpeff: float,
-                                               rhowaterinj: float, Pplantoutlet: float, PumpingPowerProd) -> tuple:
+def InjPressureDropAndPumpingPowerUsingIndexes(
+        model: Model,
+        usebuiltinhydrostaticpressurecorrelation: bool,
+        productionwellpumping: bool,
+        usebuiltinppwellheadcorrelation: bool,
+        usebuiltinoutletplantcorrelation: bool,
+        Trock_degC: float,
+        Tsurf_degC: float,
+        depth_m: float,
+        gradient_C_per_km: float,
+        ppwellhead: float,
+        II: float,
+        wellflowrate: float,
+        f1: float,
+        vinj: float,
+        injwelldiam: float,
+        nprod: int,
+        ninj: int,
+        waterloss: float,
+        pumpeff: float,
+        rhowaterinj: float,
+        Pplantoutlet: float,
+        PumpingPowerProd) -> tuple:
     """
      Calculate PressureDrops and Pumping Power needed for the injection well using indexes
-        :param depth: depth of the well [m]
-        :type depth: float
+        :param depth_m: depth of the well [m]
+        :type depth_m: float
         :param wellflowrate: flow rate of the fluid in the well [kg/s]
         :type wellflowrate: float
         :param pumpeff: pump efficiency [-]
@@ -413,12 +456,12 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         :type nprod: int
         :param ppwellhead: production wellhead pressure [kPa]
         :type ppwellhead: float
-        :param gradient: geothermal gradient [C/km]
-        :type gradient: float
+        :param gradient_C_per_km: geothermal gradient [C/km]
+        :type gradient_C_per_km: float
         :param Tsurf: surface temperature [C]
         :type Tsurf: float
-        :param Trock: rock temperature [C]
-        :type Trock: float
+        :param Trock_degC: rock temperature [C]
+        :type Trock_degC: float
         :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
         :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
@@ -457,10 +500,8 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     #   !usebuiltinhydrostaticpressurecorrelation (guessing it's meant to have referenced or passed
     #   self.Phydrostaticcalc...)
     if usebuiltinhydrostaticpressurecorrelation:
-        CP = 4.64E-7
-        CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (
-            math.exp(density_water_kg_per_m3(Tsurf, pressure=model.reserv.lithostatic_pressure()) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+        Phydrostaticcalc = get_hydrostatic_pressure_kPa(Trock_degC, Tsurf_degC, depth_m, gradient_C_per_km,
+                                                        model.reserv.lithostatic_pressure())
 
     if productionwellpumping:
         # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
@@ -468,7 +509,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock,
+            Trock_degC,
             # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
         ) + Pexcess_kPa
 
@@ -487,8 +528,8 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
 
     # necessary injection wellhead pressure [kPa]
     Pinjwellhead = Phydrostaticcalc + wellflowrate * (
-        1 + waterloss) * nprod / ninj / IIkPa - rhowaterinj * 9.81 * depth / 1E3 + f1 * (
-                       rhowaterinj * vinj ** 2 / 2) * (depth / injwelldiam) / 1E3
+        1 + waterloss) * nprod / ninj / IIkPa - rhowaterinj * 9.81 * depth_m / 1E3 + f1 * (
+                       rhowaterinj * vinj ** 2 / 2) * (depth_m / injwelldiam) / 1E3
 
     # plant outlet pressure [kPa]
     if usebuiltinoutletplantcorrelation:
@@ -679,7 +720,7 @@ class WellBores:
         self.Phydrostatic = self.ParameterDict[self.Phydrostatic.Name] = floatParameter(
             "Reservoir Hydrostatic Pressure",
             value=1E2,
-            DefaultValue=1E2,
+            DefaultValue=1E2, # FIXME WIP not a reasonable hydrostatic pressure
             Min=1E2,
             Max=1E5,
             UnitType=Units.PRESSURE,

@@ -150,7 +150,6 @@ Example usage in Python:
                     "Reservoir Depth": 3,
                     "Number of Segments": 1,
                     "Gradient 1": 50,
-                    "Maximum Temperature": 400,
                     "Number of Production Wells": 2,
                     "Number of Injection Wells": 2,
                     "Production Well Diameter": 7,

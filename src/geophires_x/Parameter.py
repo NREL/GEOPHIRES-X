@@ -120,7 +120,11 @@ class boolParameter(Parameter):
         DefaultValue (bool, True):  The default value of that parameter
     """
 
-    value: bool = True # FIXME set from DefaultValue
+    def __post_init__(self):
+        if self.value is None:
+            self.value:bool = self.DefaultValue
+
+    value: bool = None
     DefaultValue: bool = value
     json_parameter_type: str = 'boolean'
 
@@ -137,7 +141,11 @@ class intParameter(Parameter):
         AllowableRange (list): A list of the valid values
     """
 
-    value: int = 0 # FIXME set from DefaultValue
+    def __post_init__(self):
+        if self.value is None:
+            self.value:int = self.DefaultValue
+
+    value: int = None
     DefaultValue: int = value
     AllowableRange: List[int] = field(default_factory=list)
     json_parameter_type: str = 'integer'
@@ -180,8 +188,11 @@ class strParameter(Parameter):
         value (str): The value of that parameter
         DefaultValue (str, ""):  The default value of that parameter
     """
+    def __post_init__(self):
+        if self.value is None:
+            self.value:str = self.DefaultValue
 
-    value: str = "" # FIXME set from DefaultValue
+    value: str = None
     DefaultValue: str = value
     json_parameter_type: str = 'string'
 

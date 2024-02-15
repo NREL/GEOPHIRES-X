@@ -74,10 +74,9 @@ class Reservoir:
 
         self.Tmax = self.ParameterDict[self.Tmax.Name] = floatParameter(
             "Maximum Temperature",
-            value=400.0,
             DefaultValue=400.0,
             Min=50,
-            Max=400,
+            Max=500,
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS,

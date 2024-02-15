@@ -55,11 +55,14 @@ class CylindricalReservoirTestCase(BaseTestCase):
                 '../examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt'
             )
         )
-        reservoir = model.reserv
+        reservoir: CylindricalReservoir = model.reserv
         self.assertIsNotNone(reservoir.InputDepth)
 
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
         self.assertEqual(3.0, reservoir.InputDepth.value)
+
+        # TODO depth should probably be set to this value on initialization rather than calculation
+        # self.assertEqual(3000.0, reservoir.depth.quantity().to('m').magnitude)
 
     def test_read_inputs_depth_in_meters(self):
         model = self._new_model_with_cylindrical_reservoir(
@@ -72,7 +75,6 @@ class CylindricalReservoirTestCase(BaseTestCase):
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
 
     def test_calculate_temperature_inflow_end(self):
-        """Calculates the temperature of the rock at the inflow end of the cylindrical reservoir"""
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
@@ -103,6 +105,12 @@ class CylindricalReservoirTestCase(BaseTestCase):
             2.0 * math.pi * (reservoir.RadiusOfEffect.value**2)
         )
         assert reservoir.SurfaceArea.value == expected_surface_area
+
+    def test_calculate_depth_as_total_drilled_length(self):
+        model = self._new_model_with_cylindrical_reservoir()
+        reservoir = model.reserv
+        reservoir.Calculate(model)
+        self.assertEqual(10.0, reservoir.depth.quantity().to('km').magnitude)
 
     def test_calculate_heat_capacity_water(self):
         """Calculates the heat capacity of water"""

@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.0
+ GEOPHIRES Version: 3.4.1
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-13
- Simulation Time:  09:44
- Calculation Time:      0.044 sec
+ Simulation Date: 2024-02-14
+ Simulation Time:  15:12
+ Calculation Time:      0.045 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -69,7 +69,7 @@ Simulation Metadata
                They are only used for calculating remaining heat content.
       Reservoir volume provided as input
       Reservoir volume:                               125000000 m**3
-      Reservoir hydrostatic pressure:                       100.00 kPa
+      Reservoir hydrostatic pressure:                     39028.92 kPa
       Plant outlet pressure:                               2260.87 kPa
       Production wellhead pressure:                        2329.82 kPa
       Productivity Index:                                    10.00 kg/sec/bar

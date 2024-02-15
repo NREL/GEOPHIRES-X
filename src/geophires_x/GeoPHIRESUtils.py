@@ -104,15 +104,13 @@ def quantity(value: float, unit: str) -> PlainQuantity:
 @lru_cache
 def density_water_kg_per_m3(
     Twater_degC: float,
-    pressure: Optional[PlainQuantity] = None,
-    enable_fallback_calculation=False) -> float:
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the density of water as a function of temperature.
 
     Args:
         Twater_degC: The temperature of water in degrees C.
         pressure: Pressure - should be provided
-        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
     Returns:
         The density of water in kg/m³.
     Raises:
@@ -129,15 +127,8 @@ def density_water_kg_per_m3(
             return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
     except (NotImplementedError, ValueError) as e:
-        if enable_fallback_calculation:
-            _logger.warning(f'density_water: Fallback calculation triggered for {Twater_degC}C')
-
-            Twater_K = celsius_to_kelvin(Twater_degC)
-            # water density correlation as used in Geophires v1.2 [kg/m3]
-            rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
-            return rho_water
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
 def celsius_to_kelvin(celsius: float) -> float:
@@ -161,12 +152,13 @@ def celsius_to_kelvin(celsius: float) -> float:
 @lru_cache
 def viscosity_water_Pa_sec(
         Twater_degC: float,
-        pressure: Optional[PlainQuantity] = None,
-        enable_fallback_calculation=False) -> float:
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
-    The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
+    Calculate the dynamic viscosity of water as a function of temperature and pressure.
+
     Args:
         Twater_degC: the temperature of water in degrees C
+        pressure: Pressure - should be provided
     Returns:
         Viscosity of water in Pa·s (Ns/m2)
     Raises:
@@ -181,21 +173,14 @@ def viscosity_water_Pa_sec(
             return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
     except (NotImplementedError, ValueError) as e:
-        if enable_fallback_calculation:
-            _logger.warning(f'viscosity_water: Fallback calculation triggered for {Twater_degC}C')
-
-            # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
-            muwater = 2.414E-5 * np.power(10, 247.8 / (Twater_degC + 273.15 - 140))
-            return muwater
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
 @lru_cache
 def heat_capacity_water_J_per_kg_per_K(
     Twater_degC: float,
     pressure: Optional[PlainQuantity] = None,
-    enable_fallback_calculation=False
 ) -> float:
     """
     Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
@@ -203,7 +188,6 @@ def heat_capacity_water_J_per_kg_per_K(
     Args:
         Twater_degC: The temperature of water in degrees C.
         pressure: Pressure - should be provided
-        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
     Returns:
         The isobaric specific heat capacity of water as a function of temperature in J/(kg·K).
     Raises:
@@ -224,21 +208,8 @@ def heat_capacity_water_J_per_kg_per_K(
             return CP.PropsSI('C', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
     except (NotImplementedError, ValueError) as e:
-        if enable_fallback_calculation:
-            _logger.warning(f'heat_capacity_water: Fallback calculation triggered for {Twater_degC}C')
-
-            Twater = (Twater_degC + 273.15) / 1000
-            A = -203.6060
-            B = 1523.290
-            C = -3196.413
-            D = 2474.455
-            E = 3.855326
-            # water specific heat capacity in J/(kg·K)
-            cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
-
-            return cpwater
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
 @lru_cache
@@ -273,15 +244,15 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache
-def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=False) -> float:
+def vapor_pressure_water_kPa(
+    Twater_degC: float,
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the vapor pressure of water as a function of temperature.
 
-    TODO accept pressure as parameter https://github.com/NREL/GEOPHIRES-X/issues/118
-
     Args:
         Twater_degC: the temperature of water in degrees C
-        enable_fallback_calculation: deprecation shim, do not use, see https://github.com/NREL/GEOPHIRES-X/issues/110
+        pressure: Pressure - should be provided
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
@@ -295,33 +266,18 @@ def vapor_pressure_water_kPa(Twater_degC: float, enable_fallback_calculation=Fal
         raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
     try:
-        return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
-                .to('kPa').magnitude)
+        if pressure is not None:
+            return (quantity(
+                CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water'), 'Pa')
+                    .to('kPa').magnitude)
+        else:
+            _logger.warning(f'vapor_pressure_water: No pressure provided, using vapor quality=0 instead')
+            return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
+                    .to('kPa').magnitude)
+
+
     except (NotImplementedError, ValueError) as e:
-        if enable_fallback_calculation:
-            _logger.warning(f'vapor_pressure_water: Fallback calculation triggered for {Twater_degC}C')
-            return _vapor_pressure_antoine_equation_kPa(Twater_degC)
-
-
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
-
-def _vapor_pressure_antoine_equation_kPa(Twater_degC: float) -> float:
-    """
-    water vapor pressure in kPa using Antione Equation
-    Do not add additional consumers, use geophires_x.GeoPHIRESUtils.vapor_pressure_water_kPa instead.
-    """
-
-    if Twater_degC < 100:
-        A = 8.07131
-        B = 1730.63
-        C = 233.426
-    else:
-        A = 8.14019
-        B = 1810.94
-        C = 244.485
-    vp = 133.322 * (
-        10 ** (A - B / (C + Twater_degC))) / 1000
-    return vp
 
 
 @lru_cache

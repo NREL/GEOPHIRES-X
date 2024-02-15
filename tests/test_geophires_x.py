@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from geophires_x.OptionList import PlantType
 from geophires_x_client import GeophiresXClient
@@ -192,7 +193,29 @@ class GeophiresXTestCase(BaseTestCase):
                             msg=f'Example test: {example_file_path}',
                         )
                     else:
-                        raise ae
+                        msg = 'Results are not approximately equal within any percentage <100'
+                        percent_diff = self._get_unequal_dicts_approximate_percent_difference(
+                            expected_result.result, geophires_result.result
+                        )
+
+                        if percent_diff is not None:
+                            msg = (
+                                f'Results are approximately equal within {percent_diff}%. '
+                                f'(Run `regenerate-example-result.sh {example_file_path.split(".")[0]}` '
+                                f'from tests/ if this difference is expected due to calculation updates)'
+                            )
+
+                        raise AssertionError(msg) from ae
+
+    def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
+        for i in range(99):
+            try:
+                self.assertDictAlmostEqual(d1, d2, percent=i)
+                return i
+            except AssertionError:
+                pass
+
+        return None
 
     def test_runtime_error_with_error_code(self):
         client = GeophiresXClient()
@@ -242,14 +265,18 @@ class GeophiresXTestCase(BaseTestCase):
 
         result_meters_input = client.get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_meters.txt'))
+                from_file_path=self._get_test_file_path(
+                    Path('geophires_x_tests/cylindrical_reservoir_input_depth_meters.txt')
+                )
             )
         )
         del result_meters_input.result['metadata']
 
         result_kilometers_input = client.get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('cylindrical_reservoir_input_depth_kilometers.txt'))
+                from_file_path=self._get_test_file_path(
+                    Path('geophires_x_tests/cylindrical_reservoir_input_depth_kilometers.txt')
+                )
             )
         )
         del result_kilometers_input.result['metadata']

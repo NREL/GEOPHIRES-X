@@ -1756,7 +1756,7 @@ class Economics:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # capital costs
         # well costs (using GeoVision drilling correlations). These are calculated whether totalcapcostvalid = 1
@@ -1766,40 +1766,44 @@ class Economics:
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
         else:
             # if depth is > 7000 m, we don't have a correlation for it, so we must use the SIMPLE logic
-            checkdepth = model.reserv.depth.value
-            if model.reserv.depth.CurrentUnits != LengthUnit.METERS:
-                checkdepth = checkdepth * 1000.0
+            checkdepth = model.reserv.depth.quantity().to('m').magnitude
             if (
                 checkdepth > 7000.0 or checkdepth < 500) and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
-                print("Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
-                model.logger.warning(
-                    "Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m")
+                msg = f'Simple user-specified cost per meter used for drilling depth <500 or >7000 m ({checkdepth}m)'
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
                 self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
-            if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:  # use SIMPLE approach
+
+            if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
+                # use SIMPLE approach
                 if hasattr(model.wellbores, 'Configuration'):
                     if model.wellbores.Configuration.value == Configuration.ULOOP:
-                        if hasattr(model.reserv,
-                                   'InputDepth'):  # must be using simple cylindrical model, which has an Input and Output Depth
+                        if hasattr(model.reserv, 'InputDepth'):
+                            # must be using simple cylindrical model, which has an Input and Output Depth
                             self.C1well = ((self.Vertical_drilling_cost_per_m.value *
-                                            (model.reserv.InputDepth.value * 1000.0)) +
+                                            (model.reserv.InputDepth.quantity().to('m').magnitude)) +
                                            (self.Vertical_drilling_cost_per_m.value * (
-                                                   model.reserv.OutputDepth.value * 1000.0)) +
+                                                   model.reserv.OutputDepth.quantity().to('m').magnitude)) +
                                            (
                                                    self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
                         else:
                             if hasattr(model.wellbores, 'Nonvertical_length'):
                                 self.C1well = ((2 * self.Vertical_drilling_cost_per_m.value *
-                                                (model.reserv.depth.value * 1000.0)) +
+                                                (model.reserv.depth.quantity().to('m').magnitude)) +
                                                (
                                                        self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
                             else:
                                 self.C1well = (2 * self.Vertical_drilling_cost_per_m.value * (
-                                        model.reserv.depth.value * 1000.0)) * 1E-6
-                    else:  # Coaxial
-                        self.C1well = ((self.Vertical_drilling_cost_per_m.value * (model.reserv.depth.value * 1000.0)) +
+                                        model.reserv.depth.value.quantity().to('m').magnitude)) * 1E-6
+                    else:
+                        # Coaxial
+                        self.C1well = ((self.Vertical_drilling_cost_per_m.value * (model.reserv.depth.quantity().to('m').magnitude)) +
                                        (
                                                self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
 
+                else:
+                    self.C1well = self.Vertical_drilling_cost_per_m.value * model.reserv.depth.quantity().to(
+                        'm').magnitude * 1E-6
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL:
                 self.C1well = (
                                       0.3021 * checkdepth ** 2 + 584.9112 * checkdepth + 751368.) * 1E-6  # well drilling and completion cost in M$/well
@@ -2279,7 +2283,7 @@ class Economics:
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOH(self, model)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "Economics"

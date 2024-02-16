@@ -1,4 +1,5 @@
 import inspect
+import numbers
 import os.path
 import unittest
 
@@ -16,10 +17,19 @@ class BaseTestCase(unittest.TestCase):
     def _list_test_files_dir(self, test_files_dir: str):
         return os.listdir(self._get_test_file_path(test_files_dir))
 
-    def assertDictAlmostEqual(self, expected, actual, msg=None, places=7):
+    def assertAlmostEqualWithinPercentage(self, expected, actual, msg=None, percent=5):
+        if isinstance(expected, numbers.Real):
+            self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
+        else:
+            self.assertEqual(expected, actual, msg)
+
+    def assertDictAlmostEqual(self, expected, actual, msg=None, places=7, percent=None):
         """
         https://stackoverflow.com/a/53081544/21380804
         """
+
+        if percent is not None:
+            places = None
 
         # check if both inputs are dicts
         self.assertIsInstance(expected, dict, 'First argument is not a dictionary')
@@ -31,13 +41,19 @@ class BaseTestCase(unittest.TestCase):
         # check each key
         for key, value in expected.items():
             if isinstance(value, dict):
-                self.assertDictAlmostEqual(expected[key], actual[key], msg=msg, places=places)
+                self.assertDictAlmostEqual(expected[key], actual[key], msg=msg, places=places, percent=percent)
             elif isinstance(value, list):
-                self.assertListAlmostEqual(expected[key], actual[key], msg=msg, places=places)
+                self.assertListAlmostEqual(expected[key], actual[key], msg=msg, places=places, percent=percent)
             else:
-                self.assertAlmostEqual(expected[key], actual[key], places=places, msg=msg)
+                if places is not None:
+                    self.assertAlmostEqual(expected[key], actual[key], places=places, msg=msg)
+                else:
+                    self.assertAlmostEqualWithinPercentage(expected[key], actual[key], percent=percent, msg=msg)
 
-    def assertListAlmostEqual(self, expected, actual, msg=None, places=7):
+    def assertListAlmostEqual(self, expected, actual, msg=None, places=7, percent=None):
+        if percent is not None:
+            places = None
+
         # check if both inputs are dicts
         self.assertIsInstance(expected, list, 'First argument is not a list')
         self.assertIsInstance(actual, list, 'Second argument is not a list')
@@ -50,11 +66,14 @@ class BaseTestCase(unittest.TestCase):
             v1 = expected[i]
             v2 = actual[i]
             if isinstance(v1, dict):
-                self.assertDictAlmostEqual(v1, v2, msg=msg, places=places)
+                self.assertDictAlmostEqual(v1, v2, msg=msg, places=places, percent=percent)
             elif isinstance(v1, list):
-                self.assertListAlmostEqual(v1, v2, msg=msg, places=places)
+                self.assertListAlmostEqual(v1, v2, msg=msg, places=places, percent=percent)
             else:
-                self.assertAlmostEqual(v1, v2, places=places, msg=msg)
+                if places is not None:
+                    self.assertAlmostEqual(v1, v2, places=places, msg=msg)
+                else:
+                    self.assertAlmostEqualWithinPercentage(v1, v2, percent=percent, msg=msg)
 
     def assertFileContentsEqual(self, expected, actual):
         with open(

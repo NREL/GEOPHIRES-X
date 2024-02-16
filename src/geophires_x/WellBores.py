@@ -1,9 +1,11 @@
 import math
 import numpy as np
+from pint.facets.plain import PlainQuantity
+
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from geophires_x.GeoPHIRESUtils import VaporPressureWater as vaporpressurewater
-from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
-from geophires_x.GeoPHIRESUtils import ViscosityWater as viscositywater
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, lithostatic_pressure_MPa
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
 import geophires_x.Model as Model
 from .OptionList import ReservoirModel
@@ -83,12 +85,21 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens
     # in upper section (because surrounding rock temperature is lowest in upper section)
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    rhowater = np.array([densitywater(t, enable_fallback_calculation=True) for t in
-                         Taverage])  # replace with correlation based on Tprodaverage
+    rhowater = np.array([
+        density_water_kg_per_m3(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
 
-    # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-    muwater = np.array([viscositywater(t, enable_fallback_calculation=True) for t in Taverage])  # replace with correlation based on Tprodaverage
+    muwater = np.array([
+        viscosity_water_Pa_sec(
+            t,
+            pressure=model.reserv.lithostatic_pressure(),
+        )
+        for t in Taverage
+    ])  # replace with correlation based on Tprodaverage
 
     v = wellflowrate / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4.0 * wellflowrate / (muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -141,9 +152,11 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = densitywater(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
+                * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
+
     # replace with correlation based on Tinjaverage
-    muwater = viscositywater(Taverage) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -268,13 +281,38 @@ def InjPressureDropsAndPumpingPowerUsingImpedenceModel(f1: float, vinj: float, r
 
     return newDPOverall, PumpingPower, DPInjWell
 
+def get_hydrostatic_pressure_kPa(
+        Trock_degC: float,
+        Tsurf_degC: float,
+        depth_m: float,
+        gradient_C_per_km: float,
+        lithostatic_pressure: PlainQuantity) -> float:
+    """
+    Correlation cited as being from Xie, Bloomfield, and Shook in
+    https://workingincaes.inl.gov/SiteAssets/CAES%20Files/FORGE/inl_ext-16-38751%20GETEM%20User%20Manual%20Final.pdf
+    """
+    CP = 4.64E-7
+    CT = 9E-4 / (30.796 * Trock_degC ** (-0.552))
+    return 0 + 1. / CP * (math.exp(
+        density_water_kg_per_m3(Tsurf_degC, pressure=lithostatic_pressure) * 9.81 * CP / 1000 * (
+            depth_m - CT / 2 * gradient_C_per_km * depth_m ** 2)) - 1)
 
-def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostaticpressurecorrelation: bool,
-                                                productionwellpumping: bool, usebuiltinppwellheadcorrelation: bool,
-                                                Trock: float, Tsurf: float, depth: float, gradient: float,
-                                                ppwellhead: float, PI: float, wellflowrate: float, f3: float,
-                                                vprod: float, prodwelldiam: float, nprod: int, pumpeff: float,
-                                                rhowaterprod: float) -> tuple:
+
+def ProdPressureDropAndPumpingPowerUsingIndexes(
+        model: Model,
+        productionwellpumping: bool,
+        usebuiltinppwellheadcorrelation: bool,
+        Trock_degC: float,
+        depth_m: float,
+        ppwellhead: float,
+        PI: float,
+        wellflowrate: float,
+        f3: float,
+        vprod: float,
+        prodwelldiam: float,
+        nprod: int,
+        pumpeff: float,
+        rhowaterprod: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using indexes
         :param model: The container class of the application, giving access to everything else, including the logger
@@ -285,13 +323,13 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
         :type productionwellpumping: bool
         :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
-        :param Trock: rock temperature [C]
-        :type Trock: float
-        :param Tsurf: surface temperature [C]
-        :type Tsurf: float
-        :param depth: depth of the well [m]
-        :type depth: float
-        :param gradient: geothermal gradient [C/km]
+        :param Trock_degC: rock temperature [C]
+        :type Trock_degC: float
+        :param Tsurf_degC: surface temperature [C]
+        :type Tsurf_degC: float
+        :param depth_m: depth of the well [m]
+        :type depth_m: float
+        :param gradient_C_per_km: geothermal gradient [C/km]
         :param ppwellhead: production wellhead pressure [kPa]
         :type ppwellhead: float
         :param PI: productivity index [kg/s/bar]
@@ -316,54 +354,52 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     # initialize PumpingPower value in case it doesn't get set.
     PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod))
 
-    # reservoir hydrostatic pressure [kPa]
-    if usebuiltinhydrostaticpressurecorrelation:
-        CP = 4.64E-7
-        CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (
-                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+    # reservoir hydrostatic pressure
+    Phydrostaticcalc_kPa = model.wellbores.Phydrostaticcalc.quantity().to('kPa').magnitude
 
     if productionwellpumping:
-        # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
-        Pexcess = 344.7
+        # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
+        Pexcess_kPa = 344.7  # = 50 psi
 
-        # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+        # Minimum production pump inlet pressure and minimum wellhead pressure
+        Pminimum_kPa = vapor_pressure_water_kPa(
+            Trock_degC,
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+        ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
-            Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
+            Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
             Pprodwellhead = ppwellhead
-            if Pprodwellhead < Pminimum:
-                Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+            if Pprodwellhead < Pminimum_kPa:
+                Pprodwellhead = Pminimum_kPa
+                msg = ('Provided production wellhead pressure under minimum pressure. '
+                       'GEOPHIRES will assume minimum wellhead pressure')
+
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
         PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth = depth + (Pminimum - Phydrostaticcalc + wellflowrate / PIkPa) / (
+        pumpdepth = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate / PIkPa) / (
             f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
         pumpdepthfinal = np.max(pumpdepth)
         if pumpdepthfinal < 0.0:
             pumpdepthfinal = 0.0
-            print("Warning: GEOPHIRES calculates negative production well pumping depth. \
-            No production well pumps will be assumed")
-            model.logger.warning(
-                "GEOPHIRES calculates negative production well pumping depth. \
-                No production well pumps will be assumed")
+            msg = ('GEOPHIRES calculates negative production well pumping depth. '
+                   'No production well pumps will be assumed')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
         elif pumpdepthfinal > 600.0:
-            print("Warning: GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
-            model.logger.warning("GEOPHIRES calculates production pump depth to be deeper than 600 m. \
-            Verify reservoir pressure, production well flow rate and production well dimensions")
+            msg = ('GEOPHIRES calculates production pump depth to be deeper than 600 m. '
+                   'Verify reservoir pressure, production well flow rate and production well dimensions')
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
-        DPProdWell = Pprodwellhead - (Phydrostaticcalc - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth / 1E3 - f3 *
-                                      (rhowaterprod * vprod ** 2 / 2.) * (depth / prodwelldiam) / 1E3)
+        DPProdWell = Pprodwellhead - (Phydrostaticcalc_kPa - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
+                                      (rhowaterprod * vprod ** 2 / 2.) * (depth_m / prodwelldiam) / 1E3)
         # [MWe] total pumping power for production wells
         PumpingPowerProd = DPProdWell * nprod * wellflowrate / rhowaterprod / pumpeff / 1E3
         PumpingPowerProd = np.array([0. if x < 0. else x for x in PumpingPowerProd])
@@ -378,17 +414,30 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrosta
     return PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead
 
 
-def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostaticpressurecorrelation: bool,
-                                               productionwellpumping: bool, usebuiltinppwellheadcorrelation: bool,
-                                               usebuiltinoutletplantcorrelation: bool, Trock: float, Tsurf: float,
-                                               depth: float, gradient: float, ppwellhead: float, II: float,
-                                               wellflowrate: float, f1: float, vinj: float, injwelldiam: float,
-                                               nprod: int, ninj: int, waterloss: float, pumpeff: float,
-                                               rhowaterinj: float, Pplantoutlet: float, PumpingPowerProd) -> tuple:
+def InjPressureDropAndPumpingPowerUsingIndexes(
+        model: Model,
+        productionwellpumping: bool,
+        usebuiltinppwellheadcorrelation: bool,
+        usebuiltinoutletplantcorrelation: bool,
+        Trock_degC: float,
+        depth_m: float,
+        ppwellhead: float,
+        II: float,
+        wellflowrate: float,
+        f1: float,
+        vinj: float,
+        injwelldiam: float,
+        nprod: int,
+        ninj: int,
+        waterloss: float,
+        pumpeff: float,
+        rhowaterinj: float,
+        Pplantoutlet: float,
+        PumpingPowerProd) -> tuple:
     """
      Calculate PressureDrops and Pumping Power needed for the injection well using indexes
-        :param depth: depth of the well [m]
-        :type depth: float
+        :param depth_m: depth of the well [m]
+        :type depth_m: float
         :param wellflowrate: flow rate of the fluid in the well [kg/s]
         :type wellflowrate: float
         :param pumpeff: pump efficiency [-]
@@ -397,12 +446,12 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
         :type nprod: int
         :param ppwellhead: production wellhead pressure [kPa]
         :type ppwellhead: float
-        :param gradient: geothermal gradient [C/km]
-        :type gradient: float
+        :param gradient_C_per_km: geothermal gradient [C/km]
+        :type gradient_C_per_km: float
         :param Tsurf: surface temperature [C]
         :type Tsurf: float
-        :param Trock: rock temperature [C]
-        :type Trock: float
+        :param Trock_degC: rock temperature [C]
+        :type Trock_degC: float
         :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
         :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
@@ -436,38 +485,36 @@ def InjPressureDropAndPumpingPowerUsingIndexes(model: Model, usebuiltinhydrostat
     """
     PumpingPowerInj = DPInjWell = Pprodwellhead = [0.0]  # initialize value in case it doesn't get set.
 
-    # reservoir hydrostatic pressure [kPa]
-    if usebuiltinhydrostaticpressurecorrelation:
-        CP = 4.64E-7
-        CT = 9E-4 / (30.796 * Trock ** (-0.552))
-        Phydrostaticcalc = 0 + 1. / CP * (
-                math.exp(densitywater(Tsurf) * 9.81 * CP / 1000 * (depth - CT / 2 * gradient * depth ** 2)) - 1)
+    # reservoir hydrostatic pressure
+    Phydrostaticcalc_kPa = model.wellbores.Phydrostaticcalc.quantity().to('kPa').magnitude
 
     if productionwellpumping:
-        # [kPa] = 50 psi. Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
-        Pexcess = 344.7
+        # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
+        Pexcess_kPa = 344.7 # = 50 psi
 
-        # [kPa] is minimum production pump inlet pressure and minimum wellhead pressure
-        # FIXME TODO - get rid of fallback calculations https://github.com/NREL/GEOPHIRES-X/issues/110
-        Pminimum = vaporpressurewater(Trock, enable_fallback_calculation=True) + Pexcess
+        # Minimum production pump inlet pressure and minimum wellhead pressure
+        Pminimum_kPa = vapor_pressure_water_kPa(
+            Trock_degC,
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+        ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
-            Pprodwellhead = Pminimum  # production wellhead pressure [kPa]
+            Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
             Pprodwellhead = ppwellhead
-            if Pprodwellhead < Pminimum:
-                Pprodwellhead = Pminimum
-                print("Warning: provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
-                model.logger.warning("Provided production wellhead pressure under minimum pressure. \
-                GEOPHIRES will assume minimum wellhead pressure")
+            if Pprodwellhead < Pminimum_kPa:
+                Pprodwellhead = Pminimum_kPa
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead}) under minimum pressure ({Pminimum_kPa}). '
+                       f'GEOPHIRES will assume minimum wellhead pressure')
+                print(f'Warning: {msg}')
+                model.logger.warning(msg)
 
     IIkPa = II / 100.0  # convert II from kg/s/bar to kg/s/kPa
 
     # necessary injection wellhead pressure [kPa]
-    Pinjwellhead = Phydrostaticcalc + wellflowrate * (
-        1 + waterloss) * nprod / ninj / IIkPa - rhowaterinj * 9.81 * depth / 1E3 + f1 * (
-                       rhowaterinj * vinj ** 2 / 2) * (depth / injwelldiam) / 1E3
+    Pinjwellhead = Phydrostaticcalc_kPa + wellflowrate * (
+        1 + waterloss) * nprod / ninj / IIkPa - rhowaterinj * 9.81 * depth_m / 1E3 + f1 * (
+                       rhowaterinj * vinj ** 2 / 2) * (depth_m / injwelldiam) / 1E3
 
     # plant outlet pressure [kPa]
     if usebuiltinoutletplantcorrelation:
@@ -657,8 +704,7 @@ class WellBores:
         )
         self.Phydrostatic = self.ParameterDict[self.Phydrostatic.Name] = floatParameter(
             "Reservoir Hydrostatic Pressure",
-            value=1E2,
-            DefaultValue=1E2,
+            DefaultValue=29430, # Calculated from example1
             Min=1E2,
             Max=1E5,
             UnitType=Units.PRESSURE,
@@ -850,7 +896,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # Deal with all the parameter values that the user has provided. They should really only provide values that
         # they want to change from the default values, but they can provide a value that is already set because it is a
@@ -912,7 +958,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -921,6 +967,12 @@ class WellBores:
         # and if you do, do it before or after you call you own version of this method.  If you do, you can also
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
         # making all thr values available to your methods. but you had better have set all the parameters!
+
+        self.Phydrostaticcalc.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
+                                                                   model.reserv.depth.quantity().to('m').magnitude,
+                                                                   model.reserv.averagegradient.value,
+                                                                   model.reserv.lithostatic_pressure()) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
+            self.Phydrostaticcalc.CurrentUnits).magnitude
 
         # special case: production and injection well diameters are input as inches and call calculations
         # assume meters! Check and change if needed, assuming anything > 2 must be talking about inches
@@ -936,7 +988,7 @@ class WellBores:
         # calculate wellbore temperature drop
         self.ProdTempDrop.value = self.tempdropprod.value  # if not Ramey, hard code a user-supplied temperature drop.
         if self.rameyoptionprod.value:
-            if hasattr(model.reserv, "InputDepth"):
+            if hasattr(model.reserv, 'InputDepth'):
                 d = model.reserv.InputDepth.value
             else:
                 d = model.reserv.depth.value
@@ -995,23 +1047,22 @@ class WellBores:
 
         else:  # PI and II are used
             self.PumpingPower.value, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
-                ProdPressureDropAndPumpingPowerUsingIndexes(model, self.usebuiltinhydrostaticpressurecorrelation,
+                ProdPressureDropAndPumpingPowerUsingIndexes(model,
                                                             self.productionwellpumping.value,
                                                             self.usebuiltinppwellheadcorrelation,
                                                             model.reserv.Trock.value,
-                                                            model.reserv.Tsurf.value, model.reserv.depth.value,
-                                                            model.reserv.averagegradient.value, self.ppwellhead.value,
+                                                            model.reserv.depth.value,
+                                                            self.ppwellhead.value,
                                                             self.PI.value, self.prodwellflowrate.value, f3, vprod,
                                                             self.prodwelldiam.value, self.nprod.value,
                                                             model.surfaceplant.pump_efficiency.value, self.rhowaterprod)
             self.PumpingPower.value, self.PumpingPowerInj.value, self.DPInjWell.value, model.surfaceplant.plant_outlet_pressure.value, self.Pprodwellhead.value = \
-                InjPressureDropAndPumpingPowerUsingIndexes(model, self.usebuiltinhydrostaticpressurecorrelation,
+                InjPressureDropAndPumpingPowerUsingIndexes(model,
                                                            self.productionwellpumping.value,
                                                            self.usebuiltinppwellheadcorrelation,
                                                            model.surfaceplant.usebuiltinoutletplantcorrelation.value,
-                                                           model.reserv.Trock.value, model.reserv.Tsurf.value,
+                                                           model.reserv.Trock.value,
                                                            model.reserv.depth.value,
-                                                           model.reserv.averagegradient.value,
                                                            self.ppwellhead.value, self.II.value,
                                                            self.prodwellflowrate.value, f1, vinj,
                                                            self.injwelldiam.value, self.nprod.value,
@@ -1020,4 +1071,4 @@ class WellBores:
                                                            model.surfaceplant.plant_outlet_pressure.value,
                                                            self.PumpingPowerProd.value)
 
-        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'complete {self.__class__.__name__}: {__name__}')

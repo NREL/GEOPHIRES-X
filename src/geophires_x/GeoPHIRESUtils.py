@@ -1,20 +1,26 @@
 from __future__ import annotations
 
 import logging
+import os
+import sys
 from os.path import exists
 import dataclasses
 import json
 import numbers
 from functools import lru_cache
+from typing import Optional
 
+import pint
+import scipy
+from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
 import numpy as np
 
-from geophires_x.Parameter import *
+import CoolProp.CoolProp as CP
 
-from iapws.iapws97 import IAPWS97
+from geophires_x.Parameter import ParameterEntry
 
-_logger = logging.getLogger('root')
+_logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
 _T = np.array(
     [
@@ -83,14 +89,28 @@ _UtilEff = np.array(
 
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
+_ureg = pint.get_application_registry()
+_ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
 
-@lru_cache(maxsize=None)
-def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+
+def quantity(value: float, unit: str) -> PlainQuantity:
+    """
+    :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
+        to import the Quantity TypeAlias
+    """
+    return _ureg.Quantity(value, unit)
+
+
+@lru_cache
+def density_water_kg_per_m3(
+    Twater_degC: float,
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the density of water as a function of temperature.
 
     Args:
         Twater_degC: The temperature of water in degrees C.
+        pressure: Pressure - should be provided
     Returns:
         The density of water in kg/m³.
     Raises:
@@ -100,20 +120,17 @@ def DensityWater(Twater_degC: float, enable_fallback_calculation=False) -> float
         raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).rho
-    except NotImplementedError as nie:
-        if enable_fallback_calculation:
-            _logger.warning(f'DensityWater: Fallback calculation triggered for {Twater_degC}C')
+        if pressure is not None:
+            return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water')
+        else:
+            _logger.warning(f'density_water: No pressure provided, using vapor quality=0 instead')
+            return CP.PropsSI('D', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
-            Twater_K = celsius_to_kelvin(Twater_degC)
-            # water density correlation as used in Geophires v1.2 [kg/m3]
-            rho_water = (.7983223 + (1.50896E-3 - 2.9104E-6 * Twater_K) * Twater_K) * 1E3
-            return rho_water
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
-@lru_cache(maxsize=None)
 def celsius_to_kelvin(celsius: float) -> float:
     """
     Convert temperature from Celsius to Kelvin.
@@ -126,18 +143,22 @@ def celsius_to_kelvin(celsius: float) -> float:
         ValueError: If celsius is not a float or convertible to float.
     """
     if not isinstance(celsius, (int, float)):
-        raise ValueError("Invalid input for celsius. celsius must be a number.")
+        raise ValueError(f"Invalid input for celsius ({celsius}). celsius must be a number.")
 
     CELSIUS_TO_KELVIN_CONSTANT = 273.15
     return celsius + CELSIUS_TO_KELVIN_CONSTANT
 
 
-@lru_cache(maxsize=None)
-def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+@lru_cache
+def viscosity_water_Pa_sec(
+        Twater_degC: float,
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
-    The ViscosityWater function is used to calculate the dynamic viscosity of water as a function of temperature.
+    Calculate the dynamic viscosity of water as a function of temperature and pressure.
+
     Args:
         Twater_degC: the temperature of water in degrees C
+        pressure: Pressure - should be provided
     Returns:
         Viscosity of water in Pa·s (Ns/m2)
     Raises:
@@ -145,25 +166,28 @@ def ViscosityWater(Twater_degC: float, enable_fallback_calculation=False) -> flo
     """
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).mu
-    except NotImplementedError as nie:
-        if enable_fallback_calculation:
-            _logger.warning(f'ViscosityWater: Fallback calculation triggered for {Twater_degC}C')
+        if pressure is not None:
+            return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water')
+        else:
+            _logger.warning(f'viscosity_water: No pressure provided, using vapor quality=0 instead')
+            return CP.PropsSI('V', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
-            # accurate to within 2.5% from 0 to 370 degrees C [Ns/m2]
-            muwater = 2.414E-5 * np.power(10, 247.8 / (Twater_degC + 273.15 - 140))
-            return muwater
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
-@lru_cache(maxsize=None)
-def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+@lru_cache
+def heat_capacity_water_J_per_kg_per_K(
+    Twater_degC: float,
+    pressure: Optional[PlainQuantity] = None,
+) -> float:
     """
     Calculate the isobaric specific heat capacity (c_p) of water as a function of temperature.
 
     Args:
         Twater_degC: The temperature of water in degrees C.
+        pressure: Pressure - should be provided
     Returns:
         The isobaric specific heat capacity of water as a function of temperature in J/(kg·K).
     Raises:
@@ -177,26 +201,18 @@ def HeatCapacityWater(Twater_degC: float, enable_fallback_calculation=False) -> 
         )
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).cp * 1e3
-    except NotImplementedError as nie:
-        if enable_fallback_calculation:
-            _logger.warning(f'HeatCapacityWater: Fallback calculation triggered for {Twater_degC}C')
+        if pressure is not None:
+            return CP.PropsSI('C', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water')
+        else:
+            _logger.warning(f'heat_capacity_water: No pressure provided, using vapor quality=0 instead')
+            return CP.PropsSI('C', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water')
 
-            Twater = (Twater_degC + 273.15) / 1000
-            A = -203.6060
-            B = 1523.290
-            C = -3196.413
-            D = 2474.455
-            E = 3.855326
-            # water specific heat capacity in J/(kg·K)
-            cpwater = (A + B * Twater + C * Twater ** 2 + D * Twater ** 3 + E / (Twater ** 2)) / 18.02 * 1000
-
-            return cpwater
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
+                         f'are out of range or otherwise could not be used to calculate') from e
 
 
-@lru_cache(maxsize=None)
+@lru_cache
 def RecoverableHeat(Twater_degC: float) -> float:
     """
     the RecoverableHeat function is used to calculate the recoverable heat fraction as a function of temperature
@@ -227,13 +243,16 @@ def RecoverableHeat(Twater_degC: float) -> float:
     return recoverable_heat
 
 
-@lru_cache(maxsize=None)
-def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) -> float:
+@lru_cache
+def vapor_pressure_water_kPa(
+    Twater_degC: float,
+    pressure: Optional[PlainQuantity] = None) -> float:
     """
-    The VaporPressureWater function is used to calculate the vapor pressure of water as a function of temperature.
+    Calculate the vapor pressure of water as a function of temperature.
 
     Args:
         Twater_degC: the temperature of water in degrees C
+        pressure: Pressure - should be provided
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
@@ -247,29 +266,25 @@ def VaporPressureWater(Twater_degC: float, enable_fallback_calculation=False) ->
         raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(Twater_degC), x=0).P * 1e3
-    except NotImplementedError as nie:
-        if enable_fallback_calculation:
-            _logger.warning(f'VaporPressureWater: Fallback calculation triggered for {Twater_degC}C')
-
-            if Twater_degC < 100:
-                A = 8.07131
-                B = 1730.63
-                C = 233.426
-            else:
-                A = 8.14019
-                B = 1810.94
-                C = 244.485
-            vp = 133.322 * (10 ** (A - B / (C + Twater_degC))) / 1000  # water vapor pressure in kPa using Antione Equation
-            return vp
-
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from nie
+        if pressure is not None:
+            return (quantity(
+                CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water'), 'Pa')
+                    .to('kPa').magnitude)
+        else:
+            _logger.warning(f'vapor_pressure_water: No pressure provided, using vapor quality=0 instead')
+            return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
+                    .to('kPa').magnitude)
 
 
-@lru_cache(maxsize=None)
-def EntropyH20_func(temperature_degC: float) -> float:
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+
+
+@lru_cache
+def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
     """
-    the EntropyH20_func function is used to calculate the entropy of water as a function of temperature
+    Calculate the entropy of water as a function of temperature
+    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C
@@ -284,15 +299,16 @@ def EntropyH20_func(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).s
-    except NotImplementedError as nie:
-        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
+        return CP.PropsSI('S', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
 
-@lru_cache(maxsize=None)
-def EnthalpyH20_func(temperature_degC: float) -> float:
+@lru_cache
+def enthalpy_water_kJ_per_kg(temperature_degC: float) -> float:
     """
-    the EnthalpyH20_func function is used to calculate the enthalpy of water as a function of temperature
+    Calculate the enthalpy of water as a function of temperature
+    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C (float)
@@ -308,12 +324,12 @@ def EnthalpyH20_func(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return IAPWS97(T=celsius_to_kelvin(temperature_degC), x=0).h
-    except NotImplementedError as nie:
-        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from nie
+        return CP.PropsSI('H', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+    except (NotImplementedError, ValueError) as e:
+        raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
 
-@lru_cache(maxsize=None)
+@lru_cache
 def UtilEff_func(temperature_degC: float) -> float:
     """
     the UtilEff_func function is used to calculate the utilization efficiency of the system as a function of temperature
@@ -336,14 +352,20 @@ def UtilEff_func(temperature_degC: float) -> float:
     return util_eff
 
 
-def read_input_file(return_dict_1, logger=None):
+def read_input_file(return_dict_1, logger=None, input_file_name=None):
     """
     Read input file and return a dictionary of parameters
     :param return_dict_1: dictionary of parameters
     :param logger: logger object
     :return: dictionary of parameters
     :rtype: dict
+
+    FIXME modifies dict instead of returning it - it should do what the doc says it does and return a dict instead,
+      relying on mutation of parameters is Bad
     """
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
 
     logger.info(f'Init {__name__}')
 
@@ -351,17 +373,22 @@ def read_input_file(return_dict_1, logger=None):
     # If it doesn't exist, simply run the default model without any inputs
 
     # read input data (except input from optional filenames)
-    if len(sys.argv) > 1:
-        f_name = sys.argv[1]
+    if input_file_name is None:
+        logger.warning('Input file name not provided, checking sys.argv')
+        if len(sys.argv) > 1:
+            input_file_name = sys.argv[1]
+            logger.warning(f'Using input file from sys.argv: {input_file_name}')
+
+    if input_file_name is not None:
         content = []
-        if exists(f_name):
-            logger.info(f'Found filename: {f_name}. Proceeding with run using input parameters from that file')
-            with open(f_name, encoding='UTF-8') as f:
+        if exists(input_file_name):
+            logger.info(f'Found filename: {input_file_name}. Proceeding with run using input parameters from that file')
+            with open(input_file_name, encoding='UTF-8') as f:
                 # store all input in one long string that will be passed to all objects
                 # so they can parse out their specific parameters (and ignore the rest)
                 content = f.readlines()
         else:
-            raise FileNotFoundError(f'Unable to read input file: File {f_name} not found')
+            raise FileNotFoundError(f'Unable to read input file: File {input_file_name} not found')
 
         # successful read of data into list.  Now make a dictionary with all the parameter entries.
         # Index will be the unique name of the parameter.
@@ -427,3 +454,24 @@ class _EnhancedJSONEncoder(json.JSONEncoder):
 
 def json_dumpse(obj) -> str:
     return json.dumps(obj, cls=_EnhancedJSONEncoder)
+
+
+def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
+    """
+    Calculate lithostatic pressure in a reservoir.
+
+    Args:
+        rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
+        depth_m (float): Depth of the reservoir in meters.
+    Returns:
+        float: Lithostatic pressure in megapascals (MPa).
+    """
+
+    g = scipy.constants.g  # Acceleration due to gravity (m/s^2)
+
+    # Calculate lithostatic pressure
+    pressure_Pa = rho_kg_per_m3 * g * depth_m
+
+    pressure_mpa = quantity(pressure_Pa, 'Pa').to('MPa').magnitude
+
+    return pressure_mpa

@@ -3,13 +3,15 @@ import os
 import math
 from functools import lru_cache
 import numpy as np
+from pint.facets.plain import PlainQuantity
+
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
 from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter
 from .Units import *
 import geophires_x.Model as Model
 
-from geophires_x.GeoPHIRESUtils import HeatCapacityWater as heatcapacitywater
-from geophires_x.GeoPHIRESUtils import DensityWater as densitywater
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, lithostatic_pressure_MPa
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
 class Reservoir:
     """
@@ -774,10 +776,15 @@ class Reservoir:
 
         if self.resoption.value != ReservoirModel.SUTRA:
             # calculate reservoir water properties
-            self.cpwater.value = heatcapacitywater(
-                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
-            self.rhowater.value = densitywater(
-                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5)
+            self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+                pressure=self.lithostatic_pressure()
+            )
+
+            self.rhowater.value = density_water_kg_per_m3(
+                model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+                pressure=self.lithostatic_pressure()
+            )
 
             # temperature gain in injection wells
             model.wellbores.Tinj.value = model.wellbores.Tinj.value + model.wellbores.tempgaininj.value
@@ -787,3 +794,9 @@ class Reservoir:
             self.Trock.value - model.wellbores.Tinj.value) / 1E15  # 10^15 J
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+    def lithostatic_pressure(self) -> PlainQuantity:
+        return quantity(lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                                 self.depth.quantity().to('m').magnitude), 'MPa')
+
+

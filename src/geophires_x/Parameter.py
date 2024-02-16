@@ -11,6 +11,8 @@ import pint
 
 from abc import ABC
 
+from pint.facets.plain import PlainQuantity
+
 from geophires_x.Units import *
 
 ureg = pint.get_application_registry()
@@ -19,11 +21,10 @@ ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), '
 
 class HasQuantity(ABC):
 
-    def quantity(self) -> Any:
+    def quantity(self) -> PlainQuantity:
         """
-        :rtype: pint.registry.Quantity; TODO - importing this type appears to be incompatible with python 3.8
-            due to pint's use of a TypeAlias to declare it, hence why we declare return type as Any and use this
-            documentation to specify rtype for now.
+        :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
+            to import the Quantity TypeAlias
         """
         return ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
@@ -119,7 +120,7 @@ class boolParameter(Parameter):
         DefaultValue (bool, True):  The default value of that parameter
     """
 
-    value: bool = True
+    value: bool = True # FIXME set from DefaultValue
     DefaultValue: bool = value
     json_parameter_type: str = 'boolean'
 
@@ -136,7 +137,7 @@ class intParameter(Parameter):
         AllowableRange (list): A list of the valid values
     """
 
-    value: int = 0
+    value: int = 0 # FIXME set from DefaultValue
     DefaultValue: int = value
     AllowableRange: List[int] = field(default_factory=list)
     json_parameter_type: str = 'integer'
@@ -157,8 +158,13 @@ class floatParameter(Parameter):
                 which means that any value is valid by default
     """
 
-    value: float = 0.0
-    DefaultValue: float = value
+    def __post_init__(self):
+        if self.value is None:
+            self.value = self.DefaultValue
+
+    value: float = None
+
+    DefaultValue: float = 0.0
     Min: float = -1.8e30
     Max: float = 1.8e30
     json_parameter_type: str = 'number'
@@ -175,7 +181,7 @@ class strParameter(Parameter):
         DefaultValue (str, ""):  The default value of that parameter
     """
 
-    value: str = ""
+    value: str = "" # FIXME set from DefaultValue
     DefaultValue: str = value
     json_parameter_type: str = 'string'
 
@@ -195,7 +201,7 @@ class listParameter(Parameter):
             which means that any value is valid by default
     """
 
-    value: List[float] = field(default_factory=list)
+    value: List[float] = field(default_factory=list) # FIXME set from DefaultValue
     DefaultValue: List[float] = field(default_factory=list)
     Min: float = -1.8e308
     Max: float = 1.8e308

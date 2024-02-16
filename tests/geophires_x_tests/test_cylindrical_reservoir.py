@@ -9,11 +9,9 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Parameter import ParameterEntry
 
-# ruff: noqa: I001
-from geophires_x.Reservoir import densitywater
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
-# ruff: noqa: I001
-from geophires_x.Reservoir import heatcapacitywater
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K as heatcapacitywater
 
 # ruff: noqa: I001
 from geophires_x.CylindricalReservoir import CylindricalReservoir
@@ -53,13 +51,18 @@ class CylindricalReservoirTestCase(BaseTestCase):
 
     def test_read_inputs(self):
         model = self._new_model_with_cylindrical_reservoir(
-            input_file=self._get_test_file_path('examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt')
+            input_file=self._get_test_file_path(
+                '../examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt'
+            )
         )
-        reservoir = model.reserv
+        reservoir: CylindricalReservoir = model.reserv
         self.assertIsNotNone(reservoir.InputDepth)
 
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
         self.assertEqual(3.0, reservoir.InputDepth.value)
+
+        # TODO depth should probably be set to this value on initialization rather than calculation
+        # self.assertEqual(3000.0, reservoir.depth.quantity().to('m').magnitude)
 
     def test_read_inputs_depth_in_meters(self):
         model = self._new_model_with_cylindrical_reservoir(
@@ -72,7 +75,6 @@ class CylindricalReservoirTestCase(BaseTestCase):
         self.assertEqual(LengthUnit.KILOMETERS, reservoir.InputDepth.CurrentUnits)
 
     def test_calculate_temperature_inflow_end(self):
-        """Calculates the temperature of the rock at the inflow end of the cylindrical reservoir"""
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
@@ -104,25 +106,33 @@ class CylindricalReservoirTestCase(BaseTestCase):
         )
         assert reservoir.SurfaceArea.value == expected_surface_area
 
+    def test_calculate_depth_as_total_drilled_length(self):
+        model = self._new_model_with_cylindrical_reservoir()
+        reservoir = model.reserv
+        reservoir.Calculate(model)
+        self.assertEqual(10.0, reservoir.depth.quantity().to('km').magnitude)
+
     def test_calculate_heat_capacity_water(self):
         """Calculates the heat capacity of water"""
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
         expected_heat_capacity = heatcapacitywater(
-            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+            pressure=model.reserv.lithostatic_pressure(),
         )
         assert reservoir.cpwater.value == expected_heat_capacity
 
     def test_calculate_density_water(self):
-        """Calculates the heat capacity of water"""
+        """Calculates the density of water"""
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
-        expected_density = densitywater(
-            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5
+        expected_density = density_water_kg_per_m3(
+            model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
+            pressure=reservoir.lithostatic_pressure(),
         )
-        assert reservoir.rhowater.value == expected_density
+        assert expected_density == reservoir.rhowater.value
 
     @unittest.skip('FIXME requires review of expected value')
     def test_calculate_temperature_outflow_end(self):
@@ -139,8 +149,8 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir = model.reserv
         reservoir.RadiusOfEffectFactor.value = 0.0
         reservoir.resvolcalc.value = 0.0
-        reservoir.rhorock.value = 0.0
-        reservoir.cprock.value = 0.0
+        reservoir.rhorock.value = reservoir.rhorock.Min
+        reservoir.cprock.value = reservoir.cprock.Min
         reservoir.Trock.value = 0.0
         model.wellbores.Tinj.value = 0.0
         reservoir.Calculate(model)

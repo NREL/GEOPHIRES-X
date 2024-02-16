@@ -11,7 +11,9 @@ from .OptionList import EconomicModel
 NL="\n"
 
 class SUTRAOutputs:
-    def __init__(self, model:Model):
+    """TODO should inherit from Outputs"""
+
+    def __init__(self, model:Model, output_file:str ='HDR.out'):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be
@@ -28,11 +30,12 @@ class SUTRAOutputs:
         # It is empty by default initially - this will expand as the user desires are read from the input file
         self.ParameterDict = {}
         self.printoutput = True
+        self.output_file = output_file
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "Outputs"
+        return 'Outputs'
 
     def read_parameters(self, model:Model) -> None:
         """
@@ -106,11 +109,7 @@ class SUTRAOutputs:
         # write results to output file and screen
 
         try:
-            outputfile = "HDR.out"
-            if len(sys.argv) > 2:
-                outputfile = sys.argv[2]
-
-            with open(outputfile,'w', encoding='UTF-8') as f:
+            with open(self.output_file,'w', encoding='UTF-8') as f:
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
                 f.write('                               *****************\n')
@@ -217,6 +216,7 @@ class SUTRAOutputs:
             print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
             model.logger.critical(str(ex))
             model.logger.critical("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            # FIXME raise exception instead of sys.exit()
             sys.exit()
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

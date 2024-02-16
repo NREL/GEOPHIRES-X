@@ -4,4 +4,4 @@ INPUT, Ambient Temperature,triangular, 15, #, 25
 OUTPUT, Average Net Electricity Production
 OUTPUT, Average Annual Total Electricity Generation
 ITERATIONS, 10
-MC_OUTPUT_FILE, MC_Result.txt
+MC_OUTPUT_FILE, MC_GEOPHIRES_Result_2.txt

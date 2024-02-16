@@ -1,8 +1,9 @@
 import sys
-from .Parameter import floatParameter
-from .Units import *
+
+from geophires_x.Parameter import floatParameter
 import geophires_x.Model as Model
-from .Reservoir import Reservoir
+from geophires_x.Reservoir import Reservoir
+from geophires_x.Units import DrawdownUnit, Units
 
 
 class TDPReservoir(Reservoir):
@@ -19,7 +20,7 @@ class TDPReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().__init__(model)  # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
@@ -47,7 +48,7 @@ class TDPReservoir(Reservoir):
             ToolTipText="specify the thermal drawdown for reservoir model 3 and 4"
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "TDPReservoir"
@@ -63,14 +64,14 @@ class TDPReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the parameters for the parent.
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
         # for the variables in this class
         # because the call to the super.readparameters will set all the variables,
         # including the ones that are specific to this class
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def Calculate(self, model: Model):
         """
@@ -79,11 +80,11 @@ class TDPReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().Calculate(model)  # run calculation for the parent.
 
         model.reserv.Tresoutput.value = (1 - model.reserv.drawdp.value * model.reserv.timevector.value) * \
                                         (model.reserv.Trock.value - model.wellbores.Tinj.value) + \
                                         model.wellbores.Tinj.value  # this is no longer as in thesis (equation 4.16)
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')

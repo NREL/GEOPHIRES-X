@@ -51,8 +51,7 @@ def _DensityWater(Twater: float) -> float:
     the DensityWater function is used to calculate the density of water as a function of temperature
 
     Args:
-    Twater: the temperature of water in degrees C
-
+        Twater: the temperature of water in degrees C
     Returns:
          density of water in kg/m3
     """

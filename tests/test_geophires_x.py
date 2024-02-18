@@ -1,3 +1,5 @@
+import tempfile
+import uuid
 from pathlib import Path
 from typing import Optional
 
@@ -216,6 +218,43 @@ class GeophiresXTestCase(BaseTestCase):
                 pass
 
         return None
+
+    def test_clgs_depth_greater_than_5km(self):
+        """
+        TODO update test to check result when https://github.com/NREL/GEOPHIRES-X/issues/125 is addressed
+          (currently just verifies that input results in RuntimeError rather than previous behavior of sys.exit())
+        """
+
+        input_content = """Is AGS, True
+Closed-loop Configuration, 1
+End-Use Option, 1
+Heat Transfer Fluid, 2
+Number of Production Wells, 1
+Number of Injection Wells, 0
+All-in Vertical Drilling Costs, 1000.0
+All-in Nonvertical Drilling Costs, 1000.0
+Production Flow Rate per Well, 40
+Cylindrical Reservoir Input Depth, 5001.0 meter
+Gradient 1, 60.0
+Total Nonvertical Length, 9000
+Production Well Diameter, 8.5
+Injection Temperature, 60.0
+Plant Lifetime, 40
+Ambient Temperature, 20
+Electricity Rate, 0.10
+Circulation Pump Efficiency, 0.8
+CO2 Turbine Outlet Pressure, 200
+Economic Model, 4
+Reservoir Stimulation Capital Cost, 0
+Exploration Capital Cost, 0
+Print Output to Console, 1"""
+        input_file = Path(tempfile.gettempdir(), f'{uuid.uuid4()!s}.txt')
+        with open(input_file, 'w') as f:
+            f.write(input_content)
+
+        with self.assertRaises(RuntimeError):
+            client = GeophiresXClient()
+            client.get_geophires_result(GeophiresInputParameters(from_file_path=input_file))
 
     def test_runtime_error_with_error_code(self):
         client = GeophiresXClient()

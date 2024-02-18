@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.1
+ GEOPHIRES Version: 3.4.3
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-14
- Simulation Time:  15:13
- Calculation Time:      0.633 sec
+ Simulation Date: 2024-02-18
+ Simulation Time:  08:29
+ Calculation Time:      0.620 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -134,7 +134,7 @@ Simulation Metadata
       Initial Net Electricity Generation:                     8.33 MW
       Average Annual Total Electricity Generation:           64.55 GWh
       Average Annual Net Electricity Generation:             62.78 GWh
-      Initial pumping power/net installed power:            100.00 %
+      Initial pumping power/net installed power:              2.56 %
       Average Pumping Power:                                  0.23 MW
 
                             ************************************************************

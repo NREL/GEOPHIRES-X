@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.1
+ GEOPHIRES Version: 3.4.3
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-14
- Simulation Time:  12:27
- Calculation Time:      1.677 sec
+ Simulation Date: 2024-02-18
+ Simulation Time:  08:29
+ Calculation Time:      1.660 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -104,7 +104,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
       Initial Net Electricity Generation:                     1.66 MW
       Average Annual Total Electricity Generation:            8.64 GWh
       Average Annual Net Electricity Generation:              8.62 GWh
-      Initial pumping power/net installed power:            100.00 %
+      Initial pumping power/net installed power:              0.21 %
       Average Pumping Power:                                  0.00 MW
 
                             ************************************************************

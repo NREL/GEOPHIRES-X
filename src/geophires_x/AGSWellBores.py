@@ -635,10 +635,10 @@ class AGSWellBores(WellBores):
             CurrentUnits=PressureUnit.KPASCAL
         )
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "AGSWellBores"
+        return 'AGSWellBores'
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -734,7 +734,7 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         if self.Fluid.value == WorkingFluid.WATER:
             if self.Configuration.value == Configuration.ULOOP:

@@ -364,7 +364,10 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118; either
+            #  pressure=model.reserv.lithostatic_pressure(),
+            #  or
+            #  pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
@@ -496,7 +499,10 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118; either
+            #  pressure=model.reserv.lithostatic_pressure(),
+            #  or
+            #  pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:

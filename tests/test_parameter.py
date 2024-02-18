@@ -7,6 +7,7 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import floatParameter
+from geophires_x.Parameter import listParameter
 from geophires_x.Parameter import parameter_with_units_converted_back_to_preferred_units
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import PressureUnit
@@ -43,7 +44,6 @@ class ParameterTestCase(BaseTestCase):
     def test_set_default_value(self):
         without_val = floatParameter(
             'Reservoir Hydrostatic Pressure',
-            # value=1E2,
             DefaultValue=29430,  # Calculated from example1
             Min=1e2,
             Max=1e5,
@@ -70,6 +70,36 @@ class ParameterTestCase(BaseTestCase):
                     Xie-Bloomfield-Shook equation (DOE, 2016).',
         )
         self.assertEqual(1e2, with_val.value)
+
+    def test_set_default_value_list(self):
+        without_val = listParameter(
+            'Thicknesses',
+            DefaultValue=[100_000.0, 0.01, 0.01, 0.01, 0.01],
+            Min=0.01,
+            Max=100.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.KILOMETERS,
+            CurrentUnits=LengthUnit.KILOMETERS,
+            ErrMessage='assume default layer thicknesses (100,000, 0, 0, 0 km)',
+            ToolTipText='Thicknesses of rock segments',
+        )
+
+        self.assertEqual([100_000.0, 0.01, 0.01, 0.01, 0.01], without_val.value)
+
+        with_val = listParameter(
+            'Thicknesses',
+            value=[1, 2, 3],
+            DefaultValue=[100_000.0, 0.01, 0.01, 0.01, 0.01],
+            Min=0.01,
+            Max=100.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.KILOMETERS,
+            CurrentUnits=LengthUnit.KILOMETERS,
+            ErrMessage='assume default layer thicknesses (100,000, 0, 0, 0 km)',
+            ToolTipText='Thicknesses of rock segments',
+        )
+
+        self.assertEqual([1, 2, 3], with_val.value)
 
     def _new_model(self) -> Model:
         stash_cwd = Path.cwd()

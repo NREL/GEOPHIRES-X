@@ -364,7 +364,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
@@ -496,7 +496,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
@@ -1029,7 +1029,8 @@ class WellBores:
             model, self.Tinj.value, self.prodwellflowrate.value, self.injwelldiam.value, self.impedancemodelused.value,
             model.reserv.depth.value, self.nprod.value, self.ninj.value, model.reserv.waterloss.value)
 
-        if self.impedancemodelused.value:  # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
+        if self.impedancemodelused.value:
+            # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
             self.DPOverall.value, self.PumpingPower.value, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                 ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3, vprod, self.rhowaterinj, self.rhowaterprod,
                                                                     model.reserv.rhowater.value,
@@ -1046,7 +1047,8 @@ class WellBores:
                                                                    model.surfaceplant.pump_efficiency.value,
                                                                    self.DPOverall.value)
 
-        else:  # PI and II are used
+        else:
+            # PI and II are used
             self.PumpingPower.value, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
                 ProdPressureDropAndPumpingPowerUsingIndexes(model,
                                                             self.productionwellpumping.value,

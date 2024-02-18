@@ -140,10 +140,10 @@ class data:
             Pout = interpn(self.ivars, self.Pout, points)
 
         except BaseException as ex:
-            tb = sys.exc_info()[2]
             print(str(ex))
-            print("Error: AGS Wellbores: interp_outlet_states failed. Exiting....Line %i" % tb.tb_lineno)
-            sys.exit()
+            msg = 'Error: AGSWellBores: interp_outlet_states failed.'
+            print(msg)
+            raise RuntimeError(msg) from ex
         return Tout, Pout
 
     def interp_kWe_avg(self, point):

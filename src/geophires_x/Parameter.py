@@ -212,7 +212,11 @@ class listParameter(Parameter):
             which means that any value is valid by default
     """
 
-    value: List[float] = field(default_factory=list) # FIXME set from DefaultValue
+    def __post_init__(self):
+        if self.value is None:
+            self.value:str = self.DefaultValue
+
+    value: List[float] = None
     DefaultValue: List[float] = field(default_factory=list)
     Min: float = -1.8e308
     Max: float = 1.8e308

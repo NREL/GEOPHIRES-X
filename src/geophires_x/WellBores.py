@@ -364,7 +364,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
@@ -373,32 +373,33 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum_kPa:
                 Pprodwellhead = Pminimum_kPa
-                msg = ('Provided production wellhead pressure under minimum pressure. '
-                       'GEOPHIRES will assume minimum wellhead pressure')
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead}kPa) '
+                       f'under minimum pressure ({Pminimum_kPa}kPa). '
+                       f'GEOPHIRES will assume minimum wellhead pressure')
 
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)
 
-        PIkPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
+        PI_kPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate / PIkPa) / (
+        pumpdepth_m = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate / PI_kPa) / (
             f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
-        pumpdepthfinal = np.max(pumpdepth)
-        if pumpdepthfinal < 0.0:
-            pumpdepthfinal = 0.0
-            msg = ('GEOPHIRES calculates negative production well pumping depth. '
-                   'No production well pumps will be assumed')
+        pumpdepthfinal_m = np.max(pumpdepth_m)
+        if pumpdepthfinal_m < 0.0:
+            pumpdepthfinal_m = 0.0
+            msg = (f'GEOPHIRES calculates negative production well pumping depth. ({pumpdepthfinal_m}m)'
+                   f'No production well pumps will be assumed')
             print(f'Warning: {msg}')
             model.logger.warning(msg)
-        elif pumpdepthfinal > 600.0:
-            msg = ('GEOPHIRES calculates production pump depth to be deeper than 600 m. '
-                   'Verify reservoir pressure, production well flow rate and production well dimensions')
+        elif pumpdepthfinal_m > 600.0:
+            msg = (f'GEOPHIRES calculates production pump depth to be deeper than 600m ({pumpdepthfinal_m}m). '
+                   f'Verify reservoir pressure, production well flow rate and production well dimensions')
             print(f'Warning: {msg}')
             model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
-        DPProdWell = Pprodwellhead - (Phydrostaticcalc_kPa - wellflowrate / PIkPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
+        DPProdWell = Pprodwellhead - (Phydrostaticcalc_kPa - wellflowrate / PI_kPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
                                       (rhowaterprod * vprod ** 2 / 2.) * (depth_m / prodwelldiam) / 1E3)
         # [MWe] total pumping power for production wells
         PumpingPowerProd = DPProdWell * nprod * wellflowrate / rhowaterprod / pumpeff / 1E3
@@ -495,7 +496,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         # Minimum production pump inlet pressure and minimum wellhead pressure
         Pminimum_kPa = vapor_pressure_water_kPa(
             Trock_degC,
-            # TODO pass pressure https://github.com/NREL/GEOPHIRES-X/issues/118
+            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
         ) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
@@ -549,7 +550,7 @@ class WellBores:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
         self.rhowaterprod = self.rhowaterinj = 0.0
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -1028,7 +1029,8 @@ class WellBores:
             model, self.Tinj.value, self.prodwellflowrate.value, self.injwelldiam.value, self.impedancemodelused.value,
             model.reserv.depth.value, self.nprod.value, self.ninj.value, model.reserv.waterloss.value)
 
-        if self.impedancemodelused.value:  # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
+        if self.impedancemodelused.value:
+            # assumed everything stays liquid throughout, based on TARB in Geophires v1.2
             self.DPOverall.value, self.PumpingPower.value, self.DPProdWell.value, self.DPReserv.value, self.DPBouyancy.value = \
                 ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3, vprod, self.rhowaterinj, self.rhowaterprod,
                                                                     model.reserv.rhowater.value,
@@ -1045,7 +1047,8 @@ class WellBores:
                                                                    model.surfaceplant.pump_efficiency.value,
                                                                    self.DPOverall.value)
 
-        else:  # PI and II are used
+        else:
+            # PI and II are used
             self.PumpingPower.value, self.PumpingPowerProd.value, self.DPProdWell.value, self.Pprodwellhead.value = \
                 ProdPressureDropAndPumpingPowerUsingIndexes(model,
                                                             self.productionwellpumping.value,

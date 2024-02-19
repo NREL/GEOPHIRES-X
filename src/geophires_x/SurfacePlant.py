@@ -89,8 +89,9 @@ class SurfacePlant:
         # check if reinjectemp (model calculated) >= Tinj (user provided)
         if np.min(ReinjTemp) < Tinj:
             Tinj = np.min(ReinjTemp)
-            print("Warning: injection temperature lowered")
-            model.logger.warning("injection temperature lowered")
+            msg = 'injection temperature lowered'
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
         return Tinj, ReinjTemp, etau
 
     def electricity_heat_production(self, enduse_option: EndUseOptions, availability: np.ndarray, etau: np.ndarray, nprod: int,
@@ -205,7 +206,8 @@ class SurfacePlant:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
+
         self.Tinj = 0.0
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -475,10 +477,10 @@ class SurfacePlant:
             CurrentUnits=PowerUnit.MW
         )
 
-        model.logger.info(f"Complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
 
     def __str__(self):
-        return "SurfacePlant"
+        return 'SurfacePlant'
 
     def read_parameters(self, model:Model) -> None:
         """
@@ -488,7 +490,7 @@ class SurfacePlant:
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # Deal with all the parameter values that the user has provided.  They should really only provide values that
         # they want to change from the default values, but they can provide a value that is already set because it is a
@@ -514,7 +516,7 @@ class SurfacePlant:
                     ReadParameter(ParameterReadIn, ParameterToModify, model)
 
                     # handle special cases
-                    if ParameterToModify.Name == "End-Use Option":
+                    if ParameterToModify.Name == 'End-Use Option':
                         if ParameterReadIn.sValue == str(1):
                             ParameterToModify.value = EndUseOptions.ELECTRICITY
                         elif ParameterReadIn.sValue == str(2):
@@ -533,7 +535,7 @@ class SurfacePlant:
                         elif ParameterReadIn.sValue == str(52):
                             ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
 
-                    elif ParameterToModify.Name == "Power Plant Type":
+                    elif ParameterToModify.Name == 'Power Plant Type':
                         if ParameterReadIn.sValue == str(1):
                             ParameterToModify.value = PlantType.SUB_CRITICAL_ORC
                         elif ParameterReadIn.sValue == str(2):
@@ -579,40 +581,38 @@ class SurfacePlant:
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:
                                 model.wellbores.impedancemodelallowed.value = False
                                 self.setinjectionpressurefixed = True
-                    elif ParameterToModify.Name == "Plant Outlet Pressure":
+                    elif ParameterToModify.Name == 'Plant Outlet Pressure':
                         if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100
-                                    print("Warning: Provided plant outlet pressure outside of range 0-10000." +
-                                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
-                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000." +
-                                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                                    msg = f'Provided plant outlet pressure outside of range 0-10000. GEOPHIRES will assume default plant outlet pressure ({ParameterToModify.value} kPa)'
+                                    print(f'Warning: {msg}')
+                                    model.logger.warning(msg)
                                 else:
                                     self.usebuiltinoutletplantcorrelation.value = True
-                                    print("Warning: Provided plant outlet pressure outside of range 0-10000 kPa." +
-                                    " GEOPHIRES will calculate plant outlet pressure based on" +
-                                    " production wellhead pressure and surface equipment pressure drop of 10 psi")
-                                    model.logger.warning("Provided plant outlet pressure outside of range 0-10000 kPa." +
-                                    " GEOPHIRES will calculate plant outlet pressure based on" +
-                                    " production wellhead pressure and surface equipment pressure drop of 10 psi")
+                                    msg = ('Provided plant outlet pressure outside of range 0-10000 kPa. '
+                                           'GEOPHIRES will calculate plant outlet pressure based on production '
+                                           'wellhead pressure and surface equipment pressure drop of 10 psi')
+                                    print(f'Warning: {msg}')
+                                    model.logger.warning(msg)
             if "Plant Outlet Pressure" not in model.InputParameters:
                 if self.setinjectionpressurefixed:
                     self.usebuiltinoutletplantcorrelation.value = False
                     self.plant_outlet_pressure.value = 100
-                    print("Warning: No valid plant outlet pressure provided." +
-                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
-                    model.logger.warning("No valid plant outlet pressure provided." +
-                    " GEOPHIRES will assume default plant outlet pressure (100 kPa)")
+                    msg = (f'No valid plant outlet pressure provided. '
+                           f'GEOPHIRES will assume default plant outlet pressure ({self.plant_outlet_pressure.value} kPa)')
+                    print(f'Warning: {msg}')
+                    model.logger.warning(msg)
                 else:
                     self.usebuiltinoutletplantcorrelation.value = True
-                    print("Warning: No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet" +
-                    " pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
-                    model.logger.warning("No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet" +
-                     " pressure based on production wellhead pressure and surface equipment pressure drop of 10 psi")
+                    msg = (f'No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet pressure '
+                           f'based on production wellhead pressure and surface equipment pressure drop of 10 psi')
+                    print(f'Warning: {msg}')
+                    model.logger.warning(msg)
         else:
-            model.logger.info("No parameters read because no content provided")
+            model.logger.info('No parameters read because no content provided')
 
-        model.logger.info(f"Complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
 
     def Calculate(self, model: Model) -> None:
         """
@@ -622,8 +622,8 @@ class SurfacePlant:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # All calculations are handled in subclasses of this class, so this function is empty.
 
-        model.logger.info(f"Complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')

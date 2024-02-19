@@ -140,10 +140,10 @@ class data:
             Pout = interpn(self.ivars, self.Pout, points)
 
         except BaseException as ex:
-            tb = sys.exc_info()[2]
             print(str(ex))
-            print("Error: AGS Wellbores: interp_outlet_states failed. Exiting....Line %i" % tb.tb_lineno)
-            sys.exit()
+            msg = 'Error: AGSWellBores: interp_outlet_states failed.'
+            print(msg)
+            raise RuntimeError(msg) from ex
         return Tout, Pout
 
     def interp_kWe_avg(self, point):
@@ -635,10 +635,10 @@ class AGSWellBores(WellBores):
             CurrentUnits=PressureUnit.KPASCAL
         )
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "AGSWellBores"
+        return 'AGSWellBores'
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -734,7 +734,7 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         if self.Fluid.value == WorkingFluid.WATER:
             if self.Configuration.value == Configuration.ULOOP:
@@ -926,16 +926,15 @@ class AGSWellBores(WellBores):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         self.Tini = model.reserv.Trock.value  # initialize the temperature to be the initial temperature of the reservoir
         if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
             # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.
             if self.Tini > 375.0:
-                model.logger.warning("In AGS, but forced to use Wanju code because initial reservoir temperature \
-                is too high for CLGS")
-                print("In AGS, but forced to use Wanju code because initial reservoir temperature \
-                is too high for CLGS")
+                msg = 'In AGS, but forced to use Wanju code because initial reservoir temperature is too high for CLGS'
+                model.logger.warning(msg)
+                print(f'Warning: {msg}')
 
             # handle special cases for the multilateral calc parameters you added
             if self.nonverticalwellborediameter.value > 2.0:
@@ -1104,7 +1103,12 @@ class AGSWellBores(WellBores):
             tot_length, vert_length, horizontal_lengths = self.calculatedrillinglengths(model)
 
             # in this case, reserv.depth is just the vertical drill depth
-            # FIXME earlier calculations use depth before this value is set, meaning they're using the wrong value
+            # TODO earlier calculations use reserv.depth before it is recalculated here; this should be refactored to avoid
+            #   potential for mix-ups. As of 2024-02-16, calculations correctly account for this on-the-fly change of
+            #   reserv.depth - see https://github.com/NREL/GEOPHIRES-X/issues/122#issuecomment-194869313 - but this
+            #   implementation is fragile and prone to introducing bugs in future changes. Ideally, parameters should
+            #   not be changed once their value has been calculated, and especially not after the first calculated
+            #   value has been used as an input for other calculations.
             model.reserv.depth.value = model.reserv.InputDepth.quantity().to(model.reserv.depth.CurrentUnits).magnitude
 
             # getTandP results must be rejiggered to match wellbores expected output. Once done,

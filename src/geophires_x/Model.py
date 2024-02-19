@@ -104,7 +104,7 @@ class Model(object):
                 self.reserv: Reservoir = SUTRAReservoir(self)  # SUTRA output is created
 
         # initialize the default objects
-        self.wellbores = WellBores(self)
+        self.wellbores: WellBores = WellBores(self)
         self.surfaceplant = SurfacePlant(self)
         self.economics = Economics(self)
 
@@ -117,7 +117,7 @@ class Model(object):
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '7':
                 # if we use SUTRA output for simulating reservoir thermal energy storage, we use a special wellbore object that can handle SUTRA data
-                self.wellbores = SUTRAWellBores(self)
+                self.wellbores: WellBores = SUTRAWellBores(self)
                 self.surfaceplant = SurfacePlantSUTRA(self)
                 self.economics = SUTRAEconomics(self)
                 self.outputs = SUTRAOutputs(self, output_file=output_file)
@@ -130,7 +130,7 @@ class Model(object):
                 # that means importing them, initializing them, then reading their parameters
                 # use the simple cylindrical reservoir for all AGS systems.
                 self.reserv: Reservoir = CylindricalReservoir(self)
-                self.wellbores = AGSWellBores(self)
+                self.wellbores: WellBores = AGSWellBores(self)
                 self.surfaceplant = SurfacePlantAGS(self)
                 self.economics = AGSEconomics(self)
                 self.outputs = AGSOutputs(self, output_file=output_file)

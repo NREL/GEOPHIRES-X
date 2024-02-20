@@ -10,29 +10,31 @@
       Reservoir Thickness:           0.25 kilometer
       Reservoir Life Cycle:         25.00 yr
       Rock Heat Capacity:        2.84e+12 kJ/km**3C
-      Fluid Specific Heat Capacity:       4.87 kJ/kgC
-      Density Of Reservoir Fluid:   7.99e+11 kg/km**3
+      Fluid Specific Heat Capacity:       4.34 kJ/kgC
+      Density Of Reservoir Fluid:   8.62e+11 kg/km**3
       Density Of Reservoir Rock:   2.55e+12 kg/km**3
       Recoverable Fluid Factor:       0.50
       Recoverable Heat from Rock:       0.75
 
       ***SUMMARY OF RESULTS***
+      Reservoir Pressure:           76.82 mPa
+      Reservoir Depth:               7.83 kilometer
       Reservoir Volume (reservoir):      13.75 km**3
       Reservoir Volume (rock):      12.38 km**3
       Recoverable Volume (recoverable fluid):       0.69 km**3
-      Stored Heat (reservoir):   5.47e+15 kJ
+      Stored Heat (reservoir):   5.48e+15 kJ
       Stored Heat (rock):        5.01e+15 kJ
-      Stored Heat (fluid):       4.58e+14 kJ
+      Stored Heat (fluid):       4.67e+14 kJ
       Mass of Reservoir (rock):   3.16e+13 kilogram
-      Mass of Reservoir (fluid):   6.55e+12 kilogram
-      Specific Enthalpy (reservoir):     392.48 kJ/kg
+      Mass of Reservoir (fluid):   6.95e+12 kilogram
+      Specific Enthalpy (reservoir):     377.60 kJ/kg
       Specific Enthalpy (rock):     211.61 kJ/kg
-      Specific Enthalpy (fluid):     180.87 kJ/kg
-      Recovery Factor (reservoir):      14.30 %
-      Available Heat (reservoir):   1.18e+15 kJ
-      Producible Heat (reservoir):   7.82e+14 kJ
-      Producible Heat/Unit Area (reservoir):   1.42e+13 kJ/km**2
-      Producible Heat/Unit Volume (reservoir):   5.69e+13 kJ/km**3
-      Producible Electricity (reservoir):     500.89 MW
-      Producible Electricity/Unit Area (reservoir):       9.11 MW/km**2
-      Producible Electricity/Unit Volume (reservoir):      36.43 MW/km**3
+      Specific Enthalpy (fluid):     166.00 kJ/kg
+      Recovery Factor (reservoir):      13.90 %
+      Available Heat (reservoir):   1.15e+15 kJ
+      Producible Heat (reservoir):   7.61e+14 kJ
+      Producible Heat/Unit Area (reservoir):   1.38e+13 kJ/km**2
+      Producible Heat/Unit Volume (reservoir):   5.54e+13 kJ/km**3
+      Producible Electricity (reservoir):     585.09 MW
+      Producible Electricity/Unit Area (reservoir):      10.64 MW/km**2
+      Producible Electricity/Unit Volume (reservoir):      42.55 MW/km**3

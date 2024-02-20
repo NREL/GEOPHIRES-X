@@ -3,7 +3,7 @@ import numpy as np
 from pint.facets.plain import PlainQuantity
 
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
-from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, lithostatic_pressure_MPa
+from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *

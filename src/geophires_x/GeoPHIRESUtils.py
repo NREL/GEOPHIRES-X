@@ -102,15 +102,13 @@ def quantity(value: float, unit: str) -> PlainQuantity:
 
 
 @lru_cache
-def density_water_kg_per_m3(
-    Twater_degC: float,
-    pressure: Optional[PlainQuantity] = None) -> float:
+def density_water_kg_per_m3(Twater_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the density of water as a function of temperature.
 
     Args:
         Twater_degC: The temperature of water in degrees C.
-        pressure: Pressure - should be provided
+        pressure: Pressure - should be provided as a Pint quantity that knows its units
     Returns:
         The density of water in kg/m³.
     Raises:
@@ -245,15 +243,13 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache
-def vapor_pressure_water_kPa(
-    Twater_degC: float,
-    pressure: Optional[PlainQuantity] = None) -> float:
+def vapor_pressure_water_kPa(Twater_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the vapor pressure of water as a function of temperature.
 
     Args:
         Twater_degC: the temperature of water in degrees C
-        pressure: Pressure - should be provided
+        pressure: Pressure - should be provided as a Pint quantity that knows its units
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
@@ -276,22 +272,23 @@ def vapor_pressure_water_kPa(
             return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
                     .to('kPa').magnitude)
 
-
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache
-def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
+def entropy_water_kJ_per_kg_per_K(temperature_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the entropy of water as a function of temperature
-    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C
+        pressure: Pressure - should be provided as a Pint quantity that knows its units
     Returns:
         the entropy of water as a function of temperature in kJ/(kg·K)
     Raises:
+        TypeError: If temperature is not a float or convertible to float.
+        ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
 
     """
     try:
@@ -300,19 +297,23 @@ def entropy_water_kJ_per_kg_per_K(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return CP.PropsSI('S', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+        if pressure is not None:
+            return CP.PropsSI('S', 'T', celsius_to_kelvin(temperature_degC),
+                              'P', pressure.to('Pa').magnitude, 'Water') * 1e-3
+        else:
+            return CP.PropsSI('S', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
 
 @lru_cache
-def enthalpy_water_kJ_per_kg(temperature_degC: float) -> float:
+def enthalpy_water_kJ_per_kg(temperature_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the enthalpy of water as a function of temperature
-    TODO take pressure as a parameter https://github.com/NREL/GEOPHIRES-X/issues/119
 
     Args:
         temperature_degC: the temperature of water in degrees C (float)
+        pressure: Pressure - should be provided as a Pint quantity that knows its units
     Returns:
         the enthalpy of water as a function of temperature in kJ/kg
     Raises:
@@ -325,7 +326,12 @@ def enthalpy_water_kJ_per_kg(temperature_degC: float) -> float:
         raise TypeError(f'Input temperature ({temperature_degC}) must be a float')
 
     try:
-        return CP.PropsSI('H', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+        if pressure is not None:
+            return CP.PropsSI('H', 'T', celsius_to_kelvin(temperature_degC),
+                              'P', pressure.to('Pa').magnitude, 'Water') * 1e-3
+        else:
+            return CP.PropsSI('H', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water') * 1e-3
+
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature {temperature_degC} is out of range or otherwise not implemented') from e
 
@@ -457,15 +463,15 @@ def json_dumpse(obj) -> str:
     return json.dumps(obj, cls=_EnhancedJSONEncoder)
 
 
-def lithostatic_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
+def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
     """
-    Calculate lithostatic pressure in a reservoir.
+    Calculate litho- (or hydro-) static pressure in a reservoir.
 
     Args:
         rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
         depth_m (float): Depth of the reservoir in meters.
     Returns:
-        float: Lithostatic pressure in megapascals (MPa).
+        pint quantity: Lithostatic pressure in megapascals (MPa).
     """
 
     g = scipy.constants.g  # Acceleration due to gravity (m/s^2)

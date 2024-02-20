@@ -193,6 +193,7 @@ class CostPerDistanceUnit(str, Enum):
 
 class PressureUnit(str, Enum):
     """Pressure Units"""
+    MPASCAL = "mPa"
     KPASCAL = "kPa"
     PASCAL = "Pa"
     BAR = "bar"

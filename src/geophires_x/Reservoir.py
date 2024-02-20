@@ -10,7 +10,7 @@ from .Parameter import intParameter, floatParameter, listParameter, OutputParame
 from .Units import *
 import geophires_x.Model as Model
 
-from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, lithostatic_pressure_MPa
+from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
 class Reservoir:
@@ -783,7 +783,7 @@ class Reservoir:
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def lithostatic_pressure(self) -> PlainQuantity:
-        return quantity(lithostatic_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                                 self.depth.quantity().to('m').magnitude), 'MPa')
+        return quantity(static_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                            self.depth.quantity().to('m').magnitude), 'MPa')
 
 

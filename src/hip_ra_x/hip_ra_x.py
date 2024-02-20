@@ -17,6 +17,7 @@ from geophires_x.GeoPHIRESUtils import enthalpy_water_kJ_per_kg
 from geophires_x.GeoPHIRESUtils import entropy_water_kJ_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import read_input_file
+from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
 from geophires_x.Parameter import LookupUnits
@@ -39,6 +40,7 @@ from geophires_x.Units import PercentUnit
 from geophires_x.Units import PowerPerUnitAreaUnit
 from geophires_x.Units import PowerPerUnitVolumeUnit
 from geophires_x.Units import PowerUnit
+from geophires_x.Units import PressureUnit
 from geophires_x.Units import TemperatureUnit
 from geophires_x.Units import TimeUnit
 from geophires_x.Units import Units
@@ -276,6 +278,38 @@ class HIP_RA_X:
                 Required=False,
                 ErrMessage='assume 0.5 (50%) of fluid from the reservoir is recoverable',
                 ToolTipText='percent of fluid that is recoverable from the reservoir (0.5 = 50%)',
+            )
+        )
+        self.reservoir_depth: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Depth',
+                value=-1.0,
+                Min=0.001,
+                Max=15.0,
+                UnitType=Units.LENGTH,
+                PreferredUnits=LengthUnit.KILOMETERS,
+                CurrentUnits=LengthUnit.KILOMETERS,
+                Required=False,
+                Provided=False,
+                ErrMessage='calculate based on an assumed gradient of 30 C/km and the reservoir temperature',
+                ToolTipText='depth to top of reservoir (km). Calculated based on an assumed gradient \
+                 and the reservoir temperature if no value given',
+            )
+        )
+        self.reservoir_pressure: Parameter = parameter_dict_entry(
+            floatParameter(
+                'Reservoir Pressure',
+                value=-1.0,
+                Min=0.00,
+                Max=10000.000,
+                UnitType=Units.PRESSURE,
+                PreferredUnits=PressureUnit.MPASCAL,
+                CurrentUnits=PressureUnit.MPASCAL,
+                Required=False,
+                Provided=False,
+                ErrMessage='calculate assuming hydrostatic pressure and the reservoir depth & water density',
+                ToolTipText='pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and \
+                 reservoir depth & water density if no value given',
             )
         )
         self.recoverable_rock_heat: Parameter = parameter_dict_entry(
@@ -555,9 +589,8 @@ class HIP_RA_X:
                     # Before we change the parameter, let's assume that the unit preferences will match -
                     # if they don't, the later code will fix this.
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
-                    ReadParameter(
-                        ParameterReadIn, ParameterToModify, self
-                    )  # this should handle all the non-special cases
+                    # this should handle all the non-special cases
+                    ReadParameter(ParameterReadIn, ParameterToModify, self)
         else:
             self.logger.info('No parameters read because no content provided')
 
@@ -578,16 +611,31 @@ class HIP_RA_X:
 
         try:
             # Calculate the volume of rock and fluid in the reservoir.
-
             self.reservoir_volume.value = self.reservoir_area.value * self.reservoir_thickness.value
             self.volume_rock.value = self.reservoir_volume.value * (1.0 - (self.reservoir_porosity.value / 100.0))
+
+            # Note that we can't recover all the fluid from the reservoir, so we multiply by the recoverable fluid factor
             self.volume_recoverable_fluid.value = (
                 self.reservoir_volume.value
                 * (self.reservoir_porosity.value / 100.0)
                 * self.recoverable_fluid_factor.value
-                # Note that we can't recover all the fluid from the reservoir,
-                # so we multiply by the recoverable fluid factor
             )
+
+            if not self.reservoir_depth.Provided:
+                self.logger.info(
+                    f'Deriving value of {self.reservoir_depth.Name} because provided value '
+                    f'({self.reservoir_depth.value}) was not provided)'
+                )
+                # assume ambient Temperature of 15 C and 30C/km
+                self.reservoir_depth.value = (self.reservoir_temperature.value - 15.0) / 30.0
+
+            if not self.reservoir_pressure.Provided:
+                self.logger.info(
+                    f'Deriving value of {self.reservoir_pressure.Name} because provided value '
+                    f'({self.reservoir_pressure.value}) was not provided)'
+                )
+                # Assumes a water density of 1.0 g/cm3, which is high, since the water density decreases with depth
+                self.reservoir_pressure.value = static_pressure_MPa(1000.0, self.reservoir_depth.value * 1000.0)
 
             if self.fluid_density.value < self.fluid_density.Min:
                 self.logger.info(
@@ -595,8 +643,10 @@ class HIP_RA_X:
                     f'({self.fluid_density.value}) was less than min ({self.fluid_density.Min})'
                 )
 
-                density_h20_kg_per_m3 = density_water_kg_per_m3(self.reservoir_temperature.value)
-
+                density_h20_kg_per_m3 = density_water_kg_per_m3(
+                    self.reservoir_temperature.value,
+                    pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa'),
+                )
                 self.fluid_density.value = density_h20_kg_per_m3 * 1_000_000_000.0  # converted to kg/km3
 
             self.mass_rock.value = self.volume_rock.value * self.rock_density.value
@@ -609,48 +659,50 @@ class HIP_RA_X:
                     f'({self.fluid_heat_capacity.value}) was less than min ({self.fluid_heat_capacity.Min})'
                 )
 
+                # converted to kJ/(kg·K)
                 self.fluid_heat_capacity.value = (
-                    heat_capacity_water_J_per_kg_per_K(self.reservoir_temperature.value)
+                    heat_capacity_water_J_per_kg_per_K(
+                        self.reservoir_temperature.value,
+                        pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa'),
+                    )
                     / 1000.0
-                    # converted to kJ/(kg·K)
                 )
 
             rejection_temperature_k = celsius_to_kelvin(self.rejection_temperature.value)
             reservoir_temperature_k = celsius_to_kelvin(self.reservoir_temperature.value)
             delta_temperature_k = reservoir_temperature_k - rejection_temperature_k
-            fluid_net_enthalpy = fluid_net_enthalpy = enthalpy_water_kJ_per_kg(
-                self.reservoir_temperature.value
-            ) - enthalpy_water_kJ_per_kg(self.rejection_temperature.value)
+            fluid_net_enthalpy = enthalpy_water_kJ_per_kg(
+                self.reservoir_temperature.value, pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa')
+            ) - enthalpy_water_kJ_per_kg(
+                self.rejection_temperature.value, pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa')
+            )
             fluid_net_entropy = entropy_water_kJ_per_kg_per_K(
-                self.reservoir_temperature.value
-            ) - entropy_water_kJ_per_kg_per_K(self.rejection_temperature.value)
+                self.reservoir_temperature.value, pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa')
+            ) - entropy_water_kJ_per_kg_per_K(
+                self.rejection_temperature.value, pressure=HIP_RA_X._ureg.Quantity(self.reservoir_pressure.value, 'MPa')
+            )
 
             # fmt: off
-            self.enthalpy_rock.value = (
-                                           self.rock_heat_capacity.value * delta_temperature_k * self.volume_rock.value
-                                       ) / self.mass_rock.value
+            self.enthalpy_rock.value = ((self.rock_heat_capacity.value * delta_temperature_k * self.volume_rock.value) /
+                                        self.mass_rock.value)
             # fmt: on
 
+            # result in kJ
             self.stored_heat_rock.value = (
-                self.recoverable_rock_heat.value
-                * self.enthalpy_rock.value
-                * self.mass_rock.value
-                # result in kJ
+                self.recoverable_rock_heat.value * self.enthalpy_rock.value * self.mass_rock.value
             )
-            self.stored_heat_fluid.value = fluid_net_enthalpy * self.mass_recoverable_fluid.value  # result in kJ
+            self.stored_heat_fluid.value = fluid_net_enthalpy * self.mass_recoverable_fluid.value
             self.reservoir_stored_heat.value = self.stored_heat_rock.value + self.stored_heat_fluid.value
 
             # equation 4 in Garg and Combs(2011)
             amount_fluid_produced_kg = self.reservoir_stored_heat.value / fluid_net_enthalpy
             self.mass_recoverable_fluid.value = amount_fluid_produced_kg
 
+            # equation 7 in Garg and Combs(2011)
             fluid_exergy_kJ_per_kg = (
-                # equation 7 in Garg and Combs(2011)
-                fluid_net_enthalpy
-                - celsius_to_kelvin(self.rejection_temperature.value) * fluid_net_entropy
+                fluid_net_enthalpy - celsius_to_kelvin(self.rejection_temperature.value) * fluid_net_entropy
             )
             self.enthalpy_fluid.value = fluid_exergy_kJ_per_kg
-
             self.reservoir_enthalpy.value = self.enthalpy_rock.value + self.enthalpy_fluid.value
 
             # (equation 8 in Garg and Combs(2011))
@@ -671,9 +723,7 @@ class HIP_RA_X:
                 self.reservoir_producible_heat.value / self.reservoir_stored_heat.value
             )
 
-            # Now assuming a 30-year lifetime:
-            plant_lifetime_years = 30
-            maximum_power_kW = maximum_lifetime_electricity_kJ / (plant_lifetime_years * 365 * 24 * 3600)
+            maximum_power_kW = maximum_lifetime_electricity_kJ / (self.reservoir_life_cycle.value * 365 * 24 * 3600)
 
             electricity_with_actual_power_plant_kW = UtilEff_func(self.reservoir_temperature.value) * maximum_power_kW
             producible_power_kW = electricity_with_actual_power_plant_kW
@@ -744,9 +794,7 @@ class HIP_RA_X:
             summary_of_inputs = {}
             summary_of_results = {}
 
-            for param, render in [
-                # TODO: Commented parameters are defined in initialization but not calculated - either calculate or
-                #   remove entirely
+            inputs = [
                 (self.reservoir_temperature, render_default),
                 (self.rejection_temperature, render_default),
                 (self.reservoir_porosity, render_default),
@@ -757,63 +805,52 @@ class HIP_RA_X:
                 (self.fluid_heat_capacity, render_default),
                 (self.fluid_density, render_scientific),
                 (self.rock_density, render_scientific),
-                #                (self.rock_recoverable_heat, render_default),
-                #                (self.fluid_recoverable_heat, render_default),
                 (self.recoverable_fluid_factor, render_default),
                 (self.recoverable_rock_heat, render_default),
-            ]:
+            ]
+
+            # If depth and/or pressure are provided, report them as inputs. If not, as outputs
+            if self.reservoir_depth.Provided:
+                inputs.append((self.reservoir_depth, render_default))
+            if self.reservoir_pressure.Provided:
+                inputs.append((self.reservoir_pressure, render_default))
+
+            for param, render in inputs:
                 summary_of_inputs[param.Name] = render(param)
 
             case_data_inputs = {'SUMMARY OF INPUTS': summary_of_inputs}
 
-            for param, render in [
-                # TODO: Commented parameters are defined in initialization but not calculated - either calculate or
-                #   remove entirely
+            outputs = [
                 (self.reservoir_volume, render_default),
                 (self.volume_rock, render_default),
                 (self.volume_recoverable_fluid, render_default),
                 (self.reservoir_stored_heat, render_scientific),
                 (self.stored_heat_rock, render_scientific),
                 (self.stored_heat_fluid, render_scientific),
-                # (self.reservoir_mass, render_scientific),
                 (self.mass_rock, render_scientific),
                 (self.mass_recoverable_fluid, render_scientific),
                 (self.reservoir_enthalpy, render_default),
                 (self.enthalpy_rock, render_default),
                 (self.enthalpy_fluid, render_default),
-                # (self.wellhead_heat, render_scientific),
-                # (self.wellhead_heat_recovery_rock, render_scientific),
-                # (self.wellhead_heat_recovery_fluid, render_scientific),
                 (
                     self.reservoir_recovery_factor,
                     lambda rg: f'{(100 * rg.value):10.2f} {self.reservoir_recovery_factor.CurrentUnits.value}',
                 ),
-                # (
-                #     self.recovery_factor_rock,
-                #     lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_rock.CurrentUnits.value}',
-                # ),
-                # (
-                #     self.recovery_factor_fluid,
-                #     lambda rg: f'{(100 * rg.value):10.2f} {self.recovery_factor_fluid.CurrentUnits.value}',
-                # ),
                 (self.reservoir_available_heat, render_scientific),
-                # (self.available_heat_rock, render_scientific),
-                # (self.available_heat_fluid, render_scientific),
                 (self.reservoir_producible_heat, render_scientific),
-                # (self.producible_heat_rock, render_scientific),
-                # (self.producible_heat_fluid, render_scientific),
                 (self.producible_heat_per_unit_area, render_scientific),
                 (self.heat_per_unit_volume_reservoir, render_scientific),
-                # (self.heat_per_unit_area_rock, render_scientific),
-                # (self.heat_per_unit_area_fluid, render_scientific),
                 (self.reservoir_producible_electricity, render_default),
-                # (self.producible_electricity_rock, render_default),
-                # (self.producible_electricity_fluid, render_default),
                 (self.producible_electricity_per_unit_area, render_default),
                 (self.electricity_per_unit_volume_reservoir, render_default),
-                # (self.electricity_per_unit_area_rock, render_default),
-                # (self.electricity_per_unit_area_fluid, render_default),
-            ]:
+            ]
+
+            # If depth and/or pressure are provided, report them as inputs. If not, as outputs
+            if not self.reservoir_depth.Provided:
+                outputs.insert(0, (self.reservoir_depth, render_default))
+            if not self.reservoir_pressure.Provided:
+                outputs.insert(0, (self.reservoir_pressure, render_default))
+            for param, render in outputs:
                 summary_of_results[param.Name] = render(param)
 
             case_data_results = {'SUMMARY OF RESULTS': summary_of_results}

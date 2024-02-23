@@ -13,11 +13,13 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
     def test_geophires_monte_carlo(self):
         client = GeophiresMonteCarloClient()
 
+        input_file_path: Path = self._get_arg_file_path('GEOPHIRES-example1.txt')
+        mc_settings_file_path: Path = self._get_arg_file_path('MC_GEOPHIRES_Settings_file.txt')
         result: MonteCarloResult = client.get_monte_carlo_result(
             MonteCarloRequest(
                 SimulationProgram.GEOPHIRES,
-                self._get_arg_file_path('GEOPHIRES-example1.txt'),
-                self._get_arg_file_path('MC_GEOPHIRES_Settings_file.txt'),
+                input_file_path,
+                mc_settings_file_path,
             )
         )
         self.assertIsNotNone(result)
@@ -29,7 +31,15 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                 'Average Net Electricity Production, Average Production Temperature, Average Annual Total Electricity Generation, Gradient 1, Reservoir Temperature, Utilization Factor, Ambient Temperature',
                 result_content,
             )
-            # TODO test actual results/content
+
+        self.assertIn('input', result.result)
+        with open(input_file_path) as f:
+            self.assertEqual(f.read(), result.result['input']['input_file_content'])
+
+        with open(mc_settings_file_path) as mcf:
+            self.assertEqual(mcf.read(), result.result['input']['monte_carlo_settings_file_content'])
+
+        self.assertIn('output', result.result)
 
         with open(result.json_output_file_path) as f:
             json_content = f.read()
@@ -45,6 +55,8 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                 for stat in ['average', 'maximum', 'mean', 'median', 'minimum', 'standard deviation']:
                     self.assertIn(stat, result_json_obj[output])
                     self.assertIs(type(result_json_obj[output][stat]), float)
+
+            self.assertDictEqual(result_json_obj, result.result['output'])
 
     @unittest.skip(reason='FIXME: MC HIP result parsing is broken')
     def test_hip_ra_monte_carlo(self):

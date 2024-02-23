@@ -72,6 +72,10 @@ class MonteCarloResult:
     def output_file_path(self) -> Path:
         return self._request.output_file
 
+    @property
+    def json_output_file_path(self) -> Path:
+        return self.output_file_path.with_suffix('.json')
+
     # TODO expose properties in result
 
 

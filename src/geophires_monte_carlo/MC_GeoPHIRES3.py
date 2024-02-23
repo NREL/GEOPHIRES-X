@@ -9,6 +9,7 @@ Created on Wed November  16 10:43:04 2017
 
 import argparse
 import concurrent.futures
+import json
 import os
 import shutil
 import subprocess
@@ -331,7 +332,7 @@ def main(command_line_args=None):
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
-                # FIXME doesn't work for HIP RA results
+                # FIXME TODO doesn't work for HIP RA results
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 results.append([float(y) for y in line.split(',')])
         else:
@@ -361,27 +362,28 @@ def main(command_line_args=None):
 
     # write them out
     annotations = ''
+    outputs_result: dict[str, dict] = {}
     with open(output_file, 'a') as f:
-        i = 0
         if iterations != actual_records_count:
             f.write(
                 f'\n\n{actual_records_count!s} iterations finished successfully and were used to calculate the '
                 f'statistics\n\n'
             )
-        for output in outputs:
+        for i in range(len(outputs)):
+            output = outputs[i]
             f.write(f'{output}:\n')
-            f.write(f'     minimum: {mins[i]:,.2f}\n')
-            annotations += f'     minimum: {mins[i]:,.2f}\n'
-            f.write(f'     maximum: {maxs[i]:,.2f}\n')
-            annotations += f'     maximum: {maxs[i]:,.2f}\n'
-            f.write(f'     median: {medians[i]:,.2f}\n')
-            annotations += f'     median: {medians[i]:,.2f}\n'
-            f.write(f'     average: {averages[i]:,.2f}\n')
-            annotations += f'     average: {averages[i]:,.2f}\n'
-            f.write(f'     mean: {means[i]:,.2f}\n')
-            annotations += f'     mean: {means[i]:,.2f}\n'
-            f.write(f'     standard deviation: {std[i]:,.2f}\n')
-            annotations += f'     standard deviation: {std[i]:,.2f}\n'
+            outputs_result[output]: dict[str, float] = {}
+            outputs_result[output]['minimum'] = mins[i]
+            outputs_result[output]['maximum'] = maxs[i]
+            outputs_result[output]['median'] = medians[i]
+            outputs_result[output]['average'] = averages[i]
+            outputs_result[output]['mean'] = means[i]
+            outputs_result[output]['standard deviation'] = std[i]
+
+            for k, v in outputs_result[output].items():
+                display = f'     {k}: {v:,.2f}\n'
+                f.write(display)
+                annotations += display
 
             plt.figure(figsize=(8, 6))
             ax = plt.subplot()
@@ -395,8 +397,12 @@ def main(command_line_args=None):
             f.write(f'bin edges: {ret[1]!s}\n')
             fname = df.columns[i].strip().replace('/', '-')
             plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
-            i += 1
+
             annotations = ''
+
+    with open(Path(output_file).with_suffix('.json'), 'w') as json_output_file:
+        json_output_file.write(json.dumps(outputs_result))
+        logger.info(f'Wrote JSON results to {json_output_file.name}')
 
     logger.info(f'Complete {__name__!s}: {sys._getframe().f_code.co_name}')
 

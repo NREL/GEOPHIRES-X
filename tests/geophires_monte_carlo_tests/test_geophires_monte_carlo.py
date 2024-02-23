@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 from pathlib import Path
@@ -23,8 +24,27 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
         self.assertIsNotNone(result.output_file_path)
 
         with open(result.output_file_path) as f:
-            result_content = '\n'.join(f.readlines())
-            self.assertIn('Electricity', result_content)
+            result_content = f.read()
+            self.assertIn(
+                'Average Net Electricity Production, Average Production Temperature, Average Annual Total Electricity Generation, Gradient 1, Reservoir Temperature, Utilization Factor, Ambient Temperature',
+                result_content,
+            )
+            # TODO test actual results/content
+
+        with open(result.json_output_file_path) as f:
+            json_content = f.read()
+            self.assertIsNotNone(json_content)
+            result_json_obj = json.loads(json_content)
+            self.assertIsNotNone(result_json_obj)
+            for output in [
+                'Average Annual Total Electricity Generation',
+                'Average Production Temperature',
+                'Average Net Electricity Production',
+            ]:
+                self.assertIn(output, result_json_obj)
+                for stat in ['average', 'maximum', 'mean', 'median', 'minimum', 'standard deviation']:
+                    self.assertIn(stat, result_json_obj[output])
+                    self.assertIs(type(result_json_obj[output][stat]), float)
 
     @unittest.skip(reason='FIXME: MC HIP result parsing is broken')
     def test_hip_ra_monte_carlo(self):

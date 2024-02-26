@@ -304,15 +304,15 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         usebuiltinppwellheadcorrelation: bool,
         Trock_degC: float,
         depth_m: float,
-        ppwellhead: float,
-        PI: float,
-        wellflowrate: float,
+        ppwellhead_kPa: float,
+        PI_kg_per_sec_per_bar: float,
+        wellflowrate_kg_per_sec: float,
         f3: float,
-        vprod: float,
-        prodwelldiam: float,
+        vprod_m: float,
+        prodwelldiam_m: float,
         nprod: int,
         pumpeff: float,
-        rhowaterprod: float) -> tuple:
+        rhowaterprod_kg_per_m3: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using indexes
         :param model: The container class of the application, giving access to everything else, including the logger
@@ -330,29 +330,29 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         :param depth_m: depth of the well [m]
         :type depth_m: float
         :param gradient_C_per_km: geothermal gradient [C/km]
-        :param ppwellhead: production wellhead pressure [kPa]
-        :type ppwellhead: float
-        :param PI: productivity index [kg/s/bar]
-        :type PI: float
-        :param wellflowrate: flow rate of the fluid in the well [kg/s]
-        :type wellflowrate: float
+        :param ppwellhead_kPa: production wellhead pressure [kPa]
+        :type ppwellhead_kPa: float
+        :param PI_kg_per_sec_per_bar: productivity index [kg/s/bar]
+        :type PI_kg_per_sec_per_bar: float
+        :param wellflowrate_kg_per_sec: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate_kg_per_sec: float
         :param f3: friction factor [-]
         :type f3: float
-        :param vprod: velocity of the fluid in the production well [m/s]
-        :type vprod: float
-        :param prodwelldiam: diameter of the well [m]
-        :type prodwelldiam: float
+        :param vprod_m: velocity of the fluid in the production well [m/s]
+        :type vprod_m: float
+        :param prodwelldiam_m: diameter of the well [m]
+        :type prodwelldiam_m: float
         :param nprod: number of production wells [-]
         :type nprod: int
         :param pumpeff: pump efficiency [-]
         :type pumpeff: float
-        :param rhowaterprod: density of the water in the production well [kg/m3]
-        :type rhowaterprod: float
+        :param rhowaterprod_kg_per_m3: density of the water in the production well [kg/m3]
+        :type rhowaterprod_kg_per_m3: float
         :return: tuple of PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead [kPa]
         :rtype: tuple
     """
     # initialize PumpingPower value in case it doesn't get set.
-    PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod))
+    PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod_m))
 
     # reservoir hydrostatic pressure
     Phydrostaticcalc_kPa = model.wellbores.Phydrostaticcalc.quantity().to('kPa').magnitude
@@ -370,7 +370,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
-            Pprodwellhead = ppwellhead
+            Pprodwellhead = ppwellhead_kPa
             if Pprodwellhead < Pminimum_kPa:
                 Pprodwellhead = Pminimum_kPa
                 msg = (f'Provided production wellhead pressure ({Pprodwellhead}kPa) '
@@ -380,11 +380,12 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)
 
-        PI_kPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
+        PI_kPa = PI_kg_per_sec_per_bar / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth_m = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate / PI_kPa) / (
-            f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
+        pumpdepth_m = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate_kg_per_sec / PI_kPa) / (
+            f3 * (rhowaterprod_kg_per_m3 * vprod_m ** 2 / 2.) * (
+            1 / prodwelldiam_m) / 1E3 + rhowaterprod_kg_per_m3 * 9.81 / 1E3)
         pumpdepthfinal_m = np.max(pumpdepth_m)
         if pumpdepthfinal_m < 0.0:
             pumpdepthfinal_m = 0.0
@@ -399,10 +400,11 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
             model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
-        DPProdWell = Pprodwellhead - (Phydrostaticcalc_kPa - wellflowrate / PI_kPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
-                                      (rhowaterprod * vprod ** 2 / 2.) * (depth_m / prodwelldiam) / 1E3)
+        DPProdWell = Pprodwellhead - (
+            Phydrostaticcalc_kPa - wellflowrate_kg_per_sec / PI_kPa - rhowaterprod_kg_per_m3 * 9.81 * depth_m / 1E3 - f3 *
+            (rhowaterprod_kg_per_m3 * vprod_m ** 2 / 2.) * (depth_m / prodwelldiam_m) / 1E3)
         # [MWe] total pumping power for production wells
-        PumpingPowerProd = DPProdWell * nprod * wellflowrate / rhowaterprod / pumpeff / 1E3
+        PumpingPowerProd = DPProdWell * nprod * wellflowrate_kg_per_sec / rhowaterprod_kg_per_m3 / pumpeff / 1E3
         PumpingPowerProd = np.array([0. if x < 0. else x for x in PumpingPowerProd])
 
     # total pumping power

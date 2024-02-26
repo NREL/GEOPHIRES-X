@@ -58,6 +58,47 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
 
             self.assertDictEqual(result_json_obj, result.result['output'])
 
+    def test_monte_carlo_result_ordering(self):
+        client = GeophiresMonteCarloClient()
+
+        input_file_path: Path = self._get_arg_file_path('GEOPHIRES-example_SHR-2.txt')
+        mc_settings_file_path: Path = self._get_arg_file_path('MC_GEOPHIRES_Settings_file-2.txt')
+        result: MonteCarloResult = client.get_monte_carlo_result(
+            MonteCarloRequest(
+                SimulationProgram.GEOPHIRES,
+                input_file_path,
+                mc_settings_file_path,
+            )
+        )
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.output_file_path)
+
+        with open(result.json_output_file_path) as f:
+            json_content = f.read()
+            self.assertIsNotNone(json_content)
+            result_json_obj = json.loads(json_content)
+            self.assertIsNotNone(result_json_obj)
+            for output in [
+                'Electricity breakeven price',
+                'Average Net Electricity Production',
+                'Project NPV',
+                'Total capital costs',
+                'Average Production Temperature',
+                'Reservoir hydrostatic pressure',
+            ]:
+                self.assertIn(output, result_json_obj)
+                for stat in ['average', 'maximum', 'mean', 'median', 'minimum', 'standard deviation']:
+                    self.assertIn(stat, result_json_obj[output])
+                    self.assertIs(type(result_json_obj[output][stat]), float)
+
+            avg_prod_tmp = result_json_obj['Average Production Temperature']['average']
+            self.assertGreater(avg_prod_tmp, 300)
+            self.assertLess(avg_prod_tmp, 400)
+            self.assertGreater(result_json_obj['Reservoir hydrostatic pressure']['average'], 60000)
+            self.assertLess(result_json_obj['Total capital costs']['average'], 1000)
+
+            self.assertDictEqual(result_json_obj, result.result['output'])
+
     @unittest.skip(reason='FIXME: MC HIP result parsing is broken')
     def test_hip_ra_monte_carlo(self):
         client = GeophiresMonteCarloClient()

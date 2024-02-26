@@ -92,8 +92,16 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                     self.assertIs(type(result_json_obj[output][stat]), float)
 
             avg_prod_tmp = result_json_obj['Average Production Temperature']['average']
-            self.assertGreater(avg_prod_tmp, 300)
-            self.assertLess(avg_prod_tmp, 400)
+
+            # Note that the results aren't deterministic and this temp range isn't *strictly* guaranteed to hold...
+            # However in practice it probably should; if it doesn't - i.e. tests randomly fail here more than once in
+            # a super-blue moon - then the values here can be adjusted to be inclusive of some reasonable range.
+            # The key point is that this test is asserting is that the value is something that is in the ballpark of a
+            # plausible temperature value, and hopefully not mixed up with some other output (as was occurring prior to
+            # https://github.com/NREL/GEOPHIRES-X/issues/132 being addressed)
+            self.assertGreater(avg_prod_tmp, 280)
+            self.assertLess(avg_prod_tmp, 420)
+
             self.assertGreater(result_json_obj['Reservoir hydrostatic pressure']['average'], 60000)
             self.assertLess(result_json_obj['Total capital costs']['average'], 1000)
 

@@ -158,27 +158,28 @@ def work_package(pass_list: list):
         exit(-33)
 
     with open(tmp_output_file) as f:
-        s1 = f.readline()
-        i = 0
-        while s1:  # read until the end of the file
-            for out in local_outputs:  # check for each requested output
-                if out in s1:  # If true, we found the output value that the user requested, so process it
-                    local_outputs.remove(out)  # as an optimization, drop the output from the list once we have found it
-                    s2 = s1.split(':')  # colon marks the split between the title and the data
-                    s2 = s2[1].strip()  # remove leading and trailing spaces
-                    s2 = s2.split(
-                        ' '
-                    )  # split on space because there is a unit string after the value we are looking for
-                    s2 = s2[0].strip()  # we finally have the result we were looking for
-                    result_s += s2 + ', '
-                    i += 1
-                    if i < (len(outputs) - 1):
-                        # go back to the beginning of the file in case the outputs that the user specified are not
-                        # in the order that they appear in the file.
-                        f.seek(0)
-                    break
+        result_lines = f.readlines()
 
-            s1 = f.readline()
+        def get_output(output):
+            matches = list(filter(lambda line: f'  {output}: ' in line, result_lines))
+            if len(matches) > 1:
+                logger.warning(f'Found more than 1 match for output {output}: {matches}')
+                return None
+
+            if len(matches) < 1:
+                logger.warning(f'Found no matches for output {output}: {matches}')
+                return None
+
+            return matches[0]
+
+        for out in local_outputs:
+            s1 = get_output(out)
+            if s1 is not None:
+                s2 = s1.split(':')  # colon marks the split between the title and the data
+                s2 = s2[1].strip()  # remove leading and trailing spaces
+                s2 = s2.split(' ')  # split on space because there is a unit string after the value we are looking for
+                s2 = s2[0].strip()  # we finally have the result we were looking for
+                result_s += s2 + ', '
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."

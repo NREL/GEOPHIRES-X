@@ -91,7 +91,9 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                     self.assertIn(stat, result_json_obj[output])
                     self.assertIs(type(result_json_obj[output][stat]), float)
 
-            self.assertTrue(300 < result_json_obj['Average Production Temperature']['average'] < 400)
+            avg_prod_tmp = result_json_obj['Average Production Temperature']['average']
+            self.assertGreater(avg_prod_tmp, 300)
+            self.assertLess(avg_prod_tmp, 400)
             self.assertGreater(result_json_obj['Reservoir hydrostatic pressure']['average'], 60000)
             self.assertLess(result_json_obj['Total capital costs']['average'], 1000)
 

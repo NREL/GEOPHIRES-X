@@ -618,12 +618,11 @@ class Reservoir:
                         if ParameterToModify.value == ReservoirVolume.RES_VOL_ONLY and ParameterToModify.value in [
                             ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:
                             ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_NUM
-                            print("Warning: If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
-                            model.logger.warning("If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
+                            msg = ('If user-selected reservoir model is 1 or 2, then user-selected reservoir volume '
+                                   'option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume reservoir '
+                                   'volume option 3.')
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
 
                     elif ParameterToModify.Name == "Fracture Shape":
                         if ParameterReadIn.sValue == '1':
@@ -639,7 +638,7 @@ class Reservoir:
                             # fracshape = 4  Rectangular fracture
                             ParameterToModify.value = FractureShape.RECTANGULAR
 
-                    elif ParameterToModify.Name.startswith("Gradient"):
+                    elif ParameterToModify.Name.startswith('Gradient'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
@@ -651,7 +650,7 @@ class Reservoir:
                             # convert 0 C/m gradients to very small number, avoids divide by zero errors later
                             model.reserv.gradient.value[position] = 1e-6
 
-                    elif ParameterToModify.Name.startswith("Thickness"):
+                    elif ParameterToModify.Name.startswith('Thickness'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.layerthickness.value[position] = ParameterToModify.value
@@ -747,7 +746,7 @@ class Reservoir:
         totaldepth = np.append(np.array([0.0]), np.cumsum(self.layerthickness.value))
         temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val)
 
-#        temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
+        # temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
         self.Trock.value = intersecttemperature[temperatureindex] + self.gradient.value[temperatureindex] * \
                            (self.depth.value - totaldepth[temperatureindex])
 

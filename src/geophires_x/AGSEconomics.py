@@ -22,7 +22,7 @@ class AGSEconomics(Economics.Economics):
         :type model: Model
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # Initialize the superclass first to gain access to those variables
         super().__init__(model)
@@ -90,10 +90,10 @@ class AGSEconomics(Economics.Economics):
 
         # results are stored here and in the parent ProducedTemperature array
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "AGSEconomics"
+        return 'AGSEconomics'
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -104,7 +104,7 @@ class AGSEconomics(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the default parameters
         # if we call super, we don't need to deal with setting the parameters here,
         # just deal with the special cases for the variables in this class
@@ -115,7 +115,7 @@ class AGSEconomics(Economics.Economics):
         self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
         self.Electricity_rate = model.surfaceplant.electricity_cost_to_buy.value  # same units are GEOPHIRES
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def verify(self, model: Model) -> int:
         """
@@ -125,62 +125,55 @@ class AGSEconomics(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: 0 if all OK, 1 if error.
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # Verify inputs are within allowable bounds
         self.error = 0
         if self.O_and_M_cost_plant.value < 0 or self.O_and_M_cost_plant.value > 0.2:
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Operation & maintenance cost of \
-                surface plant (expressed as fraction of total surface plant capital cost) must be between 0 and 0.2. \
-                Simulation terminated.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions: Operation & maintenance cost of \
-                surface plant (expressed as fraction of total surface plant capital cost) must be between 0 and 0.2. \
-                Simulation terminated.")
+            # TODO interpolate provided value in message
+            msg = ('CLGS model database imposes additional range restrictions: Operation & maintenance cost of surface '
+                   'plant (expressed as fraction of total surface plant capital cost) must be between 0 and 0.2. '
+                   'Simulation terminated.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
         if self.Discount_rate < 0 or self.Discount_rate > 0.2:
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Discount rate must be between \
-                0 and 0.2. Simulation terminated.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions: Discount rate must be between \
-                0 and 0.2. Simulation terminated.")
+            # TODO interpolate provided value in message
+            msg =('CLGS model database imposes additional range restrictions: Discount rate must be between 0 and 0.2. '
+                  'Simulation terminated.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
         if self.Direct_use_heat_cost_per_kWth.value < 0 or self.Direct_use_heat_cost_per_kWth.value > 10_000:
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Capital cost for direct-use \
-                surface plant must be between 0 and 10,000 $/kWth. Simulation terminated.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions: Capital cost for direct-use \
-                surface plant must be between 0 and 10,000 $/kWth. Simulation terminated.")
+            # TODO interpolate provided value in message
+            msg = ('CLGS model database imposes additional range restrictions: Capital cost for direct-use surface '
+                   'plant must be between 0 and 10,000 $/kWth. Simulation terminated.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
         if self.Electricity_rate < 0 or self.Electricity_rate > 0.5:
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Electricity rate in direct-use \
-                for pumping power must be between 0 and 0.5 $/kWh. Simulation terminated.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions: Electricity rate in direct-use \
-                for pumping power must be between 0 and 0.5 $/kWh. Simulation terminated.")
+            # TODO interpolate provided value in message
+            msg = ('CLGS model database imposes additional range restrictions: Electricity rate in direct-use for '
+                   'pumping power must be between 0 and 0.5 $/kWh. Simulation terminated.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
         if self.Power_plant_cost_per_kWe.value < 0 or self.Power_plant_cost_per_kWe.value > 10_000:
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Power plant capital cost must be \
-                between 0 and 10,000 $/kWe. Simulation terminated.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions: Power plant capital cost must be \
-                between 0 and 10,000 $/kWe. Simulation terminated.")
+            # TODO interpolate provided value in message
+            msg = ('CLGS model database imposes additional range restrictions: Power plant capital cost must be between '
+                   '0 and 10,000 $/kWe. Simulation terminated.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
         if model.surfaceplant.enduse_option.value not in (EndUseOptions.HEAT, EndUseOptions.ELECTRICITY):
-            print(
-                "Error: CLGS model database imposes additional range restrictions: Economic Calculations can only be \
-                made only for electricity or heat, not a combination.")
-            model.logger.fatal(
-                "Error: CLGS model database imposes additional range restrictions:  Economic Calculations can only be \
-                made only for electricity or heat, not a combination.")
+            # TODO interpolate provided value in message
+            msg = ('CLGS model database imposes additional range restrictions: Economic Calculations can only be made '
+                   'only for electricity or heat, not a combination.')
+            print(f'Error: {msg}')
+            model.logger.fatal(msg)
             self.error = 1
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
         return self.error
 
     def Calculate(self, model: Model) -> None:
@@ -190,15 +183,18 @@ class AGSEconomics(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         if self.econmodel.value != EconomicModel.CLGS:  # do a classical econ calculation
             super().Calculate(model)
-        else:  # use the CLGS-Style economic calculations
+        else:
+            # use the CLGS-Style economic calculations
             err = self.verify(model)
             if err > 0:
-                print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-                sys.exit()
+                msg = 'Error: GEOPHIRES failed to Failed to validate CLGS input value. Exiting....'
+                print(msg)
+                raise RuntimeError(msg)
+
             # Calculate CAPEX
             tot, vert, horiz = model.wellbores.calculatedrillinglengths(model)
             vertical_CAPEX_Drilling = vert * self.Vertical_drilling_cost_per_m.value / 1e6  # Drilling capital cost [M$]
@@ -249,13 +245,11 @@ class AGSEconomics(Economics.Economics):
 
             # handle errors
             if len(model.surfaceplant.error_codes) > 0:
-                model.logger.fatal(
-                    "failed with the following error codes: " + str(model.surfaceplant.error_codes[0:]) + " in " + str(
-                        __class__) + " " + os.path.abspath(__file__))
-                print("Error: failed with the following error codes" + str(
-                    model.surfaceplant.error_codes[0:]) + " in " + str(__class__) + " " + os.path.abspath(
-                    __file__) + ".  Exiting....")
-                sys.exit()
+                msg = (f'failed with the following error codes: '
+                       f'{model.surfaceplant.error_codes[0:]!s} in {__class__!s} {os.path.abspath(__file__)}')
+                model.logger.fatal(msg)
+                print(f'Error: {msg}')
+                raise RuntimeError(msg)
 
             # copy values to GEOPHIRES Equivalents
             self.CCap.value = self.TotalCAPEX
@@ -267,7 +261,5 @@ class AGSEconomics(Economics.Economics):
             self.Coam.value = self.AverageOPEX_Plant * 1000
             self.Coam.CurrentUnits = CurrencyFrequencyUnit.KDOLLARSPERYEAR
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
-    def __str__(self):
-        return "AGSEconomics"

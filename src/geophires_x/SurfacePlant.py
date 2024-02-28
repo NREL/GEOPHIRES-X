@@ -123,20 +123,24 @@ class SurfacePlant:
         # next do the electricity produced - the same for all, except enduse=5, where it is recalculated
         ElectricityProduced = availability * etau * nprod * prodwellflowrate
 
-        if enduse_option == EndUseOptions.ELECTRICITY:  # pure electricity
+        if enduse_option == EndUseOptions.ELECTRICITY:
+            # pure electricity
             HeatExtractedTowardsElectricity = HeatExtracted
-        # enduse_option = 3: cogen topping cycle
+
         elif enduse_option in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:
+            # enduse_option = 3: cogen topping cycle
             # Useful heat for direct-use application [MWth]
             HeatProduced = enduse_efficiency_factor * nprod * prodwellflowrate * cpwater * (ReinjTemp - Tinj) / 1E6
             HeatExtractedTowardsElectricity = nprod * prodwellflowrate * cpwater * (ProducedTemperature - ReinjTemp) / 1E6
-        # enduse_option = 4: cogen bottoming cycle
+
         elif enduse_option in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:
+            # enduse_option = 4: cogen bottoming cycle
             # Useful heat for direct-use application [MWth]
             HeatProduced = enduse_efficiency_factor * nprod * prodwellflowrate * cpwater * (ProducedTemperature - T_chp_bottom) / 1E6
             HeatExtractedTowardsElectricity = nprod * prodwellflowrate * cpwater * (T_chp_bottom - Tinj) / 1E6
-        # enduse_option = 5: cogen split of mass flow rate
+
         elif enduse_option in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:
+            # enduse_option = 5: cogen split of mass flow rate
             # electricity part [MWe]
             ElectricityProduced = availability * etau * nprod * prodwellflowrate * (1. - chp_fraction)
             # useful heat part for direct-use application [MWth]

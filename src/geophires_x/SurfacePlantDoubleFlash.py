@@ -36,10 +36,10 @@ class SurfacePlantDoubleFlash(SurfacePlant):
         sclass = str(self.__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = Path(__file__).resolve()
-        model.logger.info(f"Complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
 
     def __str__(self):
-        return "SurfacePlantDoubleFlash"
+        return 'SurfacePlantDoubleFlash'
 
     def read_parameters(self, model:Model) -> None:
         """
@@ -49,9 +49,9 @@ class SurfacePlantDoubleFlash(SurfacePlant):
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
         super().read_parameters(model)  # Initialize all the parameters in the superclass
-        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'complete {self.__class__.__name__}: {__name__}')
 
     def Calculate(self, model: Model) -> None:
         """
@@ -61,7 +61,7 @@ class SurfacePlantDoubleFlash(SurfacePlant):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info(f"Init {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'Init {self.__class__.__name__}: {__name__}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -133,4 +133,4 @@ class SurfacePlantDoubleFlash(SurfacePlant):
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(
             self, model.reserv.InitialReservoirHeatContent.value, self.HeatkWhExtracted.value)
 
-        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")
+        model.logger.info(f'complete {self.__class__.__name__}: {__name__}')

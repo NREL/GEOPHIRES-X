@@ -86,12 +86,14 @@ class SurfacePlant:
         reinjtul = D22*TenteringPP**2 + D12*TenteringPP + D02
         ReinjTemp = (1.-Tfraction)*reinjtll + Tfraction*reinjtul
 
-        # check if reinjectemp (model calculated) >= Tinj (user provided)
+        # check if reinjectemp (model calculated) < Tinj (user provided)
         if np.min(ReinjTemp) < Tinj:
+            user_injection_temp = Tinj
             Tinj = np.min(ReinjTemp)
-            msg = 'injection temperature lowered'
-            print(f'Warning: {msg}')
+            msg = (f'Model-calculated reinjection temperature ({Tinj}) is lower than input reinjection temperature '
+                   f'({user_injection_temp}); input reinjection temperature will be ignored.')
             model.logger.warning(msg)
+
         return Tinj, ReinjTemp, etau
 
     def electricity_heat_production(self, enduse_option: EndUseOptions, availability: np.ndarray, etau: np.ndarray, nprod: int,

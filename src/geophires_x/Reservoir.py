@@ -76,7 +76,7 @@ class Reservoir:
             "Maximum Temperature",
             DefaultValue=400.0,
             Min=50,
-            Max=500,
+            Max=600,
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS,

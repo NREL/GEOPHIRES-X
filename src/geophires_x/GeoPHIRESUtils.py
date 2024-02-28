@@ -54,7 +54,7 @@ _T = np.array(
     ]
 )
 
-# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
+# TODO needs citation
 _UtilEff = np.array(
     [
         0.0,

@@ -81,8 +81,12 @@ def CalculateRevenue(plantlifetime: int, ConstructionYears: int, CAPEX: float, O
     return CashFlow, CummCashFlow
 
 
-def CalculateFinancialPerformance(plantlifetime: int, FixedInternalRate: float, TotalRevenue, TotalCummRevenue,
-                                  CAPEX: float, OPEX: float):
+def CalculateFinancialPerformance(plantlifetime: int,
+                                  FixedInternalRate: float,
+                                  TotalRevenue: list,
+                                  TotalCummRevenue: list,
+                                  CAPEX: float,
+                                  OPEX: float):
     """
     CalculateFinancialPerformance calculates the financial performance of the project.  It is used to calculate the
     financial performance of the project. It is used to calculate the revenue stream for the project.
@@ -113,6 +117,8 @@ def CalculateFinancialPerformance(plantlifetime: int, FixedInternalRate: float, 
     IRR = npf.irr(TotalRevenue)
     if math.isnan(IRR):
         IRR = 0.0
+    else:
+        IRR *= 100.  # convert from decimal to percent
     VIR = 1.0 + (NPV / CAPEX)
 
     # Calculate MOIC which depends on CumCashFlow
@@ -1321,8 +1327,8 @@ class Economics:
         self.ProjectIRR = self.OutputParameterDict[self.ProjectIRR.Name] = OutputParameter(
             "Project Internal Rate of Return",
             UnitType=Units.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT
         )
         self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = OutputParameter(
             "Project Value Investment Ratio",

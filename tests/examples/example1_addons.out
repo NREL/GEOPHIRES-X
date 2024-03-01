@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.3
+ GEOPHIRES Version: 3.4.11
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-02-18
- Simulation Time:  09:03
- Calculation Time:      0.613 sec
+ Simulation Date: 2024-03-01
+ Simulation Time:  12:31
+ Calculation Time:      0.616 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -30,7 +30,7 @@ Simulation Metadata
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          -6.29 MUSD
-      Project IRR:                                           0.04 %
+      Project IRR:                                           4.48 %
       Project VIR=PI=PIR:                                    0.81
       Project MOIC:                                          3.47
 

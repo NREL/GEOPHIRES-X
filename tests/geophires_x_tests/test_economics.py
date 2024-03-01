@@ -2,7 +2,7 @@ from base_test_case import BaseTestCase
 from geophires_x.Economics import CalculateFinancialPerformance
 
 
-class ReservoirTestCase(BaseTestCase):
+class EconomicsTestCase(BaseTestCase):
     def test_irr(self):
         """
         Test cases adapted from https://numpy.org/numpy-financial/latest/irr.html

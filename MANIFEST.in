@@ -22,7 +22,7 @@ include README.rst
 include How-to-extend-GEOPHIRES-X.md
 include geophires-logo.png
 
-recursive-include References *.pdf
-recursive-include References *.txt
+recursive-exclude References *.pdf
+recursive-exclude References *.txt
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

@@ -226,12 +226,6 @@ class EconomicsCCUS(Economics):
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH
         )
-        self.ProjectPaybackPeriod = self.OutputParameterDict[self.ProjectPaybackPeriod.Name] = OutputParameter(
-            "Project Payback Period",
-            UnitType=Units.TIME,
-            PreferredUnits=TimeUnit.YEAR,
-            CurrentUnits=TimeUnit.YEAR
-        )
         self.ProjectMOIC = self.OutputParameterDict[self.ProjectMOIC.Name] = OutputParameter(
             "Project Multiple of Invested Capital",
             UnitType=Units.PERCENT,
@@ -429,11 +423,6 @@ class EconomicsCCUS(Economics):
                 self.ProjectCummCashFlow.value[0] = val
             else:
                 self.ProjectCummCashFlow.value[i] = self.ProjectCummCashFlow.value[i - 1] + val
-                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[
-                    i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
-                    dFullDiff = self.ProjectCummCashFlow.value[i] + math.fabs(self.ProjectCummCashFlow.value[(i - 1)])
-                    dPerc = math.fabs(self.ProjectCummCashFlow.value[(i - 1)]) / dFullDiff
-                    self.ProjectPaybackPeriod.value = i + dPerc
             i = i + 1
 
         # Calculate more financial values using numpy financials

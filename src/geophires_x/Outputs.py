@@ -102,7 +102,7 @@ class Outputs:
         # write results to output file and screen
 
         try:
-            with open(self.output_file, 'w', encoding='UTF-8') as f:
+            with (open(self.output_file, 'w', encoding='UTF-8') as f):
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
                 f.write('                               *****************\n')
@@ -119,27 +119,33 @@ class Outputs:
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
                 f.write("      End-Use Option: " + str(model.surfaceplant.enduse_option.value.value) + NL)
-                if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-                    f.write(f"      Annual District Heating Demand:                   {np.average(model.surfaceplant.annual_heating_demand.value):10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
-                    f.write(f"      Average Annual Geothermal Heat Production:        {sum(model.surfaceplant.dh_geothermal_heating.value * 24) / model.surfaceplant.plant_lifetime.value / 1e3:10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
-                    f.write(f"      Average Annual Peaking Fuel Heat Production:      {sum(model.surfaceplant.dh_natural_gas_heating.value * 24) / model.surfaceplant.plant_lifetime.value / 1e3:10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]: # there is an electricity component
                     f.write(f"      Average Net Electricity Production:               {np.average(model.surfaceplant.NetElectricityProduced.value):10.2f} " + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + NL)
                 if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:    # there is a direct-use component
                     f.write(f"      Average Direct-Use Heat Production:               {np.average(model.surfaceplant.HeatProduced.value):10.2f} "+ model.surfaceplant.HeatProduced.CurrentUnits.value + NL)
-
+                if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
+                    f.write(f"      Annual District Heating Demand:                   {np.average(model.surfaceplant.annual_heating_demand.value):10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
+                    f.write(f"      Average Annual Geothermal Heat Production:        {sum(model.surfaceplant.dh_geothermal_heating.value * 24) / model.surfaceplant.plant_lifetime.value / 1e3:10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
+                    f.write(f"      Average Annual Peaking Fuel Heat Production:      {sum(model.surfaceplant.dh_natural_gas_heating.value * 24) / model.surfaceplant.plant_lifetime.value / 1e3:10.2f} " + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
                 if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
                     f.write(f"      Average Cooling Production:                       {np.average(model.surfaceplant.cooling_produced.value):10.2f} " + model.surfaceplant.cooling_produced.CurrentUnits.value + NL)
 
-                if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:    #levelized cost expressed as LCOE
-                    f.write(f"      Electricity breakeven price:                      {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
-                elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY] \
-                    and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:    # levelized cost expressed as LCOH
-                    f.write(f"      Direct-Use heat breakeven price:                  {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
-
+                if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
+                    f.write(f"      Electricity breakeven price (LCOE):               {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
+                elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT] and \
+                    model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
+                    f.write(f"      Direct-Use heat breakeven price (LCOH):            {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
                 elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT] and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
-                    f.write(f"      Direct-Use Cooling Breakeven Price:               {model.economics.LCOC.value:10.2f} " + model.economics.LCOC.CurrentUnits.value + NL)
+                    f.write(f"      Direct-Use Cooling Breakeven Price (LCOC):         {model.economics.LCOC.value:10.2f} " + model.economics.LCOC.CurrentUnits.value + NL)
+                elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
+                                                              EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
+                                                              EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
+                    f.write(f"      Electricity breakeven price (LCOE):               {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
+                    f.write(f"      Direct-Use heat breakeven price (LCOH):           {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
 
                 f.write(f"      Number of production wells:                    {model.wellbores.nprod.value:10.0f}"+NL)
                 f.write(f"      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}"+NL)
@@ -153,6 +159,8 @@ class Outputs:
                         f.write(f"      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4f} " + model.reserv.gradient.CurrentUnits.value +NL)
                         f.write(f"      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} " + model.reserv.layerthickness.CurrentUnits.value + NL)
                     f.write(f"      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4f} " + model.reserv.gradient.CurrentUnits.value + NL)
+                if model.economics.DoCarbonCalculations.value:
+                    f.write(f"      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} metric tonnes" + NL)
 
                 f.write(NL)
                 f.write(NL)
@@ -173,6 +181,14 @@ class Outputs:
                 f.write(f"      Project IRR:                                     {model.economics.ProjectIRR.value:10.2f} " + model.economics.ProjectIRR.PreferredUnits.value + NL)
                 f.write(f"      Project VIR=PI=PIR:                              {model.economics.ProjectVIR.value:10.2f}" + NL)
                 f.write(f"      Project MOIC:                                    {model.economics.ProjectMOIC.value:10.2f}" + NL)
+                f.write(f"      Project Payback Period:                          {model.economics.ProjectPaybackPeriod.value:10.2f} " + model.economics.ProjectPaybackPeriod.PreferredUnits.value + NL)
+                if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
+                                                              EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
+                                                              EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
+                                                              EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
+                    f.write(f"      CHP: Percent cost allocation for electrical plant: {model.economics.CAPEX_heat_electricity_plant_ratio.value*100.0:10.2f}%" + NL)
 
                 f.write(NL)
                 f.write('                          ***ENGINEERING PARAMETERS***\n')
@@ -554,13 +570,85 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
+#                import rich
+#                from rich.console import Console
+#                from rich.table import Table
+#                from rich import print as rprint
 
+#                ytable = Table()
+#                ytable.add_column('Year Since')
+#                etable = Table()
+#                etable.add_column('Price, $/kWh', width=10, justify="center")
+#                etable.add_column('Annual Revenue, MUSD', width=15, justify="center")
+#                etable.add_column('Cumulative Revenue, MUSD', width=15, justify="center")
+#                htable = Table()
+#                htable.add_column('Price, $/kWh', width=10, justify="center")
+#                htable.add_column('Annual Revenue, MUSD', width=15, justify="center")
+#                htable.add_column('Cumulative Revenue, MUSD', width=15, justify="center")
+#                ctable = Table()
+#                ctable.add_column('Price, 4$/kWh', width=10, justify="center")
+#                ctable.add_column('Annual Revenue, MUSD', width=15, justify="center")
+#                ctable.add_column('Cumulative Revenue, MUSD', width=15, justify="center")
+#                econ = model.economics
+#                for ii in range(0, (model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value - 1), 1):
+#                    ytable.add_row(str(ii))
+#                    etable.add_row(str(econ.ElecPrice.value[ii]), str(econ.ElecRevenue.value[ii]), str(econ.ElecCummRevenue.value[ii]))
+#                    htable.add_row(str(econ.HeatPrice.value[ii]), str(econ.HeatRevenue.value[ii]), str(econ.HeatCummRevenue.value[ii]))
+#                    ctable.add_row(str(econ.CoolingPrice.value[ii]), str(econ.CoolingRevenue.value[ii]), str(econ.CoolingCummRevenue.value[ii]))
+#
+#                #with open("d:\\temp\\test_table.html", "wt") as f:
+#                ttable = Table(title="REVENUE & CASHFLOW PROFILE", width=350)
+#                ttable.add_column('', width=10, justify="center")
+#                ttable.add_column('Electricity', width=35, justify="center")
+#                ttable.add_column('Heat', width=35, justify="center")
+#                ttable.add_column('Cooling', width=35, justify="center")
+#                ttable.add_row(ytable, etable, htable, ctable)
+#                console = Console(file=f, style="bold white on blue", force_terminal=True, record=True)
+#                console.print(ttable)
 
+                #if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
+                f.write(NL)
+                f.write(NL)
+                f.write("                             *******************************" + NL)
+                f.write("                             *  REVENUE & CASHFLOW PROFILE *" + NL)
+                f.write("                             *******************************" + NL)
+                f.write(
+                    "Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project" + NL)
+                f.write(
+                    "Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow" + NL)
+                econ = model.economics
+                f.write("Start    ("
+                        + econ.ElecPrice.PreferredUnits.value +
+                        ")(" + econ.ElecRevenue.PreferredUnits.value +
+                        ") (" + econ.ElecCummRevenue.PreferredUnits.value +
+                        ")    |(" + econ.HeatPrice.PreferredUnits.value +
+                        ") (" + econ.HeatRevenue.PreferredUnits.value +
+                        ")    (" + econ.HeatCummRevenue.PreferredUnits.value +
+                        ")   |(" + econ.CoolingPrice.PreferredUnits.value +
+                        ") (" + econ.CoolingRevenue.PreferredUnits.value +
+                        ")    (" + econ.CoolingCummRevenue.PreferredUnits.value +
+                        ")    |(" + econ.CarbonPrice.PreferredUnits.value +
+                        ") (" + econ.CarbonRevenue.PreferredUnits.value +
+                        ")    (" + econ.CarbonCummCashFlow.PreferredUnits.value +
+                        ")    |(" + econ.Coam.PreferredUnits.value +
+                        ") (" + econ.TotalRevenue.PreferredUnits.value +
+                        ")    (" + econ.TotalCummRevenue.PreferredUnits.value + ")\n")
+                f.write(
+                    "________________________________________________________________________________________________________________________________________________________________________________________" + NL)
+                # running years...
+                for ii in range(0, (
+                    model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value - 1), 1):
+                    if ii < model.surfaceplant.construction_years.value:
+                        OPEX = 0.0   # zero out the OPEX during construction years
+                    else:
+                        OPEX = econ.Coam.value
+                    f.write(
+                        f"{ii + 1:3.0f}     {econ.ElecPrice.value[ii]:5.2f}          {econ.ElecRevenue.value[ii]:5.2f}  {econ.ElecCummRevenue.value[ii]:5.2f}     |   {econ.HeatPrice.value[ii]:5.2f}    {econ.HeatRevenue.value[ii]:5.2f}        {econ.HeatCummRevenue.value[ii]:5.2f}    |   {econ.CoolingPrice.value[ii]:5.2f}    {econ.CoolingRevenue.value[ii]:5.2f}        {econ.CoolingCummRevenue.value[ii]:5.2f}     |   {econ.CarbonPrice.value[ii]:5.2f}    {econ.CarbonRevenue.value[ii]:5.2f}        {econ.CarbonCummCashFlow.value[ii]:5.2f}     | {OPEX:5.2f}     {econ.TotalRevenue.value[ii]:5.2f}     {econ.TotalCummRevenue.value[ii]:5.2f}\n")
                 f.write(NL)
 
             if model.economics.DoAddOnCalculations.value: model.addoutputs.PrintOutputs(model)
-            if model.economics.DoCCUSCalculations.value: model.ccusoutputs.PrintOutputs(model)
             if model.economics.DoSDACGTCalculations.value: model.sdacgtoutputs.PrintOutputs(model)
+
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print (str(ex))

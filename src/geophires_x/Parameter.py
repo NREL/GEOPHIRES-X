@@ -243,9 +243,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     # these Parameter Types don't have units so don't do anything fancy, and ignore it if the user has supplied units
     if isinstance(ParamToModify, boolParameter) or isinstance(ParamToModify, strParameter):
         if isinstance(ParamToModify, boolParameter):
-            if ParameterReadIn.sValue.lower() in ['0', 'false']:
+            if ParameterReadIn.sValue in ['0', 'false', 'False', 'f', 'F', 'no', 'No', 'n', 'N']:
                 ParamToModify.value = False
-            elif ParameterReadIn.sValue.lower() in ['1', 'true']:
+            elif ParameterReadIn.sValue in ['1', 'true', 'True', 't', 'T', 'yes', 'Yes', 'y', 'Y']:
                 ParamToModify.value = True
             else:
                 ParamToModify.value = bool(ParameterReadIn.sValue)

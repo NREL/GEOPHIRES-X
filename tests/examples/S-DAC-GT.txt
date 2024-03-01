@@ -9,8 +9,10 @@ But only lists those patameters that are different than their default values
 
 ***Subsurface technical parameters***
 *************************************
-S-DAC-GT, On
 Reservoir Model,3,						---m/A Single Fracture Thermal Drawdown
+Reservoir Depth,3.1,						---[km]
+Number of Segments,1,						---[-]
+Maximum Temperature,400,					---[deg.C]
 Drawdown Parameter,.00002,					---[kg/s/m2]
 Gradient 1,70,							---[deg.C/km]
 Number of Production Wells,3,					---[-]

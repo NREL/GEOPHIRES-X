@@ -53,10 +53,6 @@ def main(enable_geophires_logging_config=True):
         json_addons = jsons.dumps(model.addeconomics.OutputParameterDict, indent=4, sort_keys=True,
                                   supress_warnings=True)
         json_merged = {**json_merged, **json.loads(json_addons)}
-    if model.economics.DoCCUSCalculations.value:
-        json_ccus = jsons.dumps(model.ccuseconomics.OutputParameterDict, indent=4, sort_keys=True,
-                                supress_warnings=True)
-        json_merged = {**json_merged, **json.loads(json_ccus)}
     if model.economics.DoSDACGTCalculations.value:
         json_sdacgt = jsons.dumps(model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True,
                                   supress_warnings=True)

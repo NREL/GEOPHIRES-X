@@ -1,15 +1,11 @@
-import sys
 from pathlib import Path
 import logging
 import time
 import logging.config
 
-from geophires_x.Reservoir import Reservoir
-from geophires_x.EconomicsCCUS import EconomicsCCUS
 from geophires_x.EconomicsS_DAC_GT import EconomicsS_DAC_GT
 from geophires_x.GeoPHIRESUtils import read_input_file
 from geophires_x.OutputsAddOns import OutputsAddOns
-from geophires_x.OutputsCCUS import OutputsCCUS
 from geophires_x.OutputsS_DAC_GT import OutputsS_DAC_GT
 from geophires_x.TDPReservoir import TDPReservoir
 from geophires_x.WellBores import WellBores
@@ -48,13 +44,17 @@ class Model(object):
     Model is the container class of the application, giving access to everything else, including the logger
     """
 
-    def __init__(self, enable_geophires_logging_config=True, input_file=None):
+    def __init__(self, enable_geophires_logging_config=True):
+        """
+        The __init__ function is called automatically every time the class is being used to create a new object.
+        :return: Nothing
+        """
 
         # get logging started
-        self.logger = logging.getLogger('root') # TODO should be getting __name__ logger instead of root
+        self.logger = logging.getLogger('root')
 
         if enable_geophires_logging_config:
-            logging.config.fileConfig(Path(Path(__file__).parent, 'logging.conf'))
+            logging.config.fileConfig(Path(Path(__file__).parent,'logging.conf'))
             self.logger.setLevel(logging.INFO)
 
         self.logger.info(f'Init {__class__}: {__name__}')
@@ -68,13 +68,8 @@ class Model(object):
         # we do this as soon as possible because what we instantiate may depend on settings in this file
         self.InputParameters = {}
 
-        if input_file is None and len(sys.argv) > 1:
-            input_file = sys.argv[1]
+        read_input_file(self.InputParameters, logger=self.logger)
 
-        read_input_file(self.InputParameters, logger=self.logger, input_file_name=input_file)
-
-        self.ccuseconomics = None
-        self.ccusoutputs = None
         self.sdacgtoutputs = None
         self.sdacgteconomics = None
         self.addoutputs = None
@@ -86,41 +81,36 @@ class Model(object):
         # we need to decide which reservoir to instantiate based on the user input (InputParameters),
         # which we just read above for the first time
         # Default is Thermal drawdown percentage model (GETEM)
-        self.reserv: Reservoir = TDPReservoir(self)
+        self.reserv: TDPReservoir = TDPReservoir(self)
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '0':
-                self.reserv: Reservoir = CylindricalReservoir(self)  # Simple Cylindrical Reservoir
+                self.reserv: CylindricalReservoir = CylindricalReservoir(self)  # Simple Cylindrical Reservoir
             elif self.InputParameters['Reservoir Model'].sValue == '1':
-                self.reserv: Reservoir = MPFReservoir(self)  # Multiple parallel fractures model (LANL)
+                self.reserv: MPFReservoir = MPFReservoir(self)  # Multiple parallel fractures model (LANL)
             elif self.InputParameters['Reservoir Model'].sValue == '2':
-                self.reserv: Reservoir = LHSReservoir(self)  # Multiple parallel fractures model (LANL)
+                self.reserv: LHSReservoir = LHSReservoir(self)  # Multiple parallel fractures model (LANL)
             elif self.InputParameters['Reservoir Model'].sValue == '3':
-                self.reserv: Reservoir = SFReservoir(self)  # Drawdown parameter model (Tester)
+                self.reserv: SFReservoir = SFReservoir(self)  # Drawdown parameter model (Tester)
             elif self.InputParameters['Reservoir Model'].sValue == '5':
-                self.reserv: Reservoir = UPPReservoir(self)  # Generic user-provided temperature profile
+                self.reserv: UPPReservoir = UPPReservoir(self)  # Generic user-provided temperature profile
             elif self.InputParameters['Reservoir Model'].sValue == '6':
-                self.reserv: Reservoir = TOUGH2Reservoir(self)  # Tough2 is called
+                self.reserv: TOUGH2Reservoir = TOUGH2Reservoir(self)  # Tough2 is called
             elif self.InputParameters['Reservoir Model'].sValue == '7':
-                self.reserv: Reservoir = SUTRAReservoir(self)  # SUTRA output is created
+                self.reserv: SUTRAReservoir = SUTRAReservoir(self)  # SUTRA output is created
 
         # initialize the default objects
         self.wellbores: WellBores = WellBores(self)
-        self.surfaceplant = SurfacePlant(self)
-        self.economics = Economics(self)
-
-        output_file = 'HDR.out'
-        if len(sys.argv) > 2:
-            output_file = sys.argv[2]
-
-        self.outputs = Outputs(self, output_file=output_file)
+        self.surfaceplant: SurfacePlant = SurfacePlant(self)
+        self.economics: Economics = Economics(self)
+        self.outputs: Outputs = Outputs(self)
 
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '7':
                 # if we use SUTRA output for simulating reservoir thermal energy storage, we use a special wellbore object that can handle SUTRA data
                 self.wellbores: WellBores = SUTRAWellBores(self)
-                self.surfaceplant = SurfacePlantSUTRA(self)
-                self.economics = SUTRAEconomics(self)
-                self.outputs = SUTRAOutputs(self, output_file=output_file)
+                self.surfaceplant: SurfacePlantSUTRA = SurfacePlantSUTRA(self)
+                self.economics: SUTRAEconomics = SUTRAEconomics(self)
+                self.outputs: SUTRAOutputs = SUTRAOutputs(self)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue in ['True', 'true', 'TRUE', 'T', '1']:
@@ -129,31 +119,25 @@ class Model(object):
                 # that have AGS functionality.
                 # that means importing them, initializing them, then reading their parameters
                 # use the simple cylindrical reservoir for all AGS systems.
-                self.reserv: Reservoir = CylindricalReservoir(self)
+                self.reserv: CylindricalReservoir = CylindricalReservoir(self)
                 self.wellbores: WellBores = AGSWellBores(self)
-                self.surfaceplant = SurfacePlantAGS(self)
-                self.economics = AGSEconomics(self)
-                self.outputs = AGSOutputs(self, output_file=output_file)
+                self.surfaceplant: SurfacePlantAGS = SurfacePlantAGS(self)
+                self.economics: AGSEconomics = AGSEconomics(self)
+                self.outputs: AGSOutputs = AGSOutputs(self)
                 self.wellbores.IsAGS.value = True
 
         # if we find out we have an add-ons, we need to instantiate it, then read for the parameters
         if 'AddOn Nickname 1' in self.InputParameters:
             self.logger.info("Initiate the Add-on elements")
-            self.addeconomics = EconomicsAddOns(self)
-            self.addoutputs = OutputsAddOns(self, output_file=output_file)
-
-        # if we find out we have a ccus, we need to instantiate it, then read for the parameters
-        if 'Ending CCUS Credit Value' in self.InputParameters:
-            self.logger.info("Initiate the CCUS elements")
-            self.ccuseconomics = EconomicsCCUS(self)
-            self.ccusoutputs = OutputsCCUS(self, output_file=output_file)
+            self.addeconomics: EconomicsAddOns = EconomicsAddOns(self)
+            self.addoutputs: OutputsAddOns = OutputsAddOns(self)
 
         # if we find out we have an S-DAC-GT calculation, we need to instantiate it
-        if 'S-DAC-GT' in self.InputParameters:
-            if self.InputParameters['S-DAC-GT'].sValue == 'On':
+        if 'Do S-DAC-GT Calculations' in self.InputParameters:
+            if self.InputParameters['Do S-DAC-GT Calculations'].sValue in ['On', 'on', 'ON', 'True', 'true', 'TRUE', 'T', 't', '1']:
                 self.logger.info("Initiate the S-DAC-GT elements")
-                self.sdacgteconomics = EconomicsS_DAC_GT(self)
-                self.sdacgtoutputs = OutputsS_DAC_GT(self, output_file=output_file)
+                self.sdacgteconomics: EconomicsS_DAC_GT = EconomicsS_DAC_GT(self)
+                self.sdacgtoutputs: OutputsS_DAC_GT = OutputsS_DAC_GT(self)
 
         self.logger.info(f'Complete {__class__}: {__name__}')
 
@@ -180,10 +164,6 @@ class Model(object):
         if self.economics.DoAddOnCalculations.value:
             self.addeconomics.read_parameters(self)
             self.addoutputs.read_parameters(self)
-        # if we find out we have a ccus, read for the parameters
-        if self.economics.DoCCUSCalculations.value:
-            self.ccuseconomics.read_parameters(self)
-            self.ccusoutputs.read_parameters(self)
         # if we find out we have an S-DAC-GT calculation, read for the parameters
         if self.economics.DoSDACGTCalculations.value:
             self.sdacgteconomics.read_parameters(self)
@@ -255,13 +235,5 @@ class Model(object):
             self.surfaceplant.Calculate(self)  # model the surfaceplant
 
         self.economics.Calculate(self)  # model the economics
-
-        # do the additional economic calculations if needed
-        if self.economics.DoAddOnCalculations.value:
-            self.addeconomics.Calculate(self)
-        if self.economics.DoCCUSCalculations.value:
-            self.ccuseconomics.Calculate(self)
-        if self.economics.DoSDACGTCalculations.value:
-            self.sdacgteconomics.Calculate(self)
 
         self.logger.info(f'complete {__class__}: {__name__}')

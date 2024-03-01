@@ -69,3 +69,5 @@ Absorption Chiller O&M Cost,0.065,               --- [$M/year]
 
 Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
 Time steps per year,10,						---[-]
+Starting Cooling Sale Price,0.0655
+Ending Cooling Sale Price,0.0655

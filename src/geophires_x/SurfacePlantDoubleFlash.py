@@ -122,7 +122,7 @@ class SurfacePlantDoubleFlash(SurfacePlant):
         self.NetElectricityProduced.value = self.ElectricityProduced.value - model.wellbores.PumpingPower.value
         self.FirstLawEfficiency.value = self.NetElectricityProduced.value/HeatExtractedTowardsElectricity
 
-        # Calculate annual electricity, pum;ping, and heat production
+        # Calculate annual electricity, pumping, and heat production
         self.HeatkWhExtracted.value, self.PumpingkWh.value, self.TotalkWhProduced.value, self.NetkWhProduced.value, self.HeatkWhProduced.value = \
         SurfacePlant.annual_electricity_pumping_power(self, self.plant_lifetime.value, self.enduse_option.value,
                                 self.HeatExtracted.value, model.economics.timestepsperyear.value, self.utilization_factor.value,

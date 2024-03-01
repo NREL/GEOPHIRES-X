@@ -417,7 +417,6 @@ class Economics:
         )
         self.ccwellfixed = self.ParameterDict[self.ccwellfixed.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=200,
@@ -743,7 +742,6 @@ class Economics:
         )
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
-            value=WellDrillingCostCorrelation.VERTICAL_SMALL,
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_SMALL,
             AllowableRange=[1, 2, 3, 4, 5],
             UnitType=Units.NONE,
@@ -1767,10 +1765,11 @@ class Economics:
         else:
             # if depth is > 7000 m, we don't have a correlation for it, so we must use the SIMPLE logic
             checkdepth = model.reserv.depth.quantity().to('m').magnitude
-            if (
-                checkdepth > 7000.0 or checkdepth < 500) and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
-                msg = f'Simple user-specified cost per meter used for drilling depth <500 or >7000 m ({checkdepth}m)'
-                print(f'Warning: {msg}')
+            if ((checkdepth > 7000.0 or checkdepth < 500) and
+                not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
+                msg = (f'Invalid cost correlation specified for drilling depth <500 or >7000 m ({checkdepth}m), '
+                       f'falling back to simple user-specified cost '
+                       f'({self.Vertical_drilling_cost_per_m.value} per meter)')
                 model.logger.warning(msg)
                 self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
 
@@ -1804,13 +1803,18 @@ class Economics:
                 else:
                     self.C1well = self.Vertical_drilling_cost_per_m.value * model.reserv.depth.quantity().to(
                         'm').magnitude * 1E-6
+
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL:
-                self.C1well = (
-                                      0.3021 * checkdepth ** 2 + 584.9112 * checkdepth + 751368.) * 1E-6  # well drilling and completion cost in M$/well
+                self.C1well = ((0.3021 * checkdepth ** 2 + 584.9112 * checkdepth + 751368.)
+                               * 1E-6)  # well drilling and completion cost in M$/well
+
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL:
                 self.C1well = (0.2898 * checkdepth ** 2 + 822.1507 * checkdepth + 680563.) * 1E-6
+
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE:
+
                 self.C1well = (0.2818 * checkdepth ** 2 + 1275.5213 * checkdepth + 632315.) * 1E-6
+
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE:
                 self.C1well = (0.2553 * checkdepth ** 2 + 1716.7157 * checkdepth + 500867.) * 1E-6
 

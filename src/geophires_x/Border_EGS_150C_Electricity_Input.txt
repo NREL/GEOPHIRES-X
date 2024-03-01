@@ -1,0 +1,67 @@
+Reservoir Model,1,                        			---Multiple, Fractures, reservoir, model
+Reservoir Depth,3.7,                     				---[km]
+Number of Segments,3,                  				---[-]
+Gradient 1,42.69972,                          			---[deg.C/km]
+Gradient 2,51.66667,                          			---[deg.C/km]
+Thickness 1,0.793,                          			---[km]
+Gradient 3,46.9697,                          			---[deg.C/km]
+Thickness 2,1.646,                          			---[km]
+Maximum Temperature,400,                  			---[deg.C]
+Number of Production Wells,2,            			---[-]
+Number of Injection Wells,2,            			---[-]
+Production Well Diameter,7,		     			---[inch]
+Injection Well Diameter,7,					---[inch]
+Ramey Production Wellbore Model,1,       			---
+Production Wellbore Temperature Drop,.5,			---[deg.C]
+Injection Wellbore Temperature Gain,0,   			---[deg.C]
+Production Flow Rate per Well,90,       			---[kg/s]
+Fracture Shape,3,                       			---[-]
+Fracture Height,900, 						---[m]
+Reservoir Volume Option,3,              			---[-]
+Reservoir Volume,1000000000000,		 			---[m^3]
+Number of Fractures,20,		  				---[-]
+Water Loss Fraction,.02,					---[-]
+Productivity Index,5,						---[kg/s/bar]
+Injectivity Index,5,						---[kg/s/bar]
+Injection Temperature,40,		 			---[deg.C]
+Maximum Drawdown,0.3,			  			---[-] no redrilling considered
+Reservoir Heat Capacity,975,		  			---[J/kg/K]
+Reservoir Density,2600,			  			---[kg/m^3]
+Reservoir Thermal Conductivity,3,	  			---[W/m/K]
+
+***SURFACE TECHNICAL PARAMETERS***
+**********************************
+End-Use Option,1,			  			---[-] Electricity
+Economic Model,1,			  			---[-] Fixed Charge Rate Model
+Power Plant Type,2,			  			---[-] Supercritcal ORC
+Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
+Utilization Factor,.9,			  			---[-] between .1 and 1
+Surface Temperature,20,		  				---[deg.C]
+Ambient Temperature,20,		 				---[deg.C]
+
+***FINANCIAL PARAMETERS***
+**************************
+Plant Lifetime,30,			  			---[years]
+Fixed Charge Rate,.05,			 			---[-] between 0 and 1
+
+Inflation Rate During Construction,0,   			---[-]
+
+Starting Electricity Sale Price, 0.10
+
+Ending Electricity Sale Price, 0.15
+
+Electricity Escalation Start Year, 5
+
+Electricity Escalation Rate Per Year, 0.01
+
+***Simulation Parameters***
+***************************
+
+Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
+Time steps per year,6,		  				---[1/year]
+
+***Output unit conversions you wish to make***
+***************************
+Units:Bottom-hole temperature, degF,  ---[This is what I want the units to be for this output parameter
+Units:Exploration cost,MEUR,  ---[This is what I want the units to be for this output parameter
+Units:O&M Make-up Water costs, MEUR/yr

@@ -128,12 +128,6 @@ class EconomicsAddOns(Economics.Economics):
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-        self.ProjectPaybackPeriod = self.OutputParameterDict[self.ProjectPaybackPeriod.Name] = OutputParameter(
-            "Project Payback Period",
-            UnitType=Units.TIME,
-            PreferredUnits=TimeUnit.YEAR,
-            CurrentUnits=TimeUnit.YEAR
-        )
         self.AddOnPaybackPeriod = self.OutputParameterDict[self.AddOnPaybackPeriod.Name] = OutputParameter(
             "AddOn Payback Period",
             UnitType=Units.TIME,
@@ -348,7 +342,7 @@ class EconomicsAddOns(Economics.Economics):
             self.ProjectIRR.value = 0.0
         self.ProjectVIR.value = 1.0 + (self.ProjectNPV.value / self.AdjustedProjectCAPEX.value)
 
-        # calculate Cummcashflows and paybacks
+        # calculate Cummcashflows and payback period
         self.ProjectCummCashFlow.value = [0.0] * len(self.ProjectCashFlow.value)
         i = 0
         for val in self.ProjectCashFlow.value:
@@ -356,11 +350,6 @@ class EconomicsAddOns(Economics.Economics):
                 self.ProjectCummCashFlow.value[i] = val
             else:
                 self.ProjectCummCashFlow.value[i] = self.ProjectCummCashFlow.value[i - 1] + val
-                if self.ProjectCummCashFlow.value[i] > 0 >= self.ProjectCummCashFlow.value[
-                    i - 1]:  # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
-                    dFullDiff = self.ProjectCummCashFlow.value[i] + math.fabs(self.ProjectCummCashFlow.value[(i - 1)])
-                    dPerc = math.fabs(self.ProjectCummCashFlow.value[(i - 1)]) / dFullDiff
-                    self.ProjectPaybackPeriod.value = i + dPerc
             i = i + 1
         i = 0
         self.AddOnCummCashFlow.value = [0.0] * len(self.AddOnCashFlow.value)
@@ -382,7 +371,7 @@ class EconomicsAddOns(Economics.Economics):
                     self.AdjustedProjectOPEX.value * model.surfaceplant.plant_lifetime.value))
 
         # recalculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOH(self, model)
+        self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

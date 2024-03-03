@@ -22,6 +22,8 @@ class OutputsAddOns(Outputs):
         # now do AddOn output, which will append to the original output
         # write results to output file and screen
         try:
+            if len(sys.argv) > 2:
+                self.output_file = sys.argv[2]
             with open(self.output_file, 'a', encoding='UTF-8') as f:
                 f.write(NL)
                 f.write(NL)

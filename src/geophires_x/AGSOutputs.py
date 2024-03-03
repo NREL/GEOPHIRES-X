@@ -75,6 +75,8 @@ class AGSOutputs(Outputs.Outputs):
             if not model.economics.econmodel.value == EconomicModel.CLGS:
                 super().PrintOutputs(model)
             else:
+                if len(sys.argv) > 2:
+                    self.output_file = sys.argv[2]
                 with open(self.output_file, 'w', encoding='UTF-8') as f:
                     f.write('                               *****************\n')
                     f.write('                               ***CASE REPORT***\n')

@@ -147,6 +147,9 @@ class GeophiresXTestCase(BaseTestCase):
         log = _get_logger()
         client = GeophiresXClient()
 
+        def get_output_file_for_example(example_file: str):
+            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
+
         example_files = list(
             filter(
                 lambda example_file_path: example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
@@ -154,11 +157,8 @@ class GeophiresXTestCase(BaseTestCase):
                 self._list_test_files_dir(test_files_dir='examples'),
             )
         )
+
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
-
-        def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
-
         for example_file_path in example_files:
             with self.subTest(msg=example_file_path):
                 print(f'Running example test {example_file_path}')

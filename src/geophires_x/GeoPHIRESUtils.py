@@ -54,7 +54,7 @@ _T = np.array(
     ]
 )
 
-# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
+# TODO needs citation
 _UtilEff = np.array(
     [
         0.0,
@@ -193,11 +193,12 @@ def heat_capacity_water_J_per_kg_per_K(
     Raises:
         ValueError: If Twater_degC is not a float or convertible to float.
     """
-    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > 500:
+    max_allowed_temp_degC = 600
+    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > max_allowed_temp_degC:
         raise ValueError(
             f'Invalid input for Twater_degC.'
-            f'Twater_degC must be a non-negative number and must be within the range of 0 to 500 degrees Celsius.'
-            f'The input value was: {Twater_degC}'
+            f'Twater_degC must be a non-negative number and must be within the range of 0 to {max_allowed_temp_degC} '
+            f'degrees Celsius. The input value was: {Twater_degC}'
         )
 
     try:

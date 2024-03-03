@@ -76,7 +76,7 @@ class Reservoir:
             "Maximum Temperature",
             DefaultValue=400.0,
             Min=50,
-            Max=500,
+            Max=600,
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS,
@@ -99,13 +99,12 @@ class Reservoir:
 
         self.gradient = self.ParameterDict[self.gradient.Name] = floatParameter(
             "Gradients",
-            value=[0.05, 0.0, 0.0, 0.0],
             DefaultValue=[0.05, 0.0, 0.0, 0.0],
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
-            PreferredUnits=TemperatureGradientUnit.DEGREESCPERKM,
-            CurrentUnits=TemperatureGradientUnit.DEGREESCPERKM,
+            PreferredUnits=TemperatureGradientUnit.DEGREESCPERM,
+            CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradients 1 (50, 0, 0, 0 deg.C/km)",
             ToolTipText="Geothermal gradients"
@@ -113,13 +112,12 @@ class Reservoir:
 
         self.gradient1 = self.ParameterDict[self.gradient1.Name] = floatParameter(
             "Gradient 1",
-            value=0.05,
             DefaultValue=0.05,
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
-            PreferredUnits=TemperatureGradientUnit.DEGREESCPERKM,
-            CurrentUnits=TemperatureGradientUnit.DEGREESCPERKM,
+            PreferredUnits=TemperatureGradientUnit.DEGREESCPERM,
+            CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradient 1 (50 deg.C/km)",
             ToolTipText="Geothermal gradient 1 in rock segment 1"
@@ -127,7 +125,6 @@ class Reservoir:
 
         self.gradient2 = self.ParameterDict[self.gradient2.Name] = floatParameter(
             "Gradient 2",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -141,7 +138,6 @@ class Reservoir:
 
         self.gradient3 = self.ParameterDict[self.gradient3.Name] = floatParameter(
             "Gradient 3",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -155,7 +151,6 @@ class Reservoir:
 
         self.gradient4 = self.ParameterDict[self.gradient4.Name] = floatParameter(
             "Gradient 4",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -169,8 +164,6 @@ class Reservoir:
 
         self.layerthickness = self.ParameterDict[self.layerthickness.Name] = listParameter(
             "Thicknesses",
-            value=[100_000.0, 0.01, 0.01,
-                   0.01, 0.01],
             DefaultValue=[100_000.0,
                           0.01, 0.01,
                           0.01, 0.01],
@@ -185,7 +178,6 @@ class Reservoir:
 
         self.layerthickness1 = self.ParameterDict[self.layerthickness1.Name] = floatParameter(
             "Thickness 1",
-            value=2.0,
             DefaultValue=2.0,
             Min=0.01,
             Max=100.0,
@@ -198,7 +190,6 @@ class Reservoir:
 
         self.layerthickness2 = self.ParameterDict[self.layerthickness2.Name] = floatParameter(
             "Thickness 2",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -211,7 +202,6 @@ class Reservoir:
 
         self.layerthickness3 = self.ParameterDict[self.layerthickness3.Name] = floatParameter(
             "Thickness 3",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -224,7 +214,6 @@ class Reservoir:
 
         self.layerthickness4 = self.ParameterDict[self.layerthickness4.Name] = floatParameter(
             "Thickness 4",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -629,12 +618,11 @@ class Reservoir:
                         if ParameterToModify.value == ReservoirVolume.RES_VOL_ONLY and ParameterToModify.value in [
                             ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:
                             ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_NUM
-                            print("Warning: If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
-                            model.logger.warning("If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
+                            msg = ('If user-selected reservoir model is 1 or 2, then user-selected reservoir volume '
+                                   'option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume reservoir '
+                                   'volume option 3.')
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
 
                     elif ParameterToModify.Name == "Fracture Shape":
                         if ParameterReadIn.sValue == '1':
@@ -650,7 +638,7 @@ class Reservoir:
                             # fracshape = 4  Rectangular fracture
                             ParameterToModify.value = FractureShape.RECTANGULAR
 
-                    elif ParameterToModify.Name.startswith("Gradient"):
+                    elif ParameterToModify.Name.startswith('Gradient'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
@@ -662,7 +650,7 @@ class Reservoir:
                             # convert 0 C/m gradients to very small number, avoids divide by zero errors later
                             model.reserv.gradient.value[position] = 1e-6
 
-                    elif ParameterToModify.Name.startswith("Thickness"):
+                    elif ParameterToModify.Name.startswith('Thickness'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.layerthickness.value[position] = ParameterToModify.value
@@ -758,7 +746,7 @@ class Reservoir:
         totaldepth = np.append(np.array([0.0]), np.cumsum(self.layerthickness.value))
         temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val)
 
-#        temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
+        # temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
         self.Trock.value = intersecttemperature[temperatureindex] + self.gradient.value[temperatureindex] * \
                            (self.depth.value - totaldepth[temperatureindex])
 

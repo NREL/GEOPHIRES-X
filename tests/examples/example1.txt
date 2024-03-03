@@ -40,7 +40,7 @@ Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
 ***SURFACE TECHNICAL PARAMETERS***
 **********************************
 End-Use Option,1,			  			---[-] Electricity
-Power Plant Type,2,			  			---[-] Supercritcal ORC
+Power Plant Type,2,			  			---[-] Supercritical ORC
 Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
 Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]

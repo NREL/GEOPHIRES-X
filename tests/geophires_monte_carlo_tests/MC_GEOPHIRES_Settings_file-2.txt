@@ -1,0 +1,9 @@
+INPUT, Gradient 1, uniform, 50, 55
+INPUT, Utilization Factor,normal, 0.8, .04
+OUTPUT, Electricity breakeven price
+OUTPUT, Average Net Electricity Production
+OUTPUT, Project NPV
+OUTPUT, Total capital costs
+OUTPUT, Average Production Temperature
+OUTPUT, Reservoir hydrostatic pressure
+ITERATIONS, 2

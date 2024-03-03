@@ -32,14 +32,14 @@ class LHSReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().__init__(model)  # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.myClass = sclass.replace("\'>", "")
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return "LHSReservoir"
+        return 'LHSReservoir'
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -52,7 +52,7 @@ class LHSReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # if we call super, we don't need to deal with setting the parameters here,
         # just deal with the special cases for the variables in this class
@@ -60,7 +60,7 @@ class LHSReservoir(Reservoir):
         # including the ones that are specific to this class
         super().read_parameters(model)  # read the parameters for the parent.
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def Calculate(self, model: Model):
         """
@@ -72,7 +72,7 @@ class LHSReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
         super().Calculate(model)  # run calculate for the parent.
 
         # specify rock properties
@@ -84,10 +84,13 @@ class LHSReservoir(Reservoir):
         # storage ratio
         gamma = (model.reserv.rhowater.value * model.reserv.cpwater.value * phi) / (
                 model.reserv.rhorock.value * model.reserv.cprock.value * (1 - phi))
+
         # effective rock radius
         r_efr = 0.83 * (0.75 * (model.reserv.fracsepcalc.value * model.reserv.fracheightcalc.value * model.reserv.fracwidthcalc.value) / math.pi) ** (1. / 3.)
+
         # Biot number
         Bi = h * r_efr / model.reserv.krock.value
+
         # effective rock time constant
         tau_efr = r_efr ** 2. * (shape + 1. / Bi) / (3. * alpha)
 
@@ -111,9 +114,10 @@ class LHSReservoir(Reservoir):
                 Twnd = Twnd + [float(
                     invertlaplace(fp, model.reserv.timevector.value[t] * 365. * 24. * 3600. / tres, method='talbot'))]
         except:
-            print(
-                "Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 2. Simulation will abort.")
-            sys.exit()
+            raise RuntimeError('Error: GEOPHIRES could not execute numerical inverse laplace calculation for '
+                               'reservoir model 2. '
+                               'Simulation will abort.')
+
         Twnd = np.asarray(Twnd)
 
         # calculate dimensional temperature, add error-handling for nonsensical temperatures
@@ -122,4 +126,4 @@ class LHSReservoir(Reservoir):
         model.reserv.Tresoutput.value = np.append([model.reserv.Trock.value], model.reserv.Tresoutput.value)
         model.reserv.Tresoutput.value = np.asarray([model.reserv.Trock.value if x > model.reserv.Trock.value or x < model.wellbores.Tinj.value else x for x in model.reserv.Tresoutput.value])
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')

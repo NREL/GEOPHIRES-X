@@ -1,3 +1,4 @@
+import json
 import os
 from enum import Enum
 from pathlib import Path
@@ -68,11 +69,29 @@ class MonteCarloResult:
     def __init__(self, request: MonteCarloRequest):
         self._request: MonteCarloRequest = request
 
+        with open(self._request.input_file) as request_input_file, open(
+            self._request.monte_carlo_settings_file
+        ) as mc_settings_file, open(self.json_output_file_path) as json_file:
+            self._result: dict = {
+                'input': {
+                    'input_file_content': request_input_file.read(),
+                    'monte_carlo_settings_file_content': mc_settings_file.read(),
+                },
+                'output': json.loads(json_file.read()),
+            }
+
     @property
     def output_file_path(self) -> Path:
         return self._request.output_file
 
-    # TODO expose properties in result
+    @property
+    def json_output_file_path(self) -> Path:
+        return self.output_file_path.with_suffix('.json')
+
+    @property
+    def result(self) -> dict:
+        """TODO define properties in result (instead of unspecified JSON schema)"""
+        return self._result
 
 
 class GeophiresMonteCarloClient:

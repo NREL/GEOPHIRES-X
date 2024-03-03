@@ -266,22 +266,21 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
         ParamToModify.UnitsMatch = True
 
+    def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
+        return (
+            f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is the same as the default value. '
+            f'Consider removing {ParamToModify.Name} from the input file unless you wish '
+            f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
+        )
+
     if isinstance(ParamToModify, intParameter):
         New_val = int(float(ParameterReadIn.sValue))
 
         if New_val == ParamToModify.DefaultValue:
-            # Warning - the value read in is the same as the default value, making it superfluous - add a warning and
-            # suggestion
-
             if len(ParamToModify.ErrMessage) > 0:
-                msg = (
-                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file to a '
-                    f'value that is the same as the default. No change was made to that value. Recommendation: remove '
-                    f'the {ParamToModify.Name} from the input file unless you wish to change it from the default value '
-                    f'of ({str(ParamToModify.DefaultValue)})'
-                )
-                print(f'Warning: {msg}')
-                model.logger.warning(msg)
+                msg = default_parameter_value_message(New_val, ParamToModify.Name, ParamToModify.DefaultValue)
+                model.logger.info(msg)
+
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
@@ -311,14 +310,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
 
             ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:
-                msg = (
-                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file '
-                    f'to a value that is the same as the default. No change was made to that value. '
-                    f'Recommendation: remove the {ParamToModify.Name} from the input file unless you wish '
-                    f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
-                )
-                print(f'Warning: {msg}')
-                model.logger.warning(msg)
+                msg = default_parameter_value_message(New_val, ParamToModify.Name, ParamToModify.DefaultValue)
+                model.logger.info(msg)
+
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
             # We have nothing to change - user provided value that was the same as the

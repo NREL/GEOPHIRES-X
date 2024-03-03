@@ -9,6 +9,7 @@ Created on Wed November  16 10:43:04 2017
 
 import argparse
 import concurrent.futures
+import json
 import os
 import shutil
 import subprocess
@@ -114,19 +115,16 @@ def work_package(pass_list: list):
         f.write(input_file_entries)
 
     if args.Code_File.endswith('GEOPHIRESv3.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         geophires_client: GeophiresXClient = GeophiresXClient()
         result: GeophiresXResult = geophires_client.get_geophires_result(
             GeophiresInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('HIP_RA.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_client: HipRaClient = HipRaClient()
         result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('hip_ra_x.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
             HipRaInputParameters(from_file_path=Path(tmp_input_file))
@@ -160,27 +158,28 @@ def work_package(pass_list: list):
         exit(-33)
 
     with open(tmp_output_file) as f:
-        s1 = f.readline()
-        i = 0
-        while s1:  # read until the end of the file
-            for out in local_outputs:  # check for each requested output
-                if out in s1:  # If true, we found the output value that the user requested, so process it
-                    local_outputs.remove(out)  # as an optimization, drop the output from the list once we have found it
-                    s2 = s1.split(':')  # colon marks the split between the title and the data
-                    s2 = s2[1].strip()  # remove leading and trailing spaces
-                    s2 = s2.split(
-                        ' '
-                    )  # split on space because there is a unit string after the value we are looking for
-                    s2 = s2[0].strip()  # we finally have the result we were looking for
-                    result_s += s2 + ', '
-                    i += 1
-                    if i < (len(outputs) - 1):
-                        # go back to the beginning of the file in case the outputs that the user specified are not
-                        # in the order that they appear in the file.
-                        f.seek(0)
-                    break
+        result_lines = f.readlines()
 
-            s1 = f.readline()
+        def get_output(output):
+            matches = list(filter(lambda line: f'  {output}: ' in line, result_lines))
+            if len(matches) > 1:
+                logger.warning(f'Found more than 1 match for output {output}: {matches}')
+                return None
+
+            if len(matches) < 1:
+                logger.warning(f'Found no matches for output {output}: {matches}')
+                return None
+
+            return matches[0]
+
+        for out in local_outputs:
+            s1 = get_output(out)
+            if s1 is not None:
+                s2 = s1.split(':')  # colon marks the split between the title and the data
+                s2 = s2[1].strip()  # remove leading and trailing spaces
+                s2 = s2.split(' ')  # split on space because there is a unit string after the value we are looking for
+                s2 = s2[0].strip()  # we finally have the result we were looking for
+                result_s += s2 + ', '
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."
@@ -334,7 +333,7 @@ def main(command_line_args=None):
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
-                # FIXME doesn't work for HIP RA results
+                # FIXME TODO doesn't work for HIP RA results
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 results.append([float(y) for y in line.split(',')])
         else:
@@ -364,27 +363,28 @@ def main(command_line_args=None):
 
     # write them out
     annotations = ''
+    outputs_result: dict[str, dict] = {}
     with open(output_file, 'a') as f:
-        i = 0
         if iterations != actual_records_count:
             f.write(
                 f'\n\n{actual_records_count!s} iterations finished successfully and were used to calculate the '
                 f'statistics\n\n'
             )
-        for output in outputs:
+        for i in range(len(outputs)):
+            output = outputs[i]
             f.write(f'{output}:\n')
-            f.write(f'     minimum: {mins[i]:,.2f}\n')
-            annotations += f'     minimum: {mins[i]:,.2f}\n'
-            f.write(f'     maximum: {maxs[i]:,.2f}\n')
-            annotations += f'     maximum: {maxs[i]:,.2f}\n'
-            f.write(f'     median: {medians[i]:,.2f}\n')
-            annotations += f'     median: {medians[i]:,.2f}\n'
-            f.write(f'     average: {averages[i]:,.2f}\n')
-            annotations += f'     average: {averages[i]:,.2f}\n'
-            f.write(f'     mean: {means[i]:,.2f}\n')
-            annotations += f'     mean: {means[i]:,.2f}\n'
-            f.write(f'     standard deviation: {std[i]:,.2f}\n')
-            annotations += f'     standard deviation: {std[i]:,.2f}\n'
+            outputs_result[output]: dict[str, float] = {}
+            outputs_result[output]['minimum'] = mins[i]
+            outputs_result[output]['maximum'] = maxs[i]
+            outputs_result[output]['median'] = medians[i]
+            outputs_result[output]['average'] = averages[i]
+            outputs_result[output]['mean'] = means[i]
+            outputs_result[output]['standard deviation'] = std[i]
+
+            for k, v in outputs_result[output].items():
+                display = f'     {k}: {v:,.2f}\n'
+                f.write(display)
+                annotations += display
 
             plt.figure(figsize=(8, 6))
             ax = plt.subplot()
@@ -398,8 +398,12 @@ def main(command_line_args=None):
             f.write(f'bin edges: {ret[1]!s}\n')
             fname = df.columns[i].strip().replace('/', '-')
             plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
-            i += 1
+
             annotations = ''
+
+    with open(Path(output_file).with_suffix('.json'), 'w') as json_output_file:
+        json_output_file.write(json.dumps(outputs_result))
+        logger.info(f'Wrote JSON results to {json_output_file.name}')
 
     logger.info(f'Complete {__name__!s}: {sys._getframe().f_code.co_name}')
 

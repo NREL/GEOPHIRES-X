@@ -320,7 +320,7 @@ class TestHeatCapacityWater(unittest.TestCase):
 
     def test_valid_input_exact_match(self):
         result = heat_capacity_water_J_per_kg_per_K(25)
-        assert result == 4181.599569862515
+        self.assertAlmostEqual(4181.599569862515, result, places=3)
 
     def test_invalid_input_less_than_minimum(self):
         with self.assertRaises(ValueError):

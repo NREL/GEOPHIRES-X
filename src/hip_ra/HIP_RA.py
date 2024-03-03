@@ -739,6 +739,7 @@ class HIP_RA:
         # write results to output file and screen
         # ---------------------------------------
         try:
+            nl = '\n'
             outputfile = 'HIP.out' if len(sys.argv) <= 2 else sys.argv[2]
 
             def render_default(p: floatParameter | OutputParameter) -> str:
@@ -765,28 +766,34 @@ class HIP_RA:
 
             case_data = {'SUMMARY OF RESULTS': summary_of_results}
 
-            from rich.console import Console
+            # from rich.console import Console
 
             with open(outputfile, 'w') as f:
-                console = Console(file=f, style='bold white on blue', force_terminal=True, record=True)
+                # console = Console(file=f, style='bold white on blue', force_terminal=True, record=True)
 
                 #            with open(outputfile, 'a', encoding='UTF-8') as f:
 
-                console.print('                               *********************')
-                console.print('                               ***HIP CASE REPORT***')
-                console.print('                               *********************')
+                # console.print('                               *********************')
+                # console.print('                               ***HIP CASE REPORT***')
+                # console.print('                               *********************')
                 # console.print(nl)
-                console.print('                           ***SUMMARY OF RESULTS***')
+                # console.print('                           ***SUMMARY OF RESULTS***')
                 # console.print(nl)
+                f.write('                               *********************\n')
+                f.write('                               ***HIP CASE REPORT***\n')
+                f.write('                               *********************\n')
+                f.write('\n')
+                f.write('                           ***SUMMARY OF RESULTS***\n')
+                f.write('\n')
 
                 for k, v in case_data['SUMMARY OF RESULTS'].items():
                     # align space between value and units to same column
                     kv_spaces = max(1, (24 - (len(v.split(' ')[0]) + len(k)))) * ' '
 
-                    #                    f.write(f'      {k}:{kv_spaces}{v}{nl}')
-                    console.print(f'      {k}:{kv_spaces}{v}')
+                    f.write(f'      {k}:{kv_spaces}{v}{nl}')
+                    # console.print(f'      {k}:{kv_spaces}{v}')
 
-            console.save_html(outputfile.replace('.txt', 'html'))
+            # console.save_html(outputfile.replace('.txt', 'html'))
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print(str(ex))

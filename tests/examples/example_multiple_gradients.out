@@ -7,14 +7,14 @@ Simulation Metadata
  GEOPHIRES Version: 3.4.12
  GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2024-03-04
- Simulation Time:  08:44
- Calculation Time:      0.614 sec
+ Simulation Time:  10:53
+ Calculation Time:      0.623 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     1.90 MW
-      Electricity breakeven price:                    39.29 cents/kWh
+      Electricity breakeven price:                           39.29 cents/kWh
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          60.0 kg/sec
@@ -39,7 +39,7 @@ Simulation Metadata
       Project IRR:                                           0.00 %
       Project VIR=PI=PIR:                                   -0.18
       Project MOIC:                                         -0.82
-      Project Payback Period:                                0.00 yr
+      Project Payback Period:                                 N/A
 
                           ***ENGINEERING PARAMETERS***
 

@@ -181,7 +181,12 @@ class Outputs:
                 f.write(f"      Project IRR:                                     {model.economics.ProjectIRR.value:10.2f} " + model.economics.ProjectIRR.PreferredUnits.value + NL)
                 f.write(f"      Project VIR=PI=PIR:                              {model.economics.ProjectVIR.value:10.2f}" + NL)
                 f.write(f"      Project MOIC:                                    {model.economics.ProjectMOIC.value:10.2f}" + NL)
-                f.write(f"      Project Payback Period:                          {model.economics.ProjectPaybackPeriod.value:10.2f} " + model.economics.ProjectPaybackPeriod.PreferredUnits.value + NL)
+
+                payback_period_val = model.economics.ProjectPaybackPeriod.value
+                project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \
+                    if payback_period_val > 0.0 else 'N/A'
+                f.write(f'      Project Payback Period:                                 {project_payback_period_display}\n')
+
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,

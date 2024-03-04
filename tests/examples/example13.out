@@ -7,7 +7,7 @@ Simulation Metadata
  GEOPHIRES Version: 3.4.12
  GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2024-03-04
- Simulation Time:  08:43
+ Simulation Time:  10:53
  Calculation Time:      0.044 sec
 
                            ***SUMMARY OF RESULTS***
@@ -35,7 +35,7 @@ Simulation Metadata
       Project IRR:                                           0.00 %
       Project VIR=PI=PIR:                                   -0.26
       Project MOIC:                                         -0.62
-      Project Payback Period:                                0.00 yr
+      Project Payback Period:                                 N/A
       CHP: Percent cost allocation for electrical plant:      60.94%
 
                           ***ENGINEERING PARAMETERS***

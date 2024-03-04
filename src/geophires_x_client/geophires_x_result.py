@@ -370,6 +370,7 @@ class GeophiresXResult:
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
                     'EXTENDED ECONOMIC PROFILE',
                     'CCUS PROFILE',
+                    'REVENUE & CASHFLOW PROFILE',
                 ):
                     raise RuntimeError('unexpected category')
 

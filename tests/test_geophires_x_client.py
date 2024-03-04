@@ -75,6 +75,16 @@ class GeophiresXClientTestCase(BaseTestCase):
             == 'MUSD/yr'
         )
 
+    def test_direct_use_heat_property(self):
+        test_result_path = self._get_test_file_path('examples/example12_DH.out')
+        result = GeophiresXResult(test_result_path)
+
+        with open(test_result_path) as f:
+            self.assertIn('Direct-Use heat breakeven price (LCOH)', f.read())
+
+        # Don't care about the value in this test - just that it's being read with the (LCOH)-suffixed name
+        self.assertIsNotNone(result.direct_use_heat_breakeven_price_USD_per_MMBTU)
+
     def test_example_multiple_gradients_result(self):
         test_result_path = self._get_test_file_path('examples/example_multiple_gradients.out')
         result = GeophiresXResult(test_result_path)
@@ -245,13 +255,77 @@ class GeophiresXClientTestCase(BaseTestCase):
             eep,
         )
 
-    def test_ccus_profile(self):
-        """
-        TODO make this less tedious to update when expected result values change
-            (https://github.com/NREL/GEOPHIRES-X/issues/107)
-        """
+    def test_revenue_and_cashflow_profile(self):
+        example_result_path = self._get_test_file_path('examples/example1_addons.out')
+        example_result = GeophiresXResult(example_result_path)
+        example_profile = example_result.result['REVENUE & CASHFLOW PROFILE']
+        self.assertIsNotNone(example_profile)
 
-        test_result_path = self._get_test_file_path('examples/example1_addons.out')
+        profile_headers = [
+            'Year Since Start',
+            'Electricity Price (cents/kWh)',
+            'Electricity Ann. Rev. (MUSD/yr)',
+            'Electricity Cumm. Rev. (MUSD)',
+            'Heat Price (cents/kWh)',
+            'Heat Ann. Rev. (MUSD/yr)',
+            'Heat Cumm. Rev. (MUSD)',
+            'Cooling Price (cents/kWh)',
+            'Cooling Ann. Rev. (MUSD/yr)',
+            'Cooling Cumm. Rev. (MUSD)',
+            'Carbon Price (USD/tonne)',
+            'Carbon Ann. Rev. (MUSD/yr)',
+            'Carbon Cumm. Rev. (MUSD)',
+            'Project OPEX (MUSD/yr)',
+            'Project Net Rev. (MUSD/yr)',
+            'Project Net Cashflow (MUSD)',
+        ]
+
+        self.assertListEqual(profile_headers, example_profile[0])
+
+        rcf_path = self._get_test_file_path('result_with_revenue_and_cashflow_profile.out')
+        rcf_result = GeophiresXResult(rcf_path)
+        rcf_profile = rcf_result.result['REVENUE & CASHFLOW PROFILE']
+        self.assertIsNotNone(rcf_profile)
+
+        self.assertListEqual(
+            [
+                profile_headers,
+                [1, 0.09, -32.63, 0.0, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -32.63, -32.63],
+                [2, 0.09, 1.58, 0.78, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.58, -31.05],
+                [3, 0.09, 1.62, 1.6, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.62, -29.43],
+                [4, 0.09, 1.63, 2.43, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.63, -27.8],
+                [5, 0.09, 1.64, 3.27, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.64, -26.15],
+                [6, 0.09, 1.65, 4.12, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.65, -24.5],
+                [7, 0.1, 1.65, 4.97, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.65, -22.85],
+                [8, 0.11, 1.77, 5.94, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.77, -21.08],
+                [9, 0.13, 1.89, 7.03, 0.02, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.89, -19.19],
+                [10, 0.14, 2.01, 8.24, 0.03, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.01, -17.19],
+                [11, 0.15, 2.12, 9.56, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.12, -15.06],
+                [12, 0.15, 2.24, 11.0, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.24, -12.82],
+                [13, 0.15, 2.25, 12.44, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -10.57],
+                [14, 0.15, 2.25, 13.89, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -8.33],
+                [15, 0.15, 2.25, 15.34, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -6.08],
+                [16, 0.15, 2.25, 16.79, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -3.82],
+                [17, 0.15, 2.25, 18.24, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -1.57],
+                [18, 0.15, 2.26, 19.7, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 0.69],
+                [19, 0.15, 2.26, 21.15, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 2.94],
+                [20, 0.15, 2.26, 22.61, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 5.2],
+                [21, 0.15, 2.26, 24.07, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 7.46],
+                [22, 0.15, 2.26, 25.53, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 9.73],
+                [23, 0.15, 2.26, 26.99, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 11.99],
+                [24, 0.15, 2.26, 28.46, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 14.25],
+                [25, 0.15, 2.27, 29.92, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 16.52],
+                [26, 0.15, 2.27, 31.39, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 18.79],
+                [27, 0.15, 2.27, 32.85, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 21.06],
+                [28, 0.15, 2.27, 34.32, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 23.32],
+                [29, 0.15, 2.27, 35.79, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 25.59],
+                [30, 0.15, 2.27, 37.26, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 27.87],
+            ],
+            rcf_profile,
+        )
+
+    def test_ccus_profile(self):
+        test_result_path = self._get_test_file_path('result_with_ccus_profile.out')
         result = GeophiresXResult(test_result_path)
         ccus_profile = result.result['CCUS PROFILE']
 
@@ -356,7 +430,6 @@ class GeophiresXClientTestCase(BaseTestCase):
     def test_csv(self):
         """
         TODO make this less tedious to update when expected result values change
-            (https://github.com/NREL/GEOPHIRES-X/issues/107)
         """
 
         def assert_csv_equal(case_report_file_path, expected_csv_file_path):
@@ -372,8 +445,8 @@ class GeophiresXClientTestCase(BaseTestCase):
                 self.assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
-            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
             ('examples/example1_addons.out', 'example1_addons.csv'),
+            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
         ]:
             with self.subTest(msg=case[0]):
                 assert_csv_equal(case[0], case[1])

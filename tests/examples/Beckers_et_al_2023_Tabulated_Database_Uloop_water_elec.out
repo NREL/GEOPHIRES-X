@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.0
+ GEOPHIRES Version: 3.4.4
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2023-09-28
- Simulation Time:  17:39
- Calculation Time:      2.234 sec
+ Simulation Date: 2024-03-02
+ Simulation Time:  14:14
+ Calculation Time:      1.073 sec
 
 
                            ***AGS/CLGS STYLE OUTPUT***
@@ -19,7 +19,7 @@ Simulation Metadata
       Design: utube
       Flow rate:                                             20.0 kg/sec
       Lateral Length:                                      9000 meter
-      Vertical Depth:                                         3 kilometer
+      Vertical Depth:                                      3 kilometer
       Geothermal Gradient:                                   0.0600 degC/m
       Wellbore Diameter:                                      8.5000 in
       Injection Temperature:                                 60.0 degC

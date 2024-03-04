@@ -467,13 +467,13 @@ def json_dumpse(obj) -> str:
 
 def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
     """
-    Calculate litho- (or hydro-) static pressure in a reservoir.
+    Calculate static pressure in a reservoir (i.e. lithostatic pressure or hydrostatic pressure).
 
     Args:
         rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
         depth_m (float): Depth of the reservoir in meters.
     Returns:
-        pint quantity: Lithostatic pressure in megapascals (MPa).
+        Static pressure in megapascals (MPa).
     """
 
     g = scipy.constants.g  # Acceleration due to gravity (m/s^2)

@@ -67,13 +67,13 @@
     "Gradients": {
       "description": "Geothermal gradients",
       "type": "number",
-      "units": "degC/km",
+      "units": "degC/m",
       "category": "Reservoir"
     },
     "Gradient 1": {
       "description": "Geothermal gradient 1 in rock segment 1",
       "type": "number",
-      "units": "degC/km",
+      "units": "degC/m",
       "category": "Reservoir"
     },
     "Gradient 2": {
@@ -227,7 +227,7 @@
       "category": "Reservoir"
     },
     "Cylindrical Reservoir Output Depth": {
-      "description": "Depth of the outflow end of a cyclindrical reservoir",
+      "description": "Depth of the outflow end of a cylindrical reservoir",
       "type": "number",
       "units": "kilometer",
       "category": "Reservoir"
@@ -431,7 +431,7 @@
       "category": "Surface Plant"
     },
     "Power Plant Type": {
-      "description": "Specify the type of power plant in case of electricity generation. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash",
+      "description": "Specify the type of physical plant. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump 7: District Heating, 8: Reservoir Thermal Energy Storage",
       "type": "integer",
       "units": null,
       "category": "Surface Plant"
@@ -506,73 +506,7 @@
       "description": "Number of years spent in construction (assumes whole years, no fractions)",
       "type": "integer",
       "units": null,
-      "category": "Surface Plant"
-    },
-    "Absorption Chiller COP": {
-      "description": "Specify the coefficient of performance (COP) of the absorption chiller",
-      "type": "number",
-      "units": "",
-      "category": "Surface Plant"
-    },
-    "Heat Pump COP": {
-      "description": "Specify the coefficient of performance (COP) of the heat pump",
-      "type": "number",
-      "units": "",
-      "category": "Surface Plant"
-    },
-    "District Heating Demand Option": {
-      "description": "Select the method to provide the district heating demand to GEOPHIRES",
-      "type": "integer",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "District Heating Demand File Name": {
-      "description": "Provide district heating demand in csv file in MW or MWh per day (if district heating demand option is set to 1)",
-      "type": "string",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "District Heating Demand Data Time Resolution": {
-      "description": "Provide time interval for thermal demand data: 1 = hourly (data provided as MW = MWh' 2 = daily (data provided as MWh/day) (if district heating demand option is set to 1)",
-      "type": "integer",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "District Heating Demand Data Column Number": {
-      "description": "Select the column number of the hourly or daily data in the district heating demand csv file (if district heating demand option is set to 1)",
-      "type": "integer",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "Temperature File Name": {
-      "description": "Provide filename of tempeature file with hourly temperature to calculate district heating demand (if district heating demand option is set to 2)",
-      "type": "string",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "Temperature Data Column Number": {
-      "description": "Select the column number of the hourly temperature data in the temperature csv file (if district heating demand option is set to 2)",
-      "type": "integer",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "Number of Housing Units": {
-      "description": "Specify the number of housing units to calculate district heating demand (if district heating demand option is set to 2)",
-      "type": "number",
-      "units": null,
-      "category": "Surface Plant"
-    },
-    "Constant Anchor Demand": {
-      "description": "Specify the constant anchor demand to calculate the district heating demand (if district heating demand option is set to 2)",
-      "type": "number",
-      "units": "MW",
-      "category": "Surface Plant"
-    },
-    "US Census Division": {
-      "description": "Select the U.S. census division to calculate district heating demand (if district heating demand option is set to 2)",
-      "type": "integer",
-      "units": null,
-      "category": "Surface Plant"
+      "category": "Economics"
     },
     "Dead-state Pressure": {
       "description": "",
@@ -808,8 +742,8 @@
       "units": null,
       "category": "Economics"
     },
-    "Do CCUS Calculations": {
-      "description": "Set to true if you want the CCUS economics calculations to be made",
+    "Do Carbon Price Calculations": {
+      "description": "Set to true if you want the Carbon Credit economics calculations to be made",
       "type": "boolean",
       "units": null,
       "category": "Economics"
@@ -952,6 +886,66 @@
       "units": "USD/kWh",
       "category": "Economics"
     },
+    "Starting Cooling Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Ending Cooling Sale Price": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Cooling Escalation Start Year": {
+      "description": "Number of years after start of project before start of escalation",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "Cooling Escalation Rate Per Year": {
+      "description": "additional cost per year of price after escalation starts",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Starting Carbon Credit Value": {
+      "description": "",
+      "type": "number",
+      "units": "USD/lb",
+      "category": "Economics"
+    },
+    "Ending Carbon Credit Value": {
+      "description": "",
+      "type": "number",
+      "units": "USD/lb",
+      "category": "Economics"
+    },
+    "Carbon Escalation Start Year": {
+      "description": "Number of years after start of project before start of Carbon incentives",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "Carbon Escalation Rate Per Year": {
+      "description": "additional value per year of price after escalation starts",
+      "type": "number",
+      "units": "USD/lb",
+      "category": "Economics"
+    },
+    "Current Grid CO2 production": {
+      "description": "CO2 intensity of the grid (how much CO2 is produced per kWh of electricity produced (0.93916924 lbs/kWh for Texas ERCOT))",
+      "type": "number",
+      "units": "lbs/kWh",
+      "category": "Economics"
+    },
+    "CO2 produced by Natural Gas": {
+      "description": "CO2 intensity of buring natural gas (how much CO2 is produced per kWh of heat produced (0.407855 lbs/kWh))",
+      "type": "number",
+      "units": "lbs/kWh",
+      "category": "Economics"
+    },
     "Annual License Fees Etc": {
       "description": "",
       "type": "number",
@@ -988,6 +982,12 @@
       "units": "%",
       "category": "Economics"
     },
+    "CHP Electrical Plant Cost Allocation Ratio": {
+      "description": "CHP Electrical Plant Cost Allocation Ratio (cost electrical plant/total CAPEX)",
+      "type": "number",
+      "units": "",
+      "category": "Economics"
+    },
     "Operation & Maintenance Cost of Surface Plant": {
       "description": "",
       "type": "number",
@@ -1004,6 +1004,72 @@
       "description": "",
       "type": "number",
       "units": "USD/kW",
+      "category": "Economics"
+    },
+    "Do CCUS Calculations": {
+      "description": "Set to true if you want the CCUS economics calculations to be made",
+      "type": "boolean",
+      "units": null,
+      "category": "Economics"
+    },
+    "Ending CCUS Credit Value": {
+      "description": "",
+      "type": "number",
+      "units": "USD/lb",
+      "category": "Economics"
+    },
+    "CCUS Escalation Start Year": {
+      "description": "Number of years after start of project before start of CCUS incentives",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "CCUS Escalation Rate Per Year": {
+      "description": "additional value per year of price after escalation starts",
+      "type": "number",
+      "units": "USD/mt",
+      "category": "Economics"
+    },
+    "Starting CCUS Credit Value": {
+      "description": "",
+      "type": "number",
+      "units": "USD/mt",
+      "category": "Economics"
+    },
+    "AddOn Nickname": {
+      "description": "",
+      "type": "array",
+      "units": null,
+      "category": "Economics"
+    },
+    "AddOn CAPEX": {
+      "description": "",
+      "type": "array",
+      "units": "MUSD",
+      "category": "Economics"
+    },
+    "AddOn OPEX": {
+      "description": "",
+      "type": "array",
+      "units": "MUSD/yr",
+      "category": "Economics"
+    },
+    "AddOn Electricity Gained": {
+      "description": "",
+      "type": "array",
+      "units": "kW/yr",
+      "category": "Economics"
+    },
+    "AddOn Heat Gained": {
+      "description": "",
+      "type": "array",
+      "units": "kW/yr",
+      "category": "Economics"
+    },
+    "AddOn Profit Gained": {
+      "description": "",
+      "type": "array",
+      "units": "MUSD/yr",
       "category": "Economics"
     }
   }

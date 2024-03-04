@@ -530,15 +530,17 @@ class GeophiresXResult:
             return None
 
     def _get_ccus_profile(self):
+        """FIXME transform from Revenue & Cashflow profile if not present in output file"""
+
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
             return [
                 'Year Since Start',
                 'Carbon Avoided (pound)',
-                'CCUS Price (USD/lb)',
-                'CCUS Revenue (MUSD/yr)',
+                'CCUS Price (USD/lb)',  # Carbon Price (USD/tonne)
+                'CCUS Revenue (MUSD/yr)',  # Carbon Ann. Rev. (MUSD/yr)
                 'CCUS Annual Cash Flow (MUSD/yr)',
-                'CCUS Cumm. Cash Flow (MUSD)',
+                'CCUS Cumm. Cash Flow (MUSD)',  # Carbon Cumm. Rev. (MUSD)
                 'Project Annual Cash Flow (MUSD/yr)',
                 'Project Cumm. Cash Flow (MUSD)',
             ]

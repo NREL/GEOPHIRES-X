@@ -15,6 +15,7 @@ ECONOMIC PARAMETERS,Project IRR,,4.49,%
 ECONOMIC PARAMETERS,Project VIR=PI=PIR,,0.81,
 ECONOMIC PARAMETERS,Project MOIC,,3.48,
 ECONOMIC PARAMETERS,Fixed Charge Rate (FCR),,5.0,
+ECONOMIC PARAMETERS,Project Payback Period,,17.7,yr
 EXTENDED ECONOMICS,"Adjusted Project LCOE (after incentives\, grants\, AddOns\,etc)",,8.7,cents/kWh
 EXTENDED ECONOMICS,"Adjusted Project LCOH (after incentives\, grants\, AddOns\,etc)",,0.0,USD/MMBTU
 EXTENDED ECONOMICS,"Adjusted Project CAPEX (after incentives\, grants\, AddOns\, etc)",,102.63,MUSD

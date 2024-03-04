@@ -65,8 +65,9 @@ class GeophiresXResult:
                 'Project IRR',
                 'Project VIR=PI=PIR',
                 'Project MOIC',
-                # SUTRA
-                'Fixed Charge Rate (FCR)',
+                'Fixed Charge Rate (FCR)',  # SUTRA
+                'Project Payback Period',
+                'CHP: Percent cost allocation for electrical plant',
             ],
             'EXTENDED ECONOMICS': [
                 'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',

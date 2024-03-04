@@ -445,8 +445,8 @@ class GeophiresXClientTestCase(BaseTestCase):
                 self.assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
-            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
             ('examples/example1_addons.out', 'example1_addons.csv'),
+            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
         ]:
             with self.subTest(msg=case[0]):
                 assert_csv_equal(case[0], case[1])

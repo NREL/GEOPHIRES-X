@@ -200,10 +200,7 @@ def work_package(pass_list: list):
     result_s += '\n'
 
     with open(output_file, 'a') as f:
-        f.write('\n')  # This creates extra lines in the output file, but is needed to make concurrency work (?!?!?!).
         f.write(result_s)
-        f.write('\n')  # This creates extra lines in the output file, but is needed to make concurrency work (?!?!?!).
-        # the extra lines in the file are cleaned up later.
 
 
 def main(command_line_args=None):
@@ -410,8 +407,6 @@ def main(command_line_args=None):
             plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
 
             annotations = ''
-
-    # TODO remove extraneous blank lines from output file
 
     with open(Path(output_file).with_suffix('.json'), 'w') as json_output_file:
         json_output_file.write(json.dumps(outputs_result))

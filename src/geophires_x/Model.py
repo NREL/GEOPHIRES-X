@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 import logging
 import time
@@ -44,17 +45,17 @@ class Model(object):
     Model is the container class of the application, giving access to everything else, including the logger
     """
 
-    def __init__(self, enable_geophires_logging_config=True):
+    def __init__(self, enable_geophires_logging_config=True, input_file=None):
         """
         The __init__ function is called automatically every time the class is being used to create a new object.
         :return: Nothing
         """
 
         # get logging started
-        self.logger = logging.getLogger('root')
+        self.logger = logging.getLogger('root') # TODO should be getting __name__ logger instead of root
 
         if enable_geophires_logging_config:
-            logging.config.fileConfig(Path(Path(__file__).parent,'logging.conf'))
+            logging.config.fileConfig(Path(Path(__file__).parent, 'logging.conf'))
             self.logger.setLevel(logging.INFO)
 
         self.logger.info(f'Init {__class__}: {__name__}')
@@ -68,7 +69,10 @@ class Model(object):
         # we do this as soon as possible because what we instantiate may depend on settings in this file
         self.InputParameters = {}
 
-        read_input_file(self.InputParameters, logger=self.logger)
+        if input_file is None and len(sys.argv) > 1:
+            input_file = sys.argv[1]
+
+        read_input_file(self.InputParameters, logger=self.logger, input_file_name=input_file)
 
         self.sdacgtoutputs = None
         self.sdacgteconomics = None
@@ -102,7 +106,12 @@ class Model(object):
         self.wellbores: WellBores = WellBores(self)
         self.surfaceplant: SurfacePlant = SurfacePlant(self)
         self.economics: Economics = Economics(self)
-        self.outputs: Outputs = Outputs(self)
+
+        output_file = 'HDR.out'
+        if len(sys.argv) > 2:
+            output_file = sys.argv[2]
+
+        self.outputs = Outputs(self, output_file=output_file)
 
         if 'Reservoir Model' in self.InputParameters:
             if self.InputParameters['Reservoir Model'].sValue == '7':
@@ -110,7 +119,7 @@ class Model(object):
                 self.wellbores: WellBores = SUTRAWellBores(self)
                 self.surfaceplant: SurfacePlantSUTRA = SurfacePlantSUTRA(self)
                 self.economics: SUTRAEconomics = SUTRAEconomics(self)
-                self.outputs: SUTRAOutputs = SUTRAOutputs(self)
+                self.outputs: SUTRAOutputs = SUTRAOutputs(self, output_file=output_file)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue in ['True', 'true', 'TRUE', 'T', '1']:
@@ -123,21 +132,21 @@ class Model(object):
                 self.wellbores: WellBores = AGSWellBores(self)
                 self.surfaceplant: SurfacePlantAGS = SurfacePlantAGS(self)
                 self.economics: AGSEconomics = AGSEconomics(self)
-                self.outputs: AGSOutputs = AGSOutputs(self)
+                self.outputs: AGSOutputs = AGSOutputs(self, output_file=output_file)
                 self.wellbores.IsAGS.value = True
 
         # if we find out we have an add-ons, we need to instantiate it, then read for the parameters
         if 'AddOn Nickname 1' in self.InputParameters:
             self.logger.info("Initiate the Add-on elements")
             self.addeconomics: EconomicsAddOns = EconomicsAddOns(self)
-            self.addoutputs: OutputsAddOns = OutputsAddOns(self)
+            self.addoutputs: OutputsAddOns = OutputsAddOns(self, output_file=output_file)
 
         # if we find out we have an S-DAC-GT calculation, we need to instantiate it
         if 'Do S-DAC-GT Calculations' in self.InputParameters:
             if self.InputParameters['Do S-DAC-GT Calculations'].sValue in ['On', 'on', 'ON', 'True', 'true', 'TRUE', 'T', 't', '1']:
                 self.logger.info("Initiate the S-DAC-GT elements")
                 self.sdacgteconomics: EconomicsS_DAC_GT = EconomicsS_DAC_GT(self)
-                self.sdacgtoutputs: OutputsS_DAC_GT = OutputsS_DAC_GT(self)
+                self.sdacgtoutputs: OutputsS_DAC_GT = OutputsS_DAC_GT(self, output_file=output_file)
 
         self.logger.info(f'Complete {__class__}: {__name__}')
 

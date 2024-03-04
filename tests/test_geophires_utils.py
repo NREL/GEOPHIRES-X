@@ -173,8 +173,8 @@ class TestUtileffFunc(unittest.TestCase):
             UtilEff_func(temperature)
 
     def test_greater_than_upper_bound_temperature(self):
-        """Raises a ValueError if the input temperature is greater than the upper bound of the range (373.946 degrees C)."""
-        temperature = 400.0
+        """Raises a ValueError if the input temperature is greater than the upper bound of the range (600 degrees C)."""
+        temperature = 650.0
 
         with self.assertRaises(ValueError):
             UtilEff_func(temperature)

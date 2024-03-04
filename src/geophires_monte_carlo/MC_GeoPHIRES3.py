@@ -130,6 +130,12 @@ def work_package(pass_list: list):
             HipRaInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
+    elif args.Code_File.endswith('HIP_RA_x.py'):
+        hip_ra_x_client: HipRaXClient = HipRaXClient()
+        result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
+            HipRaInputParameters(from_file_path=Path(tmp_input_file))
+        )
+        shutil.copyfile(result.output_file_path, tmp_output_file)
     else:
         log.warning(
             f'Code file from args ({args.Code_File}) is not a known program, '
@@ -311,7 +317,7 @@ def main(command_line_args=None):
 
     args = []
     for _ in range(iterations):
-        args.append(pass_list)  # we need to make Iterations number of copies of this list fr the map
+        args.append(pass_list)  # we need to make Iterations number of copies of this list for the map
     args = tuple(args)  # convert to a tuple
 
     # Now run the executor with the map - that will run it Iterations number of times
@@ -335,6 +341,7 @@ def main(command_line_args=None):
             if len(line) > 3:
                 # FIXME TODO doesn't work for HIP RA results
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
+                line = line.replace('(', '').replace(')', '')  # strip off the ()
                 results.append([float(y) for y in line.split(',')])
         else:
             logger.warning(f'-9999.0 or space found in line {result_count!s}')

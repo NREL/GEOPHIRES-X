@@ -1054,7 +1054,7 @@ class AGSWellBores(WellBores):
                     DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
                         model, self.productionwellpumping.value,
                         self.usebuiltinppwellheadcorrelation,
-                        model.reserv.Trock.value, model.reserv.depth.value,
+                        model.reserv.Trock.value, model.reserv.InputDepth.value,
                         self.ppwellhead.value, self.PI.value,
                         self.prodwellflowrate.value, f3, vprod,
                         self.injwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,

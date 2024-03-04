@@ -45,8 +45,6 @@ class OutputsAddOns(Outputs):
                     f"      Project VIR=PI=PIR   (including AddOns):                          {model.addeconomics.ProjectVIR.value:10.2f}" + NL)
                 f.write(
                     f"      Project MOIC  (including AddOns):                                 {model.addeconomics.ProjectMOIC.value:10.2f}" + NL)
-                f.write(
-                    f"      Project Payback Period       (including AddOns):                  {model.addeconomics.ProjectPaybackPeriod.value:10.2f} " + model.addeconomics.ProjectPaybackPeriod.PreferredUnits.value + NL)
                 if model.addeconomics.AddOnCAPEXTotal.value + model.addeconomics.AddOnOPEXTotalPerYear.value != 0:
                     f.write(
                         f"      Total Add-on CAPEX:                                               {model.addeconomics.AddOnCAPEXTotal.value:10.2f} " + model.addeconomics.AddOnCAPEXTotal.PreferredUnits.value + NL)

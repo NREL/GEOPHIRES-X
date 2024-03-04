@@ -569,7 +569,7 @@ class Outputs:
                                                                             model.surfaceplant.HeatkWhExtracted.value[i]/1E6,
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
-
+                # https://github.com/NREL/GEOPHIRES-X/issues/135?title=Colorized/enhanced+case+report
 #                import rich
 #                from rich.console import Console
 #                from rich.table import Table

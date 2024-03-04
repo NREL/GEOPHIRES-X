@@ -609,9 +609,9 @@ class Outputs:
                 #if model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
                 f.write(NL)
                 f.write(NL)
-                f.write("                             *******************************" + NL)
-                f.write("                             *  REVENUE & CASHFLOW PROFILE *" + NL)
-                f.write("                             *******************************" + NL)
+                f.write('                             ********************************\n')
+                f.write('                             *  REVENUE & CASHFLOW PROFILE  *\n')
+                f.write('                             ********************************\n')
                 f.write(
                     "Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project" + NL)
                 f.write(

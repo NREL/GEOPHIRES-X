@@ -245,6 +245,17 @@ class GeophiresXClientTestCase(BaseTestCase):
             eep,
         )
 
+    def test_revenue_and_cashflow_profile(self):
+        """
+        TODO make this less tedious to update when expected result values change
+            (https://github.com/NREL/GEOPHIRES-X/issues/107)
+        """
+
+        test_result_path = self._get_test_file_path('examples/example1_addons.out')
+        result = GeophiresXResult(test_result_path)
+        revenue_and_cashflow_profile = result.result['REVENUE & CASHFLOW PROFILE']
+        self.assertIsNotNone(revenue_and_cashflow_profile)  # FIXME WIP TODO
+
     def test_ccus_profile(self):
         """
         TODO make this less tedious to update when expected result values change

@@ -315,6 +315,10 @@ class GeophiresXResult:
         if eep is not None:
             self.result['EXTENDED ECONOMIC PROFILE'] = eep
 
+        revenue_and_cashflow_profile = self._get_revenue_and_cashflow_profile()
+        if revenue_and_cashflow_profile is not None:
+            self.result['REVENUE & CASHFLOW PROFILE'] = revenue_and_cashflow_profile
+
         ccus_profile = self._get_ccus_profile()
         if ccus_profile is not None:
             self.result['CCUS PROFILE'] = ccus_profile
@@ -467,6 +471,39 @@ class GeophiresXResult:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
+    def _get_revenue_and_cashflow_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Electricity Price (cents/kWh)',
+                'Electricity Ann. Rev. (MUSD/yr)',
+                'Electricity Cumm. Rev. (MUSD)',
+                'Heat Price (cents/kWh)',
+                'Heat Ann. Rev. (MUSD/yr)',
+                'Heat Cumm. Rev. (MUSD)',
+                'Cooling Price (cents/kWh)',
+                'Cooling Ann. Rev. (MUSD/yr)',
+                'Cooling Cumm. Rev. (MUSD)',
+                'Carbon Price (USD/tonne)',
+                'Carbon Ann. Rev. (MUSD/yr)',
+                'Carbon Cumm. Rev. (MUSD)',
+                'Project OPEX (MUSD/yr)',
+                'Project Net Rev. (MUSD/yr)',
+                'Project Net Cashflow (MUSD)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('REVENUE & CASHFLOW PROFILE')
+            profile = [extract_table_header(lines)]
+            if re.fullmatch('^_+$', lines[5]) is not None:
+                del lines[5]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get revenue & cashflow profile: {e}')
+            return None
+
     def _get_extended_economic_profile(self):
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
@@ -513,13 +550,16 @@ class GeophiresXResult:
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get CCUS profile: {e}')
-            return None
+
+            # raise NotImplementedError('FIXME WIP - transform from REVENUE & CASHFLOW')
+            self._logger.error('WIP - CCUS profile not implemented yet')
+            # return None
 
     def _extract_addons_style_table_data(self, lines: list):
         """TODO consolidate with _get_data_from_profile_lines"""
 
         # Skip the lines up to the header and split the rest using whitespaces
-        lines_splitted = [line.split() for line in lines[5:]]
+        lines_splitted = [line.replace('|', '').split() for line in lines[5:]]
 
         # The number of columns is determined by the line with the most elements
         num_of_columns = max(len(line) for line in lines_splitted)

@@ -4,11 +4,11 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.4
+ GEOPHIRES Version: 3.4.12
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-03-02
- Simulation Time:  14:11
- Calculation Time:      0.124 sec
+ Simulation Date: 2024-03-04
+ Simulation Time:  08:43
+ Calculation Time:      0.044 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -210,9 +210,9 @@ Simulation Metadata
   30                54.5                   -8.7                    257.16               10.17                81.39
 
 
-                             *******************************
-                             *  REVENUE & CASHFLOW PROFILE *
-                             *******************************
+                             ********************************
+                             *  REVENUE & CASHFLOW PROFILE  *
+                             ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
 Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)

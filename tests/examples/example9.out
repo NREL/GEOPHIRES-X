@@ -4,17 +4,17 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.4
+ GEOPHIRES Version: 3.4.12
  GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2024-03-02
- Simulation Time:  14:08
- Calculation Time:      1.658 sec
+ Simulation Date: 2024-03-04
+ Simulation Time:  08:43
+ Calculation Time:      0.610 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     0.47 MW
-      Electricity breakeven price:                           50.18 cents/kWh
+      Electricity breakeven price:                    50.18 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          40.0 kg/sec
@@ -205,9 +205,9 @@ Simulation Metadata
   30                   2.7                        61.5                 20.96                  28.48
 
 
-                             *******************************
-                             *  REVENUE & CASHFLOW PROFILE *
-                             *******************************
+                             ********************************
+                             *  REVENUE & CASHFLOW PROFILE  *
+                             ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
 Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)

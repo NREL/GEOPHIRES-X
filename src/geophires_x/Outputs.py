@@ -134,7 +134,7 @@ class Outputs:
                     f.write(f"      Average Cooling Production:                       {np.average(model.surfaceplant.cooling_produced.value):10.2f} " + model.surfaceplant.cooling_produced.CurrentUnits.value + NL)
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
-                    f.write(f"      Electricity breakeven price (LCOE):               {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
+                    f.write(f"      Electricity breakeven price:               {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
                 elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT] and \
                     model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
                     f.write(f"      Direct-Use heat breakeven price (LCOH):            {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
@@ -146,7 +146,7 @@ class Outputs:
                                                               EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
                                                               EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
-                    f.write(f"      Electricity breakeven price (LCOE):               {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
+                    f.write(f"      Electricity breakeven price:                      {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.CurrentUnits.value + NL)
                     f.write(f"      Direct-Use heat breakeven price (LCOH):           {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
 
                 f.write(f"      Number of production wells:                    {model.wellbores.nprod.value:10.0f}"+NL)

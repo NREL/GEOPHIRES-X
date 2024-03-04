@@ -75,6 +75,16 @@ class GeophiresXClientTestCase(BaseTestCase):
             == 'MUSD/yr'
         )
 
+    def test_direct_use_heat_property(self):
+        test_result_path = self._get_test_file_path('examples/example12_DH.out')
+        result = GeophiresXResult(test_result_path)
+
+        with open(test_result_path) as f:
+            self.assertIn('Direct-Use heat breakeven price (LCOH)', f.read())
+
+        # Don't care about the value in this test - just that it's being read with the (LCOH)-suffixed name
+        self.assertIsNotNone(result.direct_use_heat_breakeven_price_USD_per_MMBTU)
+
     def test_example_multiple_gradients_result(self):
         test_result_path = self._get_test_file_path('examples/example_multiple_gradients.out')
         result = GeophiresXResult(test_result_path)

@@ -31,6 +31,7 @@ class GeophiresXResult:
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
                 'Direct-Use heat breakeven price',
+                'Direct-Use heat breakeven price (LCOH)',
                 'Annual District Heating Demand',
                 'Average Cooling Production',
                 'Average Annual Geothermal Heat Production',
@@ -333,10 +334,15 @@ class GeophiresXResult:
     @property
     def direct_use_heat_breakeven_price_USD_per_MMBTU(self):
         summary = self.result['SUMMARY OF RESULTS']
-        if 'Direct-Use heat breakeven price' in summary and summary['Direct-Use heat breakeven price'] is not None:
-            return summary['Direct-Use heat breakeven price']['value']
-        else:
-            return None
+
+        # LCOH suffix added in 49ff3a1213ac778ed53120626807e9a680d1ddcf,
+        # check for either (could be reading result generated prior to addition of suffix)
+        field_names = ['Direct-Use heat breakeven price', 'Direct-Use heat breakeven price (LCOH)']
+        for field_name in field_names:
+            if field_name in summary and summary[field_name] is not None:
+                return summary[field_name]['value']
+
+        return None
 
     def as_csv(self) -> str:
         f = StringIO()

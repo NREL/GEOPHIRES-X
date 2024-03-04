@@ -474,7 +474,7 @@ def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
         rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
         depth_m (float): Depth of the reservoir in meters.
     Returns:
-        Static pressure in megapascals (MPa).
+        float: Static pressure in megapascals (MPa).
     """
 
     g = scipy.constants.g  # Acceleration due to gravity (m/s^2)

@@ -538,7 +538,10 @@ class GeophiresXResult:
             return None
 
     def _get_ccus_profile(self):
-        """FIXME transform from Revenue & Cashflow profile if not present in output file"""
+        """
+        FIXME TODO - transform from revenue & cashflow if present (CCUS profile replaced by revenue & cashflow
+            profile in 49ff3a1213ac778ed53120626807e9a680d1ddcf)
+        """
 
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
@@ -560,10 +563,7 @@ class GeophiresXResult:
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get CCUS profile: {e}')
-
-            # raise NotImplementedError('FIXME WIP - transform from REVENUE & CASHFLOW')
-            self._logger.error('WIP - CCUS profile not implemented yet')
-            # return None
+            return None
 
     def _extract_addons_style_table_data(self, lines: list):
         """TODO consolidate with _get_data_from_profile_lines"""

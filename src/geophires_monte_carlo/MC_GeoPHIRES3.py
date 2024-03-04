@@ -131,7 +131,6 @@ def work_package(pass_list: list):
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('HIP_RA_x.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
             HipRaInputParameters(from_file_path=Path(tmp_input_file))
@@ -417,7 +416,6 @@ def main(command_line_args=None):
     with open(Path(output_file).with_suffix('.json'), 'w') as json_output_file:
         json_output_file.write(json.dumps(outputs_result))
         logger.info(f'Wrote JSON results to {json_output_file.name}')
-
 
     logger.info(f'Complete {__name__!s}: {sys._getframe().f_code.co_name}')
 

@@ -401,7 +401,7 @@ class Economics:
         :return: None
         """
 
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
         # "OutputParameter" Objects.  This will allow us later to access them in a user interface and get that list,
@@ -1109,7 +1109,6 @@ class Economics:
         )
         self.CoolingStartPrice = self.ParameterDict[self.CoolingStartPrice.Name] = floatParameter(
             "Starting Cooling Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -1119,7 +1118,6 @@ class Economics:
         )
         self.CoolingEndPrice = self.ParameterDict[self.CoolingEndPrice.Name] = floatParameter(
             "Ending Cooling Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -1129,7 +1127,6 @@ class Economics:
         )
         self.CoolingEscalationStart = self.ParameterDict[self.CoolingEscalationStart.Name] = intParameter(
             "Cooling Escalation Start Year",
-            value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -1140,7 +1137,6 @@ class Economics:
         )
         self.CoolingEscalationRate = self.ParameterDict[self.CoolingEscalationRate.Name] = floatParameter(
             "Cooling Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -1152,7 +1148,6 @@ class Economics:
         )
         self.CarbonStartPrice = self.ParameterDict[self.CarbonStartPrice.Name] = floatParameter(
             "Starting Carbon Credit Value",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=1000,
@@ -1162,7 +1157,6 @@ class Economics:
         )
         self.CarbonEndPrice = self.ParameterDict[self.CarbonEndPrice.Name] = floatParameter(
             "Ending Carbon Credit Value",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=1000,
@@ -1172,7 +1166,6 @@ class Economics:
         )
         self.CarbonEscalationStart = self.ParameterDict[self.CarbonEscalationStart.Name] = intParameter(
             "Carbon Escalation Start Year",
-            value=0,
             DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -1183,7 +1176,6 @@ class Economics:
             )
         self.CarbonEscalationRate = self.ParameterDict[self.CarbonEscalationRate.Name] = floatParameter(
             "Carbon Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -1195,7 +1187,6 @@ class Economics:
         )
         self.GridCO2Intensity = self.ParameterDict[self.GridCO2Intensity.Name] = floatParameter(
             "Current Grid CO2 production",
-            value=0.93916924,
             DefaultValue=0.93916924,
             Min=0,
             Max=50000,
@@ -1207,7 +1198,6 @@ class Economics:
         )
         self.NaturalGasCO2Intensity = self.ParameterDict[self.NaturalGasCO2Intensity.Name] = floatParameter(
             "CO2 produced by Natural Gas",
-            value=0.070324961,
             DefaultValue=0.070324961,
             Min=0,
             Max=50000,
@@ -1278,7 +1268,6 @@ class Economics:
         )
         self.CAPEX_heat_electricity_plant_ratio = self.ParameterDict[self.CAPEX_heat_electricity_plant_ratio.Name] = floatParameter(
             "CHP Electrical Plant Cost Allocation Ratio",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0.0,
             Max=1.0,
@@ -1579,7 +1568,7 @@ class Economics:
             CurrentUnits=TimeUnit.YEAR
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -1597,7 +1586,7 @@ class Economics:
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         if len(model.InputParameters) > 0:
             # loop through all the parameters that the user wishes to set, looking for parameters that match this object
@@ -1959,7 +1948,7 @@ class Economics:
                 self.DoSDACGTCalculations.value = True
                 break
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def Calculate(self, model: Model) -> None:
         """
@@ -1977,7 +1966,7 @@ class Economics:
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # capital costs
         # well costs (using GeoVision drilling correlations). These are calculated whether totalcapcostvalid = 1
@@ -2583,7 +2572,7 @@ class Economics:
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "Economics"

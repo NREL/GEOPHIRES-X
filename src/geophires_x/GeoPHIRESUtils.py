@@ -290,9 +290,9 @@ def entropy_water_kJ_per_kg_per_K(temperature_degC: float, pressure: Optional[Pl
         the entropy of water as a function of temperature in kJ/(kg·K)
     Raises:
         TypeError: If temperature is not a float or convertible to float.
-        ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
-
+        ValueError: If temperature and pressure combination are not within lookup range
     """
+
     try:
         temperature_degC = float(temperature_degC)
     except ValueError:
@@ -320,8 +320,9 @@ def enthalpy_water_kJ_per_kg(temperature_degC: float, pressure: Optional[PlainQu
         the enthalpy of water as a function of temperature in kJ/kg
     Raises:
         TypeError: If temperature is not a float or convertible to float.
-        ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
+        ValueError: If temperature and pressure combination are not within lookup range
     """
+
     try:
         temperature_degC = float(temperature_degC)
     except ValueError:

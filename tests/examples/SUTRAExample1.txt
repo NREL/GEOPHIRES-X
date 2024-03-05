@@ -1,6 +1,6 @@
 GEOPHIRES v3.0 Input File
-Created on 11/3/2023
-Last modified on 11/3/2023
+Created on 2023-11-03
+Last modified on 2024-01-18
 Reservoir thermal energy storage simulated with SUTRA
 
 This example reads in a SUTRA simulation result and calculate techno-economics of seasonal reservoir thermal energy storage.

@@ -5,7 +5,8 @@ import geophires_x
 import numpy as np
 from matplotlib import pyplot as plt
 import geophires_x.Model as Model
-from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits
+from geophires_x.Economics import Economics
+from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, OutputParameter
 from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel, FractureShape, ReservoirVolume, \
     PlantType
 
@@ -87,7 +88,7 @@ class Outputs:
                 param = obj.ParameterDict[key]
                 if not param.UnitsMatch: ConvertUnitsBack(param, model)
 
-        # now we need to loop through all thw output parameters to update their units to
+        # now we need to loop through all the output parameters to update their units to
         # whatever units the user has specified.
         # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those
         # from whatever LENGTH unit they are to feet.
@@ -95,9 +96,13 @@ class Outputs:
 
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.OutputParameterDict:
+                output_param:OutputParameter = obj.OutputParameterDict[key]
                 if key in self.ParameterDict:
-                    if self.ParameterDict[key] != obj.OutputParameterDict[key].CurrentUnits:
-                        ConvertOutputUnits(obj.OutputParameterDict[key], self.ParameterDict[key], model)
+                    if self.ParameterDict[key].PreferredUnits != output_param.CurrentUnits:
+                        ConvertOutputUnits(output_param, self.ParameterDict[key].PreferredUnits, model)
+                elif not output_param.UnitsMatch:
+                    obj.OutputParameterDict[key] = output_param.with_preferred_units()
+
 
         # write results to output file and screen
 
@@ -110,7 +115,7 @@ class Outputs:
                 f.write("Simulation Metadata\n")
                 f.write("----------------------\n")
                 f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
-                f.write(" GEOPHIRES Build Date: 2022-06-30\n")
+                f.write(" GEOPHIRES Build Date: 2024-03-05\n") # FIXME TODO https://github.com/NREL/GEOPHIRES-X/issues/139
                 f.write(" Simulation Date: "+ datetime.datetime.now().strftime("%Y-%m-%d\n"))
                 f.write(" Simulation Time:  "+ datetime.datetime.now().strftime("%H:%M\n"))
                 f.write(" Calculation Time: "+"{0:10.3f}".format((time.time()-model.tic)) + " sec\n")
@@ -185,7 +190,7 @@ class Outputs:
                 payback_period_val = model.economics.ProjectPaybackPeriod.value
                 project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \
                     if payback_period_val > 0.0 else 'N/A'
-                f.write(f'      Project Payback Period:                                 {project_payback_period_display}\n')
+                f.write(f'      Project Payback Period:                          {project_payback_period_display}\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
@@ -621,34 +626,43 @@ class Outputs:
                     "Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project" + NL)
                 f.write(
                     "Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow" + NL)
-                econ = model.economics
+                econ:Economics = model.economics
+
+                def o(output_param: OutputParameter):
+                    # TODO generalize this and/or FIXME make it unnecessary
+                    if output_param.Name in econ.OutputParameterDict:
+                        return econ.OutputParameterDict[output_param.Name]
+                    else:
+                        return o
+
                 f.write("Start    ("
-                        + econ.ElecPrice.PreferredUnits.value +
-                        ")(" + econ.ElecRevenue.PreferredUnits.value +
-                        ") (" + econ.ElecCummRevenue.PreferredUnits.value +
-                        ")    |(" + econ.HeatPrice.PreferredUnits.value +
-                        ") (" + econ.HeatRevenue.PreferredUnits.value +
-                        ")    (" + econ.HeatCummRevenue.PreferredUnits.value +
-                        ")   |(" + econ.CoolingPrice.PreferredUnits.value +
-                        ") (" + econ.CoolingRevenue.PreferredUnits.value +
-                        ")    (" + econ.CoolingCummRevenue.PreferredUnits.value +
-                        ")    |(" + econ.CarbonPrice.PreferredUnits.value +
-                        ") (" + econ.CarbonRevenue.PreferredUnits.value +
-                        ")    (" + econ.CarbonCummCashFlow.PreferredUnits.value +
-                        ")    |(" + econ.Coam.PreferredUnits.value +
-                        ") (" + econ.TotalRevenue.PreferredUnits.value +
-                        ")    (" + econ.TotalCummRevenue.PreferredUnits.value + ")\n")
+                        + o(econ.ElecPrice).CurrentUnits.value +
+                        ")(" + o(econ.ElecRevenue).CurrentUnits.value +
+                        ") (" + o(econ.ElecCummRevenue).CurrentUnits.value +
+                        ")    |(" + o(econ.HeatPrice).CurrentUnits.value +
+                        ") (" + o(econ.HeatRevenue).CurrentUnits.value +
+                        ")    (" + o(econ.HeatCummRevenue).CurrentUnits.value +
+                        ")   |(" + o(econ.CoolingPrice).CurrentUnits.value +
+                        ") (" + o(econ.CoolingRevenue).CurrentUnits.value +
+                        ")    (" + o(econ.CoolingCummRevenue).CurrentUnits.value +
+                        ")    |(" + o(econ.CarbonPrice).CurrentUnits.value +
+                        ") (" + o(econ.CarbonRevenue).CurrentUnits.value +
+                        ")    (" + o(econ.CarbonCummCashFlow).CurrentUnits.value +
+                        ")    |(" + o(econ.Coam).CurrentUnits.value +
+                        ") (" + o(econ.TotalRevenue).CurrentUnits.value +
+                        ")    (" + o(econ.TotalCummRevenue).CurrentUnits.value + ")\n")
                 f.write(
                     "________________________________________________________________________________________________________________________________________________________________________________________" + NL)
                 # running years...
                 for ii in range(0, (
                     model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value - 1), 1):
+
                     if ii < model.surfaceplant.construction_years.value:
                         OPEX = 0.0   # zero out the OPEX during construction years
                     else:
-                        OPEX = econ.Coam.value
+                        OPEX = o(econ.Coam).value
                     f.write(
-                        f"{ii + 1:3.0f}     {econ.ElecPrice.value[ii]:5.2f}          {econ.ElecRevenue.value[ii]:5.2f}  {econ.ElecCummRevenue.value[ii]:5.2f}     |   {econ.HeatPrice.value[ii]:5.2f}    {econ.HeatRevenue.value[ii]:5.2f}        {econ.HeatCummRevenue.value[ii]:5.2f}    |   {econ.CoolingPrice.value[ii]:5.2f}    {econ.CoolingRevenue.value[ii]:5.2f}        {econ.CoolingCummRevenue.value[ii]:5.2f}     |   {econ.CarbonPrice.value[ii]:5.2f}    {econ.CarbonRevenue.value[ii]:5.2f}        {econ.CarbonCummCashFlow.value[ii]:5.2f}     | {OPEX:5.2f}     {econ.TotalRevenue.value[ii]:5.2f}     {econ.TotalCummRevenue.value[ii]:5.2f}\n")
+                        f"{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {OPEX:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n")
                 f.write(NL)
 
             if model.economics.DoAddOnCalculations.value: model.addoutputs.PrintOutputs(model)
@@ -656,13 +670,14 @@ class Outputs:
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
-            print (str(ex))
-            print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            msg = "Error: GEOPHIRES Failed to write the output file. Exiting....Line %i" % tb.tb_lineno
+            print(str(ex))
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            sys.exit()
+            model.logger.critical(msg)
+            raise RuntimeError(msg) from ex
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def MakeDistrictHeatingPlot(self, model: Model):
         """

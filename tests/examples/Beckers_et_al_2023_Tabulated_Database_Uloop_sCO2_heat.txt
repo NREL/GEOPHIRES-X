@@ -1,5 +1,5 @@
 #GEOPHIRES v3.0 Input File
-#Last modified on 4/12/2023
+#Last modified on 2023-04-12
 #Example Description: Example 1 from "Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based Technical and Economic Modeling of Heat Production and Electricity Generation"
 #Koenraad Beckers Yaroslav Vasyliv Gabriela A. Bran-Anleu Mario Martinez Chad Augustine and Mark White
 #Presented at the 48th Stanford Geothermal Workshop Stanford California February 6-8 2023

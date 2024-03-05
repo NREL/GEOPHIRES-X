@@ -2,7 +2,7 @@
 GEOPHIRES v3.0 Input File
 Example 13
 This example file tests redrilling due to excessive drawdown and use of cogen bottoming cycle as end-use
-Created by Koenraad Beckers on 11/20/2023
+Created by Koenraad Beckers on 2023-11-20
 ----------------------------------------------------------------------------------------
 
 *** Subsurface technical parameters ***

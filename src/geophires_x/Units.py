@@ -1,6 +1,18 @@
 # copyright, 2023, Malcolm I Ross
 from enum import IntEnum, Enum, auto
 
+import pint
+import os
+
+
+_UREG = None
+def get_pint_registry():
+    global _UREG
+    if _UREG is None:
+        _UREG = pint.get_application_registry()
+        _UREG.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+
+    return _UREG
 
 class Units(IntEnum):
     """All possible systems of measure"""

@@ -5,10 +5,12 @@ from pathlib import Path
 
 from base_test_case import BaseTestCase
 from geophires_x.Model import Model
+from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import listParameter
 from geophires_x.Parameter import parameter_with_units_converted_back_to_preferred_units
+from geophires_x.Units import EnergyCostUnit
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import PressureUnit
 from geophires_x.Units import Units
@@ -100,6 +102,51 @@ class ParameterTestCase(BaseTestCase):
         )
 
         self.assertEqual([1, 2, 3], with_val.value)
+
+    def test_output_parameter_with_preferred_units(self):
+        op: OutputParameter = OutputParameter(
+            Name='Electricity Sale Price Model',
+            value=[
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+                0.055,
+            ],
+            ToolTipText='This is ToolTip Text',
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
+        )
+
+        result = op.with_preferred_units()
+        self.assertIsNotNone(result)
+        self.assertEqual(5.5, result.value[0])
 
     def _new_model(self) -> Model:
         stash_cwd = Path.cwd()

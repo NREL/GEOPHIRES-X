@@ -1,23 +1,20 @@
 # copyright, 2023, Malcolm I Ross
 import copy
-import os.path
+import dataclasses
+
 import sys
 from array import array
 from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from enum import IntEnum
 from forex_python.converter import CurrencyRates, CurrencyCodes
-import pint
 
 from abc import ABC
 
 from pint.facets.plain import PlainQuantity
-
 from geophires_x.Units import *
 
-ureg = pint.get_application_registry()
-ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
-
+ureg = get_pint_registry()
 
 class HasQuantity(ABC):
 
@@ -67,7 +64,17 @@ class OutputParameter(HasQuantity):
     # set to PreferredUnits by default assuming that the current units are the preferred units -
     # they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    UnitsMatch: bool = True # FIXME calculate from whether current & preferred match
+
+    @property
+    def UnitsMatch(self) -> str:
+        return self.CurrentUnits == self.PreferredUnits
+
+    def with_preferred_units(self) -> Any:  # Any is a proxy for Self
+        ret: OutputParameter = dataclasses.replace(self)
+        ret.value = ret.quantity().to(ret.PreferredUnits).magnitude
+        ret.CurrentUnits = ret.PreferredUnits
+        return ret
+
 
 
 @dataclass
@@ -997,7 +1004,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             # so just do the simple factor conversion and exit
             oparam.value = oparam.value * Factor
             oparam.CurrentUnits = DefUnit
-            oparam.UnitsMatch = False
+            # oparam.UnitsMatch = False
             return
 
         # start the currency conversion process

@@ -5,7 +5,7 @@ import geophires_x
 import numpy as np
 from matplotlib import pyplot as plt
 import geophires_x.Model as Model
-from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits
+from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, OutputParameter
 from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel, FractureShape, ReservoirVolume, \
     PlantType
 
@@ -95,9 +95,13 @@ class Outputs:
 
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.OutputParameterDict:
+                output_param:OutputParameter = obj.OutputParameterDict[key]
                 if key in self.ParameterDict:
-                    if self.ParameterDict[key] != obj.OutputParameterDict[key].CurrentUnits:
-                        ConvertOutputUnits(obj.OutputParameterDict[key], self.ParameterDict[key], model)
+                    if self.ParameterDict[key].PreferredUnits != output_param.CurrentUnits:
+                        ConvertOutputUnits(output_param, self.ParameterDict[key].PreferredUnits, model)
+                elif not output_param.UnitsMatch:
+                    obj.OutputParameterDict[key] = output_param.with_preferred_units()
+
 
         # write results to output file and screen
 

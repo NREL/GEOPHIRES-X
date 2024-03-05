@@ -10,7 +10,6 @@ import numbers
 from functools import lru_cache
 from typing import Optional
 
-import pint
 import scipy
 from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
@@ -19,6 +18,7 @@ import numpy as np
 import CoolProp.CoolProp as CP
 
 from geophires_x.Parameter import ParameterEntry
+from geophires_x.Units import get_unit_registry
 
 _logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
@@ -91,8 +91,7 @@ _UtilEff = np.array(
 
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
-_ureg = pint.get_application_registry()
-_ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+_ureg = get_unit_registry()
 
 
 def quantity(value: float, unit: str) -> PlainQuantity:

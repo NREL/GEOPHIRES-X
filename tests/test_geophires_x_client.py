@@ -430,6 +430,11 @@ class GeophiresXClientTestCase(BaseTestCase):
     def test_csv(self):
         """
         TODO make this less tedious to update when expected result values change
+
+        Current easiest method to update:
+         1. set breakpoint on line with `as_csv = result.as_csv()`
+         2. debug test, hit break point
+         3. copy value of `as_csv` to example1_addons.csv
         """
 
         def assert_csv_equal(case_report_file_path, expected_csv_file_path):

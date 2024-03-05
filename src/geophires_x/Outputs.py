@@ -190,7 +190,7 @@ class Outputs:
                 payback_period_val = model.economics.ProjectPaybackPeriod.value
                 project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \
                     if payback_period_val > 0.0 else 'N/A'
-                f.write(f'      Project Payback Period:                                 {project_payback_period_display}\n')
+                f.write(f'      Project Payback Period:                          {project_payback_period_display}\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,

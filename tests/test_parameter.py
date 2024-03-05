@@ -147,6 +147,7 @@ class ParameterTestCase(BaseTestCase):
         result = op.with_preferred_units()
         self.assertIsNotNone(result)
         self.assertEqual(5.5, result.value[0])
+        self.assertEqual(5.5, result.value[-1])
 
     def _new_model(self) -> Model:
         stash_cwd = Path.cwd()

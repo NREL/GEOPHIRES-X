@@ -7,8 +7,8 @@ Simulation Metadata
  GEOPHIRES Version: 3.4.15
  GEOPHIRES Build Date: 2024-03-05
  Simulation Date: 2024-03-05
- Simulation Time:  09:59
- Calculation Time:      0.612 sec
+ Simulation Time:  10:32
+ Calculation Time:      0.614 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -33,7 +33,7 @@ Simulation Metadata
       Project IRR:                                           7.14 %
       Project VIR=PI=PIR:                                    1.10
       Project MOIC:                                          1.28
-      Project Payback Period:                                      13.46 yr
+      Project Payback Period:                               13.46 yr
 
                           ***ENGINEERING PARAMETERS***
 

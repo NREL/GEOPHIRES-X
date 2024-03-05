@@ -1300,19 +1300,19 @@ class Economics:
             "Electricity Sale Price Model",
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH, # FIXME WIP
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
         )
         self.HeatPrice = self.OutputParameterDict[self.HeatPrice.Name] = OutputParameter(
             "Heat Sale Price Model",
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.CENTSSPERKWH, # FIXME TODO
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
         )
         self.CoolingPrice = self.OutputParameterDict[self.CoolingPrice.Name] = OutputParameter(
             "Heat Sale Price Model",
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.CENTSSPERKWH  # FIXME TODO
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
         )
         self.CarbonPrice = self.OutputParameterDict[self.CarbonPrice.Name] = OutputParameter(
             "Carbon Price Model",

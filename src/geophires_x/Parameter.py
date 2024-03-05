@@ -67,7 +67,7 @@ class OutputParameter(HasQuantity):
     # set to PreferredUnits by default assuming that the current units are the preferred units -
     # they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    UnitsMatch: bool = True
+    UnitsMatch: bool = True # FIXME calculate from whether current & preferred match
 
 
 @dataclass

@@ -660,9 +660,9 @@ class Outputs:
                     if ii < model.surfaceplant.construction_years.value:
                         OPEX = 0.0   # zero out the OPEX during construction years
                     else:
-                        OPEX = econ.Coam.value
+                        OPEX = o(econ.Coam).value
                     f.write(
-                        f"{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {econ.CarbonCummCashFlow.value[ii]:5.2f}     | {OPEX:5.2f}     {econ.TotalRevenue.value[ii]:5.2f}     {econ.TotalCummRevenue.value[ii]:5.2f}\n")
+                        f"{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {OPEX:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n")
                 f.write(NL)
 
             if model.economics.DoAddOnCalculations.value: model.addoutputs.PrintOutputs(model)
@@ -670,14 +670,14 @@ class Outputs:
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
-            msg = "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno
+            msg = "Error: GEOPHIRES Failed to write the output file. Exiting....Line %i" % tb.tb_lineno
             print(str(ex))
             print(msg)
             model.logger.critical(str(ex))
             model.logger.critical(msg)
             raise RuntimeError(msg) from ex
 
-        model.logger.info("Complete "+ str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def MakeDistrictHeatingPlot(self, model: Model):
         """

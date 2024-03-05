@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------
 GEOPHIRES v3.0 Input File
 Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example X) and closed loops
-Oringinally created by NREL on 3/26/2018 as Example 4
-Last modified on 2/26/2023
+Originally created by NREL on 2018-03-26 as Example 4
+Last modified on 2023-09-29
 
 Example X Description: This example problem considers a simple reservoir
 at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown

@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------
 GEOPHIRES v2.0 Input File
 Geothermal Direct-Use Example Problem using User-Provided Temperature Data (Example 5)
-Created by NREL on 3/26/2018
-Last modified on 6/12/2018
+Created by NREL on 3/26/2018-03-26
+Last modified on 2018-06-12
 
 Example 5 Description: This example problem considers an EGS reservoir at 3 km depth with
 bottom-hole temperature of 150deg.C. The reservoir output temperature is imported from

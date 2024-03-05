@@ -1,6 +1,6 @@
 GEOPHIRES v2.0 Input File
-Created on 6/11/2018
-Last modified on 6/12/2018
+Created on 2018-06-11
+Last modified on 2024-02-28
 Geothermal Electricity Problem using a Multiple Parallel Fractures Model
 
 Example 1 Description: This problem considers an EGS reservoir at 3km depth.

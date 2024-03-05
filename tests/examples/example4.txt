@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------
 GEOPHIRES v2.0 Input File
 Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example 4)
-Created by NREL on 3/26/2018
-Last modified on 6/12/2018
+Created by NREL on 2018-03-26
+Last modified on 2018-06-12
 
 Example 4 Description: This example problem considers a simple hydrothermal reservoir
 at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown

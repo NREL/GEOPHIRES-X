@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------
 GEOPHIRES v2.0 Input File
 Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example 4)
-Created by Charley Walton on 7/25/2022
-Last modified on 8/12/2022
+Created by Charley Walton on 2022-07-25
+Last modified on 2024-01-04
 
 Description: This example considers Cornell's existing district heating network assesses
 the performance of a proposed geothermal well. A known heat demand profile for the district

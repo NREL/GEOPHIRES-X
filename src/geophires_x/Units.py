@@ -6,7 +6,7 @@ import os
 
 
 _UREG = None
-def get_pint_registry():
+def get_unit_registry():
     global _UREG
     if _UREG is None:
         _UREG = pint.get_application_registry()

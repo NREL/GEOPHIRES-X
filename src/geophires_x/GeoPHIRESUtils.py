@@ -18,7 +18,7 @@ import numpy as np
 import CoolProp.CoolProp as CP
 
 from geophires_x.Parameter import ParameterEntry
-from geophires_x.Units import get_pint_registry
+from geophires_x.Units import get_unit_registry
 
 _logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
@@ -91,7 +91,7 @@ _UtilEff = np.array(
 
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
-_UREG = get_pint_registry()
+_ureg = get_unit_registry()
 
 
 def quantity(value: float, unit: str) -> PlainQuantity:
@@ -99,7 +99,7 @@ def quantity(value: float, unit: str) -> PlainQuantity:
     :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
         to import the Quantity TypeAlias
     """
-    return _UREG.Quantity(value, unit)
+    return _ureg.Quantity(value, unit)
 
 
 @lru_cache

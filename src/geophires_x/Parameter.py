@@ -14,7 +14,7 @@ from abc import ABC
 from pint.facets.plain import PlainQuantity
 from geophires_x.Units import *
 
-ureg = get_pint_registry()
+_ureg = get_unit_registry()
 
 class HasQuantity(ABC):
 
@@ -23,7 +23,7 @@ class HasQuantity(ABC):
         :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
             to import the Quantity TypeAlias
         """
-        return ureg.Quantity(self.value, str(self.CurrentUnits.value))
+        return _ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
 
 @dataclass
@@ -518,8 +518,8 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         try:
             # Make a Pint Quantity out of the old value: the amount of the unit doesn't matter,
             # just the units, so I set the amount to 0
-            Old_valQ = ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
-            New_valQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
+            Old_valQ = _ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
+            New_valQ = _ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (
@@ -703,7 +703,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             if isinstance(param.CurrentUnits, pint.Quantity):
                 currQ = param.CurrentUnits
             else:
-                currQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
+                currQ = _ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (
@@ -863,10 +863,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             # this is a simple unit conversion: it could be just units (meters->feet) or simple currency ($->EUR)
             # or compound Currency (MUSD-EUR)
             try:
-                fromQ = ureg.Quantity(
+                fromQ = _ureg.Quantity(
                     oparam.value, str(oparam.PreferredUnits.value)
                 )  # Make a Pint Quantity out of the value
-                toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
+                toQ = _ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
             except BaseException as ex:
                 print(str(ex))
                 msg = (
@@ -907,10 +907,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             i = 0
             for arrayval in oparam.value:
                 try:
-                    fromQ = ureg.Quantity(
+                    fromQ = _ureg.Quantity(
                         oparam.value[i], str(oparam.PreferredUnits.value)
                     )  # Make a Pint Quantity out of from the value
-                    toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
+                    toQ = _ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
                 except BaseException as ex:
                     print(str(ex))
                     msg = (

@@ -85,7 +85,7 @@ _UtilEff = np.array(
         0.4,
         0.4,
         0.4,
-        0.4,
+        0.5, # Extrapolate from fig 2 in https://geothermal-energy-journal.springeropen.com/articles/10.1186/s40517-019-0119-6
     ]
 )
 

@@ -811,7 +811,6 @@ class Economics:
         )
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
-            value=False,
             DefaultValue=False,
             UnitType=Units.NONE,
             Required=False,

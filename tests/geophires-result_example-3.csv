@@ -6,6 +6,7 @@ SUMMARY OF RESULTS,Average Direct-Use Heat Production,,11.06,MW
 SUMMARY OF RESULTS,Number of production wells,,3,count
 SUMMARY OF RESULTS,Number of injection wells,,3,count
 SUMMARY OF RESULTS,Flowrate per production well,,70.0,kg/sec
+SUMMARY OF RESULTS,"Well depth (or total length\, if not vertical)",,3.1,kilometer
 SUMMARY OF RESULTS,Geothermal gradient,,0.07,degC/m
 ECONOMIC PARAMETERS,Accrued financing during construction,,5.0,
 ECONOMIC PARAMETERS,Project lifetime,,35,yr

@@ -1974,17 +1974,33 @@ class Economics:
             self.C1well = self.ccwellfixed.value
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
         else:
-            # if depth is > 7000 m, we don't have a correlation for it, so we must use the SIMPLE logic
-            checkdepth = model.reserv.depth.quantity().to('m').magnitude
-            if ((checkdepth > 7000.0 or checkdepth < 500) and
-                not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
-                msg = (f'Invalid cost correlation specified for drilling depth <500 or >7000 m ({checkdepth}m), '
-                       f'falling back to simple user-specified cost '
-                       f'({self.Vertical_drilling_cost_per_m.value} per meter)')
-                model.logger.warning(msg)
-                self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
+            # Check if  well depth is out of standard bounds for cost correlation
+            checkdepth_m = model.reserv.depth.quantity().to('m').magnitude
 
-            # use SIMPLE approach if user has specified it
+            correlations_min_valid_depth_m = 500.
+            correlations_max_valid_depth_m = 7000.
+
+            if (checkdepth_m < correlations_min_valid_depth_m
+                and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
+
+                self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
+                model.logger.warning(
+                    f'Invalid cost correlation specified ({self.wellcorrelation.value}) for drilling depth '
+                    f'<{correlations_min_valid_depth_m}m ({checkdepth_m}m). '
+                    f'Falling back to simple user-specified cost '
+                    f'({self.Vertical_drilling_cost_per_m.value} per meter)'
+                )
+
+            if (checkdepth_m > correlations_max_valid_depth_m
+                and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
+                model.logger.warning(
+                    f'{self.wellcorrelation.value} may be invalid for drilling depth '
+                    f'>{correlations_max_valid_depth_m}m ({checkdepth_m}m). '
+                    f'Consider using {WellDrillingCostCorrelation.SIMPLE} (per-meter cost) or '
+                    f'{self.ccwellfixed.Name} (fixed cost per well) instead.'
+                )
+
+
             if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
                 # using the "Configuration" keywords means we are doing an AGS calculation
                 if hasattr(model.wellbores, 'Configuration'):
@@ -2009,18 +2025,17 @@ class Economics:
                         'm').magnitude * 1E-6
 
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL:
-                self.C1well = ((0.3021 * checkdepth ** 2 + 584.9112 * checkdepth + 751368.)
+                self.C1well = ((0.3021 * checkdepth_m ** 2 + 584.9112 * checkdepth_m + 751368.)
                                * 1E-6)  # well drilling and completion cost in M$/well
 
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL:
-                self.C1well = (0.2898 * checkdepth ** 2 + 822.1507 * checkdepth + 680563.) * 1E-6
+                self.C1well = (0.2898 * checkdepth_m ** 2 + 822.1507 * checkdepth_m + 680563.) * 1E-6
 
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE:
-
-                self.C1well = (0.2818 * checkdepth ** 2 + 1275.5213 * checkdepth + 632315.) * 1E-6
+                self.C1well = (0.2818 * checkdepth_m ** 2 + 1275.5213 * checkdepth_m + 632315.) * 1E-6
 
             elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE:
-                self.C1well = (0.2553 * checkdepth ** 2 + 1716.7157 * checkdepth + 500867.) * 1E-6
+                self.C1well = (0.2553 * checkdepth_m ** 2 + 1716.7157 * checkdepth_m + 500867.) * 1E-6
 
             # account for adjustment factor
             self.C1well = self.ccwelladjfactor.value * self.C1well

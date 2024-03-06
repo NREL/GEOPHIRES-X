@@ -591,7 +591,8 @@ class SurfacePlant:
                         if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100
-                                    msg = f'Provided plant outlet pressure outside of range 0-10000. GEOPHIRES will assume default plant outlet pressure ({ParameterToModify.value} kPa)'
+                                    msg = (f'Provided plant outlet pressure outside of range 0-10000. GEOPHIRES will '
+                                           f'assume default plant outlet pressure ({ParameterToModify.value} kPa)')
                                     print(f'Warning: {msg}')
                                     model.logger.warning(msg)
                                 else:
@@ -607,13 +608,11 @@ class SurfacePlant:
                     self.plant_outlet_pressure.value = 100
                     msg = (f'No valid plant outlet pressure provided. '
                            f'GEOPHIRES will assume default plant outlet pressure ({self.plant_outlet_pressure.value} kPa)')
-                    print(f'Warning: {msg}')
                     model.logger.warning(msg)
                 else:
                     self.usebuiltinoutletplantcorrelation.value = True
                     msg = (f'No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet pressure '
                            f'based on production wellhead pressure and surface equipment pressure drop of 10 psi')
-                    print(f'Warning: {msg}')
                     model.logger.warning(msg)
         else:
             model.logger.info('No parameters read because no content provided')

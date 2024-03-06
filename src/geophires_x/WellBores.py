@@ -396,7 +396,6 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         elif pumpdepthfinal_m > 600.0:
             msg = (f'GEOPHIRES calculates production pump depth to be deeper than 600m ({pumpdepthfinal_m:.2f}m). '
                    f'Verify reservoir pressure, production well flow rate and production well dimensions')
-            print(f'Warning: {msg}')
             model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]

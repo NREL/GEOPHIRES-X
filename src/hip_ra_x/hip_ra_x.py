@@ -9,6 +9,9 @@ from pathlib import Path
 
 import pint
 
+from rich.console import Console
+from rich.table import Table
+
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import celsius_to_kelvin
@@ -27,6 +30,7 @@ from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import ReadParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
+from geophires_x.Parameter import strParameter
 from geophires_x.Units import AreaUnit
 from geophires_x.Units import DensityUnit
 from geophires_x.Units import EnthalpyUnit
@@ -324,6 +328,16 @@ class HIP_RA_X:
                 Required=False,
                 ErrMessage='assume 0.75 (75%) of fluid from the reservoir is recoverable',
                 ToolTipText='percent of fluid that is recoverable from the reservoir (0.75 = 75%)',
+            )
+        )
+        self.html_output_file: Parameter = parameter_dict_entry(
+            strParameter(
+                'HTML Output File',
+                value='HIP.html',
+                Required=False,
+                Provided=False,
+                ErrMessage='assume no HTML output',
+                ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
             )
         )
 
@@ -905,13 +919,107 @@ class HIP_RA_X:
             self.logger.critical(msg)
             raise
 
-        # copy the output file to the screen
-        with open(outputfile, encoding='UTF-8') as f:
-            content = f.readlines()  # store all output in one long list
+        if self.html_output_file.Provided:
+            # write the outputs to the output file as HTML and the screen as a table
+            self.PrintOutputsHTML(case_data_inputs, case_data_results, self.html_output_file.value)
+        else:
+            # copy the output file to the screen
+            with open(outputfile, encoding='UTF-8') as f:
+                content = f.readlines()  # store all output in one long list
 
-            # Now write each line to the screen
-            for line in content:
-                sys.stdout.write(line)
+                # Now write each line to the screen
+                for line in content:
+                    sys.stdout.write(line)
+
+    def PrintOutputsHTML(self, inputs, outputs, output_filename: str = 'HIP.html'):
+        """
+        PrintOutputs writes the standard outputs to the output file as HTML. The inputs and outputs are already prepared
+        by the calling function so we just pass them in and use them in writing the HTML. They are dictionaries that
+        contain the already formatted information for output.
+        args:
+            inputs: dict of inputs
+            outputs: dict of outputs
+            output_filename: name of the output file
+        """
+        self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
+
+        try:
+            inputs_table = Table(title="***SUMMARY OF INPUTS***")
+            inputs_table.add_column('Parameter Name', no_wrap=True)
+            inputs_table.add_column('Value', no_wrap=True, justify="center")
+            inputs_table.add_column('Units', no_wrap=True)
+            outputs_table = Table(title="***SUMMARY OF RESULTS***")
+            outputs_table.add_column('Result Name', no_wrap=True)
+            outputs_table.add_column('Value', no_wrap=True, justify="center")
+            outputs_table.add_column('Units', no_wrap=True)
+
+            for key, value in inputs['SUMMARY OF INPUTS'].items():
+                name: str = key
+                val1 = value.strip().split(' ')
+                val = val1[0]
+                unit = ''
+                if len(val1) > 1:
+                    unit: str = str(val1[1])
+                    if '**2' in unit:
+                        unit = unit.replace('**2', '\u00b2')
+                    if '**3' in unit:
+                        unit = unit.replace('**3', '\u00b3')
+                    if 'deg' in unit:
+                        unit = unit.replace('deg', '\u00b0')
+                inputs_table.add_row(name, val, unit)
+
+            for key, value in outputs['SUMMARY OF RESULTS'].items():
+                name: str = key
+                val1 = value.strip().split(' ')
+                val = val1[0]
+                unit = ''
+                if len(val1) > 1:
+                    unit: str = str(val1[1])
+                    if '**2' in unit:
+                        unit = unit.replace('**2', '\u00b2')
+                    if '**3' in unit:
+                        unit = unit.replace('**3', '\u00b3')
+                    if 'deg' in unit:
+                        unit = unit.replace('deg', '\u00b0')
+                outputs_table.add_row(name, val, unit)
+
+            console = Console(style="bold white on blue", force_terminal=True, record=True)
+            console.print(f'                  *********************')
+            console.print(f'                  ***HIP CASE REPORT***')
+            console.print(f'                  *********************')
+            console.print(' ')
+            console.print(inputs_table)
+            console.print(' ')
+            console.print(outputs_table)
+            console.save_html('d:\\temp\\test_table.html')
+
+        except FileNotFoundError as ex:
+            print(str(ex))
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            print(msg)
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
+        except PermissionError as ex:
+            print(str(ex))
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            print(msg)
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
+        except Exception as ex:
+            print(str(ex))
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            print(msg)
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
 
     def __str__(self):
         return 'HIP_RA_X'

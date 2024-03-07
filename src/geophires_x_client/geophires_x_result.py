@@ -280,7 +280,9 @@ class GeophiresXResult:
         'Reservoir Model',
     )
 
-    def __init__(self, output_file_path, logger_name='root'):
+    def __init__(self, output_file_path, logger_name=None):
+        if logger_name is None:
+            logger_name = __name__
         self._logger = _get_logger(logger_name)
         self.output_file_path = output_file_path
 

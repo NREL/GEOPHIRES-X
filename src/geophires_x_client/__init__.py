@@ -12,7 +12,10 @@ from .geophires_x_result import GeophiresXResult
 
 
 class GeophiresXClient:
-    def __init__(self, enable_caching=True, logger_name='root'):
+    def __init__(self, enable_caching=True, logger_name=None):
+        if logger_name is None:
+            logger_name = __name__
+
         self._logger = _get_logger(logger_name=logger_name)
         self._enable_caching = enable_caching
         self._cache = {}

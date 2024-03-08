@@ -419,29 +419,29 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.wellhead_heat_recovery_rock = self.OutputParameterDict[
-            self.wellhead_heat_recovery_rock.Name
-        ] = OutputParameter(
-            Name='Wellhead Heat (rock)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.wellhead_heat_recovery_rock = self.OutputParameterDict[self.wellhead_heat_recovery_rock.Name] = (
+            OutputParameter(
+                Name='Wellhead Heat (rock)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
-        self.wellhead_heat_recovery_fluid = self.OutputParameterDict[
-            self.wellhead_heat_recovery_fluid.Name
-        ] = OutputParameter(
-            Name='Wellhead Heat (fluid)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.wellhead_heat_recovery_fluid = self.OutputParameterDict[self.wellhead_heat_recovery_fluid.Name] = (
+            OutputParameter(
+                Name='Wellhead Heat (fluid)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
-        self.reservoir_recovery_factor = self.OutputParameterDict[
-            self.reservoir_recovery_factor.Name
-        ] = OutputParameter(
-            Name='Recovery Factor (reservoir)',
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
+        self.reservoir_recovery_factor = self.OutputParameterDict[self.reservoir_recovery_factor.Name] = (
+            OutputParameter(
+                Name='Recovery Factor (reservoir)',
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.PERCENT,
+                CurrentUnits=PercentUnit.PERCENT,
+            )
         )
         self.recovery_factor_rock = self.OutputParameterDict[self.recovery_factor_rock.Name] = OutputParameter(
             Name='Recovery Factor (rock)',
@@ -473,13 +473,13 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.reservoir_producible_heat = self.OutputParameterDict[
-            self.reservoir_producible_heat.Name
-        ] = OutputParameter(
-            Name='Producible Heat (reservoir)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.reservoir_producible_heat = self.OutputParameterDict[self.reservoir_producible_heat.Name] = (
+            OutputParameter(
+                Name='Producible Heat (reservoir)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
         self.producible_heat_rock = self.OutputParameterDict[self.producible_heat_rock.Name] = OutputParameter(
             Name='Producible Heat (rock)',
@@ -493,37 +493,37 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.reservoir_producible_electricity = self.OutputParameterDict[
-            self.reservoir_producible_electricity.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (reservoir)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.reservoir_producible_electricity = self.OutputParameterDict[self.reservoir_producible_electricity.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (reservoir)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_electricity_rock = self.OutputParameterDict[
-            self.producible_electricity_rock.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (rock)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.producible_electricity_rock = self.OutputParameterDict[self.producible_electricity_rock.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (rock)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_electricity_fluid = self.OutputParameterDict[
-            self.producible_electricity_fluid.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (fluid)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.producible_electricity_fluid = self.OutputParameterDict[self.producible_electricity_fluid.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (fluid)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_heat_per_unit_area = self.OutputParameterDict[
-            self.producible_heat_per_unit_area.Name
-        ] = OutputParameter(
-            Name='Producible Heat/Unit Area (reservoir)',
-            UnitType=Units.HEATPERUNITAREA,
-            PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
-            CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+        self.producible_heat_per_unit_area = self.OutputParameterDict[self.producible_heat_per_unit_area.Name] = (
+            OutputParameter(
+                Name='Producible Heat/Unit Area (reservoir)',
+                UnitType=Units.HEATPERUNITAREA,
+                PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+                CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+            )
         )
         self.heat_per_unit_area_rock = self.OutputParameterDict[self.heat_per_unit_area_rock.Name] = OutputParameter(
             Name='Producible Heat/Unit Area (rock)',
@@ -537,13 +537,13 @@ class HIP_RA_X:
             PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
             CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
         )
-        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[
-            self.heat_per_unit_volume_reservoir.Name
-        ] = OutputParameter(
-            Name='Producible Heat/Unit Volume (reservoir)',
-            UnitType=Units.HEATPERUNITVOLUME,
-            PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
-            CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[self.heat_per_unit_volume_reservoir.Name] = (
+            OutputParameter(
+                Name='Producible Heat/Unit Volume (reservoir)',
+                UnitType=Units.HEATPERUNITVOLUME,
+                PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+                CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+            )
         )
         self.producible_electricity_per_unit_area = self.OutputParameterDict[
             self.producible_electricity_per_unit_area.Name
@@ -553,21 +553,21 @@ class HIP_RA_X:
             PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
             CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
         )
-        self.electricity_per_unit_area_rock = self.OutputParameterDict[
-            self.electricity_per_unit_area_rock.Name
-        ] = OutputParameter(
-            Name='Producible Electricity/Unit Area (rock)',
-            UnitType=Units.POWERPERUNITAREA,
-            PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
-            CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+        self.electricity_per_unit_area_rock = self.OutputParameterDict[self.electricity_per_unit_area_rock.Name] = (
+            OutputParameter(
+                Name='Producible Electricity/Unit Area (rock)',
+                UnitType=Units.POWERPERUNITAREA,
+                PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+                CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+            )
         )
-        self.electricity_per_unit_area_fluid = self.OutputParameterDict[
-            self.electricity_per_unit_area_fluid.Name
-        ] = OutputParameter(
-            Name='Producible Electricity/Unit Area (fluid)',
-            UnitType=Units.POWERPERUNITAREA,
-            PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
-            CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+        self.electricity_per_unit_area_fluid = self.OutputParameterDict[self.electricity_per_unit_area_fluid.Name] = (
+            OutputParameter(
+                Name='Producible Electricity/Unit Area (fluid)',
+                UnitType=Units.POWERPERUNITAREA,
+                PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+                CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+            )
         )
         self.electricity_per_unit_volume_reservoir = self.OutputParameterDict[
             self.electricity_per_unit_volume_reservoir.Name

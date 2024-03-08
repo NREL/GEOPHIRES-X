@@ -8,7 +8,6 @@ import traceback
 from pathlib import Path
 
 import pint
-
 from rich.console import Console
 from rich.table import Table
 
@@ -944,13 +943,13 @@ class HIP_RA_X:
         self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
 
         try:
-            inputs_table = Table(title="***SUMMARY OF INPUTS***")
+            inputs_table = Table(title='***SUMMARY OF INPUTS***')
             inputs_table.add_column('Parameter Name', no_wrap=True)
-            inputs_table.add_column('Value', no_wrap=True, justify="center")
+            inputs_table.add_column('Value', no_wrap=True, justify='center')
             inputs_table.add_column('Units', no_wrap=True)
-            outputs_table = Table(title="***SUMMARY OF RESULTS***")
+            outputs_table = Table(title='***SUMMARY OF RESULTS***')
             outputs_table.add_column('Result Name', no_wrap=True)
-            outputs_table.add_column('Value', no_wrap=True, justify="center")
+            outputs_table.add_column('Value', no_wrap=True, justify='center')
             outputs_table.add_column('Units', no_wrap=True)
 
             for key, value in inputs['SUMMARY OF INPUTS'].items():
@@ -983,10 +982,10 @@ class HIP_RA_X:
                         unit = unit.replace('deg', '\u00b0')
                 outputs_table.add_row(name, val, unit)
 
-            console = Console(style="bold white on blue", force_terminal=True, record=True)
-            console.print(f'                  *********************')
-            console.print(f'                  ***HIP CASE REPORT***')
-            console.print(f'                  *********************')
+            console = Console(style='bold white on blue', force_terminal=True, record=True)
+            console.print('                  *********************')
+            console.print('                  ***HIP CASE REPORT***')
+            console.print('                  *********************')
             console.print(' ')
             console.print(inputs_table)
             console.print(' ')
@@ -1019,7 +1018,6 @@ class HIP_RA_X:
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
-
 
     def __str__(self):
         return 'HIP_RA_X'

@@ -54,8 +54,8 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'LCOE',
                 'LCOH',
-                # SUTRA
-                'Lifetime Average Well Flow Rate',
+                'Lifetime Average Well Flow Rate',  # SUTRA
+                'Total Avoided Carbon Emissions',
             ],
             'ECONOMIC PARAMETERS': [
                 _EqualSignDelimitedField('Economic Model'),

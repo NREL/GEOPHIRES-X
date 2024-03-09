@@ -58,6 +58,19 @@ Stanford University, 36th Workshop on Geothermal Reservoir Engineering; SGP-TR-1
 """
 
 
+def UpgradeSymbologyOfUnits(unit: str) -> str:
+    """
+    UpgradeSymbologyOfUnits is a function that takes a string that represents a unit and replaces the **2 and **3
+    with the appropriate unicode characters for superscript 2 and 3, and replaces "deg" with the unicode character
+    for degrees.
+    :param unit: a string that represents a unit
+    :return: a string that represents a unit with the appropriate unicode characters for superscript 2 and 3, and
+    replaces "deg" with the unicode character for degrees.
+    """
+    unit = unit.replace('**2', '\u00b2').replace('**3', '\u00b3').replace('deg', '\u00b0')
+    return unit
+
+
 class HIP_RA_X:
     """
     HIP_RA_X is the container class of the HIP-RA-X application, giving access to everything else, including the logger
@@ -892,28 +905,22 @@ class HIP_RA_X:
                     f.write(f'      {k}:{kv_spaces}{v}{nl}')
 
         except FileNotFoundError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except PermissionError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except Exception as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
@@ -958,13 +965,7 @@ class HIP_RA_X:
                 val = val1[0]
                 unit = ''
                 if len(val1) > 1:
-                    unit: str = str(val1[1])
-                    if '**2' in unit:
-                        unit = unit.replace('**2', '\u00b2')
-                    if '**3' in unit:
-                        unit = unit.replace('**3', '\u00b3')
-                    if 'deg' in unit:
-                        unit = unit.replace('deg', '\u00b0')
+                    unit: str = UpgradeSymbologyOfUnits(str(val1[1]))
                 inputs_table.add_row(name, val, unit)
 
             for key, value in outputs['SUMMARY OF RESULTS'].items():
@@ -973,13 +974,8 @@ class HIP_RA_X:
                 val = val1[0]
                 unit = ''
                 if len(val1) > 1:
-                    unit: str = str(val1[1])
-                    if '**2' in unit:
-                        unit = unit.replace('**2', '\u00b2')
-                    if '**3' in unit:
-                        unit = unit.replace('**3', '\u00b3')
-                    if 'deg' in unit:
-                        unit = unit.replace('deg', '\u00b0')
+                    unit: str = UpgradeSymbologyOfUnits(str(val1[1]))
+
                 outputs_table.add_row(name, val, unit)
 
             console = Console(style='bold white on blue', force_terminal=True, record=True)
@@ -993,28 +989,22 @@ class HIP_RA_X:
             console.save_html('d:\\temp\\test_table.html')
 
         except FileNotFoundError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except PermissionError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except Exception as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise

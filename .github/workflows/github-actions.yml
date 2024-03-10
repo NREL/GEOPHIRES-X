@@ -162,7 +162,7 @@ jobs:
         done
 
     - name: upload artifact
-      uses: actions/upload-pages-artifact@v4
+      uses: actions/upload-pages-artifact@v3
 
     - name: deploy to GitHub Pages
       id: deployment

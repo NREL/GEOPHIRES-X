@@ -310,9 +310,9 @@ class GeophiresXResult:
 
         try:
             self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
-            self.result[
-                'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
-            ] = self._get_heat_electricity_extraction_generation_profile()
+            self.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'] = (
+                self._get_heat_electricity_extraction_generation_profile()
+            )
         except Exception as e:
             # FIXME
             self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')

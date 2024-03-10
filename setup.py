@@ -77,6 +77,7 @@ setup(
         'scipy',
         'iapws',
         'coolprop',
+        'rich',
     ],
     extras_require={
         # eg:

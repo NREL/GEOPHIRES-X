@@ -37,9 +37,9 @@ class HipRaResult:
             matches = re.findall(pattern, text)
 
             result = {
-                key.strip(): {'value': float(value), 'unit': unit.strip()}
-                if unit
-                else {'value': float(value), 'unit': None}
+                key.strip(): (
+                    {'value': float(value), 'unit': unit.strip()} if unit else {'value': float(value), 'unit': None}
+                )
                 for key, value, unit in matches
             }
 

@@ -430,7 +430,7 @@ class Outputs:
                     f.write(f"      Average Peaking Boiler Heat Production:           {np.average(model.surfaceplant.dh_natural_gas_heating.value):10.2f} " + model.surfaceplant.dh_natural_gas_heating.PreferredUnits.value + NL)
                     f.write(f"      Minimum Peaking Boiler Heat Production:           {np.min(model.surfaceplant.dh_natural_gas_heating.value):10.2f} " + model.surfaceplant.dh_natural_gas_heating.PreferredUnits.value + NL)
 
-                f.write(f"      Average Pumping Power:                            {np.average(model.wellbores.PumpingPower.value):10.2f} " + model.wellbores.PumpingPower.PreferredUnits.value + NL)
+                f.write(f"      Average Pumping Power:                            {np.average(model.wellbores.PumpingPower.value):10.2f} {model.wellbores.PumpingPower.CurrentUnits.value}{NL}")
 
 
                 f.write(NL)

@@ -71,8 +71,8 @@ Simulation Metadata
       Reservoir volume:                               196000000 m**3
       Reservoir impedance:                                    0.05 GPa.s/m**3
       Reservoir density:                                   2730.00 kg/m**3
-      Reservoir thermal conductivity:                         2.83 watt/m/kelvin
-      Reservoir heat capacity:                              825.00 J/kg/kelvin
+      Reservoir thermal conductivity:                         2.83 W/m/K
+      Reservoir heat capacity:                              825.00 J/kg/K
 
 
                            ***RESERVOIR SIMULATION RESULTS***

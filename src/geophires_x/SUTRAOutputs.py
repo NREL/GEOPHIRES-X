@@ -190,7 +190,7 @@ class SUTRAOutputs:
                 f.write(f"      Average Annual RTES Heating Production:        {np.average(model.surfaceplant.AnnualHeatProduced.value):10.2f} " + model.surfaceplant.AnnualHeatProduced.PreferredUnits.value + NL)
                 f.write(f"      Average Annual Auxiliary Heating Production:   {np.average(model.surfaceplant.AnnualAuxiliaryHeatProduced.value):10.2f} " + model.surfaceplant.AnnualAuxiliaryHeatProduced.PreferredUnits.value + NL)
                 f.write(f"      Average Annual Total Heating Production:       {np.average(model.surfaceplant.AnnualTotalHeatProduced.value):10.2f} " + model.surfaceplant.AnnualTotalHeatProduced.PreferredUnits.value + NL)
-                f.write(f"      Average Pumping Power:                         {np.average(model.wellbores.PumpingPower.value):10.2f} " + model.wellbores.PumpingPower.PreferredUnits.value + NL)
+                f.write(f"      Average Pumping Power:                         {np.average(model.wellbores.PumpingPower.value):10.2f} {model.wellbores.PumpingPower.CurrentUnits.value}{NL}")
                 f.write(f"      Average Annual Electricity Use for Pumping:    {np.average(model.surfaceplant.PumpingkWh.value):10.2f} " + model.surfaceplant.PumpingkWh.PreferredUnits.value + NL)
                 f.write(NL)
                 f.write(NL)

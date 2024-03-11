@@ -517,7 +517,6 @@ class AGSWellBores(WellBores):
 
         self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
             "Heat Transfer Fluid",
-            value=WorkingFluid.WATER,
             DefaultValue=WorkingFluid.WATER,
             AllowableRange=[1, 2],
             UnitType=Units.NONE,
@@ -526,7 +525,6 @@ class AGSWellBores(WellBores):
         )
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Closed-loop Configuration",
-            value=Configuration.COAXIAL,
             DefaultValue=Configuration.COAXIAL,
             AllowableRange=[1, 2],
             UnitType=Units.NONE,
@@ -537,7 +535,6 @@ class AGSWellBores(WellBores):
         # Input data for subsurface condition
         self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
             "Total Nonvertical Length",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=1000.0,
             Max=20000.0,
@@ -550,7 +547,6 @@ class AGSWellBores(WellBores):
 
         self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
             "Water Thermal Conductivity",
-            value=0.6,
             DefaultValue=0.6,
             Min=0.0,
             Max=100.0,
@@ -563,7 +559,6 @@ class AGSWellBores(WellBores):
 
         self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
             "Nonvertical Wellbore Diameter",
-            value=0.156,
             DefaultValue=0.156,
             Min=0.01,
             Max=100.0,
@@ -575,7 +570,6 @@ class AGSWellBores(WellBores):
         )
         self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
             "Number of Multilateral Sections",
-            value=1,
             DefaultValue=1,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.NONE,
@@ -584,7 +578,6 @@ class AGSWellBores(WellBores):
         )
         self.time_operation = self.ParameterDict[self.time_operation.Name] = floatParameter(
             "Closed Loop Calculation Start Year",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -596,7 +589,6 @@ class AGSWellBores(WellBores):
         )
         self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
             "Multilaterals Cased",
-            value=False,
             DefaultValue=False,
             Required=False,
             Provided=False,

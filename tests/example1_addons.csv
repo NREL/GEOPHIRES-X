@@ -59,8 +59,8 @@ RESERVOIR PARAMETERS,Production wellhead pressure,,29774.91,kPa
 RESERVOIR PARAMETERS,Productivity Index,,5.0,kg/sec/bar
 RESERVOIR PARAMETERS,Injectivity Index,,5.0,kg/sec/bar
 RESERVOIR PARAMETERS,Reservoir density,,2700.0,kg/m**3
-RESERVOIR PARAMETERS,Reservoir thermal conductivity,,2.7,watt/m/kelvin
-RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/kelvin
+RESERVOIR PARAMETERS,Reservoir thermal conductivity,,2.7,W/m/K
+RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/K
 RESERVOIR SIMULATION RESULTS,Maximum Production Temperature,,167.2,degC
 RESERVOIR SIMULATION RESULTS,Average Production Temperature,,167.0,degC
 RESERVOIR SIMULATION RESULTS,Minimum Production Temperature,,165.2,degC

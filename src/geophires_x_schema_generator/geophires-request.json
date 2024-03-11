@@ -181,7 +181,7 @@
     "Reservoir Heat Capacity": {
       "description": "Constant and uniform reservoir rock heat capacity",
       "type": "number",
-      "units": "J/kg/kelvin",
+      "units": "J/kg/K",
       "category": "Reservoir"
     },
     "Reservoir Density": {
@@ -193,7 +193,7 @@
     "Reservoir Thermal Conductivity": {
       "description": "Constant and uniform reservoir rock thermal conductivity",
       "type": "number",
-      "units": "watt/m/kelvin",
+      "units": "W/m/K",
       "category": "Reservoir"
     },
     "Reservoir Permeability": {
@@ -397,7 +397,7 @@
     "Water Thermal Conductivity": {
       "description": "Water Thermal Conductivity",
       "type": "number",
-      "units": "watt/m/kelvin",
+      "units": "W/m/K",
       "category": "Well Bores"
     },
     "Nonvertical Wellbore Diameter": {

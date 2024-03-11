@@ -46,7 +46,6 @@ class EconomicsCCUS(Economics):
 
         self.FixedInternalRate = self.ParameterDict[self.FixedInternalRate.Name] = floatParameter(
             "Fixed Internal Rate",
-            value=6.25,
             DefaultValue=6.25,
             Min=0.0,
             Max=100.0,
@@ -58,7 +57,6 @@ class EconomicsCCUS(Economics):
         )
         self.ConstructionYears = self.ParameterDict[self.ConstructionYears.Name] = intParameter(
             "Construction Years",
-            value=1,
             DefaultValue=1,
             AllowableRange=list(range(1, 15, 1)),
             UnitType=Units.NONE,
@@ -67,7 +65,6 @@ class EconomicsCCUS(Economics):
         )
         self.CCUSEndPrice = self.ParameterDict[self.CCUSEndPrice.Name] = floatParameter(
             "Ending CCUS Credit Value",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=1000,
@@ -77,7 +74,6 @@ class EconomicsCCUS(Economics):
         )
         self.CCUSEscalationStart = self.ParameterDict[self.CCUSEscalationStart.Name] = intParameter(
             "CCUS Escalation Start Year",
-            value=0,
             DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -88,7 +84,6 @@ class EconomicsCCUS(Economics):
             )
         self.CCUSEscalationRate = self.ParameterDict[self.CCUSEscalationRate.Name] = floatParameter(
             "CCUS Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -100,7 +95,6 @@ class EconomicsCCUS(Economics):
         )
         self.CCUSStartPrice = self.ParameterDict[self.CCUSStartPrice.Name] = floatParameter(
             "Starting CCUS Credit Value",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=1000,
@@ -110,7 +104,6 @@ class EconomicsCCUS(Economics):
         )
         self.CCUSGridCO2 = self.ParameterDict[self.CCUSGridCO2.Name] = floatParameter(
             "Current Grid CO2 production",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=50000,
@@ -120,7 +113,6 @@ class EconomicsCCUS(Economics):
         )
         self.HeatStartPrice = self.ParameterDict[self.HeatStartPrice.Name] = floatParameter(
             "Starting Heat Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -130,7 +122,6 @@ class EconomicsCCUS(Economics):
         )
         self.HeatEndPrice = self.ParameterDict[self.HeatEndPrice.Name] = floatParameter(
             "Ending Heat Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -140,7 +131,6 @@ class EconomicsCCUS(Economics):
         )
         self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name] = intParameter(
             "Heat Escalation Start Year",
-            value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -151,7 +141,6 @@ class EconomicsCCUS(Economics):
             )
         self.HeatEscalationRate = self.ParameterDict[self.HeatEscalationRate.Name] = floatParameter(
             "Heat Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -163,7 +152,6 @@ class EconomicsCCUS(Economics):
         )
         self.ElecStartPrice = self.ParameterDict[self.ElecStartPrice.Name] = floatParameter(
             "Starting Electricity Sale Price",
-            value=0.055,
             DefaultValue=0.055,
             Min=0,
             Max=100,
@@ -173,7 +161,6 @@ class EconomicsCCUS(Economics):
         )
         self.ElecEndPrice = self.ParameterDict[self.ElecEndPrice.Name] = floatParameter(
             "Ending Electricity Sale Price",
-            value=0.055,
             DefaultValue=0.055,
             Min=0,
             Max=100,
@@ -183,7 +170,6 @@ class EconomicsCCUS(Economics):
         )
         self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name] = intParameter(
             "Electricity Escalation Start Year",
-            value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -194,7 +180,6 @@ class EconomicsCCUS(Economics):
         )
         self.ElecEscalationRate = self.ParameterDict[self.ElecEscalationRate.Name] = floatParameter(
             "Electricity Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,

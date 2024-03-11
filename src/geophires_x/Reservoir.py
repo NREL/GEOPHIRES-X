@@ -48,7 +48,6 @@ class Reservoir:
 
         self.resoption = self.ParameterDict[self.resoption.Name] = intParameter(
             "Reservoir Model",
-            value=ReservoirModel.ANNUAL_PERCENTAGE,
             DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
             AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
@@ -60,7 +59,6 @@ class Reservoir:
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
             "Reservoir Depth",
-            value=3.0,
             DefaultValue=3.0,
             Min=0.1,
             Max=15,
@@ -88,7 +86,6 @@ class Reservoir:
 
         self.numseg = self.ParameterDict[self.numseg.Name] = intParameter(
             "Number of Segments",
-            value=1,
             DefaultValue=1,
             AllowableRange=[1, 2, 3, 4],
             UnitType=Units.NONE,
@@ -226,7 +223,6 @@ class Reservoir:
 
         self.resvoloption = self.ParameterDict[self.resvoloption.Name] = intParameter(
             "Reservoir Volume Option",
-            value=ReservoirVolume.RES_VOL_FRAC_NUM,
             DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM,
             AllowableRange=[1, 2, 3, 4],
             Required=True,
@@ -242,7 +238,6 @@ class Reservoir:
 
         self.fracshape = self.ParameterDict[self.fracshape.Name] = intParameter(
             "Fracture Shape",
-            value=FractureShape.CIRCULAR_AREA,
             DefaultValue=FractureShape.CIRCULAR_AREA,
             AllowableRange=[1, 2, 3, 4],
             UnitType=Units.NONE,
@@ -254,7 +249,6 @@ class Reservoir:
 
         self.fracarea = self.ParameterDict[self.fracarea.Name] = floatParameter(
             "Fracture Area",
-            value=250_000.0,
             DefaultValue=250_000.0,
             Min=1,
             Max=1E8,
@@ -267,7 +261,6 @@ class Reservoir:
 
         self.fracheight = self.ParameterDict[self.fracheight.Name] = floatParameter(
             "Fracture Height",
-            value=500.0,
             DefaultValue=500.0,
             Min=1,
             Max=10000,
@@ -280,7 +273,6 @@ class Reservoir:
 
         self.fracwidth = self.ParameterDict[self.fracwidth.Name] = floatParameter(
             "Fracture Width",
-            value=500.0,
             DefaultValue=500.0,
             Min=1,
             Max=10000,
@@ -293,7 +285,6 @@ class Reservoir:
 
         self.fracnumb = self.ParameterDict[self.fracnumb.Name] = intParameter(
             "Number of Fractures",
-            value=10,
             DefaultValue=10,
             AllowableRange=list(range(1, 21, 1)),
             UnitType=Units.NONE,
@@ -303,7 +294,6 @@ class Reservoir:
 
         self.fracsep = self.ParameterDict[self.fracsep.Name] = floatParameter(
             "Fracture Separation",
-            value=50.0,
             DefaultValue=50.0,
             Min=1,
             Max=1E4,
@@ -317,7 +307,6 @@ class Reservoir:
 
         self.resvol = self.ParameterDict[self.resvol.Name] = floatParameter(
             "Reservoir Volume",
-            value=125_000_000.0,
             DefaultValue=125_000_000.0,
             Min=10,
             Max=1E12,
@@ -330,7 +319,6 @@ class Reservoir:
 
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=0.99,
@@ -343,7 +331,6 @@ class Reservoir:
 
         self.cprock = self.ParameterDict[self.cprock.Name] = floatParameter(
             "Reservoir Heat Capacity",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=100,
             Max=10000,
@@ -357,7 +344,6 @@ class Reservoir:
 
         self.rhorock = self.ParameterDict[self.rhorock.Name] = floatParameter(
             "Reservoir Density",
-            value=2700.0,
             DefaultValue=2700.0,
             Min=100,
             Max=10000,
@@ -371,7 +357,6 @@ class Reservoir:
 
         self.krock = self.ParameterDict[self.krock.Name] = floatParameter(
             "Reservoir Thermal Conductivity",
-            value=3.0,
             DefaultValue=3.0,
             Min=0.01,
             Max=100,
@@ -384,7 +369,6 @@ class Reservoir:
 
         self.permrock = self.ParameterDict[self.permrock.Name] = floatParameter(
             "Reservoir Permeability",
-            value=1E-13,
             DefaultValue=1E-13,
             Min=1E-20,
             Max=1E-5,
@@ -397,7 +381,6 @@ class Reservoir:
 
         self.porrock = self.ParameterDict[self.porrock.Name] = floatParameter(
             "Reservoir Porosity",
-            value=0.04,
             DefaultValue=0.04,
             Min=0.001,
             Max=0.99,
@@ -410,7 +393,6 @@ class Reservoir:
 
         self.Tsurf = self.ParameterDict[self.Tsurf.Name] = floatParameter(
             "Surface Temperature",
-            value=15.0,
             DefaultValue=15.0,
             Min=-50,
             Max=50,

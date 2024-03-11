@@ -231,7 +231,7 @@ class HeatUnit(str, Enum):
 
 class HeatCapacityUnit(str, Enum):
     """Heat Capacity Units"""
-    JPERKGPERK = "J/kg/kelvin"
+    JPERKGPERK = "J/kg/K"
     KJPERKM3C = "kJ/km**3C"
     kJPERKGC = "kJ/kgC"
 
@@ -248,7 +248,7 @@ class EnthalpyUnit(str, Enum):
 
 class ThermalConductivityUnit(str, Enum):
     """Thermal Conductivity Units"""
-    WPERMPERK = "watt/m/kelvin"
+    WPERMPERK = "W/m/K"
 
 
 class TimeUnit(str, Enum):

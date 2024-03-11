@@ -36,7 +36,6 @@ class SFReservoir(Reservoir):
         # and set all these parameters to your class.
         self.drawdp = self.ParameterDict[self.drawdp.Name] = floatParameter(
             "Drawdown Parameter",
-            value=0.005,
             DefaultValue=0.005,
             Min=0,
             Max=0.2,

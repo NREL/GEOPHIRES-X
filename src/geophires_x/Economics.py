@@ -413,7 +413,6 @@ class Economics:
         # This is the default.
         self.econmodel = self.ParameterDict[self.econmodel.Name] = intParameter(
             "Economic Model",
-            value=EconomicModel.STANDARDIZED_LEVELIZED_COST,
             DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
             AllowableRange=[1, 2, 3, 4],
             Required=True,
@@ -423,7 +422,6 @@ class Economics:
         )
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -436,7 +434,6 @@ class Economics:
         )
         self.ccstimadjfactor = self.ParameterDict[self.ccstimadjfactor.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -449,7 +446,6 @@ class Economics:
         )
         self.ccexplfixed = self.ParameterDict[self.ccexplfixed.Name] = floatParameter(
             "Exploration Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -462,7 +458,6 @@ class Economics:
         )
         self.ccexpladjfactor = self.ParameterDict[self.ccexpladjfactor.Name] = floatParameter(
             "Exploration Capital Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -487,7 +482,6 @@ class Economics:
         )
         self.ccwelladjfactor = self.ParameterDict[self.ccwelladjfactor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -500,7 +494,6 @@ class Economics:
         )
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
             "Wellfield O&M Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -513,7 +506,6 @@ class Economics:
         )
         self.oamwelladjfactor = self.ParameterDict[self.oamwelladjfactor.Name] = floatParameter(
             "Wellfield O&M Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -526,7 +518,6 @@ class Economics:
         )
         self.ccplantfixed = self.ParameterDict[self.ccplantfixed.Name] = floatParameter(
             "Surface Plant Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=1000,
@@ -539,7 +530,6 @@ class Economics:
         )
         self.ccplantadjfactor = self.ParameterDict[self.ccplantadjfactor.Name] = floatParameter(
             "Surface Plant Capital Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -552,7 +542,6 @@ class Economics:
         )
         self.ccgathfixed = self.ParameterDict[self.ccgathfixed.Name] = floatParameter(
             "Field Gathering System Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -565,7 +554,6 @@ class Economics:
         )
         self.ccgathadjfactor = self.ParameterDict[self.ccgathadjfactor.Name] = floatParameter(
             "Field Gathering System Capital Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -578,7 +566,6 @@ class Economics:
         )
         self.oamplantfixed = self.ParameterDict[self.oamplantfixed.Name] = floatParameter(
             "Surface Plant O&M Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -591,7 +578,6 @@ class Economics:
         )
         self.oamplantadjfactor = self.ParameterDict[self.oamplantadjfactor.Name] = floatParameter(
             "Surface Plant O&M Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -604,7 +590,6 @@ class Economics:
         )
         self.oamwaterfixed = self.ParameterDict[self.oamwaterfixed.Name] = floatParameter(
             "Water Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -617,7 +602,6 @@ class Economics:
         )
         self.oamwateradjfactor = self.ParameterDict[self.oamwateradjfactor.Name] = floatParameter(
             "Water Cost Adjustment Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0,
             Max=10,
@@ -630,7 +614,6 @@ class Economics:
         )
         self.totalcapcost = self.ParameterDict[self.totalcapcost.Name] = floatParameter(
             "Total Capital Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=1000,
@@ -645,7 +628,6 @@ class Economics:
         )
         self.oamtotalfixed = self.ParameterDict[self.oamtotalfixed.Name] = floatParameter(
             "Total O&M Cost",
-            value=-1.0,
             DefaultValue=-1.0,
             Min=0,
             Max=100,
@@ -659,7 +641,6 @@ class Economics:
         )
         self.timestepsperyear = self.ParameterDict[self.timestepsperyear.Name] = intParameter(
             "Time steps per year",
-            value=4,
             DefaultValue=4,
             AllowableRange=list(range(1, 101, 1)),
             UnitType=Units.NONE,
@@ -669,7 +650,6 @@ class Economics:
         )
         self.FCR = self.ParameterDict[self.FCR.Name] = floatParameter(
             "Fixed Charge Rate",
-            value=0.1,
             DefaultValue=0.1,
             Min=0.0,
             Max=1.0,
@@ -681,7 +661,6 @@ class Economics:
         )
         self.discountrate = self.ParameterDict[self.discountrate.Name] = floatParameter(
             "Discount Rate",
-            value=0.07,
             DefaultValue=0.07,
             Min=0.0,
             Max=1.0,
@@ -693,7 +672,6 @@ class Economics:
         )
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
-            value=0.5,
             DefaultValue=0.5,
             Min=0.0,
             Max=1.0,
@@ -705,7 +683,6 @@ class Economics:
         )
         self.BIR = self.ParameterDict[self.BIR.Name] = floatParameter(
             "Inflated Bond Interest Rate",
-            value=0.05,
             DefaultValue=0.05,
             Min=0.0,
             Max=1.0,
@@ -717,7 +694,6 @@ class Economics:
         )
         self.EIR = self.ParameterDict[self.EIR.Name] = floatParameter(
             "Inflated Equity Interest Rate",
-            value=0.1,
             DefaultValue=0.1,
             Min=0.0,
             Max=1.0,
@@ -729,7 +705,6 @@ class Economics:
         )
         self.RINFL = self.ParameterDict[self.RINFL.Name] = floatParameter(
             "Inflation Rate",
-            value=0.02,
             DefaultValue=0.02,
             Min=0.0,
             Max=1.0,
@@ -741,7 +716,6 @@ class Economics:
         )
         self.CTR = self.ParameterDict[self.CTR.Name] = floatParameter(
             "Combined Income Tax Rate",
-            value=0.02,
             DefaultValue=0.02,
             Min=0.0,
             Max=1.0,
@@ -753,7 +727,6 @@ class Economics:
         )
         self.GTR = self.ParameterDict[self.GTR.Name] = floatParameter(
             "Gross Revenue Tax Rate",
-            value=0.02,
             DefaultValue=0.02,
             Min=0.0,
             Max=1.0,
@@ -765,7 +738,6 @@ class Economics:
         )
         self.RITC = self.ParameterDict[self.RITC.Name] = floatParameter(
             "Investment Tax Credit Rate",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=1.0,
@@ -777,7 +749,6 @@ class Economics:
         )
         self.PTR = self.ParameterDict[self.PTR.Name] = floatParameter(
             "Property Tax Rate",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=1.0,
@@ -789,7 +760,6 @@ class Economics:
         )
         self.inflrateconstruction = self.ParameterDict[self.inflrateconstruction.Name] = floatParameter(
             "Inflation Rate During Construction",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=1.0,
@@ -827,7 +797,6 @@ class Economics:
         )
         self.DoSDACGTCalculations = self.ParameterDict[self.DoSDACGTCalculations.Name] = boolParameter(
             "Do S-DAC-GT Calculations",
-            value=False,
             DefaultValue=False,
             UnitType=Units.NONE,
             Required=False,
@@ -836,7 +805,6 @@ class Economics:
         )
         self.Vertical_drilling_cost_per_m = self.ParameterDict[self.Vertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Vertical Drilling Costs",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=0.0,
             Max=10_000.0,
@@ -850,7 +818,6 @@ class Economics:
         self.Nonvertical_drilling_cost_per_m = self.ParameterDict[
             self.Nonvertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Nonvertical Drilling Costs",
-            value=1300.0,
             DefaultValue=1300.0,
             Min=0.0,
             Max=15_000.0,
@@ -908,7 +875,6 @@ class Economics:
         # district heating
         self.ngprice = self.ParameterDict[self.ngprice.Name] = floatParameter(
             "Peaking Fuel Cost Rate",
-            value=0.034,
             DefaultValue=0.034,
             Min=0.0,
             Max=1.0,
@@ -920,7 +886,6 @@ class Economics:
         )
         self.peakingboilerefficiency = self.ParameterDict[self.peakingboilerefficiency.Name] = floatParameter(
             "Peaking Boiler Efficiency",
-            value=0.85,
             DefaultValue=0.85,
             Min=0,
             Max=1,
@@ -934,7 +899,6 @@ class Economics:
         )
         self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
             "District Heating Piping Cost Rate",
-            value=1200,
             DefaultValue=1200,
             Min=0,
             Max=10000,
@@ -948,7 +912,6 @@ class Economics:
         )
         self.dhtotaldistrictnetworkcost = self.ParameterDict[self.dhtotaldistrictnetworkcost.Name] = floatParameter(
             "Total District Heating Network Cost",
-            value=10,
             DefaultValue=10,
             Min=0,
             Max=1000,
@@ -962,7 +925,6 @@ class Economics:
         )
         self.dhoandmcost = self.ParameterDict[self.dhoandmcost.Name] = floatParameter(
             "District Heating O&M Cost",
-            value=1,
             DefaultValue=1,
             Min=0,
             Max=100,
@@ -974,7 +936,6 @@ class Economics:
         )
         self.dhpipinglength = self.ParameterDict[self.dhpipinglength.Name] = floatParameter(
             "District Heating Network Piping Length",
-            value=10.0,
             DefaultValue=10.0,
             Min=0,
             Max=1000,
@@ -986,7 +947,6 @@ class Economics:
         )
         self.dhroadlength = self.ParameterDict[self.dhroadlength.Name] = floatParameter(
             "District Heating Road Length",
-            value=10.0,
             DefaultValue=10.0,
             Min=0,
             Max=1000,
@@ -998,7 +958,6 @@ class Economics:
         )
         self.dhlandarea = self.ParameterDict[self.dhlandarea.Name] = floatParameter(
             "District Heating Land Area",
-            value=10.0,
             DefaultValue=10.0,
             Min=0,
             Max=1000,
@@ -1010,7 +969,6 @@ class Economics:
         )
         self.dhpopulation = self.ParameterDict[self.dhpopulation.Name] = floatParameter(
             "District Heating Population",
-            value=200,
             DefaultValue=200,
             Min=0,
             Max=1000000,
@@ -1021,7 +979,6 @@ class Economics:
 
         self.HeatStartPrice = self.ParameterDict[self.HeatStartPrice.Name] = floatParameter(
             "Starting Heat Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -1031,7 +988,6 @@ class Economics:
         )
         self.HeatEndPrice = self.ParameterDict[self.HeatEndPrice.Name] = floatParameter(
             "Ending Heat Sale Price",
-            value=0.025,
             DefaultValue=0.025,
             Min=0,
             Max=100,
@@ -1041,7 +997,6 @@ class Economics:
         )
         self.HeatEscalationStart = self.ParameterDict[self.HeatEscalationStart.Name] = intParameter(
             "Heat Escalation Start Year",
-            value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -1052,7 +1007,6 @@ class Economics:
         )
         self.HeatEscalationRate = self.ParameterDict[self.HeatEscalationRate.Name] = floatParameter(
             "Heat Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -1064,7 +1018,6 @@ class Economics:
         )
         self.ElecStartPrice = self.ParameterDict[self.ElecStartPrice.Name] = floatParameter(
             "Starting Electricity Sale Price",
-            value=0.055,
             DefaultValue=0.055,
             Min=0,
             Max=100,
@@ -1074,7 +1027,6 @@ class Economics:
         )
         self.ElecEndPrice = self.ParameterDict[self.ElecEndPrice.Name] = floatParameter(
             "Ending Electricity Sale Price",
-            value=0.055,
             DefaultValue=0.055,
             Min=0,
             Max=100,
@@ -1084,7 +1036,6 @@ class Economics:
         )
         self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name] = intParameter(
             "Electricity Escalation Start Year",
-            value=5,
             DefaultValue=5,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.TIME,
@@ -1095,7 +1046,6 @@ class Economics:
         )
         self.ElecEscalationRate = self.ParameterDict[self.ElecEscalationRate.Name] = floatParameter(
             "Electricity Escalation Rate Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -1208,7 +1158,6 @@ class Economics:
 
         self.AnnualLicenseEtc = self.ParameterDict[self.AnnualLicenseEtc.Name] = floatParameter(
             "Annual License Fees Etc",
-            value=0.0,
             DefaultValue=0.0,
             Min=-1000.0,
             Max=1000.0,
@@ -1234,7 +1183,6 @@ class Economics:
         )
         self.TaxRelief = self.ParameterDict[self.TaxRelief.Name] = floatParameter(
             "Tax Relief Per Year",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=100.0,
@@ -1254,7 +1202,6 @@ class Economics:
         )
         self.FixedInternalRate = self.ParameterDict[self.FixedInternalRate.Name] = floatParameter(
             "Fixed Internal Rate",
-            value=6.25,
             DefaultValue=6.25,
             Min=0.0,
             Max=100.0,

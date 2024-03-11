@@ -53,7 +53,6 @@ class AGSEconomics(Economics.Economics):
 
         self.O_and_M_cost_plant = self.ParameterDict[self.O_and_M_cost_plant.Name] = floatParameter(
             "Operation & Maintenance Cost of Surface Plant",
-            value=0.015,
             DefaultValue=0.015,
             Min=0.0,
             Max=0.2,
@@ -66,7 +65,6 @@ class AGSEconomics(Economics.Economics):
         self.Direct_use_heat_cost_per_kWth = self.ParameterDict[
             self.Direct_use_heat_cost_per_kWth.Name] = floatParameter(
             "Capital Cost for Surface Plant for Direct-use System",
-            value=100.0,
             DefaultValue=100.0,
             Min=0.0,
             Max=10000.0,
@@ -77,7 +75,7 @@ class AGSEconomics(Economics.Economics):
             ErrMessage="assume default Capital cost for surface plant for direct-use system (100 $/kWth)"
         )
         self.Power_plant_cost_per_kWe = self.ParameterDict[self.Power_plant_cost_per_kWe.Name] = floatParameter(
-            "Capital Cost for Power Plant for Electricity Generation", value=3000.0,
+            "Capital Cost for Power Plant for Electricity Generation",
             DefaultValue=3000.0,
             Min=0.0,
             Max=10000.0,

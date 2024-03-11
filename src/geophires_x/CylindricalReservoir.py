@@ -43,7 +43,6 @@ class CylindricalReservoir(Reservoir):
 
         self.InputDepth = self.ParameterDict[self.InputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Input Depth",
-            value=3.0,
             DefaultValue=3.0,
             Min=0.1,
             Max=15,
@@ -57,7 +56,6 @@ class CylindricalReservoir(Reservoir):
 
         self.OutputDepth = self.ParameterDict[self.OutputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Output Depth",
-            value=self.InputDepth.value,
             DefaultValue=self.InputDepth.value,
             Min=0.1,
             Max=15,
@@ -70,7 +68,6 @@ class CylindricalReservoir(Reservoir):
         )
         self.Length = self.ParameterDict[self.Length.Name] = floatParameter(
             "Cylindrical Reservoir Length",
-            value=4.0,
             DefaultValue=4.0,
             Min=0.1,
             Max=10.0,
@@ -83,7 +80,6 @@ class CylindricalReservoir(Reservoir):
         )
         self.RadiusOfEffect = self.ParameterDict[self.RadiusOfEffect.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect",
-            value=30.0,
             DefaultValue=30.0,
             Min=0,
             Max=1000.0,
@@ -96,7 +92,6 @@ class CylindricalReservoir(Reservoir):
         )
         self.RadiusOfEffectFactor = self.ParameterDict[self.RadiusOfEffectFactor.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect Factor",
-            value=1.0,
             DefaultValue=1.0,
             Min=0.0,
             Max=10.0,
@@ -114,7 +109,6 @@ class CylindricalReservoir(Reservoir):
         # internal values required for calculations
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
             "Drilled length",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=150,
@@ -127,7 +121,6 @@ class CylindricalReservoir(Reservoir):
         )
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=0.99,

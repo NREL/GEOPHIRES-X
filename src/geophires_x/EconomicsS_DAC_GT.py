@@ -50,7 +50,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         self.OutputParameterDict = {}
         self.wacc = self.ParameterDict[self.wacc.Name] = floatParameter(
             "WACC",
-            value=10.0,
             DefaultValue=10.0,
             Min=0.1,
             Max=30.0,
@@ -62,7 +61,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.CAPEX = self.ParameterDict[self.CAPEX.Name] = floatParameter(
             "S-DAC-GT CAPEX",
-            value=1379.0,
             DefaultValue=1379.0,
             Min=100.0,
             Max=5000.0,
@@ -74,7 +72,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.OPEX = self.ParameterDict[self.OPEX.Name] = floatParameter(
             "S-DAC-GT OPEX",
-            value=56.0,
             DefaultValue=56.0,
             Min=10.0,
             Max=500.0,
@@ -86,7 +83,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.elec = self.ParameterDict[self.elec.Name] = floatParameter(
             "S-DAC-GT Electrical Energy",
-            value=916.0,
             DefaultValue=916.0,
             Min=100.0, Max=5000.0,
             UnitType=Units.ENERGYPERCO2,
@@ -97,7 +93,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.therm = self.ParameterDict[self.therm.Name] = floatParameter(
             "S-DAC-GT Thermal Energy",
-            value=1447.0,
             DefaultValue=1447.0,
             Min=100.0,
             Max=5000.0,
@@ -109,7 +104,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.NG_price = self.ParameterDict[self.NG_price.Name] = floatParameter(
             "S-DAC-GT Natural Gas Price",
-            value=5.0,
             DefaultValue=5.0,
             Min=0.5,
             Max=500.0,
@@ -121,7 +115,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.power_co2intensity = self.ParameterDict[self.power_co2intensity.Name] = floatParameter(
             "S-DAC-GT CO2 Intensity of Electricity",
-            value=0.4,
             DefaultValue=0.4,
             Min=0.0,
             Max=1.0,
@@ -133,7 +126,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.NG_co2intensity = self.ParameterDict[self.NG_co2intensity.Name] = floatParameter(
             "S-DAC-GT CO2 Intensity of Natural Gas",
-            value=0.194965384,
             DefaultValue=0.194965384,
             Min=0.0,
             Max=1.0,

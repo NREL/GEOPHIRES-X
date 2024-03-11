@@ -250,7 +250,6 @@ class SurfacePlant:
         )
         self.pump_efficiency = self.ParameterDict[self.pump_efficiency.Name] = floatParameter(
             "Circulation Pump Efficiency",
-            value=0.75,
             DefaultValue=0.75,
             Min=0.1,
             Max=1.0,
@@ -263,7 +262,6 @@ class SurfacePlant:
         )
         self.utilization_factor = self.ParameterDict[self.utilization_factor.Name] = floatParameter(
             "Utilization Factor",
-            value=0.9,
             DefaultValue=0.9,
             Min=0.1,
             Max=1.0,
@@ -276,7 +274,6 @@ class SurfacePlant:
         )
         self.enduse_efficiency_factor = self.ParameterDict[self.enduse_efficiency_factor.Name] = floatParameter(
             "End-Use Efficiency Factor",
-            value=0.9,
             DefaultValue=0.9,
             Min=0.1,
             Max=1.0,
@@ -288,7 +285,6 @@ class SurfacePlant:
         )
         self.chp_fraction = self.ParameterDict[self.chp_fraction.Name] = floatParameter(
             "CHP Fraction",
-            value=0.5,
             DefaultValue=0.5,
             Min=0.0001,
             Max=0.9999,
@@ -301,7 +297,6 @@ class SurfacePlant:
         )
         self.T_chp_bottom = self.ParameterDict[self.T_chp_bottom.Name] = floatParameter(
             "CHP Bottoming Entering Temperature",
-            value=150.0,
             DefaultValue=150.0,
             Min=0,
             Max=400,
@@ -313,7 +308,6 @@ class SurfacePlant:
         )
         self.ambient_temperature = self.ParameterDict[self.ambient_temperature.Name] = floatParameter(
             "Ambient Temperature",
-            value=15.0,
             DefaultValue=15.0,
             Min=-50,
             Max=50,
@@ -325,7 +319,6 @@ class SurfacePlant:
         )
         self.plant_lifetime = self.ParameterDict[self.plant_lifetime.Name] = intParameter(
             "Plant Lifetime",
-            value=30,
             DefaultValue=30,
             AllowableRange=list(range(1, 101, 1)),
             UnitType=Units.TIME,
@@ -337,7 +330,6 @@ class SurfacePlant:
         )
         self.piping_length = self.ParameterDict[self.piping_length.Name] = floatParameter(
             "Surface Piping Length",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=100,
@@ -348,7 +340,6 @@ class SurfacePlant:
         )
         self.plant_outlet_pressure = self.ParameterDict[self.plant_outlet_pressure.Name] = floatParameter(
             "Plant Outlet Pressure",
-            value=100.0,
             DefaultValue=100.0,
             Min=0.01,
             Max=10000.0,
@@ -360,7 +351,6 @@ class SurfacePlant:
         )
         self.electricity_cost_to_buy = self.ParameterDict[self.electricity_cost_to_buy.Name] = floatParameter(
             "Electricity Rate",
-            value=0.07,
             DefaultValue=0.07,
             Min=0.0,
             Max=1.0,
@@ -373,7 +363,6 @@ class SurfacePlant:
         )
         self.heat_price = self.ParameterDict[self.heat_price.Name] = floatParameter(
             "Heat Rate",
-            value=0.02,
             DefaultValue=0.02,
             Min=0.0,
             Max=1.0,
@@ -385,7 +374,6 @@ class SurfacePlant:
         )
         self.construction_years = self.ParameterDict[self.construction_years.Name] = intParameter(
             "Construction Years",
-            value=1,
             DefaultValue=1,
             AllowableRange=list(range(1, 15, 1)),
             UnitType=Units.NONE,

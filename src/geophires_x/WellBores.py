@@ -573,7 +573,6 @@ class WellBores:
 
         self.nprod = self.ParameterDict[self.nprod.Name] = intParameter(
             "Number of Production Wells",
-            value=2,
             DefaultValue=2,
             AllowableRange=list(range(1, 201, 1)),
             UnitType=Units.NONE,
@@ -583,7 +582,6 @@ class WellBores:
         )
         self.ninj = self.ParameterDict[self.ninj.Name] = intParameter(
             "Number of Injection Wells",
-            value=2,
             DefaultValue=2,
             AllowableRange=list(range(0, 201, 1)),
             UnitType=Units.NONE,
@@ -593,7 +591,6 @@ class WellBores:
         )
         self.prodwelldiam = self.ParameterDict[self.prodwelldiam.Name] = floatParameter(
             "Production Well Diameter",
-            value=8.0,
             DefaultValue=8.0,
             Min=1.,
             Max=30.,
@@ -607,7 +604,6 @@ class WellBores:
         )
         self.injwelldiam = self.ParameterDict[self.injwelldiam.Name] = floatParameter(
             "Injection Well Diameter",
-            value=8.0,
             DefaultValue=8.0,
             Min=1.,
             Max=30.,
@@ -621,7 +617,6 @@ class WellBores:
         )
         self.rameyoptionprod = self.ParameterDict[self.rameyoptionprod.Name] = boolParameter(
             "Ramey Production Wellbore Model",
-            value=True,
             DefaultValue=True,
             UnitType=Units.NONE,
             Required=True,
@@ -631,7 +626,6 @@ class WellBores:
         )
         self.tempdropprod = self.ParameterDict[self.tempdropprod.Name] = floatParameter(
             "Production Wellbore Temperature Drop",
-            value=5.0,
             DefaultValue=5.0,
             Min=-5.,
             Max=50.,
@@ -643,7 +637,6 @@ class WellBores:
         )
         self.tempgaininj = self.ParameterDict[self.tempgaininj.Name] = floatParameter(
             "Injection Wellbore Temperature Gain",
-            value=0.0,
             DefaultValue=0.0,
             Min=-5.,
             Max=50.,
@@ -655,7 +648,6 @@ class WellBores:
         )
         self.prodwellflowrate = self.ParameterDict[self.prodwellflowrate.Name] = floatParameter(
             "Production Flow Rate per Well",
-            value=50.0,
             DefaultValue=50.0,
             Min=1.,
             Max=500.,
@@ -667,7 +659,6 @@ class WellBores:
         )
         self.impedance = self.ParameterDict[self.impedance.Name] = floatParameter(
             "Reservoir Impedance",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=1E-4,
             Max=1E4,
@@ -681,7 +672,6 @@ class WellBores:
         )
         self.wellsep = self.ParameterDict[self.wellsep.Name] = floatParameter(
             "Well Separation",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=10.,
             Max=10000.,
@@ -693,7 +683,6 @@ class WellBores:
         )
         self.Tinj = self.ParameterDict[self.Tinj.Name] = floatParameter(
             "Injection Temperature",
-            value=70.0,
             DefaultValue=70.0,
             Min=0.,
             Max=200.,
@@ -718,7 +707,6 @@ class WellBores:
         )
         self.ppwellhead = self.ParameterDict[self.ppwellhead.Name] = floatParameter(
             "Production Wellhead Pressure",
-            value=101.3200 + 344.7,
             DefaultValue=101.3200 + 344.7,
             Min=0.0,
             Max=1E4,
@@ -730,7 +718,6 @@ class WellBores:
         )
         self.II = self.ParameterDict[self.II.Name] = floatParameter(
             "Injectivity Index",
-            value=10.0,
             DefaultValue=10.0,
             Min=1E-2,
             Max=1E4,
@@ -743,7 +730,6 @@ class WellBores:
         )
         self.PI = self.ParameterDict[self.PI.Name] = floatParameter(
             "Productivity Index",
-            value=10.0,
             DefaultValue=10.0,
             Min=1E-2,
             Max=1E4,
@@ -756,7 +742,6 @@ class WellBores:
         )
         self.maxdrawdown = self.ParameterDict[self.maxdrawdown.Name] = floatParameter(
             "Maximum Drawdown",
-            value=1.0,
             DefaultValue=1.0,
             Min=0.0,
             Max=1.000001,
@@ -771,7 +756,6 @@ class WellBores:
         )
         self.IsAGS = self.ParameterDict[self.IsAGS.Name] = boolParameter(
             "Is AGS",
-            value=False,
             DefaultValue=False,
             UnitType=Units.NONE,
             Required=False,

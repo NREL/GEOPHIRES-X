@@ -109,6 +109,12 @@ bin edges: [-43.34   -43.2258 -43.1116 -42.9974 -42.8832 -42.769  -42.6548 -42.5
 
 ```
 
+You may also run from the command line:
+
+```
+python -mgeophires_monte_carlo GEOPHIRESv3.py GEOPHIRES-example1.txt MC_GEOPHIRES_Settings_file.txt MC_GEOPHIRES_Result.txt
+```
+
 ## Documentation
 
 See [module documentation](reference/geophires_monte_carlo.html)

@@ -73,8 +73,8 @@ Simulation Metadata
       Productivity Index:                                    10.00 kg/sec/bar
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   3000.00 kg/m**3
-      Reservoir thermal conductivity:                         3.00 watt/m/kelvin
-      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+      Reservoir thermal conductivity:                         3.00 W/m/K
+      Reservoir heat capacity:                             1000.00 J/kg/K
 
 
                            ***RESERVOIR SIMULATION RESULTS***

@@ -23,7 +23,7 @@ Simulation Metadata
       Geothermal Gradient:                                   0.0600 degC/m
       Wellbore Diameter:                                      8.5000 in
       Injection Temperature:                                 60.0 degC
-      Thermal Conductivity:                                   3.00 watt/m/kelvin
+      Thermal Conductivity:                                   3.00 W/m/K
  ### Reservoir Simulation Results ###
       Average Production Temperature:                       105.9 degC
       Average Production Pressure:                          139.9 bar

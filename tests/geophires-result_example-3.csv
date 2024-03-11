@@ -37,8 +37,8 @@ RESERVOIR PARAMETERS,Reservoir hydrostatic pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Plant outlet pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Injectivity Index,,5.0,kg/sec/bar
 RESERVOIR PARAMETERS,Reservoir density,,3000.0,kg/m**3
-RESERVOIR PARAMETERS,Reservoir thermal conductivity,,3.0,watt/m/kelvin
-RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/kelvin
+RESERVOIR PARAMETERS,Reservoir thermal conductivity,,3.0,W/m/K
+RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/K
 RESERVOIR SIMULATION RESULTS,Maximum Production Temperature,,227.9,degC
 RESERVOIR SIMULATION RESULTS,Average Production Temperature,,220.9,degC
 RESERVOIR SIMULATION RESULTS,Minimum Production Temperature,,207.4,degC

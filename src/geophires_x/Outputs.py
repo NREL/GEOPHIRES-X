@@ -292,7 +292,7 @@ class Outputs:
 
                     f.write(f"      Reservoir density:                                {model.reserv.rhorock.value:10.2f} " + model.reserv.rhorock.CurrentUnits.value + NL)
                     if model.wellbores.rameyoptionprod.value or model.reserv.resoption.value in [ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP, ReservoirModel.SINGLE_FRACTURE, ReservoirModel.TOUGH2_SIMULATOR]:
-                        f.write(f"      Reservoir thermal conductivity:                   {model.reserv.krock.value:10.2f} " + model.reserv.krock.CurrentUnits.value + NL)
+                        f.write(f"      Reservoir thermal conductivity:                   {model.reserv.krock.value:10.2f} {model.reserv.krock.CurrentUnits.value}{NL}")
                     f.write(f"      Reservoir heat capacity:                          {model.reserv.cprock.value:10.2f} " + model.reserv.cprock.CurrentUnits.value + NL)
                     if model.reserv.resoption.value == ReservoirModel.LINEAR_HEAT_SWEEP or (model.reserv.resoption.value == ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model):
                         f.write(f"      Reservoir porosity:                               {model.reserv.porrock.value*100:10.2f} " + model.reserv.porrock.CurrentUnits.value + NL)

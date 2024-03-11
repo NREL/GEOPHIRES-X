@@ -240,11 +240,6 @@ def main(command_line_args=None):
     # keep track of execution time
     tic = time.time()
 
-    # set the starting directory to be the directory that this file is in
-    working_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(working_dir)
-    working_dir = working_dir + os.sep
-
     # get the values off the command line
     parser = argparse.ArgumentParser()
     parser.add_argument('Code_File', help='Code File')
@@ -268,7 +263,11 @@ def main(command_line_args=None):
     inputs = []
     outputs = []
     iterations = 0
-    output_file = args.MC_OUTPUT_FILE if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None else ''
+    output_file = (
+        args.MC_OUTPUT_FILE
+        if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None
+        else str(Path(Path(args.Input_file).parent, 'MC_Result.txt').absolute())
+    )
     python_path = 'python'
 
     for line in flist:
@@ -311,6 +310,11 @@ def main(command_line_args=None):
     # write the header so it is easy to import and analyze in Excel
     with open(output_file, 'w') as f:
         f.write(s)
+
+    # set the starting directory to be the directory that this file is in
+    working_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(working_dir)
+    working_dir = working_dir + os.sep
 
     # build the args list
     pass_list = [inputs, outputs, args, output_file, working_dir, python_path]  # this list never changes

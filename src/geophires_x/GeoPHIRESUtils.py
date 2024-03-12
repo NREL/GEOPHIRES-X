@@ -244,37 +244,30 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache
-def vapor_pressure_water_kPa(Twater_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
+def vapor_pressure_water_kPa(temperature_degC: float) -> float:
     """
     Calculate the vapor pressure of water as a function of temperature.
 
     Args:
-        Twater_degC: the temperature of water in degrees C
-        pressure: Pressure - should be provided as a Pint quantity that knows its units
+        temperature_degC: the temperature of water in degrees C
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
-        ValueError: If Twater_degC is not a float or convertible to float.
-        ValueError: If Twater_degC is below 0.
+        ValueError: If temperature_degC is not a float or convertible to float.
+        ValueError: If temperature_degC is below 0.
     """
 
-    if not isinstance(Twater_degC, (int, float)):
-        raise ValueError(f'Twater_degC ({Twater_degC}) must be a number')
-    if Twater_degC < 0:
-        raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
+    if not isinstance(temperature_degC, (int, float)):
+        raise ValueError(f'Input temperature ({temperature_degC}) must be a number')
+    if temperature_degC < 0:
+        raise ValueError(f'Input temperature ({temperature_degC}C) must be greater than or equal to 0')
 
     try:
-        if pressure is not None:
-            return (quantity(
-                CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water'), 'Pa')
-                    .to('kPa').magnitude)
-        else:
-            _logger.warning(f'vapor_pressure_water: No pressure provided, using vapor quality=0 instead')
-            return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
+        return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water'), 'Pa')
                     .to('kPa').magnitude)
 
     except (NotImplementedError, ValueError) as e:
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+        raise ValueError(f'Input temperature ({temperature_degC}C) is out of range or otherwise not implemented') from e
 
 
 @lru_cache

@@ -362,10 +362,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         Pexcess_kPa = 344.7  # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock_degC,
-            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
-        ) + Pexcess_kPa
+        Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
@@ -411,7 +408,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         PumpingPower = PumpingPowerProd
 
     # negative pumping power values become zero (b/c we are not generating electricity)
-    PumpingPower = [0. if x < 0. else x for x in PumpingPower]
+    PumpingPower = [max(x, 0.) for x in PumpingPower]
 
     return PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead
 
@@ -495,10 +492,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         Pexcess_kPa = 344.7 # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock_degC,
-            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
-        ) + Pexcess_kPa
+        Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]

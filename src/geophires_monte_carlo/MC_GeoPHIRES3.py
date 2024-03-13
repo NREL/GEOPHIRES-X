@@ -26,9 +26,7 @@ from rich.console import Console
 from rich.table import Table
 
 from geophires_monte_carlo.common import _get_logger
-from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import Parameter
-from geophires_x.Parameter import floatParameter
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -205,7 +203,7 @@ def render_Parameter_default(p: Parameter) -> str:
     return render_default(p.value, p.CurrentUnits.value)
 
 
-def render_parameter_scientific(p: floatParameter | OutputParameter) -> str:
+def render_parameter_scientific(p: Parameter) -> str:
     """
     RenderScientific - render a float as a string in scientific notation with 2 decimal places
     and the unit appended to it if it is not an empty string (the default) by calling the render_scientific base function

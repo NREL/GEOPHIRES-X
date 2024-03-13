@@ -26,6 +26,7 @@ from geophires_x.Parameter import ConvertOutputUnits
 from geophires_x.Parameter import ConvertUnitsBack
 from geophires_x.Parameter import LookupUnits
 from geophires_x.Parameter import OutputParameter
+from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import ReadParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
@@ -742,10 +743,10 @@ class HIP_RA:
             nl = '\n'
             outputfile = 'HIP.out' if len(sys.argv) <= 2 else sys.argv[2]
 
-            def render_default(p: floatParameter | OutputParameter) -> str:
+            def render_default(p: Parameter) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
 
-            def render_scientific(p: floatParameter | OutputParameter) -> str:
+            def render_scientific(p: Parameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
             summary_of_results = {}

@@ -811,10 +811,10 @@ class HIP_RA_X:
         try:
             outputfile = 'HIP.out' if len(sys.argv) <= 2 else sys.argv[2]
 
-            def render_default(p: floatParameter | OutputParameter) -> str:
+            def render_default(p: Parameter) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
 
-            def render_scientific(p: floatParameter | OutputParameter) -> str:
+            def render_scientific(p: Parameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
             summary_of_inputs = {}

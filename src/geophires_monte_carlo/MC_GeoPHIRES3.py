@@ -27,6 +27,7 @@ from rich.table import Table
 
 from geophires_monte_carlo.common import _get_logger
 from geophires_x.Parameter import OutputParameter
+from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import floatParameter
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
@@ -192,7 +193,7 @@ def render_scientific(p: float, unit: str = '') -> str:
     return f'{p:10.2e} {unit}'.strip()
 
 
-def render_Parameter_default(p: floatParameter | OutputParameter) -> str:
+def render_Parameter_default(p: Parameter) -> str:
     """
     RenderDefault - render a float as a string with 2 decimal places, or in scientific notation if it is greater than
     10,000 with the unit appended to it if it is not an empty string (the default) by calling the render_default base

@@ -1069,8 +1069,7 @@ class AGSWellBores(WellBores):
 
                 # recalculate the pumping power by looking at the difference between the upgoing and downgoing and the nonvertical
                 self.PumpingPower.value = DowngoingPumpingPower + NonverticalPumpingPower - UpgoingPumpingPower
-                self.PumpingPower.value = [0. if x < 0. else x for x in
-                                           self.PumpingPower.value]  # cannot be negative, so set to 0
+                self.PumpingPower.value = [max(x, 0.) for x in self.PumpingPower.value]  # cannot be negative, so set to 0
 
         else:
             # do the CLGS-style calculation
@@ -1129,7 +1128,7 @@ class AGSWellBores(WellBores):
             self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rho_water / model.surfaceplant.pump_efficiency.value / 1E3
             # in GEOPHIRES v1.2, negative pumping power values become zero
             # (b/c we are not generating electricity) = thermosiphon is happening!
-            self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
+            self.PumpingPower.value = [max(x, 0.) for x in self.PumpingPower.value]
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

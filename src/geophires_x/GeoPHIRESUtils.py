@@ -17,7 +17,7 @@ import numpy as np
 
 import CoolProp.CoolProp as CP
 
-from geophires_x.Parameter import ParameterEntry
+from geophires_x.Parameter import ParameterEntry, Parameter
 from geophires_x.Units import get_unit_registry
 
 _logger = logging.getLogger('root')  # TODO use __name__ instead of root
@@ -92,6 +92,131 @@ _UtilEff = np.array(
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
 _ureg = get_unit_registry()
+
+
+def InsertImagesIntoHTML(html_path: str, short_names: set, full_names: set) -> None:
+
+    # Write a reference to the image(s) into the HTML file by inserting before the "</body>" tag
+    # build the string to be inserted first
+    insert_string = ''
+    for _ in range(len(full_names)):
+        name_to_use = short_names.pop()
+        insert_string = insert_string + f'<img src="{name_to_use}.png" alt="{name_to_use}">\n<br>'
+
+    match_string = '</body>'
+    with open(html_path, 'r+', encoding='UTF-8') as html_file:
+        contents = html_file.readlines()
+        if match_string in contents[-1]:  # Handle last line to prevent IndexError
+            pass
+        else:
+            for index, line in enumerate(contents):
+                if match_string in line and insert_string not in contents[index + 1]:
+                    contents.insert(index, insert_string)
+                    break
+        html_file.seek(0)
+        html_file.writelines(contents)
+
+
+def UpgradeSymbologyOfUnits(unit: str) -> str:
+    """
+    UpgradeSymbologyOfUnits is a function that takes a string that represents a unit and replaces the **2 and **3
+    with the appropriate unicode characters for superscript 2 and 3, and replaces "deg" with the unicode character
+    for degrees.
+    :param unit: a string that represents a unit
+    :return: a string that represents a unit with the appropriate unicode characters for superscript 2 and 3, and
+    replaces "deg" with the unicode character for degrees.
+    """
+
+    return unit.replace('**2', '\u00b2').replace('**3', '\u00b3').replace('deg', '\u00b0')
+
+
+def render_default(p: float, unit: str = '', fmt: str = '') -> str:
+    """
+    RenderDefault - render a float as a string with 2 decimal place by default, or whatever format the user specifies,
+     or in scientific notation if it is greater than 10,000
+     with the unit appended to it if it is not an empty string (the default)
+    :param p: the float to render
+    :type p: float
+    :param unit: the unit to append to the string
+    :type unit: str
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+    if not np.can_cast(p, float):
+        raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
+
+    unit = UpgradeSymbologyOfUnits(unit)
+    # if the number is greater than 10,000, render it in scientific notation
+    if p > 10_000:
+        return render_scientific(p, unit)
+    # otherwise, render it with 2 decimal places
+    else:
+        if not fmt:
+            return f'{p:10.2f} {unit}'.strip()
+        else:
+            if ':' in fmt:
+                fmt = fmt.split(':')[1]
+            fmt = '{0:' + fmt + '}{1:s}'
+            return fmt.format(p, unit.strip())
+
+
+def render_scientific(p: float, unit: str = '', fmt: str = '') -> str:
+    """
+    RenderScientific - render a float as a string in scientific notation with 2 decimal places by default, or whatever
+    format the user specifies, and the unit appended to it if it is not an empty string (the default)
+    :param p: the float to render
+    :type p: float
+    :param unit: the unit to append to the string
+    :type unit: str
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    :rtype: str
+    """
+
+    if not np.can_cast(p, float):
+        raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
+
+    unit = UpgradeSymbologyOfUnits(unit)
+    if not fmt:
+        return f'{p:10.2e} {unit}'.strip()
+    else:
+        pass
+
+
+def render_Parameter_default(p: Parameter, fmt: str = '') -> str:
+    """
+    RenderDefault - render a float parameter in scientific notation as a string with 2 decimal places,
+     or whatever format the user specifies with the unit appended to it if it is not an empty string (the default)
+    function
+    :param p: the parameter to render
+    :type p: Parameter
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+    if not np.can_cast(p.value, float):
+        raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
+
+    return render_default(p.value, p.CurrentUnits.value)
+
+
+def render_parameter_scientific(p: Parameter, fmt: str = '') -> str:
+    """
+    RenderScientific - render a float as a string in scientific notation with 2 decimal places
+    and the unit appended to it if it is not an empty string (the default) by calling the render_scientific base function
+    :param p: the parameter to render
+    :type p: float
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+
+    if not np.can_cast(p.value, float):
+        raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
+
+    return render_scientific(p.value, p.CurrentUnits.value)
 
 
 def quantity(value: float, unit: str) -> PlainQuantity:

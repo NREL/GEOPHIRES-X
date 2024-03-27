@@ -80,10 +80,6 @@ def main(enable_geophires_logging_config=True):
             for line in content:
                 sys.stdout.write(line)
 
-    # make district heating plot
-    if model.surfaceplant.plant_type.value == OptionList.PlantType.DISTRICT_HEATING:
-        model.outputs.MakeDistrictHeatingPlot(model)
-
     logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 

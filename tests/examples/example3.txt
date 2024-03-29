@@ -21,11 +21,7 @@ Ramey Production Wellbore Model,0,				---Should be 0 (disabled) or 1 (enabled)
 Production Wellbore Temperature Drop,5,				---[deg.C]
 Injection Wellbore Temperature Gain,3,				---[deg.C]
 Production Flow Rate per Well,70,				---[kg/s]
-Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
-Fracture Shape,1,						---Should be 1 2 3 or 4
-Fracture Area,200000,						---[m2]
-Number of Fractures,12,						---[-]
-Fracture Separation,80,						---[m]
+Reservoir Volume Option,4,					---Should be 1 2 3 or 4. See manual for details.
 Injectivity Index,5,						---[kg/s/bar]
 Injection Temperature,70,					---[deg.C]
 Maximum Drawdown,1,						---[-] no redrilling considered

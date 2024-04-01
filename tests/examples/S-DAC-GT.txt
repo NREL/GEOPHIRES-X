@@ -5,7 +5,9 @@ Based on Example 3 description: This example problem considers an EGS reservoir 
 The heat is used in a combined heat and power topping cycle model with double flash as
 topping cycle and electricity considered as the main product.
 
-But only lists those patameters that are different than their default values
+But only lists those parameters that are different than their default values
+
+Do S-DAC-GT Calculations, True
 
 ***Subsurface technical parameters***
 *************************************

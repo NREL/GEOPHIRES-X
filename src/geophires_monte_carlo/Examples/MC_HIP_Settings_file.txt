@@ -3,10 +3,11 @@ INPUT, Reservoir Area, uniform, 50.0, 120.0
 INPUT, Reservoir Thickness, uniform, 0.122, 0.299
 INPUT, Reservoir Temperature, uniform, 130, 170
 INPUT, Rejection Temperature, uniform, 20, 33
-OUTPUT, Available Heat (fluid)
-OUTPUT, Producible Heat (fluid)
-OUTPUT, Producible Heat/Unit Area (fluid)
-OUTPUT, Producible Electricity (fluid)
-OUTPUT, Producible Electricity/Unit Area (fluid)
-ITERATIONS, 250
+OUTPUT, Producible Heat (reservoir)
+OUTPUT, Producible Heat/Unit Area (reservoir)
+OUTPUT, Producible Heat/Unit Volume (reservoir)
+OUTPUT, Producible Electricity (reservoir)
+OUTPUT, Producible Electricity/Unit Area (reservoir)
+OUTPUT, Producible Electricity/Unit Volume (reservoir)
+ITERATIONS, 25
 MC_OUTPUT_FILE, MC_HIP_Result.txt

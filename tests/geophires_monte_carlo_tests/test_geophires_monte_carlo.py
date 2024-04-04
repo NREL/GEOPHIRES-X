@@ -125,6 +125,12 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
             result_content = '\n'.join(f.readlines())
             self.assertIn('Electricity', result_content)
 
+        with open(result.json_output_file_path) as f:
+            json_result = json.loads(f.read())
+            self.assertIn('Producible Electricity', json_result)
+            self.assertLess(json_result['Producible Electricity']['median'], 1000)
+            self.assertGreater(json_result['Producible Electricity']['median'], 50)
+
     def _get_arg_file_path(self, arg_file):
         test_dir: Path = Path(os.path.abspath(__file__)).parent
         return Path(test_dir, arg_file).absolute()

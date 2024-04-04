@@ -107,7 +107,6 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
 
             self.assertDictEqual(result_json_obj, result.result['output'])
 
-    @unittest.skip(reason='FIXME: MC HIP result parsing is broken')
     def test_hip_ra_monte_carlo(self):
         client = GeophiresMonteCarloClient()
 
@@ -116,6 +115,7 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                 SimulationProgram.HIP_RA,
                 self._get_arg_file_path('HIP-example1.txt'),
                 self._get_arg_file_path('MC_HIP_Settings_file.txt'),
+                self._get_arg_file_path('MC_HIP_Result.txt'),
             )
         )
         self.assertIsNotNone(result)
@@ -124,6 +124,12 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
         with open(result.output_file_path) as f:
             result_content = '\n'.join(f.readlines())
             self.assertIn('Electricity', result_content)
+
+        with open(result.json_output_file_path) as f:
+            json_result = json.loads(f.read())
+            self.assertIn('Producible Electricity', json_result)
+            self.assertLess(json_result['Producible Electricity']['median'], 1000)
+            self.assertGreater(json_result['Producible Electricity']['median'], 50)
 
     def _get_arg_file_path(self, arg_file):
         test_dir: Path = Path(os.path.abspath(__file__)).parent

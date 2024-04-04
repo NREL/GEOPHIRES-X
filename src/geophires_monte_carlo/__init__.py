@@ -51,7 +51,9 @@ class MonteCarloRequest:
             self.output_file: Path = output_file
         else:
             self._temp_output_dir: TemporaryDirectory = TemporaryDirectory(prefix='geophires_monte_carlo-')
-            self.output_file: Path = Path(self._temp_output_dir.name, 'MC_GEOPHIRES_Result.txt').absolute()
+            self.output_file: Path = Path(
+                self._temp_output_dir.name, f'MC_{self._simulation_program.name}_Result.txt'
+            ).absolute()
 
         if not self.output_file.is_absolute():
             raise ValueError(f'Output file path ({output_file}) must be absolute')

@@ -35,6 +35,8 @@ from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
 from hip_ra_x import HipRaXClient
 
+logger = _get_logger()
+
 
 def Write_HTML_Output(
     html_path: str,
@@ -311,12 +313,6 @@ def work_package(pass_list: list):
             HipRaInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
-    elif args.Code_File.endswith('HIP_RA_x.py'):
-        hip_ra_x_client: HipRaXClient = HipRaXClient()
-        result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
-            HipRaInputParameters(from_file_path=Path(tmp_input_file))
-        )
-        shutil.copyfile(result.output_file_path, tmp_output_file)
     else:
         log.warning(
             f'Code file from args ({args.Code_File}) is not a known program, '
@@ -449,7 +445,6 @@ def main(command_line_args=None):
         if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None
         else str(Path(Path(args.Input_file).parent, 'MC_Result.txt').absolute())
     )
-    args.MC_OUTPUT_FILE = output_file
     python_path = 'python'
     html_path = ''
 
@@ -464,6 +459,8 @@ def main(command_line_args=None):
         elif pair[0].startswith('ITERATIONS'):
             iterations = int(pair[1])
         elif pair[0].startswith('MC_OUTPUT_FILE'):
+            # FIXME accepting relative paths here is likely to break MC, consolidate/align setting output file with
+            #   pattern in geophires_monte_carlo.MonteCarloRequest
             output_file = pair[1]
         elif pair[0].startswith('PYTHON_PATH'):
             python_path = pair[1]
@@ -528,7 +525,6 @@ def main(command_line_args=None):
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
             if len(line) > 3:
-                # FIXME TODO doesn't work for HIP RA results
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 line = line.replace('(', '').replace(')', '')  # strip off the ()
                 results.append([float(y) for y in line.split(',')])
@@ -614,7 +610,6 @@ def main(command_line_args=None):
 
 
 if __name__ == '__main__':
-    logger = _get_logger()
     logger.info(f'Init {__name__!s}')
 
     main(command_line_args=sys.argv[1:])

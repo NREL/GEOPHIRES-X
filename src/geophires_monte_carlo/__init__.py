@@ -51,7 +51,9 @@ class MonteCarloRequest:
             self.output_file: Path = output_file
         else:
             self._temp_output_dir: TemporaryDirectory = TemporaryDirectory(prefix='geophires_monte_carlo-')
-            self.output_file: Path = Path(self._temp_output_dir.name, 'MC_GEOPHIRES_Result.txt').absolute()
+            self.output_file: Path = Path(
+                self._temp_output_dir.name, f'MC_{self._simulation_program.name}_Result.txt'
+            ).absolute()
 
         if not self.output_file.is_absolute():
             raise ValueError(f'Output file path ({output_file}) must be absolute')
@@ -71,14 +73,20 @@ class MonteCarloResult:
 
         with open(self._request.input_file) as request_input_file, open(
             self._request.monte_carlo_settings_file
-        ) as mc_settings_file, open(self.json_output_file_path) as json_file:
+        ) as mc_settings_file:
             self._result: dict = {
                 'input': {
                     'input_file_content': request_input_file.read(),
                     'monte_carlo_settings_file_content': mc_settings_file.read(),
                 },
-                'output': json.loads(json_file.read()),
+                # 'output': json.loads(json_file.read()),
             }
+
+        try:
+            with open(self.json_output_file_path) as json_file:
+                self._result['output'] = json.loads(json_file.read())
+        except FileNotFoundError:
+            pass  # FIXME WIP
 
     @property
     def output_file_path(self) -> Path:

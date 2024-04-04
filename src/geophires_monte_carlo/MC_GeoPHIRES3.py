@@ -459,6 +459,8 @@ def main(command_line_args=None):
         elif pair[0].startswith('ITERATIONS'):
             iterations = int(pair[1])
         elif pair[0].startswith('MC_OUTPUT_FILE'):
+            # FIXME accepting relative paths here is likely to break MC, consolidate/align setting output file with
+            #   pattern in geophires_monte_carlo.MonteCarloRequest
             output_file = pair[1]
         elif pair[0].startswith('PYTHON_PATH'):
             python_path = pair[1]

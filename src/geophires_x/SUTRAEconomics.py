@@ -136,8 +136,7 @@ class SUTRAEconomics(Economics.Economics):
         )
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
-            value=0,
-            DefaultValue=10, #Vertical Large Diameter, Intermediate1
+            DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],  # Range updated to include all options
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (1)",

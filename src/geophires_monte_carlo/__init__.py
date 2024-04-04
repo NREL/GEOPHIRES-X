@@ -73,20 +73,14 @@ class MonteCarloResult:
 
         with open(self._request.input_file) as request_input_file, open(
             self._request.monte_carlo_settings_file
-        ) as mc_settings_file:
+        ) as mc_settings_file, open(self.json_output_file_path) as json_file:
             self._result: dict = {
                 'input': {
                     'input_file_content': request_input_file.read(),
                     'monte_carlo_settings_file_content': mc_settings_file.read(),
                 },
-                # 'output': json.loads(json_file.read()),
+                'output': json.loads(json_file.read()),
             }
-
-        try:
-            with open(self.json_output_file_path) as json_file:
-                self._result['output'] = json.loads(json_file.read())
-        except FileNotFoundError:
-            pass  # FIXME WIP
 
     @property
     def output_file_path(self) -> Path:

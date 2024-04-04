@@ -128,6 +128,13 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
         with open(result.json_output_file_path) as f:
             json_result = json.loads(f.read())
             self.assertIn('Producible Electricity', json_result)
+
+            # Note: it is possible, though unlikely, for the test to incorrectly fail (i.e. a false negative)
+            # if the random values generated happen to give valid results that are outside this range.
+            # If you experience intermittent test failures from the below lines (that are unrelated to HIP-RA code
+            # changes), then it probably means the expected range or settings file need to be adjusted to 'guarantee'
+            # the results can be confidently asserted. (Such as in
+            # https://github.com/NREL/GEOPHIRES-X/pull/178/commits/ec4db42fca5a90715ceb5143e18315d5f3d782b7)
             self.assertLess(json_result['Producible Electricity']['median'], 1000)
             self.assertGreater(json_result['Producible Electricity']['median'], 20)
 

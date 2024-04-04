@@ -5,4 +5,4 @@ INPUT, Reservoir Temperature, uniform, 130, 170
 INPUT, Rejection Temperature, uniform, 20, 33
 OUTPUT, Producible Heat
 OUTPUT, Producible Electricity
-ITERATIONS, 5
+ITERATIONS, 10

@@ -107,7 +107,6 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
 
             self.assertDictEqual(result_json_obj, result.result['output'])
 
-    @unittest.skip(reason='FIXME: MC HIP result parsing is broken')
     def test_hip_ra_monte_carlo(self):
         client = GeophiresMonteCarloClient()
 
@@ -116,6 +115,7 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                 SimulationProgram.HIP_RA,
                 self._get_arg_file_path('HIP-example1.txt'),
                 self._get_arg_file_path('MC_HIP_Settings_file.txt'),
+                self._get_arg_file_path('MC_HIP_Result.txt'),
             )
         )
         self.assertIsNotNone(result)

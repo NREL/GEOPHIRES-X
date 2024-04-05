@@ -1,0 +1,95 @@
+GEOPHIRES v2.0 Input File
+Created on 2018-06-11
+Last modified on 2024-02-28
+Geothermal Electricity Problem using a Multiple Parallel Fractures Model
+
+Example 1 Description: This problem considers an EGS reservoir at 3km depth.
+Ramey's model is applied to simulate production wellbore heat losses. The heat
+is used in for electricity application with a reinjection temperature of 50deg.C.
+
+
+***Subsurface technical parameters***
+*************************************
+Reservoir Model,1,                        			---Multiple Fractures reservoir model
+Reservoir Depth,3,                     				---[km]
+Number of Segments,1,                  				---[-]
+Gradient 1,50,                          			---[deg.C/km]
+Maximum Temperature,400,                  			---[deg.C]
+Number of Production Wells,2,            			---[-]
+Number of Injection Wells,2,            			---[-]
+Production Well Diameter,7,		     			---[inch]
+Injection Well Diameter,7,					---[inch]
+Ramey Production Wellbore Model,1,       			---0 if disabled  1 if enabled
+Production Wellbore Temperature Drop,.5,			---[deg.C]
+Injection Wellbore Temperature Gain,0,   			---[deg.C]
+Production Flow Rate per Well,55,       			---[kg/s]
+Fracture Shape,3,                       			---[-] Should be 1 2 3 or 4. See manual for details
+Fracture Height,900, 						---[m]
+Reservoir Volume Option,3,              			---[-] Should be 1 2 3 or 4. See manual for details
+Number of Fractures,20,		  				---[-]
+Reservoir Volume,1000000000,		 			---[m^3]
+Water Loss Fraction,.02,					---[-]
+Productivity Index,5,						---[kg/s/bar]
+Injectivity Index,5,						---[kg/s/bar]
+Injection Temperature,50,		 			---[deg.C]
+Maximum Drawdown,1,			  			---[-] no redrilling considered
+Reservoir Heat Capacity,1000,		  			---[J/kg/K]
+Reservoir Density,2700,			  			---[kg/m^3]
+Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
+
+***SURFACE TECHNICAL PARAMETERS***
+**********************************
+End-Use Option,1,			  			---[-] Electricity
+Power Plant Type,2,			  			---[-] Supercritical ORC
+Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
+Utilization Factor,.9,			  			---[-] between .1 and 1
+Surface Temperature,20,		  				---[deg.C]
+Ambient Temperature,20,		 				---[deg.C]
+
+***CAPITAL AND O&M COST PARAMETERS***
+*************************************
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
+Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
+Surface Plant Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Field Gathering System Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
+Exploration Capital Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Wellfield O&M Cost Adjustment Factor,1,				---[-] Use built-in correlations
+Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
+Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
+
+
+*** Economic/Financial Parameters ***
+*************************************
+Plant Lifetime,30,			--- [years]
+Economic Model,3,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) or 3 (Bicycle model).
+Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflated Bond Interest Rate,0.07,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflated Equity Interest Rate,0.12,	--- [-] Required if Bicycle model is selected. See manual for details.
+Inflation Rate,0.025,			--- [-] Required if Bicycle model is selected. See manual for details.
+Combined Income Tax Rate,0.392,		--- [-] Required if Bicycle model is selected. See manual for details.
+Gross Revenue Tax Rate,0,		--- [-] Required if Bicycle model is selected. See manual for details.
+Investment Tax Credit Rate,0,		--- [-] Required if Bicycle model is selected. See manual for details.
+Property Tax Rate,0,			--- [-] Required if Bicycle model is selected. See manual for details.
+Inflation Rate During Construction,0,	--- [-]
+Well Drilling and Completion Capital Cost Adjustment Factor,1,	--- [-] Use built-in well cost correlation as is
+Well Drilling Cost Correlation,1,				--- [-] Use built-in well drilling cost correlation #1
+Reservoir Stimulation Capital Cost,0,				--- [M$/injection well] Reservoir stimulation capital cost per injection well
+Surface Plant Capital Cost Adjustment Factor,1,			--- [-] Use built-in surface plant cost correlation as is
+Field Gathering System Capital Cost Adjustment Factor,1,		--- [-] Use built-in pipeline distribution cost correlation as is
+Exploration Capital Cost Adjustment Factor,1,			--- [-] Use built-in exploration cost correlation as is
+Wellfield O&M Cost Adjustment Factor,1,				--- [-] Use built-in wellfield O&M cost correlation as is
+Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation as is
+Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
+Investment Tax Credit Rate,0.5,					--- [-] Investment tax credit rate
+Production Tax Credit Electricity, 0.05,				--- [-] Production tax credit for electricity in $/kWh
+Production Tax Credit Heat, 0.05,				--- [-] Production tax credit for electricity in $/kWh
+Production Tax Credit Cooling, 0.05,				--- [-] Production tax credit for electricity in $/kWh
+Production Tax Credit Duration, 10,				--- [-] Production tax credit for duration in years
+Production Tax Credit Inflation Adjusted, True,				--- [-] Is the Production tax credit inflation adjusted (T/F)
+
+***Simulation Parameters***
+***************************
+
+Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
+Time steps per year,6,		  				---[1/year]

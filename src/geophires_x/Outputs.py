@@ -1139,6 +1139,9 @@ class Outputs:
             CAPEX.append(
                 OutputTableItem('Stimulation costs (for redrilling)', '{0:10.2f}'.format(model.economics.Cstim.value),
                                 model.economics.Cstim.CurrentUnits.value))
+        if model.economics.RITC.Provided:
+            CAPEX.append(OutputTableItem('Investment tax Credit', '{0:10.2f}'.format(-1*model.economics.RITCValue.value),
+                                         model.economics.RITCValue.CurrentUnits.value))
         CAPEX.append(OutputTableItem('Total capital costs', '{0:10.2f}'.format(model.economics.CCap.value),
                                      model.economics.CCap.CurrentUnits.value))
         if model.economics.econmodel.value == EconomicModel.FCR:
@@ -1468,22 +1471,18 @@ class Outputs:
         # note that the price arrays need to be extended by the number of construction years. with price = 0
         cashflow[f'Year|:3.0f'] = [i for i in range(1,
                                                     model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value + 1)]
-        longer_version = np.insert(econ.ElecPrice.value, 0, construction_years_zeros)
-        cashflow[f'Electricity:Price ({econ.ElecPrice.CurrentUnits.value})|:7.4f'] = longer_version
+        cashflow[f'Electricity:Price ({econ.ElecPrice.CurrentUnits.value})|:7.4f'] = econ.ElecPrice.value
         cashflow[f'Electricity:Ann. Rev. ({econ.ElecRevenue.CurrentUnits.value})|:5.2f'] = econ.ElecRevenue.value
         cashflow[
             f'Electricity:Cumm. Rev. ({econ.ElecCummRevenue.CurrentUnits.value})|:5.2f'] = econ.ElecCummRevenue.value
-        longer_version = np.insert(econ.HeatPrice.value, 0, construction_years_zeros)
-        cashflow[f'Heat:Price ({econ.HeatPrice.CurrentUnits.value})|:7.4f'] = longer_version
+        cashflow[f'Heat:Price ({econ.HeatPrice.CurrentUnits.value})|:7.4f'] = econ.HeatPrice.value
         cashflow[f'Heat:Ann. Rev. ({econ.HeatRevenue.CurrentUnits.value})|:5.2f'] = econ.HeatRevenue.value
         cashflow[f'Heat:Cumm. Rev. ({econ.HeatCummRevenue.CurrentUnits.value})|:5.2f'] = econ.HeatCummRevenue.value
-        longer_version = np.insert(econ.CoolingPrice.value, 0, construction_years_zeros)
-        cashflow[f'Cooling:Price ({econ.CoolingPrice.CurrentUnits.value})|:7.4f'] = longer_version
+        cashflow[f'Cooling:Price ({econ.CoolingPrice.CurrentUnits.value})|:7.4f'] = econ.CoolingPrice.value
         cashflow[f'Cooling:Ann. Rev. ({econ.CoolingRevenue.CurrentUnits.value})|:5.2f'] = econ.CoolingRevenue.value
         cashflow[
             f'Cooling:Cumm. Rev. ({econ.CoolingCummRevenue.CurrentUnits.value})|:5.2f'] = econ.CoolingCummRevenue.value
-        longer_version = np.insert(econ.CarbonPrice.value, 0, construction_years_zeros)
-        cashflow[f'Carbon:Price ({econ.CarbonPrice.CurrentUnits.value})|:7.4f'] = longer_version
+        cashflow[f'Carbon:Price ({econ.CarbonPrice.CurrentUnits.value})|:7.4f'] = econ.CarbonPrice.value
         cashflow[f'Carbon:Ann. Rev. ({econ.CarbonRevenue.CurrentUnits.value})|:5.2f'] = econ.CarbonRevenue.value
         cashflow[
             f'Carbon:Cumm. Rev. ({econ.CarbonCummCashFlow.CurrentUnits.value})|:5.2f'] = econ.CarbonCummCashFlow.value
@@ -1750,6 +1749,8 @@ class Outputs:
                     f.write(f'         Drilling and completion costs (for redrilling):{model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'      Drilling and completion costs per redrilled well: {(model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value)):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'         Stimulation costs (for redrilling):            {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
+                if model.economics.RITCValue.value:
+                    f.write(f'         Investment Tax Credit:                         {-1*model.economics.RITCValue.value:10.2f} ' + model.economics.RITCValue.CurrentUnits.value + NL)
                 f.write(f'      Total capital costs:                              {model.economics.CCap.value:10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)

@@ -9,38 +9,65 @@ from geophires_x.Parameter import intParameter, floatParameter, OutputParameter,
 from geophires_x.Units import *
 
 
-def BuildPricingModel(plantlifetime: int, StartYear: int, StartPrice: float, EndPrice: float,
-                      EscalationStart: int, EscalationRate: float):
+def BuildPTCModel(plantlifetime: int, duration: int, ptc_price: float,
+                  ptc_inflation_adjusted: bool, inflation_rate: float) -> list:
     """
     BuildPricingModel builds the price model array for the project lifetime.  It is used to calculate the revenue
     stream for the project.
     :param plantlifetime: The lifetime of the project in years
     :type plantlifetime: int
-    :param StartYear: The year the project starts in years (not including construction years)
-    :type StartYear: int
+    :param duration: The duration of the PTC in years
+    :type duration: int
+    :param ptc_price: The PTC in $/kWh
+    :type ptc_price: float
+    :param ptc_inflation_adjusted: Is the PTC is inflation?
+    :type ptc_inflation_adjusted: bool
+    :param inflation_rate: The inflation rate in %
+    :type inflation_rate: float
+    :return: Price: The price model array for the PTC in $/kWh
+    :rtype: list
+    """
+    # Build the PTC price model by setting the price to the PTCPrice for the duration of the PTC
+    Price = [0.0] * plantlifetime
+    for year in range(0, duration, 1):
+        Price[year] = ptc_price
+        if ptc_inflation_adjusted and year > 0:
+            Price[year] = Price[year-1] * (1 + inflation_rate)
+    return Price
+
+
+def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
+                      EscalationStartYear: int, EscalationRate: float, PTCAddition: list) -> list:
+    """
+    BuildPricingModel builds the price model array for the project lifetime.  It is used to calculate the revenue
+    stream for the project.
+    :param plantlifetime: The lifetime of the project in years
+    :type plantlifetime: int
     :param StartPrice: The price in the first year of the project in $/kWh
     :type StartPrice: float
     :param EndPrice: The price in the last year of the project in $/kWh
     :type EndPrice: float
-    :param EscalationStart: The year the price escalation starts in years (not including construction years) in years
-    :type EscalationStart: int
+    :param EscalationStartYear: The year the price escalation starts in years (not including construction years) in years
+    :type EscalationStartYear: int
     :param EscalationRate: The rate of price escalation in $/kWh/year
     :type EscalationRate: float
+    :param PTCAddition: The PTC addition array for the project in $/kWh
+    :type PTCAddition: list
     :return: Price: The price model array for the project in $/kWh
     :rtype: list
     """
-    Price = [StartPrice] * plantlifetime
-    if StartPrice == EndPrice:
-        return Price
-    for i in range(StartYear, plantlifetime, 1):
-        if i >= EscalationStart:
-            Price[i] = Price[i] + ((i - EscalationStart) * EscalationRate)
+    Price = [0.0] * plantlifetime
+    for i in range(0, plantlifetime, 1):
+        Price[i] = StartPrice
+        if i >= EscalationStartYear:
+            Price[i] = Price[i] + ((i - EscalationStartYear) * EscalationRate)
         if Price[i] > EndPrice:
             Price[i] = EndPrice
+        Price[i] = Price[i] + PTCAddition[i]
     return Price
 
 
-def CalculateTotalRevenue(plantlifetime: int, ConstructionYears: int, CAPEX: float, OPEX: float, AnnualRev, CummRev):
+def CalculateTotalRevenue(plantlifetime: int, ConstructionYears: int, CAPEX: float, OPEX: float, AnnualRev):
     """
     CalculateRevenue calculates the revenue stream for the project.  It is used to calculate the revenue
     stream for the project.
@@ -52,10 +79,8 @@ def CalculateTotalRevenue(plantlifetime: int, ConstructionYears: int, CAPEX: flo
     :type CAPEX: float
     :param OPEX: The total annual operating cost of the project in MUSD
     :type OPEX: float
-    :param Energy: The energy production array for the project in kWh
-    :type Energy: list
-    :param Price: The price model array for the project in $/kWh
-    :type Price: list
+    :param AnnualRev: The annual revenue array for the project in MUSD
+    :type AnnualRev: list
     :return: CashFlow: The annual cash flow for the project in MUSD and CummCashFlow: The cumulative cash flow for the
     project in MUSD
     :rtype: list
@@ -307,6 +332,7 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
         NPVfc = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * self.PTR.value * inflationvector * discountvector)
         NPVit = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * self.CCap.value * CRF - self.CCap.value / model.surfaceplant.plant_lifetime.value) * discountvector)
         NPVitc = (1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
+
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
             NPVoandm = np.sum(self.Coam.value * inflationvector * discountvector)
             NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
@@ -1223,6 +1249,57 @@ class Economics:
             ErrMessage="assume calculation for CHP Electrical Plant Cost Allocation Ratio (cost electrical plant/total CAPEX)",
             ToolTipText="CHP Electrical Plant Cost Allocation Ratio (cost electrical plant/total CAPEX)"
         )
+        self.PTCElec = self.ParameterDict[self.PTCElec.Name] = floatParameter(
+            "Production Tax Credit Electricity",
+            DefaultValue=0.04,
+            Min=0.0,
+            Max=10.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
+            ErrMessage="assume default for Production Tax Credit Electricity ($0.04/kWh)",
+            ToolTipText="Production tax credit for electricity in $/kWh"
+        )
+        self.PTCHeat = self.ParameterDict[self.PTCHeat.Name] = floatParameter(
+            "Production Tax Credit Heat",
+            DefaultValue=0.0,
+            Min=0.0,
+            Max=100.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            ErrMessage="assume default for Production Tax Credit Heat ($0.0/MMBTU)",
+            ToolTipText="Production tax credit for heat in $/MMBTU"
+        )
+        self.PTCCooling = self.ParameterDict[self.PTCCooling.Name] = floatParameter(
+            "Production Tax Credit Cooling",
+            DefaultValue=0.0,
+            Min=0.0,
+            Max=100.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            ErrMessage="assume default for Production Tax Credit Cooling ($0.0/MMBTU)",
+            ToolTipText="Production tax credit for cooling in $/MMBTU"
+        )
+        self.PTCDuration = self.ParameterDict[self.PTCDuration.Name] = intParameter(
+            "Production Tax Credit Duration",
+            DefaultValue=10,
+            AllowableRange=list(range(0, 100, 1)),
+            UnitType=Units.TIME,
+            PreferredUnits=TimeUnit.YEAR,
+            CurrentUnits=TimeUnit.YEAR,
+            ErrMessage="assume default for Production Tax Credit Duration (10 years)",
+            ToolTipText="Production tax credit for duration in years"
+        )
+        self.PTCInflationAdjusted = self.ParameterDict[self.PTCInflationAdjusted.Name] = boolParameter(
+            "Production Tax Credit Inflation Adjusted",
+            DefaultValue=False,
+            UnitType=Units.NONE,
+            Required=False,
+            ErrMessage="assume default for Production Tax Credit Inflation Adjusted (False)",
+            ToolTipText="Production tax credit inflation adjusted"
+        )
 
         # local variable initialization
         self.CAPEX_cost_electricity_plant = 0.0
@@ -1237,6 +1314,10 @@ class Economics:
         self.InputFile = ""
         self.Cplantcorrelation = 0.0
         self.C1well = 0.0
+        self.PTCElecPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCHeatPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
@@ -1511,6 +1592,12 @@ class Economics:
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.YEAR,
             CurrentUnits=TimeUnit.YEAR
+        )
+        self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
+            Name="Investment Tax Credit Value",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
         )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
@@ -2301,6 +2388,11 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
+        # update the capitol costs, assuming the entire ITC is used to reduce the capitol costs
+        if self.RITC.Provided:
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            self.CCap.value = self.CCap.value - self.RITCValue.value
+
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
@@ -2410,19 +2502,37 @@ class Economics:
             model.reserv.depth.value = model.reserv.depth.value / 1000.0
             model.reserv.depth.CurrentUnits = LengthUnit.KILOMETERS
 
+        # build the PTC price models
+        if self.PTCElec.Provided:
+            self.PTCElecPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                              self.PTCDuration.value, self.PTCElec.value, self.PTCInflationAdjusted.value,
+                                              self.RINFL.value)
+        if self.PTCHeat.Provided:
+            self.PTCHeatPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                              self.PTCDuration.value, self.PTCHeat.value, self.PTCInflationAdjusted.value,
+                                              self.RINFL.value)
+        if self.PTCCooling.Provided:
+            self.PTCCoolingPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                              self.PTCDuration.value,self.PTCCooling.value, self.PTCInflationAdjusted.value,
+                                              self.RINFL.value)
+
         # build the price models
-        self.ElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, 0,
+        self.ElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                  self.ElecStartPrice.value, self.ElecEndPrice.value,
-                                                 self.ElecEscalationStart.value, self.ElecEscalationRate.value)
-        self.HeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, 0,
+                                                 self.ElecEscalationStart.value, self.ElecEscalationRate.value,
+                                                 self.PTCElecPrice)
+        self.HeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                  self.HeatStartPrice.value, self.HeatEndPrice.value,
-                                                 self.HeatEscalationStart.value, self.HeatEscalationRate.value)
-        self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, 0,
+                                                 self.HeatEscalationStart.value, self.HeatEscalationRate.value,
+                                                 self.PTCHeatPrice)
+        self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                  self.CoolingStartPrice.value, self.CoolingEndPrice.value,
-                                                 self.CoolingEscalationStart.value, self.CoolingEscalationRate.value)
-        self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value, self.CarbonEscalationStart.value,
+                                                 self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
+                                                 self.PTCCoolingPrice)
+        self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                  self.CarbonStartPrice.value, self.CarbonEndPrice.value,
-                                                 self.CarbonEscalationStart.value, self.CarbonEscalationRate.value)
+                                                 self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
+                                                 self.PTCCarbonPrice)
 
         # do the additional economic calculations first, if needed, so the summaries below work.
         if self.DoAddOnCalculations.value:
@@ -2491,6 +2601,13 @@ class Economics:
             for i in range(model.surfaceplant.construction_years.value, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
                 self.TotalRevenue.value[i] = self.TotalRevenue.value[i] + self.CarbonRevenue.value[i]
                 #self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i] + self.CarbonCummCashFlow.value[i]
+
+        # for the sake of display, insert zeros at the beginning of the pricing arrays
+        for i in range(0, model.surfaceplant.construction_years.value, 1):
+            self.ElecPrice.value.insert(0, 0.0)
+            self.HeatPrice.value.insert(0, 0.0)
+            self.CoolingPrice.value.insert(0, 0.0)
+            self.CarbonPrice.value.insert(0, 0.0)
 
         # Insert the cost of construction into the front of the array that will be used to calculate NPV
         # the convention is that the upfront CAPEX is negative

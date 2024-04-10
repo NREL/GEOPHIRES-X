@@ -1314,10 +1314,6 @@ class Economics:
         self.InputFile = ""
         self.Cplantcorrelation = 0.0
         self.C1well = 0.0
-        self.PTCElecPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCHeatPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
@@ -2503,6 +2499,10 @@ class Economics:
             model.reserv.depth.CurrentUnits = LengthUnit.KILOMETERS
 
         # build the PTC price models
+        self.PTCElecPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCHeatPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
         if self.PTCElec.Provided:
             self.PTCElecPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
                                               self.PTCDuration.value, self.PTCElec.value, self.PTCInflationAdjusted.value,

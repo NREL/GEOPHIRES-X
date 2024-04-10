@@ -3,7 +3,7 @@ Created on 2018-06-11
 Last modified on 2024-02-28
 Geothermal Electricity Problem using a Multiple Parallel Fractures Model
 
-Example 1 Description: This problem considers an EGS reservoir at 3km depth.
+Example PTC Description: This problem considers an EGS reservoir at 3km depth.
 Ramey's model is applied to simulate production wellbore heat losses. The heat
 is used in for electricity application with a reinjection temperature of 50deg.C.
 
@@ -81,7 +81,6 @@ Exploration Capital Cost Adjustment Factor,1,			--- [-] Use built-in exploration
 Wellfield O&M Cost Adjustment Factor,1,				--- [-] Use built-in wellfield O&M cost correlation as is
 Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation as is
 Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
-Investment Tax Credit Rate,0.5,					--- [-] Investment tax credit rate
 Production Tax Credit Electricity, 0.05,				--- [-] Production tax credit for electricity in $/kWh
 Production Tax Credit Heat, 0.05,				--- [-] Production tax credit for electricity in $/kWh
 Production Tax Credit Cooling, 0.05,				--- [-] Production tax credit for electricity in $/kWh

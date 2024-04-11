@@ -96,7 +96,7 @@ def Write_HTML_Output(
     for index, row in df.iterrows():
         data = row.values[0 : len(outputs)]
 
-        # have to deal with the special case where thr last column is actually
+        # have to deal with the special case where the last column is actually
         # a compound string with multiple columns in it that looks like this:
         # ' (Gradient 1:47.219846973456924;Reservoir Temperature:264.7789623351493;...)'
         str_to_parse = str(row.values[len(outputs)]).strip().replace('(', '').replace(')', '')

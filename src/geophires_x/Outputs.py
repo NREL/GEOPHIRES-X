@@ -1496,10 +1496,6 @@ class Outputs:
         sdac_df = pd.DataFrame()
         addon_results: list[OutputTableItem] = []
         sdac_results: list[OutputTableItem] = []
-        if model.economics.DoAddOnCalculations.value:
-            addon_df, addon_results = model.addoutputs.PrintOutputs(model)
-        if model.economics.DoSDACGTCalculations.value:
-            sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
         # write results to output file and screen
         try:
@@ -2017,6 +2013,11 @@ class Outputs:
                     f.write(
                         f'{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
                 f.write(NL)
+
+            if model.economics.DoAddOnCalculations.value:
+                addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+            if model.economics.DoSDACGTCalculations.value:
+                sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
         except BaseException as ex:
             tb = sys.exc_info()[2]

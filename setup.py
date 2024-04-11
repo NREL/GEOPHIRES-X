@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.4.22',
+    version='3.4.24',
     license='MIT',
     description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
@@ -73,7 +73,7 @@ setup(
         'pandas',
         'matplotlib',
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
-        'h5py',
+        'h5py==3.10.0',  # TODO resolve apparent h5py==3.11.0 build compatibility issues on some platforms
         'scipy',
         'iapws',
         'coolprop',

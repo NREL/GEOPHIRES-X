@@ -1,0 +1,8 @@
+INPUT, Formation Porosity, uniform, 9.0, 28.0
+INPUT, Reservoir Area, uniform, 50.0, 120.0
+INPUT, Reservoir Thickness, uniform, 0.122, 0.299
+INPUT, Reservoir Temperature, uniform, 130, 170
+INPUT, Rejection Temperature, uniform, 20, 33
+OUTPUT, Producible Heat (reservoir)
+OUTPUT, Producible Electricity (reservoir)
+ITERATIONS, 10

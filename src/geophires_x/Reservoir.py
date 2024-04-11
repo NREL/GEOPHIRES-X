@@ -625,9 +625,11 @@ class Reservoir:
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
                         if model.reserv.gradient.value[position] > 1.0:
+                            # TODO refactor to avoid heuristic-based unit conversions
                             model.reserv.gradient.value[position] = model.reserv.gradient.value[
                                                                         position] / 1000.0  # convert C/m
                             model.reserv.gradient.CurrentUnits = TemperatureGradientUnit.DEGREESCPERM
+
                         if model.reserv.gradient.value[position] < 1e-6:
                             # convert 0 C/m gradients to very small number, avoids divide by zero errors later
                             model.reserv.gradient.value[position] = 1e-6

@@ -73,7 +73,7 @@ setup(
         'pandas',
         'matplotlib',
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
-        'h5py==3.9.0',
+        'h5py==3.10.0',
         'scipy',
         'iapws',
         'coolprop',

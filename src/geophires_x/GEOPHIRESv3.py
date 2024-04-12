@@ -42,30 +42,6 @@ def main(enable_geophires_logging_config=True):
     # write the outputs as JSON
     import jsons, json
 
-    # import pickle
-
-    # Use Pickle to dump the current model in its entirety
-#    pickle_outputfile = 'HDR.pkl'
-#    if len(sys.argv) > 2:
-#        pickle_outputfile = str(sys.argv[2])
-#        segs = pickle_outputfile.split('.')
-#        pickle_outputfile = segs[0] + '.pkl'
-#    with open(pickle_outputfile, 'wb') as f:
-#        pickle.dump(model, f)
-
-#    # Use Pickle to load an example model output
-#    with open('example1.pkl', 'rb') as f:
-#        mod1 = pickle.load(f)
-
-    # the is redundant, but used here as an example
- #   with open(pickle_outputfile, 'rb') as f:
- #       mod1a = pickle.load(f)
-
-    # Use recursive_diff to compare the two models
-#    from recursive_diff import recursive_diff
-#    for diff in recursive_diff(mod1.reserv, mod1a.reserv, abs_tol=0.0001):
-#        print(diff)
-
     jsons.suppress_warnings(True)
     json_resrv = jsons.dumps(model.reserv.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
     json_wells = jsons.dumps(model.wellbores.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)

@@ -1,7 +1,6 @@
-GEOPHIRES v3.0 Input File
-Created on 2024-04-12
-
-Investment Tax Credit (ITC) Example
+--- GEOPHIRES v3 Input File
+--- Created on 2024-04-12
+--- Investment Tax Credit (ITC) Example
 
 ***Subsurface technical parameters***
 *************************************

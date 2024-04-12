@@ -41,6 +41,7 @@ def main(enable_geophires_logging_config=True):
 
     # write the outputs as JSON
     import jsons, json
+
     jsons.suppress_warnings(True)
     json_resrv = jsons.dumps(model.reserv.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
     json_wells = jsons.dumps(model.wellbores.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
@@ -79,10 +80,6 @@ def main(enable_geophires_logging_config=True):
             # Now write each line to the screen
             for line in content:
                 sys.stdout.write(line)
-
-    # make district heating plot
-    if model.surfaceplant.plant_type.value == OptionList.PlantType.DISTRICT_HEATING:
-        model.outputs.MakeDistrictHeatingPlot(model)
 
     logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 

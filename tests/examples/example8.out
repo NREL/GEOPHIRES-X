@@ -63,7 +63,7 @@ Simulation Metadata
       Reservoir Model = Multiple Parallel Fractures Model
       Bottom-hole temperature:                               98.40 degC
       Fracture model = Square
-      Well seperation: fracture height:                     700.00 meter
+      Well separation: fracture height:                     700.00 meter
       Fracture area:                                     490000.00 m**2
       Reservoir volume calculated with fracture separation and number of fractures as input
       Number of fractures:                                    5.00
@@ -205,7 +205,7 @@ Year            Electricity             |            Heat                  |    
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
 Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
-  1      5.50           0.00   0.00     |    2.50    -21.06         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -21.06     -21.06
+  1      0.00           0.00   0.00     |    0.00    -21.06         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -21.06     -21.06
   2      5.50           0.00   0.00     |    2.50     0.82         1.25    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  0.44      0.82     -20.24
   3      5.50           0.00   0.00     |    2.50     0.82         2.51    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  0.44      0.82     -19.42
   4      5.50           0.00   0.00     |    2.50     0.83         3.78    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  0.44      0.83     -18.59

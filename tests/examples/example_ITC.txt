@@ -1,20 +1,15 @@
-GEOPHIRES v2.0 Input File
-Created on 2018-06-11
-Last modified on 2024-02-28
-Geothermal Electricity Problem using a Multiple Parallel Fractures Model
+GEOPHIRES v3.0 Input File
+Created on 2024-04-12
 
-Example PTC Description: This problem considers an EGS reservoir at 3km depth.
-Ramey's model is applied to simulate production wellbore heat losses. The heat
-is used in for electricity application with a reinjection temperature of 50deg.C.
-
+Investment Tax Credit (ITC) Example
 
 ***Subsurface technical parameters***
 *************************************
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
-Reservoir Depth,3,                     				---[km]
+Reservoir Depth,5,                     				---[km]
 Number of Segments,1,                  				---[-]
-Gradient 1,50,                          			---[deg.C/km]
-Maximum Temperature,400,                  			---[deg.C]
+Gradient 1,55,                          			---[deg.C/km]
+Maximum Temperature,500,                  			---[deg.C]
 Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]
 Production Well Diameter,7,		     			---[inch]

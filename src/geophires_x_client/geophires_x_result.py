@@ -27,6 +27,7 @@ class GeophiresXResult:
             'SUMMARY OF RESULTS': [
                 _StringValueField('End-Use Option'),
                 _StringValueField('End-Use'),
+                _StringValueField('Surface Application'),
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',

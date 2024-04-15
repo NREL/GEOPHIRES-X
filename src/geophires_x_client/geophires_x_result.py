@@ -144,7 +144,7 @@ class GeophiresXResult:
                 'Fracture area',
                 'Fracture width',
                 'Reservoir volume',
-                'Reservoir hydrostatic pressure',
+                'Average reservoir pressure',
                 'Plant outlet pressure',
                 'Production wellhead pressure',
                 'Productivity Index',

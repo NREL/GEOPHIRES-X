@@ -64,10 +64,10 @@ Simulation Metadata
       Reservoir Model = Multiple Parallel Fractures Model
       Bottom-hole temperature:                              170.00 degC
       Fracture model = Square
-      Well seperation: fracture height:                     900.00 meter
+      Well separation: fracture height:                     900.00 meter
       Fracture area:                                     810000.00 m**2
       Reservoir volume:                              1000000000 m**3
-      Reservoir hydrostatic pressure:                     29430.21 kPa
+      Average reservoir pressure:                           29430.21 kPa
       Plant outlet pressure:                              29705.96 kPa
       Production wellhead pressure:                       29774.91 kPa
       Productivity Index:                                     5.00 kg/sec/bar

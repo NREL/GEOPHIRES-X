@@ -33,7 +33,7 @@ RESOURCE CHARACTERISTICS,Geothermal gradient,,0.07,degC/m
 RESERVOIR PARAMETERS,Reservoir Model,,Single Fracture m/A Thermal Drawdown Model,
 RESERVOIR PARAMETERS,Bottom-hole temperature,,232.0,degC
 RESERVOIR PARAMETERS,Reservoir volume,,176000000,m**3
-RESERVOIR PARAMETERS,Reservoir hydrostatic pressure,,100.0,kPa
+RESERVOIR PARAMETERS,Average reservoir pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Plant outlet pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Injectivity Index,,5.0,kg/sec/bar
 RESERVOIR PARAMETERS,Reservoir density,,3000.0,kg/m**3

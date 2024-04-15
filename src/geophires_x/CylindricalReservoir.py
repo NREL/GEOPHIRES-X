@@ -244,20 +244,20 @@ class CylindricalReservoir(Reservoir):
                                                  ) / 1e15  # 10^15 J
         self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=model.reserv.lithostatic_pressure()
+            pressure=self.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.Trock.value)
         )
         self.rhowater.value = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=model.reserv.lithostatic_pressure()
+            pressure=self.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.Trock.value)
         )
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def lithostatic_pressure(self) -> PlainQuantity:
+    #def lithostatic_pressure(self) -> PlainQuantity:
         """
         @override
 
         Standard reservoir implementation uses depth but CylindricalReservoir sets depth to total drilled length
         """
-        return quantity(static_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                            self.InputDepth.quantity().to('m').magnitude), 'MPa')
+        def lithostatic_pressure(self, rho_rock: float, depth: float) -> PlainQuantity:
+            return quantity(static_pressure_MPa(rho_rock, depth), 'MPa')

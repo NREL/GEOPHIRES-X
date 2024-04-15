@@ -1005,9 +1005,9 @@ class Outputs:
                 reservoir_parameters.append(OutputTableItem('Reservoir impedance', '{0:10.2f}'.format(model.wellbores.impedance.value / 1000),
                                     model.wellbores.impedance.CurrentUnits.value))
             else:
-                reservoir_parameters.append(OutputTableItem('Reservoir hydrostatic pressure',
-                                                            '{0:10.2f}'.format(model.wellbores.Phydrostaticcalc.value),
-                                                            model.wellbores.Phydrostaticcalc.CurrentUnits.value))
+                reservoir_parameters.append(OutputTableItem('Average reservoir pressure',
+                                                            '{0:10.2f}'.format(np.average(model.wellbores.production_reservoir_pressure.value)),
+                                                            model.wellbores.production_reservoir_pressure.CurrentUnits.value))
                 reservoir_parameters.append(OutputTableItem('Plant outlet pressure', '{0:10.2f}'.format(
                     model.surfaceplant.plant_outlet_pressure.value),
                                                             model.surfaceplant.plant_outlet_pressure.CurrentUnits.value))
@@ -1672,7 +1672,7 @@ class Outputs:
                     if model.wellbores.impedancemodelused.value:
                         f.write(f'      Reservoir impedance:                              {model.wellbores.impedance.value/1000:10.2f} ' + model.wellbores.impedance.CurrentUnits.value + NL)
                     else:
-                        f.write(f'      Reservoir hydrostatic pressure:                   {model.wellbores.Phydrostaticcalc.value:10.2f} ' + model.wellbores.Phydrostaticcalc.CurrentUnits.value + NL)
+                        f.write(f'      Average reservoir pressure:                       {np.average(model.wellbores.production_reservoir_pressure.value):10.2f} ' + model.wellbores.production_reservoir_pressure.CurrentUnits.value + NL)
                         f.write(f'      Plant outlet pressure:                            {model.surfaceplant.plant_outlet_pressure.value:10.2f} ' + model.surfaceplant.plant_outlet_pressure.CurrentUnits.value + NL)
                         if model.wellbores.productionwellpumping.value:
                             f.write(f'      Production wellhead pressure:                     {model.wellbores.Pprodwellhead.value:10.2f} ' + model.wellbores.Pprodwellhead.CurrentUnits.value + NL)

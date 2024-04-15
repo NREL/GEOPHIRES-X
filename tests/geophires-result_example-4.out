@@ -70,7 +70,7 @@ Simulation Metadata
                They are only used for calculating remaining heat content.
       Reservoir volume provided as input
       Reservoir volume:                               125000000 m**3
-      Reservoir hydrostatic pressure:                       100.00 kPa
+      Average reservoir pressure:                             100.00 kPa
       Plant outlet pressure:                                445.96 kPa
       Production wellhead pressure:                         514.91 kPa
       Productivity Index:                                    10.00 kg/sec/bar

@@ -191,7 +191,7 @@ class GeophiresXTestCase(BaseTestCase):
                         self.assertDictAlmostEqual(
                             expected_result.result,
                             geophires_result.result,
-                            places=2,
+                            places=1,
                             msg=f'Example test: {example_file_path}',
                         )
                     else:

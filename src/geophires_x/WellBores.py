@@ -898,7 +898,7 @@ class WellBores:
         )
         self.injection_reservoir_pressure = self.OutputParameterDict[self.injection_reservoir_pressure.Name] = OutputParameter(
             Name="Calculated Injection Reservoir Pressure",
-            value=self.Phydrostatic.value,
+            value=-1,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
@@ -1092,7 +1092,21 @@ class WellBores:
                                                                               self.overpressure_depletion_rate.value)
 
         if self.overpressure_percentage.Provided:
-            # calculate the injection reservoir pressure as a function of time if overpressure is provided
+            # if we are doing an overpressure calculation, it is possible that the user has chosen to
+            # split the reservoir into two parts - the deeper, overpressured Production Reservoir,
+            # and a shallower, lower pressure Injection Reservoir.
+            # If so, calculate the injection reservoir pressure as a function of time if overpressure is provided.
+            # If the injection reservoir temperature or pressure are not provided, calculate a default for them.
+            if self.injection_reservoir_depth.Provided:  #this means they must be doing a split reservoir
+                if not self.injection_reservoir_temperature.Provided:
+                    self.injection_reservoir_temperature.value = (model.reserv.averagegradient.value * self.injection_reservoir_depth.value) + model.reserv.Tsurf.value
+                if self.injection_reservoir_pressure.value < 0:
+                    self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
+                                                                                        model.reserv.Tsurf.value,
+                                                                                        self.injection_reservoir_depth.value,
+                                                                                        model.reserv.averagegradient.value * 1000.0,
+                                                                                        model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
+                                                                                                               self.injection_reservoir_depth.value))
             self.injection_reservoir_initial_pressure.value = self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
                                                                                    model.reserv.Tsurf.value,
                                                                                    self.injection_reservoir_depth.value,

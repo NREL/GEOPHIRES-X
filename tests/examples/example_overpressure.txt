@@ -12,13 +12,13 @@ is used in for electricity application with a reinjection temperature of 50deg.C
 *************************************
 Overpressure Percentage, 155.0
 Overpressure Depletion Rate, 10.0
-Injection Reservoir Temperature, 101.1
-Injection Reservoir Depth, 1001.1
-Injection Reservoir Inflation Rate, 202.2
+Injection Reservoir Temperature, 101.1,      degC
+Injection Reservoir Depth, 1001.1,      meters
+Injection Reservoir Inflation Rate, 202.2,    kPa/yr
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
 Reservoir Depth,3,                     				---[km]
 Number of Segments,1,                  				---[-]
-Gradient 1,65,                          			---[deg.C/km]
+Gradient 1,50,                          			---[deg.C/km]
 Maximum Temperature,400,                  			---[deg.C]
 Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]
@@ -27,7 +27,7 @@ Injection Well Diameter,9,					---[inch]
 Ramey Production Wellbore Model,1,       			---0 if disabled  1 if enabled
 Production Wellbore Temperature Drop,.5,			---[deg.C]
 Injection Wellbore Temperature Gain,0,   			---[deg.C]
-Production Flow Rate per Well,80,       			---[kg/s]
+Production Flow Rate per Well,70,       			---[kg/s]
 Fracture Shape,3,                       			---[-] Should be 1 2 3 or 4. See manual for details
 Fracture Height,900, 						---[m]
 Reservoir Volume Option,3,              			---[-] Should be 1 2 3 or 4. See manual for details

@@ -40,8 +40,8 @@ def InjectionReservoirPressurePredictor(project_lifetime: int, timesteps_per_yea
     # Calculate the initial pressure
     pressure[0] = initial_pressure
     pressure_change_per_timestep = inflation_rate / timesteps_per_year
-    for timestep in range(1, project_lifetime * timesteps_per_year, 1):
-        pressure[timestep] = initial_pressure + (pressure_change_per_timestep * timestep)
+    for current_timestep in range(1, project_lifetime * timesteps_per_year):
+        pressure[current_timestep] = initial_pressure + (pressure_change_per_timestep * current_timestep)
     return pressure
 
 
@@ -78,7 +78,7 @@ def ReservoirPressurePredictor(project_lifetime: int, timesteps_per_year: int, i
     delta_pressure = (pressure[0] - initial_pressure)
     depletion_timesteps = int((100.0 / depletion_rate) * timesteps_per_year)
     pressure_change_per_timestep = delta_pressure / depletion_timesteps
-    for timestep in range(1, depletion_timesteps, 1):
+    for timestep in range(1, depletion_timesteps):
         pressure[timestep] = pressure[0] - (pressure_change_per_timestep * timestep)
         if pressure[timestep] < initial_pressure:
             # If the pressure drops below the hydrostatic pressure, set it to the hydrostatic pressure and break out

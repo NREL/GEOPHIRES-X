@@ -33,6 +33,7 @@ Reservoir Thermal Conductivity, 2.7
 End-Use Option, 1
 Economic Model, 1
 Power Plant Type, 3
+Well Drilling Cost Correlation, 1
 Circulation Pump Efficiency, .8
 Utilization Factor, .9
 Surface Temperature, 20

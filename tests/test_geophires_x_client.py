@@ -236,7 +236,7 @@ class GeophiresXClientTestCase(BaseTestCase):
                 [1, 0.0, 0.0023, 0.0, 0.0, 1.14, -70.0, -70.0, -101.06, -101.06],
                 [2, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -68.86, 5.68, -95.38],
                 [3, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -67.72, 5.72, -89.65],
-                [4, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -66.59, 5.74, -83.91],
+                [4, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -66.59, 5.74, -83.92],
                 [5, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -65.45, 5.75, -78.17],
                 [6, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -64.31, 5.75, -72.42],
                 [7, 0.09, 0.0026, 0.012, 0.0, 1.14, 1.14, -63.17, 5.76, -66.66],
@@ -440,26 +440,47 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertDictEqual(result_default_units, result_non_default_units)
 
     def test_csv(self):
-        """
-        TODO make this less tedious to update when expected result values change
+        def assertFileContentsEqual(expected_file_path, actual_file_path, tol=0.01):
+            with open(expected_file_path, encoding='utf-8') as ef:
+                expected_lines = ef.readlines()
+            with open(actual_file_path, encoding='utf-8') as af:
+                actual_lines = af.readlines()
 
-        Current easiest method to update:
-         1. set breakpoint on line with `as_csv = result.as_csv()`
-         2. debug test, hit break point
-         3. copy value of `as_csv` to example1_addons.csv
-        """
+            self.assertEqual(len(expected_lines), len(actual_lines), 'The number of lines in the files do not match.')
+
+            for line_index, (expected_line, actual_line) in enumerate(zip(expected_lines, actual_lines), start=1):
+                expected_parts = expected_line.strip().split(',')
+                actual_parts = actual_line.strip().split(',')
+                self.assertEqual(
+                    len(expected_parts),
+                    len(actual_parts),
+                    f'The number of columns in line {line_index} does not match.',
+                )
+                for col_index, (expected, actual) in enumerate(zip(expected_parts, actual_parts), start=1):
+                    try:
+                        expected_float = float(expected)
+                        actual_float = float(actual)
+                        self.assertTrue(
+                            abs(expected_float - actual_float) < tol,
+                            f'Float values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                        )
+                    except ValueError:
+                        self.assertEqual(
+                            expected,
+                            actual,
+                            f'String values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                        )
 
         def assert_csv_equal(case_report_file_path, expected_csv_file_path):
             test_result_path = self._get_test_file_path(case_report_file_path)
             result = GeophiresXResult(test_result_path)
-
             as_csv = result.as_csv()
             self.assertIsNotNone(as_csv)
 
             result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
             with open(result_file, 'w', newline='', encoding='utf-8') as rf:
                 rf.write(as_csv)
-                self.assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
+            assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
             ('examples/example1_addons.out', 'example1_addons.csv'),

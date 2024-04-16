@@ -59,7 +59,8 @@ Water Loss Fraction,.02,					---[-]
 Productivity Index,5,						---[kg/s/bar]
 Injectivity Index,5,						---[kg/s/bar]
 Injection Temperature,50,		 			---[deg.C]
-Maximum Drawdown,1,			  			---[-] no redrilling considered
+Maximum Drawdown,1,			  			---[-] no redrilling considered,
+Well Drilling Cost Correlation,1,		---[-] Use built-in correlations
 Reservoir Heat Capacity,1000,		  			---[J/kg/K]
 Reservoir Density,2700,			  			---[kg/m^3]
 Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]

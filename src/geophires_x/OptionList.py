@@ -53,27 +53,25 @@ class ReservoirVolume(str, Enum):
 class WellDrillingCostCorrelation(str, Enum):
     """Note: order must be retained since input is read as an int"""
 
-    VERTICAL_SMALL = "vertical open-hole, small diameter, ideal"
-    DEVIATED_SMALL = "deviated liner, small diameter, ideal"
-    VERTICAL_LARGE = "vertical open-hole, large diameter, ideal"
-    DEVIATED_LARGE = "deviated liner, large diameter, ideal"
+    VERTICAL_SMALL = "vertical small diameter, baseline"
+    DEVIATED_SMALL = "deviated small diameter, baseline"
+    VERTICAL_LARGE = "vertical large diameter, baseline"
+    DEVIATED_LARGE = "deviated large diameter, baseline"
 
     SIMPLE = "Simple"
 
-    VERTICAL_SMALL_BASE = "vertical small diameter, baseline"
     VERTICAL_SMALL_INT1 = "vertical small diameter, intermediate1"
     VERTICAL_SMALL_INT2 = "vertical small diameter, intermediate2"
-
-    DEVIATED_SMALL_BASE = "deviated small diameter, baseline"
     DEVIATED_SMALL_INT1 = "deviated small diameter, intermediate1"
     DEVIATED_SMALL_INT2 = "deviated small diameter, intermediate2"
-
-    VERTICAL_LARGE_BASE = "vertical large diameter, baseline"
     VERTICAL_LARGE_INT1 = "vertical large diameter, intermediate1"
     VERTICAL_LARGE_INT2 = "vertical large diameter, intermediate2"
-    DEVIATED_LARGE_BASE = "deviated large diameter, baseline"
     DEVIATED_LARGE_INT1 = "deviated large diameter, intermediate1"
     DEVIATED_LARGE_INT2 = "deviated large diameter, intermediate2"
+    VERTICAL_SMALL_IDEAL = "vertical open-hole, small diameter, ideal"
+    DEVIATED_SMALL_IDEAL = "deviated liner, small diameter, ideal"
+    VERTICAL_LARGE_IDEAL = "vertical open-hole, large diameter, ideal"
+    DEVIATED_LARGE_IDEAL = "deviated liner, large diameter, ideal"
 
 
 

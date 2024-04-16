@@ -1516,7 +1516,8 @@ class Outputs:
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
                 f.write('      End-Use Option: ' + str(model.surfaceplant.enduse_option.value.value) + NL)
-
+                if model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
+                    f.write('      Surface Application: ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]: # there is an electricity component
                     f.write(f'      Average Net Electricity Production:               {np.average(model.surfaceplant.NetElectricityProduced.value):10.2f} ' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + NL)
                 if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:    # there is a direct-use component

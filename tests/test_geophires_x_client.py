@@ -85,6 +85,18 @@ class GeophiresXClientTestCase(BaseTestCase):
         # Don't care about the value in this test - just that it's being read with the (LCOH)-suffixed name
         self.assertIsNotNone(result.direct_use_heat_breakeven_price_USD_per_MMBTU)
 
+    def test_surface_application_field(self):
+        for example_file, surface_application in [
+            ('examples/example10_HP.out', 'Heat Pump'),
+            ('examples/example11_AC.out', 'Absorption Chiller'),
+            ('examples/example12_DH.out', 'District Heating'),
+        ]:
+            with self.subTest(msg=example_file):
+                test_result_path = self._get_test_file_path(example_file)
+                result = GeophiresXResult(test_result_path)
+
+                assert result.result['SUMMARY OF RESULTS']['Surface Application']['value'] == surface_application
+
     def test_example_multiple_gradients_result(self):
         test_result_path = self._get_test_file_path('examples/example_multiple_gradients.out')
         result = GeophiresXResult(test_result_path)

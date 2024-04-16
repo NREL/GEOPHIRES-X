@@ -731,7 +731,7 @@
       "category": "Economics"
     },
     "Well Drilling Cost Correlation": {
-      "description": "Select the built-in horizontal well drilling and completion cost correlation. 1: vertical open-hole, small diameter; 2: deviated liner, small diameter; 3: vertical open-hole, large diameter; 4: deviated liner, large diameter; 5: Simple - user specified cost per meter",
+      "description": "Select the built-in horizontal well drilling and completion cost correlation. 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
       "type": "integer",
       "units": null,
       "category": "Economics"

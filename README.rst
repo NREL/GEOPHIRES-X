@@ -100,7 +100,7 @@ Steps:
 
    - Windows::
 
-       venv\Scripts\Activate.ps1
+       venv\Scripts\activate
 
    - macOS/Linux::
 

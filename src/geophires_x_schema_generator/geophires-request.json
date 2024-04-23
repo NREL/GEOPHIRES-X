@@ -731,7 +731,7 @@
       "category": "Economics"
     },
     "Well Drilling Cost Correlation": {
-      "description": "Select the built-in horizontal well drilling and completion cost correlation. 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
+      "description": "Select the built-in well drilling and completion cost correlation: 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
       "type": "integer",
       "units": null,
       "category": "Economics"
@@ -986,6 +986,36 @@
       "description": "CHP Electrical Plant Cost Allocation Ratio (cost electrical plant/total CAPEX)",
       "type": "number",
       "units": "",
+      "category": "Economics"
+    },
+    "Production Tax Credit Electricity": {
+      "description": "Production tax credit for electricity in $/kWh",
+      "type": "number",
+      "units": "USD/kWh",
+      "category": "Economics"
+    },
+    "Production Tax Credit Heat": {
+      "description": "Production tax credit for heat in $/MMBTU",
+      "type": "number",
+      "units": "USD/MMBTU",
+      "category": "Economics"
+    },
+    "Production Tax Credit Cooling": {
+      "description": "Production tax credit for cooling in $/MMBTU",
+      "type": "number",
+      "units": "USD/MMBTU",
+      "category": "Economics"
+    },
+    "Production Tax Credit Duration": {
+      "description": "Production tax credit for duration in years",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics"
+    },
+    "Production Tax Credit Inflation Adjusted": {
+      "description": "Production tax credit inflation adjusted",
+      "type": "boolean",
+      "units": null,
       "category": "Economics"
     },
     "Operation & Maintenance Cost of Surface Plant": {

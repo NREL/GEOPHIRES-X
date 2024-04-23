@@ -68,7 +68,7 @@ Simulation Metadata
       Number of fractures:                                   12.00
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
-      Average reservoir pressure:                         20849.48 kPa
+      Reservoir hydrostatic pressure:                     20849.48 kPa
       Plant outlet pressure:                                416.74 kPa
       Production wellhead pressure:                         485.69 kPa
       Productivity Index:                                    10.00 kg/sec/bar

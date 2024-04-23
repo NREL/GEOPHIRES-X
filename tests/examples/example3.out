@@ -70,7 +70,7 @@ Simulation Metadata
       Number of fractures:                                   12.00
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
-      Average reservoir pressure:                           29742.69 kPa
+      Reservoir hydrostatic pressure:                         29742.69 kPa
       Plant outlet pressure:                                100.00 kPa
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   3000.00 kg/m**3

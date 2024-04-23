@@ -67,7 +67,7 @@ Simulation Metadata
       Well separation: fracture height:                     900.00 meter
       Fracture area:                                     810000.00 m**2
       Reservoir volume:                              1000000000 m**3
-      Average reservoir pressure:                           68311.02 kPa
+      Reservoir hydrostatic pressure:                     68311.02 kPa
       Plant outlet pressure:                                100.00 kPa
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   2700.00 kg/m**3

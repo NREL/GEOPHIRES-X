@@ -11,18 +11,18 @@ import geophires_x.Model as Model
 from .OptionList import ReservoirModel
 
 
-def InjectionReservoirPressurePredictor(project_lifetime: int, timesteps_per_year: int, initial_pressure: float,
-                               inflation_rate: float) -> list:
+def InjectionReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
+                                        inflation_rate: float) -> list:
     """
     InjectionReservoirPressurePredictor builds the Injection Reservoir Pressure Array for the project lifetime
      based on the initial (perhaps hydrostatic) pressure and the inflation rate. There is no limit to how high the
         pressure can go.
-    :param project_lifetime: The lifetime of the project in years
-    :type project_lifetime: int
+    :param project_lifetime_yr: The lifetime of the project in years
+    :type project_lifetime_yr: int
     :param timesteps_per_year: The number of timesteps per year
     :type timesteps_per_year: int
-    :param initial_pressure: The initial pressure in kPa
-    :type initial_pressure: float
+    :param initial_pressure_kPa: The initial pressure in kPa
+    :type initial_pressure_kPa: float
     :param inflation_rate: The inflation rate in %/yr
     :type inflation_rate: float
     :return: pressure: The pressure array as a function of time.
@@ -30,7 +30,7 @@ def InjectionReservoirPressurePredictor(project_lifetime: int, timesteps_per_yea
     """
 
     # Initialize the pressure array with the initial hydrostatic pressure
-    pressure = [initial_pressure] * project_lifetime * timesteps_per_year
+    pressure = [initial_pressure_kPa] * project_lifetime_yr * timesteps_per_year
 
     # If the overpressure percentage is 0,
     # return the hydrostatic pressure array as a constant value equal to the initial hydrostatic pressure
@@ -38,25 +38,25 @@ def InjectionReservoirPressurePredictor(project_lifetime: int, timesteps_per_yea
         return pressure
 
     # Calculate the initial pressure
-    pressure[0] = initial_pressure
+    pressure[0] = initial_pressure_kPa
     pressure_change_per_timestep = inflation_rate / timesteps_per_year
-    for current_timestep in range(1, project_lifetime * timesteps_per_year):
-        pressure[current_timestep] = initial_pressure + (pressure_change_per_timestep * current_timestep)
+    for current_timestep in range(1, project_lifetime_yr * timesteps_per_year):
+        pressure[current_timestep] = initial_pressure_kPa + (pressure_change_per_timestep * current_timestep)
     return pressure
 
 
-def ReservoirPressurePredictor(project_lifetime: int, timesteps_per_year: int, initial_pressure: float,
+def ReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
                                overpressure_percentage: float, depletion_rate: float) -> list:
     """
     ReservoirPressurePredictor builds the Reservoir Pressure Array for the project lifetime based on the initial
     (likely hydrostatic) pressure. the overpressure percentage and the depletion rate. Don't let the pressure drop
     below the initial pressure.
-    :param project_lifetime: The lifetime of the project in years
-    :type project_lifetime: int
+    :param project_lifetime_yr: The lifetime of the project in years
+    :type project_lifetime_yr: int
     :param timesteps_per_year: The number of timesteps per year
     :type timesteps_per_year: int
-    :param initial_pressure: The hydrostatic pressure in kPa
-    :type initial_pressure: float
+    :param initial_pressure_kPa: The hydrostatic pressure in kPa
+    :type initial_pressure_kPa: float
     :param overpressure_percentage: The overpressure percentage in %
     :type overpressure_percentage: float
     :param depletion_rate: The depletion rate in %/yr
@@ -66,23 +66,23 @@ def ReservoirPressurePredictor(project_lifetime: int, timesteps_per_year: int, i
     """
 
     # Initialize the hydrostatic pressure array with the initial hydrostatic pressure
-    pressure = [initial_pressure] * project_lifetime * timesteps_per_year
+    pressure = [initial_pressure_kPa] * project_lifetime_yr * timesteps_per_year
 
-    # If the overpressure percentage is 0,
+    # If the overpressure percentage is 100,
     # return the hydrostatic pressure array as a constant value equal to the initial pressure
     if overpressure_percentage == 100.0:
         return pressure
 
     # Calculate the initial overpressure
-    pressure[0] = initial_pressure * (overpressure_percentage / 100)
-    delta_pressure = (pressure[0] - initial_pressure)
+    pressure[0] = initial_pressure_kPa * (overpressure_percentage / 100)
+    delta_pressure = (pressure[0] - initial_pressure_kPa)
     depletion_timesteps = int((100.0 / depletion_rate) * timesteps_per_year)
     pressure_change_per_timestep = delta_pressure / depletion_timesteps
     for timestep in range(1, depletion_timesteps):
         pressure[timestep] = pressure[0] - (pressure_change_per_timestep * timestep)
-        if pressure[timestep] < initial_pressure:
+        if pressure[timestep] < initial_pressure_kPa:
             # If the pressure drops below the hydrostatic pressure, set it to the hydrostatic pressure and break out
-            pressure[timestep] = initial_pressure
+            pressure[timestep] = initial_pressure_kPa
             break
     return pressure
 
@@ -164,7 +164,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     rhowater = np.array([
         density_water_kg_per_m3(
             t,
-            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.value),
+            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.quantity().to('m').magnitude),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -172,7 +172,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     muwater = np.array([
         viscosity_water_Pa_sec(
             t,
-            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.value),
+            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.quantity().to('m').magnitude),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -229,12 +229,12 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
     rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.value))
+                                                                   model.reserv.depth.quantity().to('m').magnitude))
                 * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
 
     # replace with correlation based on Tinjaverage
     muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.value)) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+                                                                   model.reserv.depth.quantity().to('m').magnitude)) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -896,6 +896,12 @@ class WellBores:
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
+        self.average_production_reservoir_pressure = self.OutputParameterDict[self.average_production_reservoir_pressure.Name] = OutputParameter(
+            Name="Average Reservoir Pressure",
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL
+        )
         self.injection_reservoir_pressure = self.OutputParameterDict[self.injection_reservoir_pressure.Name] = OutputParameter(
             Name="Calculated Injection Reservoir Pressure",
             value=-1,
@@ -1082,7 +1088,7 @@ class WellBores:
                                                                                 model.reserv.depth.quantity().to('m').magnitude,
                                                                                 model.reserv.averagegradient.value,
                                                                                 model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.value)) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
+                                                                   model.reserv.depth.quantity().to('m').magnitude)) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
             self.production_reservoir_pressure.CurrentUnits).magnitude
 
         self.production_reservoir_pressure.value = ReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,
@@ -1090,6 +1096,7 @@ class WellBores:
                                                                               self.production_reservoir_pressure.value,
                                                                               self.overpressure_percentage.value,
                                                                               self.overpressure_depletion_rate.value)
+        self.average_production_reservoir_pressure.value = np.average(self.production_reservoir_pressure.value)
 
         if self.overpressure_percentage.Provided:
             # if we are doing an overpressure calculation, it is possible that the user has chosen to
@@ -1106,13 +1113,13 @@ class WellBores:
                                                                                         self.injection_reservoir_depth.value,
                                                                                         model.reserv.averagegradient.value * 1000.0,
                                                                                         model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                                                               self.injection_reservoir_depth.value))
+                                                                                                               self.injection_reservoir_depth.quantity().to('m').magnitude))
             self.injection_reservoir_initial_pressure.value = self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
                                                                                    model.reserv.Tsurf.value,
                                                                                    self.injection_reservoir_depth.value,
                                                                                    model.reserv.averagegradient.value,
                                                                                    model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                                                                     self.injection_reservoir_depth.value))
+                                                                                                                     self.injection_reservoir_depth.quantity().to('m').magnitude))
 
 #            if not self.injection_reservoir_initial_pressure.Provided:
             self.injection_reservoir_pressure.value = InjectionReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,

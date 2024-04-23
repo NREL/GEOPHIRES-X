@@ -15,10 +15,15 @@ Overpressure Depletion Rate, 10.0
 Injection Reservoir Temperature, 101.1,      degC
 Injection Reservoir Depth, 1001.1,      meters
 Injection Reservoir Inflation Rate, 202.2,    kPa/yr
+Starting Electricity Sale Price,0.09
+Ending Electricity Sale Price,0.15
+Electricity Escalation Start Year,5
+Electricity Escalation Rate Per Year,0.012
+
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
 Reservoir Depth,3,                     				---[km]
 Number of Segments,1,                  				---[-]
-Gradient 1,50,                          			---[deg.C/km]
+Gradient 1,47,                          			---[deg.C/km]
 Maximum Temperature,400,                  			---[deg.C]
 Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]
@@ -57,11 +62,6 @@ Plant Lifetime,30,			  			---[years]
 Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
-Starting Electricity Sale Price,0.09
-Ending Electricity Sale Price,0.15
-Electricity Escalation Start Year,5
-Electricity Escalation Rate Per Year,0.012
-
 
 ***CAPITAL AND O&M COST PARAMETERS***
 *************************************

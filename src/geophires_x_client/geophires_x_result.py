@@ -189,6 +189,8 @@ class GeophiresXResult:
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
                 'Drilling and completion costs per well',
+                'Drilling and completion costs per production well',
+                'Drilling and completion costs per injection well',
                 'Stimulation costs',
                 'Surface power plant costs',
                 'of which Absorption Chiller Cost',
@@ -205,6 +207,8 @@ class GeophiresXResult:
                 # SUTRA
                 'Drilling and Completion Costs',
                 'Drilling and Completion Costs per Well',
+                'Drilling and completion costs per production well',
+                'Drilling and completion costs per injection well',
                 'Auxiliary Heater Cost',
                 'Pump Cost',
                 'Total Capital Costs',

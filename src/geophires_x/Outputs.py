@@ -253,7 +253,8 @@ def Write_HTML_Output(html_path: str, simulation_metadata: list, summary: list, 
                       engineering_parameters: list, resource_characteristics: list, reservoir_parameters: list,
                       reservoir_stimulation_results: list, CAPEX: list, OPEX: list, surface_equipment_results: list,
                       sdac_results: list, addon_results: list, hce: pd.DataFrame, ahce: pd.DataFrame,
-                      cashflow: pd.DataFrame, sdac_df: pd.DataFrame, addon_df: pd.DataFrame) -> None:
+                      cashflow: pd.DataFrame, pumping_power_profiles: pd.DataFrame,
+                      sdac_df: pd.DataFrame, addon_df: pd.DataFrame) -> None:
     """
     This function writes out the HTML output
     :param html_path: the path to the HTML output file
@@ -288,6 +289,8 @@ def Write_HTML_Output(html_path: str, simulation_metadata: list, summary: list, 
     :type ahce: pd.DataFrame
     :param cashflow: the revenue & cashflow profile
     :type cashflow: pd.DataFrame
+    :param pumping_power_profiles: the pumping power profiles
+    :type pd.DataFrame
     :param sdac_df: the sdac dataframe
     :type sdac_df: pd.DataFrame
     :param addon_df: the addon dataframe
@@ -325,6 +328,8 @@ def Write_HTML_Output(html_path: str, simulation_metadata: list, summary: list, 
     Write_Complex_HTML_Table('HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE', hce, 1, console)
     Write_Complex_HTML_Table('ANNUAL HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE', ahce, 1, console)
     Write_Complex_HTML_Table('REVENUE & CASHFLOW PROFILE', cashflow, 1, console)
+    if len(pumping_power_profiles) > 0:
+        Write_Complex_HTML_Table('PUMPING POWER PROFILES', pumping_power_profiles, 1, console)
     if len(addon_df) > 0:
         Write_Complex_HTML_Table('ADD-ON PROFILE', addon_df, 1, console)
     if len(sdac_df) > 0:
@@ -428,8 +433,8 @@ def Plot_Single_Graph(title: str, html_path: str, x: pd.array, y: pd.array, x_la
 
 
 def Plot_Tables_Into_HTML(enduse_option: intParameter, plant_type: intParameter, html_path: str,
-                          hce: pd.DataFrame, ahce: pd.DataFrame, cashflow: pd.DataFrame, sdac_df: pd.DataFrame,
-                          addon_df: pd.DataFrame) -> None:
+                          hce: pd.DataFrame, ahce: pd.DataFrame, cashflow: pd.DataFrame, pumping_power_profiles: pd.DataFrame,
+                          sdac_df: pd.DataFrame, addon_df: pd.DataFrame) -> None:
     """
     This function plots the tables into the HTML
     :param enduse_option: the end use option
@@ -444,6 +449,8 @@ def Plot_Tables_Into_HTML(enduse_option: intParameter, plant_type: intParameter,
     :type ahce: pd.DataFrame
     :param cashflow: the revenue & cashflow profile
     :type cashflow: pd.DataFrame
+    :param pumping_power_profiles: The pumping power profiles
+    :type pd.DataFrame
     :param sdac_df: the sdac dataframe
     :type sdac_df: pd.DataFrame
     :param addon_df: the addon dataframe
@@ -552,6 +559,15 @@ def Plot_Tables_Into_HTML(enduse_option: intParameter, plant_type: intParameter,
     Plot_Twin_Graph('REVENUE & CASHFLOW PROFILE: Project: Net Revenue and cashflow',
                     html_path, cashflow.values[0:, 1], cashflow.values[0:, 15], cashflow.values[0:, 16],
                     cashflow.columns[1].split('|')[0], cashflow.columns[15].split('|')[0], cashflow.columns[16].split('|')[0])
+
+    # Pumping Power Profiles Graphs
+    if len(pumping_power_profiles) > 0:
+        Plot_Twin_Graph('PUMPING POWER PROFILES: Production Pumping Power & Injection Pumping Power', html_path,
+                        pumping_power_profiles.values[0:, 1], pumping_power_profiles.values[0:, 2], pumping_power_profiles.values[0:, 3],
+                        pumping_power_profiles.columns[1].split('|')[0], pumping_power_profiles.columns[2].split('|')[0], pumping_power_profiles.columns[3].split('|')[0])
+        Plot_Single_Graph('PUMPING POWER PROFILES: Pumping Power', html_path,
+                            pumping_power_profiles.values[0:, 1], pumping_power_profiles.values[0:, 4], pumping_power_profiles.columns[1].split('|')[0],
+                            pumping_power_profiles.columns[4].split('|')[0])
 
     if len (addon_df) > 0:
         Plot_Twin_Graph('ADD-ON PROFILE: Electricity Annual Price vs. Revenue',
@@ -759,6 +775,7 @@ class Outputs:
         surface_equipment_results = []
         addon_results = []
         sdac_resa_results = []
+        pumping_power_results = []
 
         simulation_metadata.append(OutputTableItem('GEOPHIRES Version', geophires_x.__version__))
         simulation_metadata.append(OutputTableItem('GEOPHIRES Build Date', '2024-03-05'))
@@ -1006,8 +1023,8 @@ class Outputs:
                                     model.wellbores.impedance.CurrentUnits.value))
             else:
                 reservoir_parameters.append(OutputTableItem('Average reservoir pressure',
-                                                            '{0:10.2f}'.format(np.average(model.wellbores.production_reservoir_pressure.value)),
-                                                            model.wellbores.production_reservoir_pressure.CurrentUnits.value))
+                                                            '{0:10.2f}'.format(model.wellbores.average_production_reservoir_pressure.value),
+                                                            model.wellbores.average_production_reservoir_pressure.CurrentUnits.value))
                 reservoir_parameters.append(OutputTableItem('Plant outlet pressure', '{0:10.2f}'.format(
                     model.surfaceplant.plant_outlet_pressure.value),
                                                             model.surfaceplant.plant_outlet_pressure.CurrentUnits.value))
@@ -1099,8 +1116,18 @@ class Outputs:
         if not model.economics.totalcapcost.Valid:
             CAPEX.append(OutputTableItem('Drilling and completion costs', '{0:10.2f}'.format(model.economics.Cwell.value),
                                 model.economics.Cwell.CurrentUnits.value))
-            CAPEX.append(OutputTableItem('Drilling and completion costs per well', '{0:10.2f}'.format(
-                model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value)),
+
+            if model.economics.cost_one_production_well.value != model.economics.cost_one_injection_well.value and \
+                model.economics.cost_one_injection_well.value != -1:
+                CAPEX.append(OutputTableItem('Drilling and completion costs per production well',
+                                             '{0:10.2f}'.format(model.economics.cost_one_production_well.value,
+                                              model.economics.cost_one_production_well.CurrentUnits.value)))
+                CAPEX.append(OutputTableItem('Drilling and completion costs per injection well, '
+                                             '{0:10.2f}'.format(model.economics.cost_one_injection_well.value,
+                                             model.economics.cost_one_injection_well.CurrentUnits.value)))
+            else:
+                CAPEX.append(OutputTableItem('Drilling and completion costs per well', '{0:10.2f}'.format(
+                    model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value)),
                                          model.economics.Cwell.CurrentUnits.value))
             CAPEX.append(OutputTableItem('Stimulation costs', '{0:10.2f}'.format(model.economics.Cstim.value),
                                          model.economics.Cstim.CurrentUnits.value))
@@ -1492,6 +1519,26 @@ class Outputs:
             f'Project:Net Cashflow ({econ.TotalCummRevenue.CurrentUnits.value})|:5.2f'] = econ.TotalCummRevenue.value
         cashflow = cashflow.reset_index()
 
+        # Build the data frame to hold the pumping power profiles
+        pumping_power_profiles: pd.DataFrame = pd.DataFrame()
+
+        if model.wellbores.overpressure_percentage.Provided and model.wellbores.injection_reservoir_depth.Provided:
+            # add the columns as needed based on the output.
+            # Note that the correct format for that column is stashed in the title of that column
+            # so that it can be used in the write statement.
+            pumping_power_profiles[f'Year|:2.0f'] = [i for i in range(1, (model.surfaceplant.plant_lifetime.value + 1))]
+            pumping_power_profiles[f'Prod Pump Power ({model.wellbores.PumpingPowerProd.CurrentUnits.value})|:8.4f'] = ShortenArrayToAnnual(
+                model.wellbores.PumpingPowerProd.value,
+                model.surfaceplant.plant_lifetime.value, model.economics.timestepsperyear.value)
+            pumping_power_profiles[f'Inject Pump Power ({model.wellbores.PumpingPowerInj.CurrentUnits.value})|:8.4f'] = ShortenArrayToAnnual(
+                model.wellbores.PumpingPowerInj.value,
+                model.surfaceplant.plant_lifetime.value, model.economics.timestepsperyear.value)
+            pumping_power_profiles[f'Pump Power ({model.wellbores.PumpingPower.CurrentUnits.value})|:8.4f'] = ShortenArrayToAnnual(
+                model.wellbores.PumpingPower.value,
+                model.surfaceplant.plant_lifetime.value, model.economics.timestepsperyear.value)
+
+        pumping_power_profiles = pumping_power_profiles.reset_index()
+
         addon_df = pd.DataFrame()
         sdac_df = pd.DataFrame()
         addon_results: list[OutputTableItem] = []
@@ -1673,7 +1720,7 @@ class Outputs:
                     if model.wellbores.impedancemodelused.value:
                         f.write(f'      Reservoir impedance:                              {model.wellbores.impedance.value/1000:10.2f} ' + model.wellbores.impedance.CurrentUnits.value + NL)
                     else:
-                        f.write(f'      Average reservoir pressure:                       {np.average(model.wellbores.production_reservoir_pressure.value):10.2f} ' + model.wellbores.production_reservoir_pressure.CurrentUnits.value + NL)
+                        f.write(f'      Average reservoir pressure:                       {model.wellbores.average_production_reservoir_pressure.value:10.2f} ' + model.wellbores.average_production_reservoir_pressure.CurrentUnits.value + NL)
                         f.write(f'      Plant outlet pressure:                            {model.surfaceplant.plant_outlet_pressure.value:10.2f} ' + model.surfaceplant.plant_outlet_pressure.CurrentUnits.value + NL)
                         if model.wellbores.productionwellpumping.value:
                             f.write(f'      Production wellhead pressure:                     {model.wellbores.Pprodwellhead.value:10.2f} ' + model.wellbores.Pprodwellhead.CurrentUnits.value + NL)
@@ -1726,7 +1773,12 @@ class Outputs:
                 f.write(NL)
                 if not model.economics.totalcapcost.Valid:
                     f.write(f'         Drilling and completion costs:                 {model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
-                    f.write(f'         Drilling and completion costs per well:        {model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
+                    if econ.cost_one_production_well.value != econ.cost_one_injection_well.value and \
+                            model.economics.cost_one_injection_well.value != -1:
+                        f.write(f'             Drilling and completion costs per production well:   {econ.cost_one_production_well.value:10.2f} ' + econ.cost_one_production_well.CurrentUnits.value + NL)
+                        f.write(f'             Drilling and completion costs per injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)
+                    else:
+                        f.write(f'         Drilling and completion costs per well:        {model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'         Stimulation costs:                             {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
                     f.write(f'         Surface power plant costs:                     {model.economics.Cplant.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
                     if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
@@ -2015,6 +2067,22 @@ class Outputs:
                         f'{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
                 f.write(NL)
 
+            # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
+            if model.wellbores.overpressure_percentage.Provided and model.wellbores.injection_reservoir_depth.Provided:
+                f.write(NL)
+                f.write('                            ***************************************\n')
+                f.write('                            *  RESERVOIR POWER REQUIRED PROFILES  *\n')
+                f.write('                            ***************************************\n')
+                f.write('  YEAR     PROD PUMP     INJECT PUMP     TOTAL PUMP\n')
+                f.write('             POWER          POWER           POWER\n')
+                f.write('                                     (' + model.wellbores.ProducedTemperature.CurrentUnits.value+')               (' + model.wellbores.PumpingPower.CurrentUnits.value + ')              (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  (%)\n')
+                for i in range(0, model.surfaceplant.plant_lifetime.value):
+                    f.write('  {0:2.0f}         {1:8.4f}          {2:8.4f}              {3:8.4f}'.format(i+1,
+                        model.wellbores.PumpingPowerProd.value[i*model.economics.timestepsperyear.value],
+                        model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
+                        model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
+                f.write(NL)
+
             if model.economics.DoAddOnCalculations.value:
                 addon_df, addon_results = model.addoutputs.PrintOutputs(model)
             if model.economics.DoSDACGTCalculations.value:
@@ -2032,7 +2100,7 @@ class Outputs:
         if self.text_output_file.Provided:
             Write_Text_Output(self.output_file, simulation_metadata, summary, economic_parameters,engineering_parameters,
                               resource_characteristics, reservoir_parameters, reservoir_stimulation_results, CAPEX, OPEX,
-                              surface_equipment_results, sdac_results, addon_results, hce, ahce, cashflow, sdac_df, addon_df)
+                              surface_equipment_results, sdac_results, addon_results, hce, ahce, cashflow, pumping_power_profiles, sdac_df, addon_df)
 
             # Get rid of any trailing spaces in that output file - they are confusing the testing code
             with open(self.output_file, 'r+') as fp:
@@ -2050,10 +2118,10 @@ class Outputs:
             Write_HTML_Output(self.html_output_file.value, simulation_metadata, summary, economic_parameters,
                               engineering_parameters, resource_characteristics, reservoir_parameters,
                               reservoir_stimulation_results, CAPEX, OPEX, surface_equipment_results, sdac_results,
-                              addon_results, hce, ahce, cashflow, sdac_df, addon_df)
+                              addon_results, hce, ahce, cashflow, pumping_power_profiles, sdac_df, addon_df)
 
             Plot_Tables_Into_HTML(model.surfaceplant.enduse_option, model.surfaceplant.plant_type,
-                                  self.html_output_file.value, hce, ahce, cashflow, sdac_df, addon_df)
+                                  self.html_output_file.value, hce, ahce, cashflow, pumping_power_profiles, sdac_df, addon_df)
             # make district heating plot
             if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                 MakeDistrictHeatingPlot(self.html_output_file.value, model.surfaceplant.dh_geothermal_heating.value,

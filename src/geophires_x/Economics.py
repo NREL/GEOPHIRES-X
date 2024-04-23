@@ -9,6 +9,109 @@ from geophires_x.Parameter import intParameter, floatParameter, OutputParameter,
 from geophires_x.Units import *
 
 
+def CalculateCostOfOneWell(model: Model, depth_m: float, well_correlation: int, vertical_drilling_cost_per_m: float,
+                           fixed_well_cost_name: str, well_cost_adjustment_factor: float) -> float:
+    """
+    CalculateCostOfOneWell calculates the cost of one well based on the depth of the well and the cost correlation.
+    :param model: The model object
+    :type model: :class:`~geophires
+    :param depth_m: The depth of the well in meters
+    :type depth_m: float
+    :param well_correlation: The well correlation
+    :type well_correlation: int
+    :param vertical_drilling_cost_per_m: The vertical drilling cost per meter in $/m
+    :type vertical_drilling_cost_per_m: float
+    :param fixed_well_cost_name: The fixed well cost name
+    :type fixed_well_cost_name: str
+    :param well_cost_adjustment_factor: The well cost adjustment factor
+    :type well_cost_adjustment_factor: float
+    :return: cost_of_one_well: The cost of one well in MUSD
+    :rtype: float
+    """
+    # Check if  well depth is out of standard bounds for cost correlation
+    correlations_min_valid_depth_m = 500.
+    correlations_max_valid_depth_m = 7000.
+    cost_of_one_well = 0.0
+
+    if depth_m < correlations_min_valid_depth_m and not well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        well_correlation = WellDrillingCostCorrelation.SIMPLE
+        model.logger.warning(
+            f'Invalid cost correlation specified ({well_correlation}) for drilling depth '
+            f'<{correlations_min_valid_depth_m}m ({depth_m}m). '
+            f'Falling back to simple user-specified cost '
+            f'({vertical_drilling_cost_per_m} per meter)'
+        )
+
+    if depth_m > correlations_max_valid_depth_m and not well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        model.logger.warning(
+            f'{well_correlation} may be invalid for drilling depth '
+            f'>{correlations_max_valid_depth_m}m ({depth_m}m). '
+            f'Consider using {WellDrillingCostCorrelation.SIMPLE} (per-meter cost) or '
+            f'{fixed_well_cost_name} (fixed cost per well) instead.'
+        )
+
+    if well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        # using the "Configuration" keywords means we are doing an AGS calculation
+        if hasattr(model.wellbores, 'Configuration'):
+            if model.wellbores.Configuration.value is Configuration.ULOOP:
+                # found out if we are  using simple cylindrical model, which has an Input and Output Depth
+                if hasattr(model.reserv, 'InputDepth'):
+                    # cost of one closed-loop well = cost of 2 verticals + cost of horizontal section(s)
+                    cost_of_one_well = ((vertical_drilling_cost_per_m * (model.reserv.InputDepth.value * 1000.0)) +
+                                   (vertical_drilling_cost_per_m * (model.reserv.OutputDepth.value * 1000.0)) +
+                                   (model.wellboew.numnonverticalsections.value *
+                                    model.wellbores.Nonvertical_drilling_cost_per_m.value *
+                                    model.wellbores.Nonvertical_length.value)) * 1E-6
+                else:
+                    if hasattr(model.wellbores, 'Nonvertical_length'):
+                        cost_of_one_well = ((2 * vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) +
+                                       (model.wellbores.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
+                    else:
+                        cost_of_one_well = (2 * vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) * 1E-6
+            else:  # Coaxial
+                cost_of_one_well = ((vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) +
+                               (model.wellbores.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
+        else:
+            cost_of_one_well = vertical_drilling_cost_per_m * model.reserv.depth.quantity().to('m').magnitude * 1E-6
+
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
+        cost_of_one_well = (0.30212 * depth_m ** 2 + 584.91124 * depth_m + 751368.47270) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE:
+        cost_of_one_well = (0.28180 * depth_m ** 2 + 1275.52130 * depth_m + 632315.12640) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL:
+        cost_of_one_well = (0.28977 * depth_m ** 2 + 882.15067 * depth_m + 680562.50150) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE:
+        cost_of_one_well = (0.25528 * depth_m ** 2 + 1716.71568 * depth_m + 500866.89110) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
+        cost_of_one_well = (0.13710 * depth_m ** 2 + 129.61033 * depth_m + 1205587.57100) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
+        cost_of_one_well = (0.18927 * depth_m ** 2 + 293.45174 * depth_m + 1326526.31300) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
+        cost_of_one_well = (0.15340 * depth_m ** 2 + 120.31700 * depth_m + 1431801.54400) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
+        cost_of_one_well = (0.19950 * depth_m ** 2 + 296.13011 * depth_m + 1697867.70900) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
+        cost_of_one_well = (0.00804 * depth_m ** 2 + 455.60507 * depth_m + 921007.68680) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
+        cost_of_one_well = (0.00315 * depth_m ** 2 + 782.69676 * depth_m + 983620.25270) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
+        cost_of_one_well = (0.00854 * depth_m ** 2 + 506.08357 * depth_m + 1057330.39000) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
+        cost_of_one_well = (0.00380 * depth_m ** 2 + 838.90249 * depth_m + 1181947.04400) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
+        cost_of_one_well = (0.00252 * depth_m ** 2 + 439.44503 * depth_m + 590611.90110) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
+        cost_of_one_well = (-0.00240 * depth_m ** 2 + 752.93946 * depth_m + 524337.65380) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
+        cost_of_one_well = (0.00719 * depth_m ** 2 + 455.85233 * depth_m + 753377.73080) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
+        cost_of_one_well = (0.00376 * depth_m ** 2 + 762.52696 * depth_m + 765103.07690) * 1E-6
+
+    # account for adjustment factor
+    cost_of_one_well = well_cost_adjustment_factor * cost_of_one_well
+    return cost_of_one_well
+
+
 def BuildPTCModel(plantlifetime: int, duration: int, ptc_price: float,
                   ptc_inflation_adjusted: bool, inflation_rate: float) -> list:
     """
@@ -494,7 +597,7 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for built-in exploration capital cost correlation"
         )
-        self.ccwellfixed = self.ParameterDict[self.ccwellfixed.Name] = floatParameter(
+        self.per_production_well_cost = self.ParameterDict[self.per_production_well_cost.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost",
             DefaultValue=-1.0,
             Min=0,
@@ -506,7 +609,19 @@ class Economics:
             Valid=False,
             ToolTipText="Well Drilling and Completion Capital Cost"
         )
-        self.ccwelladjfactor = self.ParameterDict[self.ccwelladjfactor.Name] = floatParameter(
+        self.per_injection_well_cost = self.ParameterDict[self.per_injection_well_cost.Name] = floatParameter(
+            "Injection Well Drilling and Completion Capital Cost",
+            DefaultValue=self.per_production_well_cost.value,
+            Min=0,
+            Max=200,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            Valid=False,
+            ToolTipText="Injection Well Drilling and Completion Capital Cost"
+        )
+        self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
             DefaultValue=1.0,
             Min=0,
@@ -517,6 +632,18 @@ class Economics:
             Provided=False,
             Valid=True,
             ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor"
+        )
+        self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
+            "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
+            DefaultValue=self.production_well_cost_adjustment_factor.value,
+            Min=0,
+            Max=10,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            Provided=False,
+            Valid=True,
+            ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         )
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
             "Wellfield O&M Cost",
@@ -1327,7 +1454,6 @@ class Economics:
         self.annualheatincome = 0.0
         self.InputFile = ""
         self.Cplantcorrelation = 0.0
-        self.C1well = 0.0
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
@@ -1451,7 +1577,6 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-
         # heat pump
         self.averageannualheatpumpelectricitycost = self.OutputParameterDict[
             self.averageannualheatpumpelectricitycost.Name] = OutputParameter(
@@ -1460,7 +1585,6 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
             Name="Peaking boiler cost",
@@ -1605,6 +1729,18 @@ class Economics:
         )
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
+        )
+        self.cost_one_production_well = self.OutputParameterDict[self.cost_one_production_well.Name] = OutputParameter(
+            Name="Cost of One Production Well",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
+        )
+        self.cost_one_injection_well = self.OutputParameterDict[self.cost_one_injection_well.Name] = OutputParameter(
+            Name="Cost of One Injection Well",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1764,12 +1900,12 @@ class Economics:
                                                      " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Well Drilling and Completion Capital Cost Adjustment Factor":
-                        if self.ccwellfixed.Valid and ParameterToModify.Valid:
+                        if self.per_production_well_cost.Valid and ParameterToModify.Valid:
                             print("Warning: Provided well drilling and completion cost adjustment factor not" +
                                   " considered because valid total well drilling and completion cost provided.")
                             model.logger.warning("Provided well drilling and completion cost adjustment factor not" +
                                                  " considered because valid total well drilling and completion cost provided.")
-                        elif not self.ccwellfixed.Provided and not self.ccwelladjfactor.Provided:
+                        elif not self.per_production_well_cost.Provided and not self.production_well_cost_adjustment_factor.Provided:
                             ParameterToModify.value = 1.0
                             print("Warning: No valid well drilling and completion total cost or adjustment" +
                                   " factor provided. GEOPHIRES will assume default built-in well drilling and" +
@@ -1778,15 +1914,15 @@ class Economics:
                                 "No valid well drilling and completion total cost or adjustment factor" +
                                 " provided. GEOPHIRES will assume default built-in well drilling and completion cost" +
                                 " correlation with adjustment factor = 1.")
-                        elif self.ccwellfixed.Provided and not self.ccwellfixed.Valid:
+                        elif self.per_production_well_cost.Provided and not self.per_production_well_cost.Valid:
                             print("Warning: Provided well drilling and completion cost outside of range 0-1000." +
                                   " GEOPHIRES will assume default built-in well drilling and completion cost correlation" +
                                   " with adjustment factor = 1.")
                             model.logger.warning("Provided well drilling and completion cost outside of range 0-1000." +
                                                  " GEOPHIRES will assume default built-in well drilling and completion cost correlation with" +
                                                  " adjustment factor = 1.")
-                            self.ccwelladjfactor.value = 1.0
-                        elif not self.ccwellfixed.Provided and self.ccwelladjfactor.Provided and not self.ccwelladjfactor.Valid:
+                            self.production_well_cost_adjustment_factor.value = 1.0
+                        elif not self.per_production_well_cost.Provided and self.production_well_cost_adjustment_factor.Provided and not self.production_well_cost_adjustment_factor.Valid:
                             print("Warning: Provided well drilling and completion cost adjustment factor outside" +
                                   " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
                                   " cost correlation with adjustment factor = 1.")
@@ -1794,7 +1930,7 @@ class Economics:
                                 "Provided well drilling and completion cost adjustment factor outside" +
                                 " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
                                 " cost correlation with adjustment factor = 1.")
-                            self.ccwelladjfactor.value = 1.0
+                            self.production_well_cost_adjustment_factor.value = 1.0
                     elif ParameterToModify.Name == "Wellfield O&M Cost Adjustment Factor":
                         if self.oamtotalfixed.Valid:
                             if self.oamwellfixed.Provided:
@@ -2040,98 +2176,33 @@ class Economics:
         # well costs (using GeoVision drilling correlations). These are calculated whether totalcapcostvalid = 1
         # start with the cost of one well
         # C1well is well drilling and completion cost in M$/well
-        if self.ccwellfixed.Valid:
-            self.C1well = self.ccwellfixed.value
-            self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
+        if self.per_production_well_cost.Valid:
+            self.cost_one_production_well.value = self.per_production_well_cost.value
+            if not self.per_injection_well_cost.Provided:
+                self.cost_one_injection_well.value = self.per_production_well_cost.value
+            else:
+                self.cost_one_injection_well.value = self.per_injection_well_cost.value
+            self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
+                                (self.cost_one_injection_well.value * model.wellbores.ninj.value))
         else:
-            # Check if  well depth is out of standard bounds for cost correlation
-            checkdepth_m = model.reserv.depth.quantity().to('m').magnitude
-
-            correlations_min_valid_depth_m = 500.
-            correlations_max_valid_depth_m = 7000.
-
-            if (checkdepth_m < correlations_min_valid_depth_m
-                and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
-
-                self.wellcorrelation.value = WellDrillingCostCorrelation.SIMPLE
-                model.logger.warning(
-                    f'Invalid cost correlation specified ({self.wellcorrelation.value}) for drilling depth '
-                    f'<{correlations_min_valid_depth_m}m ({checkdepth_m}m). '
-                    f'Falling back to simple user-specified cost '
-                    f'({self.Vertical_drilling_cost_per_m.value} per meter)'
-                )
-
-            if (checkdepth_m > correlations_max_valid_depth_m
-                and not self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE):
-                model.logger.warning(
-                    f'{self.wellcorrelation.value} may be invalid for drilling depth '
-                    f'>{correlations_max_valid_depth_m}m ({checkdepth_m}m). '
-                    f'Consider using {WellDrillingCostCorrelation.SIMPLE} (per-meter cost) or '
-                    f'{self.ccwellfixed.Name} (fixed cost per well) instead.'
-                )
-
-
-            if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
-                # using the "Configuration" keywords means we are doing an AGS calculation
-                if hasattr(model.wellbores, 'Configuration'):
-                    if model.wellbores.Configuration.value == Configuration.ULOOP:
-                        # found out if we are  using simple cylindrical model, which has an Input and Output Depth
-                        if hasattr(model.reserv, 'InputDepth'):
-                            # cost of one closed-loop well = cost of 2 verticals + cost of horizontal section(s)
-                            self.C1well = ((self.Vertical_drilling_cost_per_m.value * (model.reserv.InputDepth.value * 1000.0)) +
-                                           (self.Vertical_drilling_cost_per_m.value * (model.reserv.OutputDepth.value * 1000.0)) +
-                                           (model.wellboew.numnonverticalsections.value * self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
-                        else:
-                            if hasattr(model.wellbores, 'Nonvertical_length'):
-                                self.C1well = ((2 * self.Vertical_drilling_cost_per_m.value * (model.reserv.depth.value * 1000.0)) +
-                                               (self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
-                            else:
-                                self.C1well = (2 * self.Vertical_drilling_cost_per_m.value * (model.reserv.depth.value * 1000.0)) * 1E-6
-                    else:  # Coaxial
-                        self.C1well = ((self.Vertical_drilling_cost_per_m.value * (model.reserv.depth.value * 1000.0)) +
-                                       (self.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
-                else:
-                    self.C1well = self.Vertical_drilling_cost_per_m.value * model.reserv.depth.quantity().to(
-                        'm').magnitude * 1E-6
-
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL:
-                self.C1well = (0.30212 * checkdepth_m ** 2 + 584.91124 * checkdepth_m + 751368.47270) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE:
-                self.C1well = (0.28180 * checkdepth_m ** 2 + 1275.52130 * checkdepth_m + 632315.12640) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL:
-                self.C1well = (0.28977 * checkdepth_m ** 2 + 882.15067 * checkdepth_m + 680562.50150) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE:
-                self.C1well = (0.25528 * checkdepth_m ** 2 + 1716.71568 * checkdepth_m + 500866.89110) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
-                self.C1well = (0.13710 * checkdepth_m ** 2 + 129.61033 * checkdepth_m + 1205587.57100) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
-                self.C1well = (0.18927 * checkdepth_m ** 2 + 293.45174 * checkdepth_m + 1326526.31300) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
-                self.C1well = (0.15340 * checkdepth_m ** 2 + 120.31700 * checkdepth_m + 1431801.54400) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
-                self.C1well = (0.19950 * checkdepth_m ** 2 + 296.13011 * checkdepth_m + 1697867.70900) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
-                self.C1well = (0.00804 * checkdepth_m ** 2 + 455.60507 * checkdepth_m + 921007.68680) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
-                self.C1well = (0.00315 * checkdepth_m ** 2 + 782.69676 * checkdepth_m + 983620.25270) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
-                self.C1well = (0.00854 * checkdepth_m ** 2 + 506.08357 * checkdepth_m + 1057330.39000) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
-                self.C1well = (0.00380 * checkdepth_m ** 2 + 838.90249 * checkdepth_m + 1181947.04400) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
-                self.C1well = (0.00252 * checkdepth_m ** 2 + 439.44503 * checkdepth_m + 590611.90110) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
-                self.C1well = (-0.00240 * checkdepth_m ** 2 + 752.93946 * checkdepth_m + 524337.65380) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
-                self.C1well = (0.00719 * checkdepth_m ** 2 + 455.85233 * checkdepth_m + 753377.73080) * 1E-6
-            elif self.wellcorrelation.value == WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
-                self.C1well = (0.00376 * checkdepth_m ** 2 + 762.52696 * checkdepth_m + 765103.07690) * 1E-6
-            # account for adjustment factor
-            self.C1well = self.ccwelladjfactor.value * self.C1well
+            self.cost_one_production_well.value = CalculateCostOfOneWell(model, model.reserv.depth.quantity().to('m').magnitude,
+                                                                   self.wellcorrelation.value,
+                                                                   self.Vertical_drilling_cost_per_m.value,
+                                                                   self.per_production_well_cost.Name,
+                                                                   self.production_well_cost_adjustment_factor.value)
+            if model.wellbores.ninj.value == 0:
+                self.cost_one_injection_well.value = -1.0
+            else:
+                self.cost_one_injection_well.value = CalculateCostOfOneWell(model, model.wellbores.injection_reservoir_depth.value,
+                                                                   self.wellcorrelation.value,
+                                                                   self.Vertical_drilling_cost_per_m.value,
+                                                                   self.per_injection_well_cost.Name,
+                                                                   self.injection_well_cost_adjustment_factor.value)
 
             # cost of the well field
-            self.Cwell.value = 1.05 * self.C1well * (
-                    model.wellbores.nprod.value + model.wellbores.ninj.value)  # 1.05 for 5% indirect costs
+            # 1.05 for 5% indirect costs
+            self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
+                                          (self.cost_one_injection_well.value * model.wellbores.ninj.value))
 
         # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
         if self.ccstimfixed.Valid:
@@ -2403,7 +2474,7 @@ class Economics:
                 self.Cexpl.value = self.ccexplfixed.value
             else:
                 self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * 1.12 * (
-                        1. + self.C1well * 0.6)  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
 
             # Surface Piping Length Costs (M$) #assumed $750k/km
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value

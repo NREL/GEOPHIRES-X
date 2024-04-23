@@ -768,7 +768,7 @@ class Reservoir:
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def lithostatic_pressure(self, rho_rock: float, depth: float) -> PlainQuantity:
-        return quantity(static_pressure_MPa(rho_rock, depth), 'MPa')
+    def lithostatic_pressure(self, rho_rock_kg_per_m3: float, depth_m: float) -> PlainQuantity:
+        return quantity(static_pressure_MPa(rho_rock_kg_per_m3, depth_m), 'MPa')
 
 

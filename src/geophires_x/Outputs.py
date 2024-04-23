@@ -1720,7 +1720,12 @@ class Outputs:
                     if model.wellbores.impedancemodelused.value:
                         f.write(f'      Reservoir impedance:                              {model.wellbores.impedance.value/1000:10.2f} ' + model.wellbores.impedance.CurrentUnits.value + NL)
                     else:
-                        f.write(f'      Average reservoir pressure:                       {model.wellbores.average_production_reservoir_pressure.value:10.2f} ' + model.wellbores.average_production_reservoir_pressure.CurrentUnits.value + NL)
+                        if model.wellbores.overpressure_percentage.Provided:
+                            # write the reservoir pressure as an average in the overpressure case
+                            f.write(f'      Average reservoir pressure:                       {model.wellbores.average_production_reservoir_pressure.value:10.2f} ' + model.wellbores.average_production_reservoir_pressure.CurrentUnits.value + NL)
+                        else:
+                            # write the reservoir pressure as a single value
+                            f.write(f'      Reservoir hydrostatic pressure:                       {model.wellbores.production_reservoir_pressure.value[0]:10.2f} ' + model.wellbores.production_reservoir_pressure.CurrentUnits.value + NL)
                         f.write(f'      Plant outlet pressure:                            {model.surfaceplant.plant_outlet_pressure.value:10.2f} ' + model.surfaceplant.plant_outlet_pressure.CurrentUnits.value + NL)
                         if model.wellbores.productionwellpumping.value:
                             f.write(f'      Production wellhead pressure:                     {model.wellbores.Pprodwellhead.value:10.2f} ' + model.wellbores.Pprodwellhead.CurrentUnits.value + NL)
@@ -2067,21 +2072,22 @@ class Outputs:
                         f'{ii + 1:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
                 f.write(NL)
 
-            # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
-            if model.wellbores.overpressure_percentage.Provided and model.wellbores.injection_reservoir_depth.Provided:
-                f.write(NL)
-                f.write('                            ***************************************\n')
-                f.write('                            *  RESERVOIR POWER REQUIRED PROFILES  *\n')
-                f.write('                            ***************************************\n')
-                f.write('  YEAR     PROD PUMP     INJECT PUMP     TOTAL PUMP\n')
-                f.write('             POWER          POWER           POWER\n')
-                f.write('                                     (' + model.wellbores.ProducedTemperature.CurrentUnits.value+')               (' + model.wellbores.PumpingPower.CurrentUnits.value + ')              (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  (%)\n')
-                for i in range(0, model.surfaceplant.plant_lifetime.value):
-                    f.write('  {0:2.0f}         {1:8.4f}          {2:8.4f}              {3:8.4f}'.format(i+1,
-                        model.wellbores.PumpingPowerProd.value[i*model.economics.timestepsperyear.value],
-                        model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
-                        model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
-                f.write(NL)
+                # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
+                if model.wellbores.overpressure_percentage.Provided and model.wellbores.injection_reservoir_depth.Provided:
+                    f.write(NL)
+                    f.write('                            ***************************************\n')
+                    f.write('                            *  RESERVOIR POWER REQUIRED PROFILES  *\n')
+                    f.write('                            ***************************************\n')
+                    f.write('  YEAR     PROD PUMP     INJECT PUMP     TOTAL PUMP\n')
+                    f.write('             POWER          POWER           POWER\n')
+                    f.write('             (' + model.wellbores.PumpingPowerProd.CurrentUnits.value+')           (' + model.wellbores.PumpingPowerInj.CurrentUnits.value + ')            (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  \n')
+                    for i in range(0, model.surfaceplant.plant_lifetime.value):
+                        f.write('  {0:2.0f}     {1:8.4f}        {2:8.4f}       {3:8.4f}'.format(i+1,
+                            model.wellbores.PumpingPowerProd.value[i*model.economics.timestepsperyear.value],
+                            model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
+                            model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
+                        f.write(NL)
+                    f.write(NL)
 
             if model.economics.DoAddOnCalculations.value:
                 addon_df, addon_results = model.addoutputs.PrintOutputs(model)

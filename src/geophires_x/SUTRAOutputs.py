@@ -197,7 +197,13 @@ class SUTRAOutputs:
                 f.write('                          ***CAPITAL COSTS (M$)***\n')
                 f.write(NL)
                 f.write(f"      Drilling and Completion Costs:                 {model.economics.Cwell.value:10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
-                f.write(f"      Drilling and Completion Costs per Well:        {model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value):10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
+                if model.economics.cost_one_production_well.value != model.economics.cost_one_injection_well.value:
+                    f.write(
+                        f'             Drilling and completion costs per production well:   {model.economics.cost_one_production_well.value:10.2f} ' + model.economics.cost_one_production_well.CurrentUnits.value + NL)
+                    f.write(
+                        f'             Drilling and completion costs per injection well:    {model.economics.cost_one_injection_well.value:10.2f} ' + model.economics.cost_one_injection_well.CurrentUnits.value + NL)
+                else:
+                    f.write(f"      Drilling and Completion Costs per Well:        {model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value):10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
                 f.write(f"      Auxiliary Heater Cost:                         {model.economics.peakingboilercost.value:10.2f} " + model.economics.peakingboilercost.CurrentUnits.value + NL)
                 f.write(f"      Pump Cost:                                     {model.economics.Cpumps:10.2f} " + model.economics.peakingboilercost.CurrentUnits.value + NL)
                 f.write(f"      Total Capital Costs:                           {model.economics.CCap.value:10.2f} " + model.economics.CCap.CurrentUnits.value + NL)

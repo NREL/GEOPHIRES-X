@@ -17,7 +17,7 @@ class ReservoirTestCase(BaseTestCase):
 
     def test_reservoir_lithostatic_pressure(self):
         reservoir = Reservoir(self._new_model())
-        p: PlainQuantity = reservoir.lithostatic_pressure()
+        p: PlainQuantity = reservoir.lithostatic_pressure(2700, 3000)
 
         # Assumes Reservoir default values of rho=2700, depth=3km
         self.assertAlmostEqual(79.433865, p.magnitude, places=3)

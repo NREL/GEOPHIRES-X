@@ -58,6 +58,8 @@ class Units(IntEnum):
     POWERPERUNITAREA = auto()
     HEATPERUNITVOLUME = auto()
     POWERPERUNITVOLUME = auto()
+    DECAY_RATE=auto()
+    INFLATION_RATE=auto()
 
 
 class TemperatureUnit(str, Enum):
@@ -129,7 +131,7 @@ class EnergyUnit(str, Enum):
 
 
 class PowerUnit(str, Enum):
-    """Power (electrcity or heat) Units"""
+    """Power (electricity or heat) Units"""
     W = "W"
     KW = "kW"
     MW = "MW"
@@ -338,3 +340,13 @@ class HeatPerUnitVolumeUnit(str,Enum):
 class PowerPerUnitVolumeUnit(str,Enum):
     """Population Density Units"""
     MWPERCUBICKM = "MW/km**3"
+
+
+class Decay_RateUnit(str,Enum):
+    """Decay rate Units"""
+    PERCENTPERYEAR = "%/yr"
+
+
+class Inflation_RateUnit(str,Enum):
+    """Decay rate Units"""
+    KPASCALPERYEAR = "kPa/yr"

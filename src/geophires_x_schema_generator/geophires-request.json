@@ -340,8 +340,8 @@
       "units": "degC",
       "category": "Well Bores"
     },
-    "Reservoir Hydrostatic Pressure": {
-      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
+    "Average reservoir Pressure": {
+      "description": "Average reservoir far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
       "type": "number",
       "units": "kPa",
       "category": "Well Bores"

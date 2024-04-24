@@ -45,21 +45,21 @@ class ParameterTestCase(BaseTestCase):
 
     def test_set_default_value(self):
         without_val = floatParameter(
-            'Reservoir Hydrostatic Pressure',
+            'Average Reservoir Pressure',
             DefaultValue=29430,  # Calculated from example1
             Min=1e2,
             Max=1e5,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
-            ErrMessage='calculate reservoir hydrostatic pressure using built-in correlation',
+            ErrMessage='calculate reservoir pressure using built-in correlation',
             ToolTipText='Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified \
                     Xie-Bloomfield-Shook equation (DOE, 2016).',
         )
         self.assertEqual(29430, without_val.value)
 
         with_val = floatParameter(
-            'Reservoir Hydrostatic Pressure',
+            'Average Reservoir Pressure',
             value=1e2,
             DefaultValue=29430,
             Min=1e2,
@@ -67,7 +67,7 @@ class ParameterTestCase(BaseTestCase):
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
-            ErrMessage='calculate reservoir hydrostatic pressure using built-in correlation',
+            ErrMessage='calculate reservoir pressure using built-in correlation',
             ToolTipText='Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified \
                     Xie-Bloomfield-Shook equation (DOE, 2016).',
         )

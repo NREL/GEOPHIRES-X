@@ -62,7 +62,7 @@ Simulation Metadata
       Reservoir Model = 1-D Linear Heat Sweep Model
       Bottom-hole temperature:                              180.00 degC
       Fracture model = Circular fracture with known diameter
-      Well seperation: fracture diameter:                   300.00 meter
+      Well separation: fracture diameter:                   300.00 meter
       Fracture area:                                      70685.83 m**2
       Number of fractures calculated with reservoir volume and fracture separation as input
       Number of fractures:                                   30.47

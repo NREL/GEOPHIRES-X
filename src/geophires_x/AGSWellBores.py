@@ -871,12 +871,12 @@ class AGSWellBores(WellBores):
             # nonvertical wellbore fluid conditions based on current temperature
             rhowater = density_water_kg_per_m3(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                pressure=model.reserv.lithostatic_pressure()
             )
 
             muwater = viscosity_water_Pa_sec(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                pressure=model.reserv.lithostatic_pressure()
             )
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
@@ -957,15 +957,15 @@ class AGSWellBores(WellBores):
                 # MIR figure out how to calculate year and extract Tini from reserv Tresoutput array
                 year = math.trunc(self.time_operation.value / self.al)
                 self.NonverticalProducedTemperature.value[year] = inverselaplace(
-                    self, 16, 0, model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude))
+                    self, 16, 0, model.reserv.lithostatic_pressure())
                 # update alpha_fluid value based on next temperature of reservoir
 
                 self.alpha_fluid = self.WaterThermalConductivity.value / density_water_kg_per_m3(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                    pressure=model.reserv.lithostatic_pressure()
                 ) / heat_capacity_water_J_per_kg_per_K(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                    pressure=model.reserv.lithostatic_pressure()
                 ) * 24.0 * 3600.0
                 self.time_operation.value += self.al
 
@@ -979,7 +979,7 @@ class AGSWellBores(WellBores):
             self.ProdTempDrop.value = self.tempdropprod.value
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.NonverticalProducedTemperature.value[0],
-                pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                pressure=model.reserv.lithostatic_pressure()
             )
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
@@ -1002,13 +1002,13 @@ class AGSWellBores(WellBores):
             if self.productionwellpumping.value:
                 self.rhowaterinj = density_water_kg_per_m3(
                     model.reserv.Tsurf.value,
-                    pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                    pressure=model.reserv.lithostatic_pressure()
                 ) * np.linspace(1, 1,
                                 len(self.ProducedTemperature.value))
 
                 self.rhowaterprod = density_water_kg_per_m3(
                     model.reserv.Trock.value,
-                    pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude)
+                    pressure=model.reserv.lithostatic_pressure()
                 ) * np.linspace(1, 1, len(self.ProducedTemperature.value))
 
                 self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
@@ -1113,13 +1113,13 @@ class AGSWellBores(WellBores):
 
             rho_water = density_water_kg_per_m3(
                 self.Tout[0],
-                pressure = model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude),
+                pressure = model.reserv.lithostatic_pressure(),
             )
 
 
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.Tout[0],
-                pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.InputDepth.quantity().to('m').magnitude),
+                pressure=model.reserv.lithostatic_pressure(),
             )  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always

@@ -749,14 +749,12 @@ class Reservoir:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-                pressure=self.lithostatic_pressure(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                            self.depth.quantity().to('m').magnitude)
+                pressure=self.lithostatic_pressure()
             )
 
             self.rhowater.value = density_water_kg_per_m3(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-                pressure=self.lithostatic_pressure(self.rhorock.quantity().to('kg/m**3').magnitude,
-                                            self.depth.quantity().to('m').magnitude)
+                pressure=self.lithostatic_pressure()
             )
 
             # temperature gain in injection wells
@@ -768,7 +766,8 @@ class Reservoir:
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    def lithostatic_pressure(self, rho_rock_kg_per_m3: float, depth_m: float) -> PlainQuantity:
-        return quantity(static_pressure_MPa(rho_rock_kg_per_m3, depth_m), 'MPa')
+    def lithostatic_pressure(self) -> PlainQuantity:
+        return quantity(static_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                            self.depth.quantity().to('m').magnitude), 'MPa')
 
 

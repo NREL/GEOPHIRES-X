@@ -84,7 +84,7 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
                 'Project NPV',
                 'Total capital costs',
                 'Average Production Temperature',
-                'Average reservoir pressure',
+                'Reservoir hydrostatic pressure',
             ]:
                 self.assertIn(output, result_json_obj)
                 for stat in ['average', 'maximum', 'mean', 'median', 'minimum', 'standard deviation']:
@@ -102,7 +102,7 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
             self.assertGreater(avg_prod_tmp, 280)
             self.assertLess(avg_prod_tmp, 420)
 
-            self.assertGreater(result_json_obj['Average reservoir pressure']['average'], 60000)
+            self.assertGreater(result_json_obj['Reservoir hydrostatic pressure']['average'], 60000)
             self.assertLess(result_json_obj['Total capital costs']['average'], 1000)
 
             self.assertDictEqual(result_json_obj, result.result['output'])

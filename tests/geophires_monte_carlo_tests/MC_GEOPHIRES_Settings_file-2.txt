@@ -5,5 +5,5 @@ OUTPUT, Average Net Electricity Production
 OUTPUT, Project NPV
 OUTPUT, Total capital costs
 OUTPUT, Average Production Temperature
-OUTPUT, Average reservoir pressure
+OUTPUT, Reservoir hydrostatic pressure
 ITERATIONS, 3

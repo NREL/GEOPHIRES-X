@@ -119,6 +119,13 @@ Steps:
 
 7. View and edit source code by opening the ``my-geophires-project/`` directory in an IDE or editor such as `PyCharm <https://www.jetbrains.com/pycharm/>`__, `Spyder <https://www.spyder-ide.org/>`__, or `Visual Studio Code <https://code.visualstudio.com/>`__. The GEOPHIRES-X source code will be located in the ``my-geophires-project/geophires-x`` directory. You can add your own python files in ``my-geophires-x/`` that use the source as a module as shown below.
 
+To update the editable installation with the latest GEOPHIRES version::
+
+    cd geophires-x
+    git pull
+    # resolve merge conflicts, if any
+    pip install -e .
+
 Pip Package
 ^^^^^^^^^^^
 

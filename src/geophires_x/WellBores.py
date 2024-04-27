@@ -1104,10 +1104,17 @@ class WellBores:
             # and a shallower, lower pressure Injection Reservoir.
             # If so, calculate the injection reservoir pressure as a function of time if overpressure is provided.
             # If the injection reservoir temperature or pressure are not provided, calculate a default for them.
-            if self.injection_reservoir_depth.Provided:  #this means they must be doing a split reservoir
+            if self.injection_reservoir_depth.Provided or self.injection_reservoir_inflation_rate.Provided:
+                # this means they must be doing a split reservoir -
+                # now deal give default values to whatever values they didn't set
+                if not self.injection_reservoir_temperature.Provided:
+                    self.injection_reservoir_temperature.value = model.reserv.Trock.value
+                if not self.injection_reservoir_depth.Provided:
+                    self.injection_reservoir_depth.value = model.reserv.depth.value
                 if not self.injection_reservoir_temperature.Provided:
                     self.injection_reservoir_temperature.value = (model.reserv.averagegradient.value * self.injection_reservoir_depth.value) + model.reserv.Tsurf.value
-                if self.injection_reservoir_pressure.value < 0:
+
+                if self.injection_reservoir_pressure.value < 0: # they didn't provide a pressure so assume hydrostatic.
                     self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
                                                                                         model.reserv.Tsurf.value,
                                                                                         self.injection_reservoir_depth.value,

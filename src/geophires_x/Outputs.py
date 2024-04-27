@@ -2073,7 +2073,7 @@ class Outputs:
                 f.write(NL)
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
-                if model.wellbores.overpressure_percentage.Provided and model.wellbores.injection_reservoir_depth.Provided:
+                if model.wellbores.overpressure_percentage.Provided:
                     f.write(NL)
                     f.write('                            ***************************************\n')
                     f.write('                            *  RESERVOIR POWER REQUIRED PROFILES  *\n')

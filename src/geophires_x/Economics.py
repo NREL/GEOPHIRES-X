@@ -9,10 +9,52 @@ from geophires_x.Parameter import intParameter, floatParameter, OutputParameter,
 from geophires_x.Units import *
 
 
-def CalculateCostOfOneWell(model: Model, depth_m: float, well_correlation: int, vertical_drilling_cost_per_m: float,
-                           fixed_well_cost_name: str, well_cost_adjustment_factor: float) -> float:
+def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: int, nonvertical_length_km: float,
+                                       InputDepth_km: float, nprod:int, ninj:int) -> tuple:
     """
-    CalculateCostOfOneWell calculates the cost of one well based on the depth of the well and the cost correlation.
+    returns the total length, vertical length, and non-vertical lengths, depending on the configuration
+    :param Configuration: Configuration of the well
+    :type Configuration: :class:`~geophires
+    :param numnonverticalsections: number of non-vertical sections
+    :type numnonverticalsections: int
+    :param nonvertical_length_km: length of non-vertical sections in km
+    :type nonvertical_length_km: float
+    :param InputDepth_km: depth of the well in km
+    :type InputDepth_km: float
+    :param nprod: number of production wells
+    :type nprod: int
+    :param ninj: number of injection wells
+    :return: total length, vertical length, and horizontal lengths in meters
+    :rtype: tuple
+    """
+    if Configuration == Configuration.ULOOP:
+        # Total drilling depth of both wells and laterals in U-loop [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+    elif Configuration == Configuration.COAXIAL:
+        # Total drilling depth of well and lateral in co-axial case [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+    elif Configuration == Configuration.VERTICAL:
+        # Total drilling depth of well in vertical case [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        nonvertical_pipe_length_m = 0.0
+    elif Configuration == Configuration.L:
+        # Total drilling depth of well in L case [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+    else:
+        raise ValueError(f'Invalid Configuration: {Configuration}')
+
+    tot_pipe_length_m = vertical_pipe_length_m + nonvertical_pipe_length_m
+    return tot_pipe_length_m, vertical_pipe_length_m, nonvertical_pipe_length_m
+
+
+def calculate_cost_of_one_vertical_well(model: Model, depth_m: float, well_correlation: int,
+                                        vertical_drilling_cost_per_m: float,
+                                        fixed_well_cost_name: str, well_cost_adjustment_factor: float) -> float:
+    """
+    CalculateCostOfOneWell calculates the cost of one vertical well based on the depth of the well and the cost correlation.
     :param model: The model object
     :type model: :class:`~geophires
     :param depth_m: The depth of the well in meters
@@ -51,28 +93,7 @@ def CalculateCostOfOneWell(model: Model, depth_m: float, well_correlation: int, 
         )
 
     if well_correlation is WellDrillingCostCorrelation.SIMPLE:
-        # using the "Configuration" keywords means we are doing an AGS calculation
-        if hasattr(model.wellbores, 'Configuration'):
-            if model.wellbores.Configuration.value is Configuration.ULOOP:
-                # found out if we are  using simple cylindrical model, which has an Input and Output Depth
-                if hasattr(model.reserv, 'InputDepth'):
-                    # cost of one closed-loop well = cost of 2 verticals + cost of horizontal section(s)
-                    cost_of_one_well = ((vertical_drilling_cost_per_m * (model.reserv.InputDepth.value * 1000.0)) +
-                                   (vertical_drilling_cost_per_m * (model.reserv.OutputDepth.value * 1000.0)) +
-                                   (model.wellboew.numnonverticalsections.value *
-                                    model.wellbores.Nonvertical_drilling_cost_per_m.value *
-                                    model.wellbores.Nonvertical_length.value)) * 1E-6
-                else:
-                    if hasattr(model.wellbores, 'Nonvertical_length'):
-                        cost_of_one_well = ((2 * vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) +
-                                       (model.wellbores.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
-                    else:
-                        cost_of_one_well = (2 * vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) * 1E-6
-            else:  # Coaxial
-                cost_of_one_well = ((vertical_drilling_cost_per_m * (model.reserv.depth.value * 1000.0)) +
-                               (model.wellbores.Nonvertical_drilling_cost_per_m.value * model.wellbores.Nonvertical_length.value)) * 1E-6
-        else:
-            cost_of_one_well = vertical_drilling_cost_per_m * model.reserv.depth.quantity().to('m').magnitude * 1E-6
+            cost_of_one_well = vertical_drilling_cost_per_m * depth_m * 1E-6
 
     elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
         cost_of_one_well = (0.30212 * depth_m ** 2 + 584.91124 * depth_m + 751368.47270) * 1E-6
@@ -110,6 +131,123 @@ def CalculateCostOfOneWell(model: Model, depth_m: float, well_correlation: int, 
     # account for adjustment factor
     cost_of_one_well = well_cost_adjustment_factor * cost_of_one_well
     return cost_of_one_well
+
+
+def calculate_cost_of_non_vertical_section(model: Model, length_m: float, well_correlation: int,
+                                        nonvertical_drilling_cost_per_m: float,
+                                           num_nonvertical_sections: int,
+                                        fixed_well_cost_name: str, NonverticalsCased: bool,
+                                           well_cost_adjustment_factor: float) -> float:
+    """
+    calculate_cost_of_non_vertical_section calculates the cost of the non vertical section of the well.
+    Assume that the cost per meter for drilling of the non-vertical section is the same as the vertical section.
+    :param model: The model object
+    :type model: :class:`~geophires
+    :param length_m: The depth of the well in meters
+    :type length_m: float
+    :param well_correlation: The well cost correlation
+    :type well_correlation: int
+    :param nonvertical_drilling_cost_per_m: The nonvertical drilling cost per meter in $/m
+    :type nonvertical_drilling_cost_per_m: float
+    :param num_nonvertical_sections: The number of non vertical sections
+    :type num_nonvertical_sections: int
+    :param fixed_well_cost_name: The fixed well cost name
+    :type fixed_well_cost_name: str
+    :param NonverticalsCased: Are the nonverticals cased?
+    :type NonverticalsCased: bool
+    :param well_cost_adjustment_factor: The well cost adjustment factor
+    :type well_cost_adjustment_factor: float
+    :return: cost_of_one_well: The cost of the nonvertical section in MUSD
+    :rtype: float
+    """
+
+    # if we are drilling a vertical well, the nonvertical cost is 0
+    if model.wellbores.Configuration.value == Configuration.VERTICAL:
+        return 0.0
+
+    # Check if  well length is out of standard bounds for cost correlation
+    length_per_section_m = length_m / num_nonvertical_sections
+    correlations_min_valid_length_m = 500.
+    correlations_max_valid_length_m = 7000.
+    cost_of_non_vertical_section = 0.0
+    cost_per_section = 0.0
+
+    if length_per_section_m < correlations_min_valid_length_m and not well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        well_correlation = WellDrillingCostCorrelation.SIMPLE
+        model.logger.warning(
+            f'Invalid cost correlation specified ({well_correlation}) for drilling length '
+            f'<{correlations_min_valid_length_m}m ({length_m}m). '
+            f'Falling back to simple user-specified cost '
+            f'({nonvertical_drilling_cost_per_m} per meter)'
+        )
+
+    if length_per_section_m > correlations_max_valid_length_m and not well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        model.logger.warning(
+            f'{well_correlation} may be invalid for drilling length '
+            f'>{correlations_max_valid_length_m}m ({length_m}m). '
+            f'Consider using {WellDrillingCostCorrelation.SIMPLE} (per-meter cost) or '
+            f'{fixed_well_cost_name} (fixed cost per well) instead.'
+        )
+
+    casing_factor = 1.0
+    if not NonverticalsCased:
+        # assume that casing & cementing costs 50% of drilling costs
+        casing_factor = 0.5
+    if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
+        cost_of_non_vertical_section = casing_factor * ((num_nonvertical_sections * nonvertical_drilling_cost_per_m * length_per_section_m)) * 1E-6
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
+        cost_per_section = (0.30212 * length_per_section_m ** 2 + 584.91124 * length_per_section_m + 751368.47270) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE:
+        cost_per_section = (0.28180 * length_per_section_m ** 2 + 1275.52130 * length_per_section_m + 632315.12640) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL:
+        cost_per_section = (0.28977 * length_per_section_m ** 2 + 882.15067 * length_per_section_m + 680562.50150) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE:
+        cost_per_section = (0.25528 * length_per_section_m ** 2 + 1716.71568 * length_per_section_m + 500866.89110) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
+        cost_per_section = (0.13710 * length_per_section_m ** 2 + 129.61033 * length_per_section_m + 1205587.57100) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
+        cost_per_section = (0.18927 * length_per_section_m ** 2 + 293.45174 * length_per_section_m + 1326526.31300) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
+        cost_per_section = (0.15340 * length_per_section_m ** 2 + 120.31700 * length_per_section_m + 1431801.54400) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
+        cost_per_section = (0.19950 * length_per_section_m ** 2 + 296.13011 * length_per_section_m + 1697867.70900) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
+        cost_per_section = (0.00804 * length_per_section_m ** 2 + 455.60507 * length_per_section_m + 921007.68680) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
+        cost_per_section = (0.00315 * length_per_section_m ** 2 + 782.69676 * length_per_section_m + 983620.25270) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
+        cost_per_section = (0.00854 * length_per_section_m ** 2 + 506.08357 * length_per_section_m + 1057330.39000) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
+        cost_per_section = (0.00380 * length_per_section_m ** 2 + 838.90249 * length_per_section_m + 1181947.04400) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
+        cost_per_section = (0.00252 * length_per_section_m ** 2 + 439.44503 * length_per_section_m + 590611.90110) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
+        cost_per_section = (-0.00240 * length_per_section_m ** 2 + 752.93946 * length_per_section_m + 524337.65380) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
+        cost_per_section = (0.00719 * length_per_section_m ** 2 + 455.85233 * length_per_section_m + 753377.73080) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
+        cost_per_section = (0.00376 * length_per_section_m ** 2 + 762.52696 * length_per_section_m + 765103.07690) * 1E-6
+        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
+
+    # account for adjustment factor
+
+    cost_of_non_vertical_section = well_cost_adjustment_factor * cost_of_non_vertical_section
+    return cost_of_non_vertical_section
 
 
 def BuildPTCModel(plantlifetime: int, duration: int, ptc_price: float,
@@ -2186,24 +2324,57 @@ class Economics:
             self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value))
         else:
-            self.cost_one_production_well.value = CalculateCostOfOneWell(model, model.reserv.depth.quantity().to('m').magnitude,
-                                                                   self.wellcorrelation.value,
-                                                                   self.Vertical_drilling_cost_per_m.value,
-                                                                   self.per_production_well_cost.Name,
-                                                                   self.production_well_cost_adjustment_factor.value)
+
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                if not model.wellbores.IsAGS.value:
+                    vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
+                else:
+                    vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
+                model.wellbores.injection_reservoir_depth.value = vert_depth_km
+
+                tot, vert, horiz = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
+                                                                      model.wellbores.numnonverticalsections.value,
+                                                                      model.wellbores.Nonvertical_length.value / 1000.0,
+                                                                      vert_depth_km,
+                                                                      model.wellbores.nprod.value,
+                                                                      model.wellbores.ninj.value)
+
+            else:
+                tot = vert = model.reserv.depth.quantity().to('km').magnitude
+                horiz = 0.0
+                if not model.wellbores.injection_reservoir_depth.Provided:
+                    model.wellbores.injection_reservoir_depth.value = model.reserv.depth.quantity().to('km').magnitude
+                else:
+                    model.wellbores.injection_reservoir_depth.value = model.wellbores.injection_reservoir_depth.quantity().to('km').magnitude
+            self.cost_one_production_well.value = calculate_cost_of_one_vertical_well(model, model.reserv.depth.quantity().to('m').magnitude,
+                                                                                      self.wellcorrelation.value,
+                                                                                      self.Vertical_drilling_cost_per_m.value,
+                                                                                      self.per_production_well_cost.Name,
+                                                                                      self.production_well_cost_adjustment_factor.value)
             if model.wellbores.ninj.value == 0:
                 self.cost_one_injection_well.value = -1.0
             else:
-                self.cost_one_injection_well.value = CalculateCostOfOneWell(model, model.wellbores.injection_reservoir_depth.value,
-                                                                   self.wellcorrelation.value,
-                                                                   self.Vertical_drilling_cost_per_m.value,
-                                                                   self.per_injection_well_cost.Name,
-                                                                   self.injection_well_cost_adjustment_factor.value)
+                self.cost_one_injection_well.value = calculate_cost_of_one_vertical_well(model,
+                                                                                         model.wellbores.injection_reservoir_depth.value * 1000.0,
+                                                                                         self.wellcorrelation.value,
+                                                                                         self.Vertical_drilling_cost_per_m.value,
+                                                                                         self.per_injection_well_cost.Name,
+                                                                                         self.injection_well_cost_adjustment_factor.value)
 
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                cost_nonvertical_section = calculate_cost_of_non_vertical_section(model, horiz, self.wellcorrelation.value,
+                                            self.Nonvertical_drilling_cost_per_m.value,
+                                            model.wellbores.numnonverticalsections.value,
+                                            self.per_injection_well_cost.Name,
+                                            model.wellbores.NonverticalsCased.value,
+                                            1.0)
+            else:
+                cost_nonvertical_section = 0.0
             # cost of the well field
             # 1.05 for 5% indirect costs
             self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
-                                          (self.cost_one_injection_well.value * model.wellbores.ninj.value))
+                                          (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
+                                          cost_nonvertical_section)
 
         # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
         if self.ccstimfixed.Valid:

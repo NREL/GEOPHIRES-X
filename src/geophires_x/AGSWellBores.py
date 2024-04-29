@@ -515,67 +515,6 @@ class AGSWellBores(WellBores):
         # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the
         # last possible time
 
-        self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
-            "Heat Transfer Fluid",
-            DefaultValue=WorkingFluid.WATER,
-            AllowableRange=[1, 2],
-            UnitType=Units.NONE,
-            Required=True,
-            ErrMessage="assume default Heat transfer fluid is water (1)"
-        )
-        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
-            "Closed-loop Configuration",
-            DefaultValue=Configuration.COAXIAL,
-            AllowableRange=[1, 2],
-            UnitType=Units.NONE,
-            Required=True,
-            ErrMessage="assume default closed-loop configuration is co-axial with injection in annulus (2)"
-        )
-
-        # Input data for subsurface condition
-        self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
-            "Total Nonvertical Length",
-            DefaultValue=1000.0,
-            Min=1000.0,
-            Max=20000.0,
-            UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.METERS,
-            CurrentUnits=LengthUnit.METERS,
-            Required=True,
-            ErrMessage="assume default Total nonvertical length (1000 m)"
-        )
-
-        self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
-            "Water Thermal Conductivity",
-            DefaultValue=0.6,
-            Min=0.0,
-            Max=100.0,
-            UnitType=Units.THERMAL_CONDUCTIVITY,
-            PreferredUnits=ThermalConductivityUnit.WPERMPERK,
-            CurrentUnits=ThermalConductivityUnit.WPERMPERK,
-            ErrMessage="assume default for water thermal conductivity (0.6 W/m/K)",
-            ToolTipText="Water Thermal Conductivity"
-        )
-
-        self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
-            "Nonvertical Wellbore Diameter",
-            DefaultValue=0.156,
-            Min=0.01,
-            Max=100.0,
-            UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.METERS,
-            CurrentUnits=LengthUnit.METERS,
-            ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
-            ToolTipText="Non-vertical Wellbore Diameter"
-        )
-        self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
-            "Number of Multilateral Sections",
-            DefaultValue=1,
-            AllowableRange=list(range(0, 101, 1)),
-            UnitType=Units.NONE,
-            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
-            ToolTipText="Number of Nonvertical Wellbore Sections"
-        )
         self.time_operation = self.ParameterDict[self.time_operation.Name] = floatParameter(
             "Closed Loop Calculation Start Year",
             DefaultValue=0.01,
@@ -586,14 +525,6 @@ class AGSWellBores(WellBores):
             CurrentUnits=TimeUnit.YEAR,
             ErrMessage="assume default for Closed Loop Calculation Start Year (0.01)",
             ToolTipText="Closed Loop Calculation Start Year"
-        )
-        self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
-            "Multilaterals Cased",
-            DefaultValue=False,
-            Required=False,
-            Provided=False,
-            Valid=True,
-            ErrMessage="assume default value (False)"
         )
 
         # local variable initiation
@@ -612,20 +543,6 @@ class AGSWellBores(WellBores):
 
         # results are stored here and in the parent ProducedTemperature array
         self.Tini = 0.0
-        self.NonverticalProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
-            Name="Nonvertical Produced Temperature",
-            value=[0.0],
-            UnitType=Units.TEMPERATURE,
-            PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS
-        )
-        self.NonverticalPressureDrop = self.OutputParameterDict[self.NonverticalPressureDrop.Name] = OutputParameter(
-            Name="Nonvertical Pressure Drop",
-            value=[0.0],
-            UnitType=Units.PRESSURE,
-            PreferredUnits=PressureUnit.KPASCAL,
-            CurrentUnits=PressureUnit.KPASCAL
-        )
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -656,21 +573,6 @@ class AGSWellBores(WellBores):
                     ParameterReadIn = model.InputParameters[key]
                     # just handle special cases for this class - the call to super set all the values,
                     # including the value unique to this class
-                    if ParameterToModify.Name == "Multilaterals Cased":
-                        if ParameterReadIn.sValue == str(1):
-                            self.NonverticalsCased.value = True
-                        else:
-                            self.NonverticalsCased.value = False
-                    elif ParameterToModify.Name == "Heat Transfer Fluid":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Fluid.value = WorkingFluid.WATER
-                        else:
-                            self.Fluid.value = WorkingFluid.SCO2
-                    elif ParameterToModify.Name == "Closed-loop Configuration":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Configuration.value = Configuration.ULOOP
-                        else:
-                            self.Configuration.value = Configuration.COAXIAL
         else:
             model.logger.info("No parameters read because no content provided")
 
@@ -699,7 +601,7 @@ class AGSWellBores(WellBores):
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    # code from Koenraad
+
     def calculatedrillinglengths(self, model) -> tuple:
         """
         returns the total length, vertical length, and horizontal lengths, depending on the configuration

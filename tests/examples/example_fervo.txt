@@ -1,0 +1,78 @@
+GEOPHIRES v3.0 Input File
+Electrcity using a Thermal Drawdown Reservoir Model and BICYCLE Economic Model
+
+example_fervo description: This example problem considers an L-shaped EGS reservoir at 3.1km depth.
+The heat is used in electricity is made with double flash.
+
+***Subsurface technical parameters***
+*************************************
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Well Geometry Configuration, 4,       ----L
+Number of Multilateral Sections, 2,  ---Two parallel horizontal sections
+Total Nonvertical Length, 3005.1
+Reservoir Model,3,						---m/A Single Fracture Thermal Drawdown
+Well Drilling Cost Correlation,3,				--- [-] Use built-in well drilling cost correlation #3 = vertical large diameter
+Horizontal Well Drilling Cost Correlation,4,				--- [-] Use built-in well drilling cost correlation #4 = deviated large diameter
+Drawdown Parameter,.00002,					---[kg/s/m2]
+Reservoir Depth,3.1,						---[km]
+Number of Segments,1,						---[-]
+Gradient 1,70,							---[deg.C/km]
+Maximum Temperature,400,					---[deg.C]
+Number of Production Wells,1,					---[-]
+Number of Injection Wells,1,					---[-]
+Production Well Diameter,8.5,					---[inch]
+Injection Well Diameter,8.5,					---[inch]
+Ramey Production Wellbore Model,1,				---Should be 0 (disabled) or 1 (enabled)
+Production Wellbore Temperature Drop,5,				---[deg.C]
+Injection Wellbore Temperature Gain,3,				---[deg.C]
+Production Flow Rate per Well,70,				---[kg/s]
+Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
+Fracture Shape,1,						---Should be 1 2 3 or 4
+Fracture Area,200000,						---[m2]
+Number of Fractures,12,						---[-]
+Fracture Separation,80,						---[m]
+Injectivity Index,5,						---[kg/s/bar]
+Injection Temperature,70,					---[deg.C]
+Maximum Drawdown,1,						---[-] no redrilling considered
+Reservoir Heat Capacity,1000,					---[J/kg/K]
+Reservoir Density,3000,						---[kg/m3]
+Reservoir Thermal Conductivity,3,				---[W/m/K]
+Water Loss Fraction,0.02,						---[-]
+
+***Surface Technical Parameters***
+**********************************
+
+End-Use Option,1,						---electricity as the main product
+Power Plant Type,4,						---Double-Flash
+Circulation Pump Efficiency,.80,				---[-]
+Utilization Factor,.9,						---[-]
+End-Use Efficiency Factor,.9,					---[-]
+Surface Temperature,15,						---[deg.C]
+Ambient Temperature,15,						---[deg.C]
+
+***Financial Parameters***
+**************************
+
+Plant Lifetime,35,						---[years]
+Economic Model,3,						---BICYCLE Levelized Cost Model
+Fraction of Investment in Bonds,.5,				---[-] Required for BICYCLE model
+Inflated Bond Interest Rate,.05,				---[-] Required for BICYCLE model
+Inflated Equity Interest Rate,.08,				---[-] Required for BICYCLE model
+Inflation Rate,.02,						---[-] Required for BICYCLE model
+Combined Income Tax Rate,.3,					---[-] Required for BICYCLE model
+Gross Revenue Tax Rate,0,					---[-] Required for BICYCLE model
+Investment Tax Credit Rate,0,					---[-] Required for BICYCLE model
+Property Tax Rate,0,						---[-] Required for BICYCLE model
+Inflation Rate During Construction,0.05,				---[-]
+Starting Electricity Sale Price,0.15
+Ending Electricity Sale Price,1.00
+Electricity Escalation Start Year,1
+Electricity Escalation Rate Per Year, 0.004053223
+
+
+***Simulation Parameters***
+***************************
+
+Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
+Time steps per year,10,						---[-]

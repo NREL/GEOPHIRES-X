@@ -358,6 +358,7 @@ def main(command_line_args=None):
         if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None
         else str(Path(Path(args.Input_file).parent, 'MC_Result.txt').absolute())
     )
+    code_file_name = Path(args.Code_File).name
     python_path = 'python'
     html_path = ''
 
@@ -451,6 +452,14 @@ def main(command_line_args=None):
     df = pd.DataFrame(results_pd)
 
     # Compute the stats along the specified axes.
+    if len(results) < 1:
+        # TODO surface actual exceptions instead of giving this generic message
+        raise RuntimeError(
+            'No MC results generated, '
+            f'this is likely caused by {code_file_name} throwing an exception '
+            f'when run with your input file.'
+        )
+
     mins = np.nanmin(results, 0)
     maxs = np.nanmax(results, 0)
     medians = np.nanmedian(results, 0)

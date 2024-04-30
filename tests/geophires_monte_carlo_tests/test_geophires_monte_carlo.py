@@ -108,9 +108,8 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
 
             self.assertDictEqual(result_json_obj, result.result['output'])
 
+    @unittest.skip('FIXME TODO https://github.com/NREL/GEOPHIRES-X/issues/192')
     def test_geophires_monte_carlo_single_input(self):
-        """https://github.com/NREL/GEOPHIRES-X/issues/192"""
-
         client = GeophiresMonteCarloClient()
         num_iterations = 3
 

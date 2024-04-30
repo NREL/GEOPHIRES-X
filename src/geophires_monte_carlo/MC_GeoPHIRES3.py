@@ -451,7 +451,6 @@ def main(command_line_args=None):
     results_pd = pd.read_csv(output_file)
     df = pd.DataFrame(results_pd)
 
-    # Compute the stats along the specified axes.
     if len(results) < 1:
         # TODO surface actual exceptions instead of giving this generic message
         raise RuntimeError(
@@ -460,6 +459,7 @@ def main(command_line_args=None):
             f'when run with your input file.'
         )
 
+    # Compute the stats along the specified axes.
     mins = np.nanmin(results, 0)
     maxs = np.nanmax(results, 0)
     medians = np.nanmedian(results, 0)

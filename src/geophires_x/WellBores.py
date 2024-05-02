@@ -78,7 +78,7 @@ def ReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int
     delta_pressure = (pressure[0] - initial_pressure_kPa)
     depletion_timesteps = int((100.0 / depletion_rate) * timesteps_per_year)
     pressure_change_per_timestep = delta_pressure / depletion_timesteps
-    for timestep in range(1, depletion_timesteps):
+    for timestep in range(1, project_lifetime_yr * timesteps_per_year):
         pressure[timestep] = pressure[0] - (pressure_change_per_timestep * timestep)
         if pressure[timestep] < initial_pressure_kPa:
             # If the pressure drops below the hydrostatic pressure, set it to the hydrostatic pressure and break out

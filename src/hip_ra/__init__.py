@@ -4,14 +4,24 @@ import sys
 import tempfile
 import uuid
 from pathlib import Path
+from types import MappingProxyType
 
 from geophires_x_client.common import _get_logger
 from hip_ra import HIP_RA
 
 
 class HipRaInputParameters:
-    def __init__(self, from_file_path: str):
-        self._input_file_path = Path(from_file_path)
+
+    def __init__(self, file_path_or_params_dict: str | MappingProxyType):
+        if isinstance(file_path_or_params_dict, dict):
+            tmp_file_path = Path(tempfile.gettempdir(), f'hip-ra-params_{uuid.uuid1()}.txt')
+            with open(tmp_file_path, 'w') as f:
+                f.writelines(
+                    [', '.join([str(p) for p in param_item]) + '\n' for param_item in file_path_or_params_dict.items()]
+                )
+            file_path_or_params_dict = str(tmp_file_path)
+
+        self._input_file_path = Path(file_path_or_params_dict)
         self._output_file_path = Path(
             tempfile.gettempdir(), f'hip-ra-result_{self._input_file_path.stem}_{uuid.uuid1()!s}.out'
         )

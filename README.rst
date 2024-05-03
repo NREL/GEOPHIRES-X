@@ -65,7 +65,7 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geophires>`__
+A web interface is available at `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__
 
 Installation
 ------------

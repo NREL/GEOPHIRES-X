@@ -21,7 +21,7 @@ class HipRaInputParameters:
                 )
             file_path_or_params_dict = str(tmp_file_path)
         elif not isinstance(file_path_or_params_dict, (str, Path)):
-            raise ValueError('Provide either file path as string or parameters as dict')
+            raise ValueError('Provide either file path (as Path or string) or parameters as dict')
 
         self._input_file_path = Path(file_path_or_params_dict)
         self._output_file_path = Path(

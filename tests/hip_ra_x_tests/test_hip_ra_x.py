@@ -445,6 +445,9 @@ class HipRaXTestCase(BaseTestCase):
                 input_file_contents,
             )
 
+        with self.assertRaises(ValueError):
+            HipRaInputParameters(1)
+
     def _new_hip_ra_test_instance(self, enable_hip_ra_logging_config=False, pre_re_stash_runner=None) -> HIP_RA_X:
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv

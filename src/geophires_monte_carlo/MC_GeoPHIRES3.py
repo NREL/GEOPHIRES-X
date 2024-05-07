@@ -218,12 +218,14 @@ def work_package(pass_list: list):
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('HIP_RA.py'):
         hip_ra_client: HipRaClient = HipRaClient()
-        result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
+        result: HipRaResult = hip_ra_client.get_hip_ra_result(
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
+        )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('hip_ra_x.py'):
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
-            HipRaInputParameters(from_file_path=Path(tmp_input_file))
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     else:

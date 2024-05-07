@@ -414,12 +414,39 @@ class HipRaXTestCase(BaseTestCase):
         with self.assertRaises(RuntimeError) as rex:
             client.get_hip_ra_result(
                 HipRaInputParameters(
-                    from_file_path=Path(tempfile.gettempdir(), f'a-non-existent-file_{uuid.uuid1()!s}.txt')
+                    file_path_or_params_dict=Path(tempfile.gettempdir(), f'a-non-existent-file_{uuid.uuid1()!s}.txt')
                 )
             )
 
         self.assertIn('Unable to read input file', str(rex.exception))
         self.assertIn('.txt not found', str(rex.exception))
+
+    def test_hip_ra_input_parameters_init(self):
+        input_from_params: HipRaInputParameters = HipRaInputParameters(
+            {
+                'Reservoir Temperature': 250.0,
+                'Rejection Temperature': 60.0,
+                'Reservoir Porosity': 10.0,
+                'Reservoir Area': 55.0,
+                'Reservoir Thickness': 0.25,
+                'Reservoir Life Cycle': 25,
+            }
+        )
+
+        with open(input_from_params.as_file_path()) as f:
+            input_file_contents = f.read()
+            self.assertEqual(
+                'Reservoir Temperature, 250.0\n'
+                'Rejection Temperature, 60.0\n'
+                'Reservoir Porosity, 10.0\n'
+                'Reservoir Area, 55.0\n'
+                'Reservoir Thickness, 0.25\n'
+                'Reservoir Life Cycle, 25\n',
+                input_file_contents,
+            )
+
+        with self.assertRaises(ValueError):
+            HipRaInputParameters(1)
 
     def _new_hip_ra_test_instance(self, enable_hip_ra_logging_config=False, pre_re_stash_runner=None) -> HIP_RA_X:
         stash_cwd = Path.cwd()

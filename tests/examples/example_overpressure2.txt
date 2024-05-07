@@ -1,9 +1,9 @@
--- Overpressure Example
+-- Overpressure Example 2
 
 ***Subsurface technical parameters***
 *************************************
 Overpressure Percentage, 155.0
-Overpressure Depletion Rate, 10.0
+Overpressure Depletion Rate, 1.0
 Injection Reservoir Temperature, 101.1,      degC
 Injection Reservoir Depth, 1001.1,      meters
 Injection Reservoir Inflation Rate, 202.2,    kPa/yr

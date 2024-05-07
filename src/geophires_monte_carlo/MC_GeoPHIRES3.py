@@ -218,12 +218,14 @@ def work_package(pass_list: list):
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('HIP_RA.py'):
         hip_ra_client: HipRaClient = HipRaClient()
-        result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
+        result: HipRaResult = hip_ra_client.get_hip_ra_result(
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
+        )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('hip_ra_x.py'):
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
-            HipRaInputParameters(from_file_path=Path(tmp_input_file))
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     else:
@@ -358,6 +360,7 @@ def main(command_line_args=None):
         if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None
         else str(Path(Path(args.Input_file).parent, 'MC_Result.txt').absolute())
     )
+    code_file_name = Path(args.Code_File).name
     python_path = 'python'
     html_path = ''
 
@@ -449,6 +452,14 @@ def main(command_line_args=None):
     # Load the results into a pandas dataframe
     results_pd = pd.read_csv(output_file)
     df = pd.DataFrame(results_pd)
+
+    if len(results) < 1:
+        # TODO surface actual exceptions instead of giving this generic message
+        raise RuntimeError(
+            'No MC results generated, '
+            f'this is likely caused by {code_file_name} throwing an exception '
+            f'when run with your input file.'
+        )
 
     # Compute the stats along the specified axes.
     mins = np.nanmin(results, 0)

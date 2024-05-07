@@ -24,10 +24,10 @@ Production Flow Rate per Well, 63
 
 Fracture Shape, 4
 Fracture Height, 100
+Fracture Width, 991 meter
 Fracture Separation, 10 meter
 
-Reservoir Volume Option, 3
-Reservoir Volume, 1000000000
+Reservoir Volume Option, 1
 Number of Fractures, 100
 Water Loss Fraction, .02
 Productivity Index, 5

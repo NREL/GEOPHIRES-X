@@ -10,7 +10,7 @@ from geophires_x.Units import *
 
 
 def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: int, nonvertical_length_km: float,
-                                       InputDepth_km: float, nprod:int, ninj:int) -> tuple:
+                                       InputDepth_km: float, OutputDepth_km: float, nprod:int, ninj:int) -> tuple:
     """
     returns the total length, vertical length, and non-vertical lengths, depending on the configuration
     :param Configuration: Configuration of the well
@@ -21,6 +21,8 @@ def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: in
     :type nonvertical_length_km: float
     :param InputDepth_km: depth of the well in km
     :type InputDepth_km: float
+    :param OutputDepth_km: depth of the output end of the well in km, if U shaped, and not horizontal
+    :type OutputDepth_km: float
     :param nprod: number of production wells
     :type nprod: int
     :param ninj: number of injection wells
@@ -29,7 +31,7 @@ def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: in
     """
     if Configuration == Configuration.ULOOP:
         # Total drilling depth of both wells and laterals in U-loop [m]
-        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        vertical_pipe_length_m = (nprod * InputDepth_km * 1000.0) + (ninj * OutputDepth_km * 1000.0)
         nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
     elif Configuration == Configuration.COAXIAL:
         # Total drilling depth of well and lateral in co-axial case [m]
@@ -1884,6 +1886,12 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+        self.cost_nonvertical_section = self.OutputParameterDict[self.cost_nonvertical_section.Name] = OutputParameter(
+            Name="Cost of the non-vertical section of a well",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
+        )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -2324,18 +2332,21 @@ class Economics:
             self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value))
         else:
-
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                self.cost_nonvertical_section.value = 0.0
                 if not model.wellbores.IsAGS.value:
-                    vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
+                    input_vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
+                    output_vert_depth_km = 0.0
                 else:
-                    vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
-                model.wellbores.injection_reservoir_depth.value = vert_depth_km
+                    input_vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
+                    output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
+                model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
 
                 tot_m, tot_vert_m, tot_horiz_m = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
                                                                       model.wellbores.numnonverticalsections.value,
                                                                       model.wellbores.Nonvertical_length.value / 1000.0,
-                                                                      vert_depth_km,
+                                                                      input_vert_depth_km,
+                                                                      output_vert_depth_km,
                                                                       model.wellbores.nprod.value,
                                                                       model.wellbores.ninj.value)
 
@@ -2363,7 +2374,7 @@ class Economics:
                                                                                          self.injection_well_cost_adjustment_factor.value)
 
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                cost_nonvertical_section = calculate_cost_of_non_vertical_section(model, tot_horiz_m,
+                self.cost_nonvertical_section.value = calculate_cost_of_non_vertical_section(model, tot_horiz_m,
                                             self.wellcorrelation.value,
                                             self.Nonvertical_drilling_cost_per_m.value,
                                             model.wellbores.numnonverticalsections.value,
@@ -2371,12 +2382,12 @@ class Economics:
                                             model.wellbores.NonverticalsCased.value,
                                             self.production_well_cost_adjustment_factor.value)
             else:
-                cost_nonvertical_section = 0.0
+                self.cost_nonvertical_section.value = 0.0
             # cost of the well field
             # 1.05 for 5% indirect costs
             self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                           (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
-                                          cost_nonvertical_section)
+                                          self.cost_nonvertical_section.value)
 
         # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
         if self.ccstimfixed.Valid:

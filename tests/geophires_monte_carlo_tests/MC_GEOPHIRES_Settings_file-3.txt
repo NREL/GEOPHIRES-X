@@ -1,0 +1,4 @@
+INPUT, Gradient 1, triangular, 36, 41, 44
+OUTPUT, Average Net Electricity Production
+OUTPUT, Electricity breakeven price
+ITERATIONS, 3

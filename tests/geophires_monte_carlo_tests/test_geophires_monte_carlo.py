@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import unittest
 from pathlib import Path
 
@@ -106,6 +107,33 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
             self.assertLess(result_json_obj['Total capital costs']['average'], 1000)
 
             self.assertDictEqual(result_json_obj, result.result['output'])
+
+    @unittest.skip('FIXME TODO https://github.com/NREL/GEOPHIRES-X/issues/192')
+    def test_geophires_monte_carlo_single_input(self):
+        client = GeophiresMonteCarloClient()
+        num_iterations = 3
+
+        input_file_path: Path = self._get_arg_file_path('GEOPHIRES-example1.txt')
+        mc_settings_file_path: Path = self._get_arg_file_path('MC_GEOPHIRES_Settings_file-3.txt')
+        result: MonteCarloResult = client.get_monte_carlo_result(
+            MonteCarloRequest(
+                SimulationProgram.GEOPHIRES,
+                input_file_path,
+                mc_settings_file_path,
+            )
+        )
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.output_file_path)
+
+        with open(result.output_file_path) as f:
+            result_content = f.read()
+            self.assertIn(
+                'Average Net Electricity Production, Electricity breakeven price, Gradient 1',
+                result_content,
+            )
+            gradient_inputs = re.compile(r'\(Gradient\s1\:[3-4][0-9]\.[0-9]+').findall(result_content)
+            self.assertEqual(num_iterations, len(gradient_inputs))
+            self.assertEqual(num_iterations, len(set(gradient_inputs)))  # verify unique values were generated
 
     def test_hip_ra_monte_carlo(self):
         client = GeophiresMonteCarloClient()

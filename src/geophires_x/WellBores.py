@@ -81,7 +81,7 @@ def ReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int
     delta_pressure = (pressure[0] - initial_pressure_kPa)
     depletion_timesteps = int((100.0 / depletion_rate) * timesteps_per_year)
     pressure_change_per_timestep = delta_pressure / depletion_timesteps
-    for timestep in range(1, depletion_timesteps):
+    for timestep in range(1, project_lifetime_yr * timesteps_per_year):
         pressure[timestep] = pressure[0] - (pressure_change_per_timestep * timestep)
         if pressure[timestep] < initial_pressure_kPa:
             # If the pressure drops below the hydrostatic pressure, set it to the hydrostatic pressure and break out
@@ -167,7 +167,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     rhowater = np.array([
         density_water_kg_per_m3(
             t,
-            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.quantity().to('m').magnitude),
+            pressure=model.reserv.lithostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -175,7 +175,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     muwater = np.array([
         viscosity_water_Pa_sec(
             t,
-            pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value, model.reserv.depth.quantity().to('m').magnitude),
+            pressure=model.reserv.lithostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -231,13 +231,11 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.quantity().to('m').magnitude))
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
                 * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
 
     # replace with correlation based on Tinjaverage
-    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.quantity().to('m').magnitude)) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -1201,8 +1199,7 @@ class WellBores:
         self.production_reservoir_pressure.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
                                                                                 model.reserv.depth.quantity().to('m').magnitude,
                                                                                 model.reserv.averagegradient.value,
-                                                                                model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                   model.reserv.depth.quantity().to('m').magnitude)) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
+                                                                                model.reserv.lithostatic_pressure()) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
             self.production_reservoir_pressure.CurrentUnits).magnitude
 
         self.production_reservoir_pressure.value = ReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,
@@ -1228,19 +1225,20 @@ class WellBores:
                 if not self.injection_reservoir_temperature.Provided:
                     self.injection_reservoir_temperature.value = (model.reserv.averagegradient.value * self.injection_reservoir_depth.value) + model.reserv.Tsurf.value
 
+                injection_reservoir_static_pressure = quantity(static_pressure_MPa(
+                    model.reserv.rhorock.value, self.injection_reservoir_depth.quantity().to('m').magnitude), 'MPa')
+
                 if self.injection_reservoir_pressure.value < 0: # they didn't provide a pressure so assume hydrostatic.
                     self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
                                                                                         model.reserv.Tsurf.value,
                                                                                         self.injection_reservoir_depth.value,
                                                                                         model.reserv.averagegradient.value * 1000.0,
-                                                                                        model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                                                               self.injection_reservoir_depth.quantity().to('m').magnitude))
+                                                                                        injection_reservoir_static_pressure)
             self.injection_reservoir_initial_pressure.value = self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
                                                                                    model.reserv.Tsurf.value,
                                                                                    self.injection_reservoir_depth.value,
                                                                                    model.reserv.averagegradient.value,
-                                                                                   model.reserv.lithostatic_pressure(model.reserv.rhorock.value,
-                                                                                                                     self.injection_reservoir_depth.quantity().to('m').magnitude))
+                                                                                   injection_reservoir_static_pressure)
 
 #            if not self.injection_reservoir_initial_pressure.Provided:
             self.injection_reservoir_pressure.value = InjectionReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,

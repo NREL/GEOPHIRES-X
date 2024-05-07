@@ -286,7 +286,7 @@ class Reservoir:
         self.fracnumb = self.ParameterDict[self.fracnumb.Name] = intParameter(
             "Number of Fractures",
             DefaultValue=10,
-            AllowableRange=list(range(1, 21, 1)),
+            AllowableRange=list(range(1, 150, 1)),
             UnitType=Units.NONE,
             ErrMessage="assume default number of fractures (10)",
             ToolTipText="Number of identical parallel fractures in EGS fracture-based reservoir model."

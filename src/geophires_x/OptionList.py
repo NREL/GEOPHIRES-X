@@ -90,5 +90,3 @@ class WorkingFluid(str, Enum):
 class Configuration(str, Enum):
     ULOOP = "utube"
     COAXIAL = "coaxial"
-    VERTICAL = "vertical"
-    L = "L"

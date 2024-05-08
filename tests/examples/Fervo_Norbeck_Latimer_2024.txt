@@ -3,49 +3,70 @@
 ---   "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
 ---   https://doi.org/10.31223/X52X0B
 
-Has Nonvertical Section, True
-Multilaterals Cased, True
-Well Geometry Configuration, 4,       ----L
-Number of Multilateral Sections, 2,  ---Two parallel horizontal sections
-Well Drilling Cost Correlation,3,				--- [-] Use built-in well drilling cost correlation #3 = vertical large diameter
-Horizontal Well Drilling Cost Correlation,4,				--- [-] Use built-in well drilling cost correlation #4 = deviated large diameter
-
+***Reservoir Parameters***
 Reservoir Model, 1
+Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
+Reservoir Density, 2700
 Reservoir Depth, 2347 meter
-Number of Segments, 1
-Gradient 1, 68
-Number of Production Wells, 1
-Number of Injection Wells, 1
-Production Well Diameter, 7
-Injection Well Diameter, 7
-Ramey Production Wellbore Model, 1
-Injection Wellbore Temperature Gain, 0
-Production Flow Rate per Well, 63
-
+Reservoir Heat Capacity,1000,					---[J/kg/K]
+Reservoir Thermal Conductivity, 2.7
+Number of Fractures, 100
 Fracture Shape, 4
 Fracture Height, 100
 Fracture Width, 991 meter
 Fracture Separation, 10 meter
-
-Reservoir Volume Option, 1
-Number of Fractures, 100
-Water Loss Fraction, .02
-Productivity Index, 5
-Injectivity Index, 5
-Injection Temperature, 50
-Maximum Drawdown, 1
-Reservoir Heat Capacity, 1000
-Reservoir Density, 2700
-Reservoir Thermal Conductivity, 2.7
-End-Use Option, 1
-Economic Model, 1
-Power Plant Type, 4
-Circulation Pump Efficiency, .8
-Utilization Factor, .9
-Surface Temperature, 20
-Ambient Temperature, 20
-Plant Lifetime, 30
-Fixed Charge Rate, .05
-Inflation Rate During Construction, 0
-Time steps per year, 6
+Number of Segments,1,						---[-]
+Gradient 1, 68
+Drawdown Parameter,.00002,					---[kg/s/m2]
 Maximum Temperature, 500
+
+*** Wellbore Parameters***
+Number of Injection Wells, 1,					---[-]
+Number of Production Wells,1,					---[-]
+Well Geometry Configuration, 4,       ----L
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Number of Multilateral Sections, 2,  ---Two parallel horizontal sections
+Total Nonvertical Length, 990 meter
+Well Drilling Cost Correlation,3,				--- [-] Use built-in well drilling cost correlation #3 = vertical large diameter
+Horizontal Well Drilling Cost Correlation,4,				--- [-] Use built-in well drilling cost correlation #4 = deviated large diameter
+Production Flow Rate per Well, 63
+Production Well Diameter, 7
+Injection Well Diameter, 7
+Injection Temperature, 50
+Injection Wellbore Temperature Gain,3,				---[deg.C]
+Injectivity Index, 5,						---[kg/s/bar]
+Productivity Index, 5
+Ramey Production Wellbore Model,1,				---Should be 0 (disabled) or 1 (enabled)
+Utilization Factor,.9,						---[-]Water Loss Fraction, .02x
+Water Loss Fraction,0.02,						---[-]
+Maximum Drawdown,1,						---[-] no redrilling considered
+
+***Surfaceplant Parameters***
+Ambient Temperature, 10.27,						---[deg.C]
+Surface Temperature, 10.27
+End-Use Option,1,						---electricity as the main product
+Plant Lifetime, 30
+Power Plant Type,4,						---Double-Flash
+End-Use Efficiency Factor,.9,					---[-]
+Circulation Pump Efficiency,.80,				---[-]
+
+*** Economic Parameters***
+Economic Model,3,						---BICYCLE Levelized Cost Model
+Starting Electricity Sale Price,0.15
+Ending Electricity Sale Price,1.00, essentially no limit s the rate can rise continuously with inflation
+Electricity Escalation Rate Per Year, 0.004053223, End up being about 2% inflation
+Electricity Escalation Start Year,1
+Fraction of Investment in Bonds,.5,				---[-] Required for BICYCLE model
+Combined Income Tax Rate,.3,					---[-] Required for BICYCLE model
+Gross Revenue Tax Rate,0,					---[-] Required for BICYCLE model
+Inflated Bond Interest Rate,.05,				---[-] Required for BICYCLE model
+Inflated Equity Interest Rate,.08,				---[-] Required for BICYCLE model
+Inflation Rate,.02,						---[-] Required for BICYCLE model
+Investment Tax Credit Rate,0,					---[-] Required for BICYCLE model
+Inflation Rate During Construction, 0.05,				---[-]
+Property Tax Rate,0,						---[-] Required for BICYCLE model
+
+***Other Parameters***
+Print Output to Console, 1,					---Should be 1 (to print) or 0 (to not print)
+Time steps per year,10,						---[-]

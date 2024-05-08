@@ -923,7 +923,7 @@ class WellBores:
         self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
             "Total Nonvertical Length",
             DefaultValue=1000.0,
-            Min=1000.0,
+            Min=50.0,
             Max=20000.0,
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,

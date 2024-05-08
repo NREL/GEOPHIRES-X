@@ -14,6 +14,7 @@ ORC. It is accessed by a closed loop well.
 Is AGS, True
 Has Nonvertical Section, True
 Multilaterals Cased, True
+Well Geometry Configuration, 1,       ----U-loop (could be Eavor style)
 Plant Lifetime, 40, ---Years
 Water Thermal Conductivity, 0.65
 Total Nonvertical Length, 5001.0
@@ -33,7 +34,7 @@ Cylindrical Reservoir Output Depth, 4.0, ------km
 Cylindrical Reservoir Length, 5.0,     ----km
 Reservoir Model,0,                        			---simople cylinder reservoir model
 Number of Production Wells,1,            			---[-]
-Number of Injection Wells,0,            			---[-]
+Number of Injection Wells,1,            			---[-]
 
 
 

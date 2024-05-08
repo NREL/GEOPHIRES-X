@@ -8,7 +8,10 @@ from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
 import geophires_x.Model as Model
-from .OptionList import ReservoirModel
+from .OptionList import ReservoirModel, Configuration, WorkingFluid
+
+
+# code from Koenraad
 
 
 def InjectionReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
@@ -876,6 +879,86 @@ class WellBores:
             ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir inflation rate",
             ToolTipText="enter the rate at which the pressure increases per year in the injection reservoir (1000 kPa/yr)"
         )
+        # This is a alias for "Well Geometry Configuration" - putting it here for backwards compatibility
+        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
+            "Closed-loop Configuration",
+            DefaultValue=Configuration.VERTICAL,
+            AllowableRange=[1, 2, 3, 4],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume simple vertical well (3)"
+        )
+        # This is a alias for "Closed-loop Configuration" - putting it here for backwards compatibility
+        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
+            "Well Geometry Configuration",
+            DefaultValue=Configuration.VERTICAL,
+            AllowableRange=[1, 2, 3, 4],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume simple vertical well (3)"
+        )
+
+        self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
+            "Water Thermal Conductivity",
+            DefaultValue=0.6,
+            Min=0.0,
+            Max=100.0,
+            UnitType=Units.THERMAL_CONDUCTIVITY,
+            PreferredUnits=ThermalConductivityUnit.WPERMPERK,
+            CurrentUnits=ThermalConductivityUnit.WPERMPERK,
+            ErrMessage="assume default for water thermal conductivity (0.6 W/m/K)",
+            ToolTipText="Water Thermal Conductivity"
+        )
+
+        self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
+            "Heat Transfer Fluid",
+            DefaultValue=WorkingFluid.WATER,
+            AllowableRange=[1, 2],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume default Heat transfer fluid is water (1)"
+        )
+
+        # Input data for subsurface condition
+        self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
+            "Total Nonvertical Length",
+            DefaultValue=1000.0,
+            Min=50.0,
+            Max=20000.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS,
+            Required=True,
+            ErrMessage="assume default Total nonvertical length (1000 m)"
+        )
+
+        self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
+            "Nonvertical Wellbore Diameter",
+            DefaultValue=0.156,
+            Min=0.01,
+            Max=100.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS,
+            ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
+            ToolTipText="Non-vertical Wellbore Diameter"
+        )
+        self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
+            "Number of Multilateral Sections",
+            DefaultValue=1,
+            AllowableRange=list(range(0, 101, 1)),
+            UnitType=Units.NONE,
+            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
+            ToolTipText="Number of Nonvertical Wellbore Sections"
+        )
+        self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
+            "Multilaterals Cased",
+            DefaultValue=False,
+            Required=False,
+            Provided=False,
+            Valid=True,
+            ErrMessage="assume default value (False)"
+        )
 
         # local variable initiation
         self.Pinjwellhead = 0.0
@@ -996,6 +1079,20 @@ class WellBores:
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
+        self.NonverticalProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
+            Name="Nonvertical Produced Temperature",
+            value=[0.0],
+            UnitType=Units.TEMPERATURE,
+            PreferredUnits=TemperatureUnit.CELSIUS,
+            CurrentUnits=TemperatureUnit.CELSIUS
+        )
+        self.NonverticalPressureDrop = self.OutputParameterDict[self.NonverticalPressureDrop.Name] = OutputParameter(
+            Name="Nonvertical Pressure Drop",
+            value=[0.0],
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL
+        )
 
     def __str__(self):
         return "WellBores"
@@ -1033,6 +1130,11 @@ class WellBores:
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this should handle all non-special cases
 
                     # handle special cases
+                    if ParameterToModify.Name == "Heat Transfer Fluid":
+                        if ParameterReadIn.sValue == str(1):
+                            self.Fluid.value = WorkingFluid.WATER
+                        else:
+                            self.Fluid.value = WorkingFluid.SCO2
                     # IsAGS is false by default - if it equal 1, then it is true
                     if ParameterToModify.Name == "Ramey Production Wellbore Model":
                         if ParameterReadIn.sValue == '0':
@@ -1059,6 +1161,18 @@ class WellBores:
                             self.usebuiltinppwellheadcorrelation = True
                         else:
                             self.usebuiltinppwellheadcorrelation = False
+                    elif (ParameterToModify.Name == "Closed-loop Configuration" or
+                          ParameterToModify.Name == "Well Geometry Configuration"):  # These two are alias of each other
+                        if ParameterReadIn.sValue == str(1):
+                            self.Configuration.value = Configuration.ULOOP
+                        elif ParameterReadIn.sValue == str(2):
+                            self.Configuration.value = Configuration.COAXIAL
+                        elif ParameterReadIn.sValue == str(3):
+                            self.Configuration.value = Configuration.VERTICAL
+                        elif ParameterReadIn.sValue == str(4):
+                            self.Configuration.value = Configuration.L
+                        else:
+                            raise ValueError(f'Invalid Configuration: {self.Configuration.value}')
         else:
             model.logger.info("No parameters read because no content provided")
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")

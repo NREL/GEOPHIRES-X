@@ -778,7 +778,6 @@ class Outputs:
         pumping_power_results = []
 
         simulation_metadata.append(OutputTableItem('GEOPHIRES Version', geophires_x.__version__))
-        simulation_metadata.append(OutputTableItem('GEOPHIRES Build Date', '2024-03-05'))
         simulation_metadata.append(OutputTableItem('Simulation Date', datetime.datetime.now().strftime('%Y-%m-%d')))
         simulation_metadata.append(OutputTableItem('Simulation Time', datetime.datetime.now().strftime('%H:%M')))
         simulation_metadata.append(OutputTableItem('Calculation Time', '{0:10.3f}'.format((time.time() - model.tic)) + ' sec'))
@@ -1554,7 +1553,6 @@ class Outputs:
                 f.write('Simulation Metadata\n')
                 f.write('----------------------\n')
                 f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
-                f.write(' GEOPHIRES Build Date: 2024-03-05\n') # FIXME TODO https://github.com/NREL/GEOPHIRES-X/issues/139
                 f.write(' Simulation Date: '+ datetime.datetime.now().strftime('%Y-%m-%d\n'))
                 f.write(' Simulation Time:  '+ datetime.datetime.now().strftime('%H:%M\n'))
                 f.write(' Calculation Time: '+'{0:10.3f}'.format((time.time()-model.tic)) + ' sec\n')

@@ -49,7 +49,7 @@ class SFReservoir(Reservoir):
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):
-        return "LHSReservoir"
+        return 'SFReservoir'
 
     def read_parameters(self, model: Model) -> None:
         """

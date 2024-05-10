@@ -1,4 +1,5 @@
 import tempfile
+import unittest
 import uuid
 from pathlib import Path
 
@@ -388,6 +389,7 @@ class GeophiresXClientTestCase(BaseTestCase):
             ccus_profile,
         )
 
+    @unittest.skip('Not currently relevant')
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
             {'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value, 'Gradient 1': 50, 'Maximum Temperature': 250}

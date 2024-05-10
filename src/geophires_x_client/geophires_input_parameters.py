@@ -1,4 +1,5 @@
 import tempfile
+import uuid
 from enum import Enum
 from pathlib import Path
 from types import MappingProxyType
@@ -42,16 +43,16 @@ class GeophiresInputParameters:
 
         assert (params is not None) or (from_file_path is not None), 'One of params or from_file_path must be provided'
 
-        if from_file_path is not None:
-            self._id = hash(from_file_path)
-            self._file_path = from_file_path
-
         if params is not None:
             self._params = dict(params)
+            self._file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{uuid.uuid4()!s}.txt')
 
-        if self._file_path is None:
-            self._id = abs(hash(frozenset(self._params.items())))
-            self._file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._id}.txt')
+            if from_file_path is not None:
+                with open(from_file_path, encoding='UTF-8') as base_file:
+                    with open(self._file_path, 'a', encoding='UTF-8') as f:
+                        f.writelines(base_file.readlines())
+        else:
+            self._file_path = from_file_path
 
         if params is not None:
             # TODO validate params - i.e. that all names are accepted by simulation, values don't exceed max allowed,
@@ -60,6 +61,8 @@ class GeophiresInputParameters:
             with open(self._file_path, 'a', encoding='UTF-8') as f:
                 f.writelines([', '.join([str(p) for p in param_item]) + '\n' for param_item in self._params.items()])
 
+        self._id = hash(self._file_path)
+
     def as_file_path(self):
         return self._file_path
 
@@ -67,4 +70,5 @@ class GeophiresInputParameters:
         return Path(tempfile.gettempdir(), f'geophires-result_{self._id}.out')
 
     def __hash__(self):
+        """TODO make hashes for equivalent parameters equal"""
         return self._id

@@ -328,3 +328,20 @@ Print Output to Console, 1"""
         del result_kilometers_input.result['metadata']
 
         self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)
+
+    def test_fcr_sensitivity(self):
+        def input_for_fcr(fcr: float) -> GeophiresInputParameters:
+            return GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/example1.txt'), params={'Fixed Charge Rate': fcr}
+            )
+
+        def get_fcr_lcoe(fcr: float) -> float:
+            return (
+                GeophiresXClient()
+                .get_geophires_result(input_for_fcr(fcr))
+                .result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
+            )
+
+        self.assertEqual(9.65, get_fcr_lcoe(0.05))
+        self.assertEqual(3.33, get_fcr_lcoe(0.0001))
+        self.assertEqual(104.74, get_fcr_lcoe(0.8))

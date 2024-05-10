@@ -389,7 +389,10 @@ class GeophiresXClientTestCase(BaseTestCase):
             ccus_profile,
         )
 
-    @unittest.skip('Not currently relevant')
+    @unittest.skip(
+        'Not currently relevant - '
+        'see TODO in geophires_x_client.geophires_input_parameters.GeophiresInputParameters.__hash__'
+    )
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
             {'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value, 'Gradient 1': 50, 'Maximum Temperature': 250}

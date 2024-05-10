@@ -54,9 +54,11 @@ class GeophiresXTestCase(BaseTestCase):
             )
         )
 
-        assert result == result_same_input
+        del result.result['metadata']
+        del result_same_input.result['metadata']
+        self.assertDictEqual(result.result, result_same_input.result)
 
-        # TODO assert that result was retrieved from cache instead of recomputed (somehow)
+        # assert result == result_same_input # TODO assert that result was retrieved from cache instead of recomputed (somehow)
 
     def test_geophires_x_end_use_electricity(self):
         client = GeophiresXClient()

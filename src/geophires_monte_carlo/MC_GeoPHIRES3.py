@@ -22,6 +22,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pylocker import Locker
 from rich.console import Console
 from rich.table import Table
 
@@ -291,8 +292,13 @@ def work_package(pass_list: list):
     result_s = result_s.strip(' ').strip(',')  # get rid of last space and comma
     result_s += '\n'
 
-    with open(output_file, 'a') as f:
-        f.write(result_s)
+    # write the result to a file in a concurrent thread safe way
+    lock_pass = str(uuid.uuid1())
+    FL = Locker(filePath=output_file, lockPass=lock_pass, timeout=10, mode='a')
+    with FL as r:
+        acquired, code, fd = r
+        if fd is not None:
+            fd.write(result_s)
 
 
 def main(command_line_args=None):
@@ -440,7 +446,7 @@ def main(command_line_args=None):
         result_count = result_count + 1
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
-            if len(line) > 3:
+            if len(line) > 10:
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
                 line = line.replace('(', '').replace(')', '')  # strip off the ()
                 results.append([float(y) for y in line.split(',')])
@@ -448,11 +454,6 @@ def main(command_line_args=None):
             logger.warning(f'-9999.0 or space found in line {result_count!s}')
 
     actual_records_count = len(results)
-
-    # Load the results into a pandas dataframe
-    results_pd = pd.read_csv(output_file)
-    df = pd.DataFrame(results_pd)
-
     if len(results) < 1:
         # TODO surface actual exceptions instead of giving this generic message
         raise RuntimeError(
@@ -469,25 +470,71 @@ def main(command_line_args=None):
     means = np.nanmean(results, 0)
     std = np.nanstd(results, 0)
 
+    # Load the results into a pandas dataframe
+    results_pd = pd.read_csv(output_file)
+    df = pd.DataFrame(results_pd)
+
+    # Build a second dataframe to contain the input data. In the df dataframe, it is too encoded to be useful
+    input_df = pd.DataFrame()
+
+    # add the columns
+    input_row = df[df.columns[len(outputs)]].tolist()[0]
+    input_row = input_row.replace('(', '').replace(')', '')
+    input_row = input_row.strip().strip(';')
+    input_columns_data = input_row.split(';')
+    for input_column_data in input_columns_data:
+        input_column_name, input_column_value = input_column_data.split(':')
+        input_df[input_column_name] = []
+
+    # add the data
+    for i in range(actual_records_count):
+        input_row = str(df[df.columns[len(outputs)]].tolist()[i])
+        if len(input_row) < 10:
+            continue
+        input_row = input_row.replace('(', '').replace(')', '')
+        input_row = input_row.strip().strip(';')
+        input_columns_data = input_row.split(';')
+        data = []
+        for input_column_data in input_columns_data:
+            input_column_name, input_column_value = input_column_data.split(':')
+            data.append(float(input_column_value))
+        input_df.loc[i] = data
+
     logger.info(f'Calculation Time: {time.time() - tic:10.3f} sec')
     logger.info(f'Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec')
     if iterations != actual_records_count:
-        logger.warning(
-            f'NOTE: {actual_records_count!s} iterations finished successfully and were used to calculate the '
-            f'statistics.'
-        )
+        msg = f'NOTE: {actual_records_count!s} iterations finished successfully and were used to calculate the statistics.'
+        logger.warning(msg)
 
-    # write them out
+    # write them out and make the graphs
     annotations = ''
     outputs_result: dict[str, dict] = {}
+
+    input = ''
     full_names: set = set()
     short_names: set = set()
     with open(output_file, 'a') as f:
-        if iterations != actual_records_count:
-            f.write(
-                f'\n\n{actual_records_count!s} iterations finished successfully and were used to calculate the '
-                f'statistics\n\n'
-            )
+
+        # First do the input graphs
+        for i in range(len(inputs)):
+            input = inputs[i][0]
+            plt.figure(figsize=(8, 6))
+            ax = plt.subplot()
+            ax.set_title(input)
+            ax.set_xlabel('Random Values')
+            ax.set_ylabel('Probability')
+
+            plt.figtext(0.11, 0.74, annotations, fontsize=8)
+            ret = plt.hist(input_df[input_df.columns[i]].tolist(), bins=50, density=True)
+            fname = input_df.columns[i].strip().replace('/', '-')
+            save_path = Path(Path(output_file).parent, f'{fname}.png')
+            if html_path:
+                save_path = Path(Path(html_path).parent, f'{fname}.png')
+            plt.savefig(save_path)
+            full_names.add(save_path)
+            short_names.add(fname)
+
+        # Now do the output graphs
         for i in range(len(outputs)):
             output = outputs[i]
             f.write(f'{output}:\n')

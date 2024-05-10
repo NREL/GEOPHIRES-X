@@ -34,25 +34,31 @@ class PowerPlantType(Enum):
 
 
 class GeophiresInputParameters:
+
     def __init__(self, params: Optional[MappingProxyType] = None, from_file_path: Optional[Path] = None):
-        assert (params is None) ^ (from_file_path is None), 'Only one of params or from_file_path may be provided'
+        """
+        Note that params will override any duplicate entries in from_file_path
+        """
+
+        assert (params is not None) or (from_file_path is not None), 'One of params or from_file_path must be provided'
+
+        if from_file_path is not None:
+            self._id = hash(from_file_path)
+            self._file_path = from_file_path
 
         if params is not None:
             self._params = dict(params)
+
+        if self._file_path is None:
             self._id = abs(hash(frozenset(self._params.items())))
+            self._file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._id}.txt')
+
+        if params is not None:
             # TODO validate params - i.e. that all names are accepted by simulation, values don't exceed max allowed,
             #  etc.
 
-            tmp_file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._id}.txt')
-            f = Path.open(tmp_file_path, 'w')
-
-            f.writelines([','.join([str(p) for p in param_item]) + '\n' for param_item in self._params.items()])
-            f.close()
-            self._file_path = tmp_file_path
-
-        if from_file_path is not None:
-            self._file_path = from_file_path
-            self._id = hash(from_file_path)
+            with open(self._file_path, 'a', encoding='UTF-8') as f:
+                f.writelines([', '.join([str(p) for p in param_item]) + '\n' for param_item in self._params.items()])
 
     def as_file_path(self):
         return self._file_path

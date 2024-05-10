@@ -1,0 +1,38 @@
+import tempfile
+import uuid
+from pathlib import Path
+
+from base_test_case import BaseTestCase
+from geophires_x_client import GeophiresInputParameters
+
+
+class GeophiresInputParametersTestCase(BaseTestCase):
+
+    def test_id(self):
+        input_1 = GeophiresInputParameters(from_file_path=self._get_test_file_path('example1.txt'))
+        input_2 = GeophiresInputParameters(from_file_path=self._get_test_file_path('example2.txt'))
+        self.assertIsNot(input_1._id, input_2._id)
+
+    def test_init_with_input_file(self):
+        file_path = self._get_test_file_path('example1.txt')
+        input_params = GeophiresInputParameters(from_file_path=file_path)
+        self.assertEqual(file_path, input_params.as_file_path())
+
+    def test_init_with_params(self):
+        dummy_input_path = Path(tempfile.gettempdir(), f'geophires-dummy-input-params_{uuid.uuid4()!s}.txt')
+        with open(dummy_input_path, 'w', encoding='UTF-8') as f:
+            f.write('Foo, Bar\nBaz, Qux\n')
+
+        input_from_file = GeophiresInputParameters(from_file_path=dummy_input_path)
+        input_from_params = GeophiresInputParameters(params={'Foo': 'Bar', 'Baz': 'Qux'})
+        self.assertFileContentsEqual(input_from_file.as_file_path(), input_from_params.as_file_path())
+
+    def test_init_with_input_file_and_parameters(self):
+        dummy_input_path = Path(tempfile.gettempdir(), f'geophires-dummy-input-params_{uuid.uuid4()!s}.txt')
+        with open(dummy_input_path, 'w', encoding='UTF-8') as f:
+            f.write('Foo, Bar\nBaz, Qux\n')
+
+        input_params = GeophiresInputParameters(from_file_path=dummy_input_path, params={'Baz': 'Quux', 'Quuz': 2})
+
+        with open(input_params.as_file_path(), encoding='UTF-8') as f:
+            self.assertEqual('Foo, Bar\nBaz, Qux\nBaz, Quux\nQuuz, 2\n', f.read())

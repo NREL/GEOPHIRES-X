@@ -9,12 +9,12 @@ from geophires_x_client import GeophiresInputParameters
 class GeophiresInputParametersTestCase(BaseTestCase):
 
     def test_id(self):
-        input_1 = GeophiresInputParameters(from_file_path=self._get_test_file_path('example1.txt'))
-        input_2 = GeophiresInputParameters(from_file_path=self._get_test_file_path('example2.txt'))
+        input_1 = GeophiresInputParameters(from_file_path=self._get_test_file_path('client_test_input_1.txt'))
+        input_2 = GeophiresInputParameters(from_file_path=self._get_test_file_path('client_test_input_2.txt'))
         self.assertIsNot(input_1._id, input_2._id)
 
     def test_init_with_input_file(self):
-        file_path = self._get_test_file_path('example1.txt')
+        file_path = self._get_test_file_path('client_test_input_1.txt')
         input_params = GeophiresInputParameters(from_file_path=file_path)
         self.assertEqual(file_path, input_params.as_file_path())
 

@@ -1,12 +1,3 @@
-GEOPHIRES v2.0 Input File
-Created on 2018-06-11
-Last modified on 2018-06-11
-Geothermal Direct-Use Example Problem using a Linear Heat Sweep Model.
-
-Example 2 Description: This problem considers an EGS reservoir at 3km depth.
-Ramey's model is applied to simulate production wellbore heat losses. The heat
-is used in direct-use heat application with reinjection temperature of 70deg.C
-
 ***Subsurface Technical Parameters***
 *************************************
 

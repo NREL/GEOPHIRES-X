@@ -531,6 +531,7 @@ def main(command_line_args=None):
             if html_path:
                 save_path = Path(Path(html_path).parent, f'{fname}.png')
             plt.savefig(save_path)
+            plt.close()
             full_names.add(save_path)
             short_names.add(fname)
 
@@ -566,6 +567,7 @@ def main(command_line_args=None):
             if html_path:
                 save_path = Path(Path(html_path).parent, f'{fname}.png')
             plt.savefig(save_path)
+            plt.close()
             full_names.add(save_path)
             short_names.add(fname)
             annotations = ''

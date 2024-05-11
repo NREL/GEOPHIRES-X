@@ -78,6 +78,7 @@ setup(
         'iapws',
         'coolprop',
         'rich',
+        'pylocker',
     ],
     extras_require={
         # eg:

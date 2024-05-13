@@ -11,6 +11,8 @@ requirements.txt
 *~
 *.bak
 .DS_Store
+*.lock
+*.json
 
 # C extensions
 *.so

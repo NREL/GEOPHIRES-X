@@ -20,13 +20,12 @@ Reservoir Heat Capacity,1000,					---[J/kg/K]
 Reservoir Thermal Conductivity, 2.7
 Number of Fractures, 100, per the paper
 Fracture Shape, 4, per the paper
-Fracture Height, 200, per the paper
-Fracture Width, 111.25 meter, per the paper (distance between wellbores must be minumum path)
+Fracture Height, 160, per the paper
+Fracture Width, 160, per the paper (distance between wellbores assumes a dipole flow field)
 Fracture Separation, 10 meter
-Number of Segments,1,						---[-]
-Gradient 1, 68
-Drawdown Parameter,.00002,					---[kg/s/m2]
-Maximum Temperature, 376 degF, per the paper
+Number of Segments,1
+Gradient 1, 76.74, per the paper
+Maximum Temperature, 170 degC, per the paper
 Plant Outlet Pressure, 1450 psi, per the paper
 
 *** Wellbore Parameters***
@@ -43,7 +42,7 @@ Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the
 Production Well Diameter, 7, per the paper
 Injection Well Diameter, 7, per the paper
 Well Separation, 365 feet, per the paper
-Injection Temperature, 90 degF, per the paper 75 to 125 degF
+Injection Temperature, 45 degC, per the paper 75 to 125 degF
 Injection Wellbore Temperature Gain,3,				---[deg.C]
 Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW
 Ramey Production Wellbore Model,1,				---Should be 0 (disabled) or 1 (enabled)

@@ -2,39 +2,32 @@
 --- Norbeck J.H. and Latimer T.M. 2024.
 ---   "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
 ---   https://doi.org/10.31223/X52X0B
---- Drilling costs from:
----- Kareem El-Sadi; Brittany Gierke; Elliot Howard; Christian Gradl; 2024
----- "Review Of Drilling Performance In A Horizontal EGS Development"
----- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Elsadi.pdf?t=1706897516
-----
----- This case study is a commercial-scale demonstration of a first-of-a-kind enhanced geothermal system.
----- The reservoir is a 7700-foot deep; 2800 kg/m3 density; 1000 J/kg/K heat capacity; 2.7 W/m/K thermal conductivity reservoir.
----- The reservoir has 87 fractures; each 750 feet high; 1000 feet wide; and 30 feet apart.
----- The reservoir has a 72.86 degree temperature gradient.
----- The second paper figure 4 shows a drilling cost that has plateaued and about $400 per foot. GEOPHIRES cannot
----- handle a drilling cost estimate on a per foot basis but drilling cost correlation of VERTICAL_LARGE_INT1 (10)
----- has a cost of $397.12 per foot at 7700 feet so we will use that.
----- NOTES:
--------- The paper does not discuss stimulation costs which could be substantially more than the default values used here.
--------- The paper does not discuss makeup water - how much what cost etc.
--------- The paper does not discuss redrilling or rentry to refrac etc.
+---  Drilling Price paper:
+---     "Review Of Drilling Performance In A Horizontal EGS Development"
+---     Kareem El-Sadi Brittany Gierke Elliot Howard Christian Gradl
+---     https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Elsadi.pdf
+--- Looking to make:
+---         gross power production of 2 to 3.5 MWe
+---         production temperature of 336 degF (169 degC)
+---         pumping power 500 to 1000 kW
 
 ***Reservoir Parameters***
 Reservoir Model, 1
 Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
-Reservoir Density, 2800, about the average for phyllite, quartzite, diorite, and granodiorite, per paper
-Reservoir Depth, 7700 feet
+Reservoir Density, 2800, per the paper phyllite + quartzite + diorite + granodiorite,
+Reservoir Depth, 7700 feet, per the paper
 Reservoir Heat Capacity,1000,					---[J/kg/K]
 Reservoir Thermal Conductivity, 2.7
-Number of Fractures, 87, between 75 and 100 per paper
-Fracture Shape, 4
-Fracture Height, 750 feet, per figure 14 of paper
-Fracture Width, 1000 feet, per figure 14 of paper
-Fracture Separation, 30 feet, per paper
+Number of Fractures, 100, per the paper
+Fracture Shape, 4, per the paper
+Fracture Height, 200, per the paper
+Fracture Width, 111.25 meter, per the paper (distance between wellbores must be minumum path)
+Fracture Separation, 10 meter
 Number of Segments,1,						---[-]
-Gradient 1, 72.86
+Gradient 1, 68
 Drawdown Parameter,.00002,					---[kg/s/m2]
-Maximum Temperature, 500
+Maximum Temperature, 376 degF, per the paper
+Plant Outlet Pressure, 1450 psi, per the paper
 
 *** Wellbore Parameters***
 Number of Injection Wells, 1,					---[-]
@@ -43,31 +36,29 @@ Well Geometry Configuration, 4,       ----L
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 2,  ---Two parallel horizontal sections
-Well Separation, 365 feet, per paper
-Total Nonvertical Length, 3250 feet
-Well Drilling Cost Correlation,10,			See above -this gets us about $400/foot
-Horizontal Well Drilling Cost Correlation,10,			See above -this gets us about $400/foot at 7700 feet
-Production Flow Rate per Well, 47.32, this is 750 gpm, range from paper was 650 gpm to 850 gpm (41-54 kg/s)
-Production Well Diameter, 7 inch
-Injection Well Diameter, 7 inch
-Injection Temperature, 100 degF, The paper says is is between 75 and 125 F
+Total Nonvertical Length, 3250 feet, per the paper
+Well Drilling Cost Correlation,10,	per the drill cost paper - works out to $400/ft
+Horizontal Well Drilling Cost Correlation,10,	per the drill cost paper - works out to $400/ft
+Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
+Production Well Diameter, 7, per the paper
+Injection Well Diameter, 7, per the paper
+Well Separation, 365 feet, per the paper
+Injection Temperature, 90 degF, per the paper 75 to 125 degF
 Injection Wellbore Temperature Gain,3,				---[deg.C]
-Injectivity Index, 5,						---[kg/s/bar]
-Productivity Index, 5
+Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW
 Ramey Production Wellbore Model,1,				---Should be 0 (disabled) or 1 (enabled)
 Utilization Factor,.9,						---[-]Water Loss Fraction, .02x
 Water Loss Fraction,0.02,						---[-]
 Maximum Drawdown,1,						---[-] no redrilling considered
 
 ***Surfaceplant Parameters***
-Ambient Temperature, 8 degC, per the paper, but the mean annual temperature in Milford is 10.27		---[deg.C]
-Surface Temperature, 8 degC, per the paper, but the mean annual temperature in Milford is 10.27		---[deg.C]
+Ambient Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
+Surface Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
 End-Use Option,1,						---electricity as the main product
-Plant Lifetime, 23, not referenced in paper but performance drops off substantially after 23 years due to heat mined
-Power Plant Type,2,   per the paper, it will be a supercritical ORC
+Plant Lifetime, 10
+Power Plant Type,2,						---supercritical binary cycle
 End-Use Efficiency Factor,.9,					---[-]
-Circulation Pump Efficiency,.80,				---[-]
-Plant Outlet Pressure, 1450 psi,  paper says 1000 psi to 2000 psi (1500 will exceed max value, so we use 1450)
+Circulation Pump Efficiency, 0.80, per the paper
 
 *** Economic Parameters***
 Economic Model,3,						---BICYCLE Levelized Cost Model

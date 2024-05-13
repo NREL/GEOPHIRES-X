@@ -101,7 +101,7 @@ def InsertImagesIntoHTML(html_path: str, short_names: set, full_names: set) -> N
     insert_string = ''
     for _ in range(len(full_names)):
         name_to_use = short_names.pop()
-        insert_string = insert_string + f'<img src="{name_to_use}.png" alt="{name_to_use}">\n<br>'
+        insert_string = insert_string + f'<img src="{name_to_use}" alt="{name_to_use}">\n<br>'
 
     match_string = '</body>'
     with open(html_path, 'r+', encoding='UTF-8') as html_file:

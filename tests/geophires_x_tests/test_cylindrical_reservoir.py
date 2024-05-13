@@ -110,7 +110,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
-        self.assertEqual(10.0, reservoir.depth.quantity().to('km').magnitude)
+        self.assertEqual(3.0, reservoir.depth.quantity().to('km').magnitude)
 
     def test_calculate_heat_capacity_water(self):
         """Calculates the heat capacity of water"""

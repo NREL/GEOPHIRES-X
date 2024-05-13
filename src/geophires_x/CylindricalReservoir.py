@@ -222,8 +222,8 @@ class CylindricalReservoir(Reservoir):
         # initialize with the Initial reservoir temperature
         self.Tresoutput.value = np.array(len(self.timevector.value) * [self.Trock.value])
         # depth in this case is actually the total length of the drilled assembly
-        self.depth.value = ((self.InputDepth.quantity() + self.OutputDepth.quantity() + self.Length.quantity()
-             ).to(self.depth.CurrentUnits).magnitude)
+        # as the average of the InputDepth and the OutputDepth
+        self.depth.value = (self.InputDepth.value + self.OutputDepth.value) / 2.0
 
         # Total volume of all laterals but hollow cylinder - doesn't include drilled-out area, units = m3
         self.resvolcalc.value = (

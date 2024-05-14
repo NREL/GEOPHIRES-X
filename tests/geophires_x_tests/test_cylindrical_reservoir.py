@@ -119,7 +119,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir.Calculate(model)
         expected_heat_capacity = heatcapacitywater(
             model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         assert reservoir.cpwater.value == expected_heat_capacity
 
@@ -130,7 +130,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir.Calculate(model)
         expected_density = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=reservoir.lithostatic_pressure(),
+            pressure=reservoir.hydrostatic_pressure(),
         )
         assert expected_density == reservoir.rhowater.value
 

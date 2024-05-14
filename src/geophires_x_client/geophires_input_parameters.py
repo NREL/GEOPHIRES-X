@@ -1,4 +1,5 @@
 import tempfile
+import uuid
 from enum import Enum
 from pathlib import Path
 from types import MappingProxyType
@@ -34,25 +35,33 @@ class PowerPlantType(Enum):
 
 
 class GeophiresInputParameters:
+
     def __init__(self, params: Optional[MappingProxyType] = None, from_file_path: Optional[Path] = None):
-        assert (params is None) ^ (from_file_path is None), 'Only one of params or from_file_path may be provided'
+        """
+        Note that params will override any duplicate entries in from_file_path
+        """
+
+        assert (params is not None) or (from_file_path is not None), 'One of params or from_file_path must be provided'
 
         if params is not None:
             self._params = dict(params)
-            self._id = abs(hash(frozenset(self._params.items())))
+            self._file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{uuid.uuid4()!s}.txt')
+
+            if from_file_path is not None:
+                with open(from_file_path, encoding='UTF-8') as base_file:
+                    with open(self._file_path, 'a', encoding='UTF-8') as f:
+                        f.writelines(base_file.readlines())
+        else:
+            self._file_path = from_file_path
+
+        if params is not None:
             # TODO validate params - i.e. that all names are accepted by simulation, values don't exceed max allowed,
             #  etc.
 
-            tmp_file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._id}.txt')
-            f = Path.open(tmp_file_path, 'w')
+            with open(self._file_path, 'a', encoding='UTF-8') as f:
+                f.writelines([', '.join([str(p) for p in param_item]) + '\n' for param_item in self._params.items()])
 
-            f.writelines([','.join([str(p) for p in param_item]) + '\n' for param_item in self._params.items()])
-            f.close()
-            self._file_path = tmp_file_path
-
-        if from_file_path is not None:
-            self._file_path = from_file_path
-            self._id = hash(from_file_path)
+        self._id = hash(self._file_path)
 
     def as_file_path(self):
         return self._file_path
@@ -61,4 +70,5 @@ class GeophiresInputParameters:
         return Path(tempfile.gettempdir(), f'geophires-result_{self._id}.out')
 
     def __hash__(self):
+        """TODO make hashes for equivalent parameters equal"""
         return self._id

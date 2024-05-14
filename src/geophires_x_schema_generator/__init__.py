@@ -8,6 +8,9 @@ from typing import Tuple
 # ruff: noqa: I001
 from geophires_x.Model import Model
 
+from geophires_x.SFReservoir import SFReservoir
+from geophires_x.LHSReservoir import LHSReservoir
+from geophires_x.MPFReservoir import MPFReservoir
 from geophires_x.AGSEconomics import AGSEconomics
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
@@ -20,6 +23,7 @@ from geophires_x.SurfacePlantSUTRA import SurfacePlantSUTRA
 from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
+from geophires_x.TDPReservoir import TDPReservoir
 
 
 class GeophiresXSchemaGenerator:
@@ -49,6 +53,10 @@ class GeophiresXSchemaGenerator:
 
         parameter_sources = [
             (dummy_model.reserv, 'Reservoir'),
+            (TDPReservoir(dummy_model), 'Reservoir'),
+            (LHSReservoir(dummy_model), 'Reservoir'),
+            (MPFReservoir(dummy_model), 'Reservoir'),
+            (SFReservoir(dummy_model), 'Reservoir'),
             (CylindricalReservoir(dummy_model), 'Reservoir'),
             (SUTRAReservoir(dummy_model), 'Reservoir'),
             (dummy_model.wellbores, 'Well Bores'),

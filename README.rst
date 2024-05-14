@@ -65,7 +65,9 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__
+A web interface is available at `scientificwebservices.com/tools/geophires <https://scientificwebservices.com/tools/geophires>`__.
+
+The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the same location.
 
 Installation
 ------------

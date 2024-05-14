@@ -83,7 +83,6 @@ class AGSOutputs(Outputs.Outputs):
                     f.write("Simulation Metadata\n")
                     f.write("----------------------\n")
                     f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
-                    f.write(" GEOPHIRES Build Date: 2022-06-30\n")
                     f.write(" Simulation Date: " + datetime.datetime.now().strftime("%Y-%m-%d\n"))
                     f.write(" Simulation Time:  " + datetime.datetime.now().strftime("%H:%M\n"))
                     f.write(" Calculation Time: " + "{0:10.3f}".format((time.time() - model.tic)) + " sec\n")

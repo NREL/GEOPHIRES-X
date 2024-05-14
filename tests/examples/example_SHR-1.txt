@@ -1,3 +1,6 @@
+--- Superhot Rock (SHR) Example 1
+--- See relevant discussion regarding thermosiphoning: https://github.com/NREL/GEOPHIRES-X/issues/188?#issuecomment-2102937796
+
 Starting Electricity Sale Price, 0.06
 Ending Electricity Sale Price, 0.10
 Electricity Escalation Start Year, 1

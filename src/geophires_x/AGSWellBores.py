@@ -578,21 +578,21 @@ class AGSWellBores(WellBores):
 
         # handle error checking and special cases:
         if model.reserv.numseg.value > 1:
-            msg = "Warning: CLGS model can only handle a single layer gradient segment. Number of Segments set to 1, \
-                Gradient set to Gradient[0], and Depth set to Reservoir Depth."
+            msg = ('Warning: CLGS model can only handle a single layer gradient segment. '
+                   'Number of Segments set to 1, Gradient set to Gradient[0], and Depth set to Reservoir Depth.')
             print(msg)
             model.logger.warning(msg)
             model.reserv.numseg.value = 1
 
         if self.ninj.value > 0:
-            msg = "Warning: CLGS model considers the only the production wellbore parameters. Anything related to the \
-                injection wellbore is ignored."
+            msg = ('Warning: CLGS model considers the only the production wellbore parameters. '
+                   'Anything related to the injection wellbore is ignored.')
             print(msg)
             model.logger.warning(msg)
 
         if self.nprod.value != 1:
-            msg = "Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). \
-                Number of production wellboreset set 1."
+            msg = ('Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). '
+                   'Number of production wellboreset set 1.')
             print(msg)
             model.logger.warning(msg)
 

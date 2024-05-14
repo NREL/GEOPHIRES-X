@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.4.28.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.4.29.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.4.28...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.4.29...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -65,7 +65,9 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__
+A web interface is available at `scientificwebservices.com/tools/geophires <https://scientificwebservices.com/tools/geophires>`__.
+
+The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the same location.
 
 Installation
 ------------

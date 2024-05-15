@@ -1193,7 +1193,7 @@ class WellBores:
         # If you choose to subclass this master class, you can also choose to override this method (or not),
         # and if you do, do it before or after you call you own version of this method.  If you do, you can also
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all thr values available to your methods. but you had better have set all the parameters!
+        # making all the values available to your methods. but you had better have set all the parameters!
 
         # calculate the reservoir pressure as a function of time
         if self.usebuiltinhydrostaticpressurecorrelation:

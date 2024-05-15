@@ -167,7 +167,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     rhowater = np.array([
         density_water_kg_per_m3(
             t,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -175,7 +175,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     muwater = np.array([
         viscosity_water_Pa_sec(
             t,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -231,11 +231,11 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.hydrostatic_pressure())
                 * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
 
     # replace with correlation based on Tinjaverage
-    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.hydrostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?

@@ -773,12 +773,12 @@ class AGSWellBores(WellBores):
             # nonvertical wellbore fluid conditions based on current temperature
             rhowater = density_water_kg_per_m3(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
 
             muwater = viscosity_water_Pa_sec(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
@@ -864,10 +864,10 @@ class AGSWellBores(WellBores):
 
                 self.alpha_fluid = self.WaterThermalConductivity.value / density_water_kg_per_m3(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) / heat_capacity_water_J_per_kg_per_K(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * 24.0 * 3600.0
                 self.time_operation.value += self.al
 
@@ -881,7 +881,7 @@ class AGSWellBores(WellBores):
             self.ProdTempDrop.value = self.tempdropprod.value
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.NonverticalProducedTemperature.value[0],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
@@ -904,13 +904,13 @@ class AGSWellBores(WellBores):
             if self.productionwellpumping.value:
                 self.rhowaterinj = density_water_kg_per_m3(
                     model.reserv.Tsurf.value,
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * np.linspace(1, 1,
                                 len(self.ProducedTemperature.value))
 
                 self.rhowaterprod = density_water_kg_per_m3(
                     model.reserv.Trock.value,
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * np.linspace(1, 1, len(self.ProducedTemperature.value))
 
                 self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
@@ -1021,7 +1021,7 @@ class AGSWellBores(WellBores):
 
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.Tout[0],
-                pressure=model.reserv.lithostatic_pressure(),
+                pressure=model.reserv.hydrostatic_pressure(),
             )  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always

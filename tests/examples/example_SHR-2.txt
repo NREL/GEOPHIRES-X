@@ -1,3 +1,5 @@
+--- Superhot Rock (SHR) Example 2
+
 Starting Electricity Sale Price, 0.06
 Ending Electricity Sale Price, 0.10
 Electricity Escalation Start Year, 1

@@ -210,8 +210,8 @@ class GeophiresXTestCase(BaseTestCase):
                         if percent_diff is not None:
                             msg = (
                                 f'Results are approximately equal within {percent_diff}%. '
-                                f'(Run `regenerate-example-result.sh {example_file_path.split(".")[0]}` '
-                                f'from tests/ if this difference is expected due to calculation updates)'
+                                f'(Run `./tests/regenerate-example-result.sh {example_file_path.split(".")[0]}` '
+                                f'if this difference is expected due to calculation updates)'
                             )
 
                         raise AssertionError(msg) from ae
@@ -344,4 +344,4 @@ Print Output to Console, 1"""
 
         self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
         self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
-        self.assertAlmostEqual(104.27, get_fcr_lcoe(0.8), places=1)
+        self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)

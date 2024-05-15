@@ -1,24 +1,31 @@
 --- Case Study: Fervo Energy Whitepaper
---- Norbeck, J.H. and Latimer, T.M. 2024.
+--- Norbeck J.H. and Latimer T.M. 2024.
 ---   "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
 ---   https://doi.org/10.31223/X52X0B
+---  Drilling Price paper:
+---     "Review Of Drilling Performance In A Horizontal EGS Development"
+---     Kareem El-Sadi Brittany Gierke Elliot Howard Christian Gradl
+---     https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Elsadi.pdf
+--- Looking to make:
+---         gross power production of 2 to 3.5 MWe
+---         production temperature of 336 degF (169 degC)
+---         pumping power 500 to 1000 kW
 
 ***Reservoir Parameters***
 Reservoir Model, 1
 Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
-Reservoir Density, 2700
-Reservoir Depth, 2347 meter
+Reservoir Density, 2800, per the paper phyllite + quartzite + diorite + granodiorite,
+Reservoir Depth, 7700 feet, per the paper
 Reservoir Heat Capacity,1000,					---[J/kg/K]
 Reservoir Thermal Conductivity, 2.7
-Number of Fractures, 100
-Fracture Shape, 4
-Fracture Height, 100
-Fracture Width, 991 meter
+Number of Fractures, 100, per the paper
+Fracture Shape, 4, per the paper
+Fracture Height, 160, per the paper
+Fracture Width, 160, per the paper (distance between wellbores assumes a dipole flow field)
 Fracture Separation, 10 meter
-Number of Segments,1,						---[-]
-Gradient 1, 68
-Drawdown Parameter,.00002,					---[kg/s/m2]
-Maximum Temperature, 500
+Number of Segments,1
+Gradient 1, 76.74, per the paper
+Plant Outlet Pressure, 1500 psi, per the paper
 
 *** Wellbore Parameters***
 Number of Injection Wells, 1,					---[-]
@@ -27,29 +34,29 @@ Well Geometry Configuration, 4,       ----L
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 2,  ---Two parallel horizontal sections
-Total Nonvertical Length, 990 meter
-Well Drilling Cost Correlation,3,				--- [-] Use built-in well drilling cost correlation #3 = vertical large diameter
-Horizontal Well Drilling Cost Correlation,4,				--- [-] Use built-in well drilling cost correlation #4 = deviated large diameter
-Production Flow Rate per Well, 63
-Production Well Diameter, 7
-Injection Well Diameter, 7
-Injection Temperature, 50
+Total Nonvertical Length, 3250 feet, per the paper
+Well Drilling Cost Correlation,10,	per the drill cost paper - works out to $400/ft
+Horizontal Well Drilling Cost Correlation,10,	per the drill cost paper - works out to $400/ft
+Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
+Production Well Diameter, 7, per the paper
+Injection Well Diameter, 7, per the paper
+Well Separation, 365 feet, per the paper
+Injection Temperature, 45 degC, per the paper 75 to 125 degF
 Injection Wellbore Temperature Gain,3,				---[deg.C]
-Injectivity Index, 5,						---[kg/s/bar]
-Productivity Index, 5
+Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW
 Ramey Production Wellbore Model,1,				---Should be 0 (disabled) or 1 (enabled)
 Utilization Factor,.9,						---[-]Water Loss Fraction, .02x
 Water Loss Fraction,0.02,						---[-]
 Maximum Drawdown,1,						---[-] no redrilling considered
 
 ***Surfaceplant Parameters***
-Ambient Temperature, 10.27,						---[deg.C]
-Surface Temperature, 10.27
+Ambient Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
+Surface Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
 End-Use Option,1,						---electricity as the main product
-Plant Lifetime, 30
-Power Plant Type,4,						---Double-Flash
+Plant Lifetime, 10
+Power Plant Type,2,						---supercritical binary cycle
 End-Use Efficiency Factor,.9,					---[-]
-Circulation Pump Efficiency,.80,				---[-]
+Circulation Pump Efficiency, 0.80, per the paper
 
 *** Economic Parameters***
 Economic Model,3,						---BICYCLE Levelized Cost Model

@@ -1193,14 +1193,16 @@ class WellBores:
         # If you choose to subclass this master class, you can also choose to override this method (or not),
         # and if you do, do it before or after you call you own version of this method.  If you do, you can also
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all thr values available to your methods. but you had better have set all the parameters!
+        # making all the values available to your methods. but you had better have set all the parameters!
 
         # calculate the reservoir pressure as a function of time
-        self.production_reservoir_pressure.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
+        if self.usebuiltinhydrostaticpressurecorrelation:
+            self.production_reservoir_pressure.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
                                                                                 model.reserv.depth.quantity().to('m').magnitude,
                                                                                 model.reserv.averagegradient.value,
-                                                                                model.reserv.lithostatic_pressure()) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
-            self.production_reservoir_pressure.CurrentUnits).magnitude
+                                                                                model.reserv.hydrostatic_pressure())
+        else:
+            self.production_reservoir_pressure.value = self.Phydrostatic.quantity().to(self.production_reservoir_pressure.CurrentUnits).magnitude
 
         self.production_reservoir_pressure.value = ReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,
                                                                               model.economics.timestepsperyear.value,

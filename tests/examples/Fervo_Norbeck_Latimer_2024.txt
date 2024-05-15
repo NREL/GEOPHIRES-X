@@ -25,8 +25,7 @@ Fracture Width, 160, per the paper (distance between wellbores assumes a dipole 
 Fracture Separation, 10 meter
 Number of Segments,1
 Gradient 1, 76.74, per the paper
-Maximum Temperature, 300 degC, per the paper
-Plant Outlet Pressure, 1450 psi, per the paper
+Plant Outlet Pressure, 1500 psi, per the paper
 
 *** Wellbore Parameters***
 Number of Injection Wells, 1,					---[-]

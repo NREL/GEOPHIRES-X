@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.29
  Simulation Date: 2024-05-15
- Simulation Time:  11:23
- Calculation Time:      0.353 sec
+ Simulation Time:  11:32
+ Calculation Time:      0.349 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -52,7 +52,7 @@ Simulation Metadata
 
                          ***RESOURCE CHARACTERISTICS***
 
-      Maximum reservoir temperature:                        300.0 degC
+      Maximum reservoir temperature:                        400.0 degC
       Number of segments:                                     1
       Geothermal gradient:                                    0.0767 degC/m
 

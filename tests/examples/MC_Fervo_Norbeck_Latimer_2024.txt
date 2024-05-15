@@ -1,0 +1,17 @@
+INPUT, Reservoir Density, uniform, 2650, 2900
+INPUT, Number of Fractures, uniform, 90, 110
+INPUT, Fracture Height, normal, 100, 30
+INPUT, Fracture Width, normal, 100, 30
+INPUT, Fracture Separation, uniform, 5, 15
+INPUT, Plant Outlet Pressure, uniform, 6895, 13790
+INPUT, Production Flow Rate per Well, triangular, 35, 41, 47
+INPUT, Injection Temperature, uniform, 24, 52
+INPUT, Ambient Temperature, normal, 15, 7
+INPUT, Surface Temperature, normal, 15, 7
+OUTPUT, Average Net Electricity Generation
+OUTPUT, Average Total Electricity Generation
+OUTPUT, Electricity breakeven price
+OUTPUT, Average Production Temperature
+OUTPUT, Average Pumping Power
+ITERATIONS, 5000
+HTML_PATH, D:\TEMP\MC_Fervo_Norbeck_latimer_2024.html

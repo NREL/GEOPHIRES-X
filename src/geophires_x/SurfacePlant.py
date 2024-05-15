@@ -342,7 +342,7 @@ class SurfacePlant:
             "Plant Outlet Pressure",
             DefaultValue=100.0,
             Min=0.01,
-            Max=10000.0,
+            Max=15000.0,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
@@ -576,16 +576,16 @@ class SurfacePlant:
                                 model.wellbores.impedancemodelallowed.value = False
                                 self.setinjectionpressurefixed = True
                     elif ParameterToModify.Name == 'Plant Outlet Pressure':
-                        if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
+                        if ParameterToModify.value < self.plant_outlet_pressure.Min or ParameterToModify.value > self.plant_outlet_pressure.Max:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100
-                                    msg = (f'Provided plant outlet pressure outside of range 0-10000. GEOPHIRES will '
+                                    msg = (f'Provided plant outlet pressure outside of range defined valid range. GEOPHIRES will '
                                            f'assume default plant outlet pressure ({ParameterToModify.value} kPa)')
                                     print(f'Warning: {msg}')
                                     model.logger.warning(msg)
                                 else:
                                     self.usebuiltinoutletplantcorrelation.value = True
-                                    msg = ('Provided plant outlet pressure outside of range 0-10000 kPa. '
+                                    msg = ('Provided plant outlet pressure outside of defined valid range. '
                                            'GEOPHIRES will calculate plant outlet pressure based on production '
                                            'wellhead pressure and surface equipment pressure drop of 10 psi')
                                     print(f'Warning: {msg}')

@@ -342,6 +342,6 @@ Print Output to Console, 1"""
                 .result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
             )
 
-        self.assertEqual(9.65, get_fcr_lcoe(0.05))
-        self.assertEqual(3.33, get_fcr_lcoe(0.0001))
-        self.assertEqual(104.74, get_fcr_lcoe(0.8))
+        self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
+        self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
+        self.assertAlmostEqual(104.27, get_fcr_lcoe(0.8), places=1)

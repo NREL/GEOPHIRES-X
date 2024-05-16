@@ -1,5 +1,5 @@
 --- Case Study: Fervo Energy Whitepaper
---- Norbeck J.H. and Latimer T.M. 2024.
+--- Norbeck J.H. and Latimer T.M. 2023.
 ---   "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
 ---   https://doi.org/10.31223/X52X0B
 ---  Drilling Price paper:

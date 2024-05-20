@@ -32,6 +32,9 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['unit'] == 'USD/MMBTU'
         assert result.result['SUMMARY OF RESULTS']['End-Use Option']['value'] == 'Direct-Use Heat'
 
+        assert 'GEOPHIRES Version' in result.result['Simulation Metadata']
+        assert '3.' in result.result['Simulation Metadata']['GEOPHIRES Version']['value']
+
     def test_geophires_x_result_2(self):
         test_result_path = self._get_test_file_path('geophires-result_example-2.out')
         result = GeophiresXResult(test_result_path)

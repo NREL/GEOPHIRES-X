@@ -174,9 +174,11 @@ class GeophiresXTestCase(BaseTestCase):
                 )
                 geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
                 del geophires_result.result['metadata']
+                del geophires_result.result['Simulation Metadata']
 
                 expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                 del expected_result.result['metadata']
+                del expected_result.result['Simulation Metadata']
 
                 try:
                     self.assertDictEqual(

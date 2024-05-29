@@ -436,7 +436,10 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         Pexcess_kPa = 344.7  # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
+        if Trock_degC < 373.9:
+            Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
+        else: #above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
+            Pminimum_kPa = 100 #setting artificially to 1 bar = 100 kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
@@ -557,8 +560,10 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         Pexcess_kPa = 344.7 # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
-
+        if Trock_degC < 373.9:
+            Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
+        else: #above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
+            Pminimum_kPa = 100 #setting artificially to 1 bar = 100 kPa
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:

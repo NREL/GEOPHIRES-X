@@ -345,3 +345,22 @@ Print Output to Console, 1"""
         self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
         self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
         self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)
+
+    def test_vapor_pressure_above_critical_temperature(self):
+        """https://github.com/NREL/GEOPHIRES-X/issues/214"""
+
+        input_params = GeophiresInputParameters(
+            {
+                'End-Use Option': 2,
+                'Reservoir Depth': 6,
+                'Gradient 1': 75,
+                'Reservoir Model': 1,
+                'Time steps per year': 1,
+                'Maximum Temperature': 500,
+                'Print Output to Console': 0,
+            }
+        )
+
+        result = GeophiresXClient().get_geophires_result(input_params)
+        self.assertIsNotNone(result)
+        self.assertIn('SUMMARY OF RESULTS', result.result)

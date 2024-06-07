@@ -3,7 +3,6 @@ import sys
 import unittest
 from pathlib import Path
 
-from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import Parameter
@@ -14,6 +13,7 @@ from geophires_x.Units import EnergyCostUnit
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import PressureUnit
 from geophires_x.Units import Units
+from tests.base_test_case import BaseTestCase
 
 
 class ParameterTestCase(BaseTestCase):

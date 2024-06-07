@@ -50,10 +50,17 @@ Strongly recommended: use a Python IDE such as `PyCharm <https://www.jetbrains.c
 If you are using PyCharm, first open the the cloned repo by going to File → Open and selecting your ``GEOPHIRES-X`` directory (from the previous steps).
 Run commands in a terminal with View → Tool Windows → Terminal
 
-1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already. Then set up and activate a virtual environment for the project::
+1. `Install virtualenv <https://virtualenv.pypa.io/en/latest/installation.html#via-pip>`__ if you don't have it already. Then set up and activate a virtual environment for the project:
 
-    python -m venv venv
-    source venv/bin/activate
+   - Windows::
+
+        python -m venv venv
+        venv\Scripts\activate
+
+   - macOS/Linux::
+
+        python -m venv venv
+        source venv/bin/activate
 
 (If you are using PyCharm, it may prompt you to set up the virtual environment automatically, allowing you to skip this step on the command line)
 

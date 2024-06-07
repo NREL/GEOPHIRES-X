@@ -2,7 +2,7 @@ import math
 import unittest
 from pathlib import Path
 
-from base_test_case import BaseTestCase
+from tests.base_test_case import BaseTestCase
 
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001

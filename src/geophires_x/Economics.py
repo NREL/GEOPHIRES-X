@@ -97,7 +97,7 @@ def calculate_cost_of_one_vertical_well(model: Model, depth_m: float, well_corre
     if well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_one_well = vertical_drilling_cost_per_m * depth_m * 1E-6
     else:
-        cost_of_one_well = well_correlation.calculate_cost_USD(depth_m)
+        cost_of_one_well = well_correlation.calculate_cost_MUSD(depth_m)
 
     # account for adjustment factor
     cost_of_one_well = well_cost_adjustment_factor * cost_of_one_well
@@ -169,7 +169,7 @@ def calculate_cost_of_non_vertical_section(model: Model, length_m: float, well_c
     if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_non_vertical_section = casing_factor * ((num_nonvertical_sections * nonvertical_drilling_cost_per_m * length_per_section_m)) * 1E-6
     else:
-        cost_per_section = well_correlation.calculate_cost_USD(length_per_section_m)
+        cost_per_section = well_correlation.calculate_cost_MUSD(length_per_section_m)
         cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
 
     # account for adjustment factor

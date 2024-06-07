@@ -4,10 +4,10 @@ from pathlib import Path
 
 from pint.facets.plain import PlainQuantity
 
-from base_test_case import BaseTestCase
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
+from tests.base_test_case import BaseTestCase
 
 
 class ReservoirTestCase(BaseTestCase):

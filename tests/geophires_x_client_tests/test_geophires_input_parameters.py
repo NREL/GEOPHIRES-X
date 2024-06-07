@@ -2,8 +2,8 @@ import tempfile
 import uuid
 from pathlib import Path
 
-from base_test_case import BaseTestCase
 from geophires_x_client import GeophiresInputParameters
+from tests.base_test_case import BaseTestCase
 
 
 class GeophiresInputParametersTestCase(BaseTestCase):

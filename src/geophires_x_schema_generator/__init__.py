@@ -96,6 +96,7 @@ class GeophiresXSchemaGenerator:
                 'type': param['json_parameter_type'],
                 'units': units_val,
                 'category': param['parameter_category'],
+                'default': param['DefaultValue'],
             }
 
             if param['Required']:

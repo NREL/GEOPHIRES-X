@@ -95,43 +95,13 @@ def calculate_cost_of_one_vertical_well(model: Model, depth_m: float, well_corre
         )
 
     if well_correlation is WellDrillingCostCorrelation.SIMPLE:
-            cost_of_one_well = vertical_drilling_cost_per_m * depth_m * 1E-6
-
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
-        cost_of_one_well = (0.30212 * depth_m ** 2 + 584.91124 * depth_m + 751368.47270) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE:
-        cost_of_one_well = (0.28180 * depth_m ** 2 + 1275.52130 * depth_m + 632315.12640) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL:
-        cost_of_one_well = (0.28977 * depth_m ** 2 + 882.15067 * depth_m + 680562.50150) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE:
-        cost_of_one_well = (0.25528 * depth_m ** 2 + 1716.71568 * depth_m + 500866.89110) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
-        cost_of_one_well = (0.13710 * depth_m ** 2 + 129.61033 * depth_m + 1205587.57100) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
-        cost_of_one_well = (0.18927 * depth_m ** 2 + 293.45174 * depth_m + 1326526.31300) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
-        cost_of_one_well = (0.15340 * depth_m ** 2 + 120.31700 * depth_m + 1431801.54400) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
-        cost_of_one_well = (0.19950 * depth_m ** 2 + 296.13011 * depth_m + 1697867.70900) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
-        cost_of_one_well = (0.00804 * depth_m ** 2 + 455.60507 * depth_m + 921007.68680) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
-        cost_of_one_well = (0.00315 * depth_m ** 2 + 782.69676 * depth_m + 983620.25270) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
-        cost_of_one_well = (0.00854 * depth_m ** 2 + 506.08357 * depth_m + 1057330.39000) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
-        cost_of_one_well = (0.00380 * depth_m ** 2 + 838.90249 * depth_m + 1181947.04400) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
-        cost_of_one_well = (0.00252 * depth_m ** 2 + 439.44503 * depth_m + 590611.90110) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
-        cost_of_one_well = (-0.00240 * depth_m ** 2 + 752.93946 * depth_m + 524337.65380) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
-        cost_of_one_well = (0.00719 * depth_m ** 2 + 455.85233 * depth_m + 753377.73080) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
-        cost_of_one_well = (0.00376 * depth_m ** 2 + 762.52696 * depth_m + 765103.07690) * 1E-6
+        cost_of_one_well = vertical_drilling_cost_per_m * depth_m * 1E-6
+    else:
+        cost_of_one_well = well_correlation.calculate_cost_MUSD(depth_m)
 
     # account for adjustment factor
     cost_of_one_well = well_cost_adjustment_factor * cost_of_one_well
+
     return cost_of_one_well
 
 
@@ -195,60 +165,16 @@ def calculate_cost_of_non_vertical_section(model: Model, length_m: float, well_c
     if not NonverticalsCased:
         # assume that casing & cementing costs 50% of drilling costs
         casing_factor = 0.5
+
     if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_non_vertical_section = casing_factor * ((num_nonvertical_sections * nonvertical_drilling_cost_per_m * length_per_section_m)) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
-        cost_per_section = (0.30212 * length_per_section_m ** 2 + 584.91124 * length_per_section_m + 751368.47270) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE:
-        cost_per_section = (0.28180 * length_per_section_m ** 2 + 1275.52130 * length_per_section_m + 632315.12640) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL:
-        cost_per_section = (0.28977 * length_per_section_m ** 2 + 882.15067 * length_per_section_m + 680562.50150) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE:
-        cost_per_section = (0.25528 * length_per_section_m ** 2 + 1716.71568 * length_per_section_m + 500866.89110) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
-        cost_per_section = (0.13710 * length_per_section_m ** 2 + 129.61033 * length_per_section_m + 1205587.57100) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
-        cost_per_section = (0.18927 * length_per_section_m ** 2 + 293.45174 * length_per_section_m + 1326526.31300) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
-        cost_per_section = (0.15340 * length_per_section_m ** 2 + 120.31700 * length_per_section_m + 1431801.54400) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
-        cost_per_section = (0.19950 * length_per_section_m ** 2 + 296.13011 * length_per_section_m + 1697867.70900) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
-        cost_per_section = (0.00804 * length_per_section_m ** 2 + 455.60507 * length_per_section_m + 921007.68680) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
-        cost_per_section = (0.00315 * length_per_section_m ** 2 + 782.69676 * length_per_section_m + 983620.25270) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
-        cost_per_section = (0.00854 * length_per_section_m ** 2 + 506.08357 * length_per_section_m + 1057330.39000) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
-        cost_per_section = (0.00380 * length_per_section_m ** 2 + 838.90249 * length_per_section_m + 1181947.04400) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
-        cost_per_section = (0.00252 * length_per_section_m ** 2 + 439.44503 * length_per_section_m + 590611.90110) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
-        cost_per_section = (-0.00240 * length_per_section_m ** 2 + 752.93946 * length_per_section_m + 524337.65380) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
-        cost_per_section = (0.00719 * length_per_section_m ** 2 + 455.85233 * length_per_section_m + 753377.73080) * 1E-6
-        cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
-        cost_per_section = (0.00376 * length_per_section_m ** 2 + 762.52696 * length_per_section_m + 765103.07690) * 1E-6
+    else:
+        cost_per_section = well_correlation.calculate_cost_MUSD(length_per_section_m)
         cost_of_non_vertical_section = casing_factor * num_nonvertical_sections * cost_per_section
 
     # account for adjustment factor
-
     cost_of_non_vertical_section = well_cost_adjustment_factor * cost_of_non_vertical_section
+
     return cost_of_non_vertical_section
 
 

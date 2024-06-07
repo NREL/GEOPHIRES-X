@@ -51,27 +51,42 @@ class ReservoirVolume(str, Enum):
 
 
 class WellDrillingCostCorrelation(str, Enum):
-    """Note: order must be retained since input is read as an int"""
+    """Note: order must be retained since input is read as an int; first int arg is duplicative of order"""
 
-    VERTICAL_SMALL = "vertical small diameter, baseline"
-    DEVIATED_SMALL = "deviated small diameter, baseline"
-    VERTICAL_LARGE = "vertical large diameter, baseline"
-    DEVIATED_LARGE = "deviated large diameter, baseline"
+    VERTICAL_SMALL = 1, "vertical small diameter, baseline", 0.30212, 584.91124, 751368.47270
+    DEVIATED_SMALL = 2, "deviated small diameter, baseline", 0.28977, 882.15067, 680562.50150
+    VERTICAL_LARGE = 3, "vertical large diameter, baseline", 0.28180, 1275.52130, 632315.12640
+    DEVIATED_LARGE = 4, "deviated large diameter, baseline", 0.25528, 1716.71568, 500866.89110
 
-    SIMPLE = "Simple"
+    SIMPLE = 5, "Simple", 0, 1846*1E6, 0 # Based on Fervo Project Cape cost per meter (~$1846/m)
 
-    VERTICAL_SMALL_INT1 = "vertical small diameter, intermediate1"
-    VERTICAL_SMALL_INT2 = "vertical small diameter, intermediate2"
-    DEVIATED_SMALL_INT1 = "deviated small diameter, intermediate1"
-    DEVIATED_SMALL_INT2 = "deviated small diameter, intermediate2"
-    VERTICAL_LARGE_INT1 = "vertical large diameter, intermediate1"
-    VERTICAL_LARGE_INT2 = "vertical large diameter, intermediate2"
-    DEVIATED_LARGE_INT1 = "deviated large diameter, intermediate1"
-    DEVIATED_LARGE_INT2 = "deviated large diameter, intermediate2"
-    VERTICAL_SMALL_IDEAL = "vertical open-hole, small diameter, ideal"
-    DEVIATED_SMALL_IDEAL = "deviated liner, small diameter, ideal"
-    VERTICAL_LARGE_IDEAL = "vertical open-hole, large diameter, ideal"
-    DEVIATED_LARGE_IDEAL = "deviated liner, large diameter, ideal"
+    VERTICAL_SMALL_INT1 = 6, "vertical small diameter, intermediate1", 0.13710, 129.61033, 1205587.57100
+    VERTICAL_SMALL_INT2 = 7, "vertical small diameter, intermediate2", 0.00804, 455.60507, 921007.68680
+    DEVIATED_SMALL_INT1 = 8, "deviated small diameter, intermediate1", 0.15340, 120.31700, 1431801.54400
+    DEVIATED_SMALL_INT2 = 9, "deviated small diameter, intermediate2", 0.00854, 506.08357, 1057330.39000
+    VERTICAL_LARGE_INT1 = 10, "vertical large diameter, intermediate1", 0.18927, 293.45174, 1326526.31300
+    VERTICAL_LARGE_INT2 = 11, "vertical large diameter, intermediate2", 0.00315, 782.69676, 983620.25270
+    DEVIATED_LARGE_INT1 = 12, "deviated large diameter, intermediate1", 0.19950, 296.13011, 1697867.70900
+    DEVIATED_LARGE_INT2 = 13, "deviated large diameter, intermediate2", 0.00380, 838.90249, 1181947.04400
+    VERTICAL_SMALL_IDEAL = 14, "vertical open-hole, small diameter, ideal", 0.00252, 439.44503, 590611.90110
+    DEVIATED_SMALL_IDEAL = 15, "deviated liner, small diameter, ideal", 0.00719, 455.85233, 753377.73080
+    VERTICAL_LARGE_IDEAL = 16, "vertical open-hole, large diameter, ideal", -0.00240, 752.93946, 524337.65380
+    DEVIATED_LARGE_IDEAL = 17, "deviated liner, large diameter, ideal", 0.00376, 762.52696, 765103.07690
+
+
+    def __new__(cls, *args, **kwds):
+        obj = str.__new__(cls)
+        obj._value_ = args[1]
+        return obj
+
+    # ignore the first param since it's already set by __new__
+    def __init__(self, idx: int, _: str, c2:float, c1:float, c0:float):
+        self._c2 = c2
+        self._c1 = c1
+        self._c0 = c0
+
+    def calculate_cost_USD(self, meters) -> float:
+        return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
 
 

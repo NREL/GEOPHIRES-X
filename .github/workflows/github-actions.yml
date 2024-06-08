@@ -142,6 +142,7 @@ jobs:
       run: |
         python -mpip install --upgrade pip
         python -mpip install --progress-bar=off -r ci/requirements.txt
+        python -mpip install coverage
         virtualenv --version
         pip --version
         tox --version
@@ -160,6 +161,13 @@ jobs:
         chmod -c -R +rX "_site/" | while read line; do
           echo "::warning title=Invalid file permissions automatically fixed::$line"
         done
+
+    - name: Generate Report
+      run: |
+        coverage run -m unittest
+
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2
 
     - name: upload artifact
       uses: actions/upload-pages-artifact@v3

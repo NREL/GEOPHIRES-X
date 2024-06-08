@@ -79,7 +79,6 @@ class WellDrillingCostCorrelation(str, Enum):
         obj._value_ = args[1]
         return obj
 
-    # ignore the first param since it's already set by __new__
     def __init__(self, idx: int, _: str, c2:float, c1:float, c0:float):
         self._c2 = c2
         self._c1 = c1

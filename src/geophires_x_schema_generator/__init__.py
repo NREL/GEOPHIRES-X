@@ -210,14 +210,14 @@ Output Parameters
         return output_rst
 
 
-def _get_key(param: dict[str, Any], k: str, default_val='') -> Any:
+def _get_key(param: dict, k: str, default_val='') -> Any:
     if k in param and str(param[k]) != '':
         return param[k]
     else:
         return default_val
 
 
-def _get_min_and_max(param: dict[str, Any], default_val='') -> Tuple[float, float]:
+def _get_min_and_max(param: dict, default_val='') -> Tuple:
     min_val = _get_key(param, 'Min', default_val=default_val)
     max_val = _get_key(param, 'Max', default_val=default_val)
 

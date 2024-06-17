@@ -59,9 +59,10 @@ setup(
         'Documentation': 'https://nrel.github.io/python-geophires-x-nrel/',
     },
     keywords=['geothermal'],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
-        'numpy==1.24',  # Last version compatible with Python 3.8
+        'numpy==1.24; python_version == "3.8"',  # Last version compatible with Python 3.8
+        'numpy==1.26; python_version > "3.8"',
         'numpy-financial',
         'pint',
         'forex_python',

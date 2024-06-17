@@ -61,7 +61,7 @@ setup(
     keywords=['geothermal'],
     python_requires='>=3.7',
     install_requires=[
-        'numpy==1.26.4',
+        'numpy==1.26',
         'numpy-financial',
         'pint',
         'forex_python',

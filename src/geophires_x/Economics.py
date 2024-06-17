@@ -1539,7 +1539,7 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
         )
         self.CoolingPrice = self.OutputParameterDict[self.CoolingPrice.Name] = OutputParameter(
-            "Heat Sale Price Model",
+            "Cooling Sale Price Model",
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,

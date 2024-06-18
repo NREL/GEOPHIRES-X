@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.4.30',
+    version='3.4.34',
     license='MIT',
     description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
@@ -59,9 +59,10 @@ setup(
         'Documentation': 'https://nrel.github.io/python-geophires-x-nrel/',
     },
     keywords=['geothermal'],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
-        'numpy',
+        'numpy==1.24; python_version == "3.8"',  # Last version compatible with Python 3.8
+        'numpy==1.26; python_version > "3.8"',
         'numpy-financial',
         'pint',
         'forex_python',

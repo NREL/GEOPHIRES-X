@@ -2043,7 +2043,7 @@ class Outputs:
                     if output_param.Name in econ.OutputParameterDict:
                         return econ.OutputParameterDict[output_param.Name]
                     else:
-                        return o
+                        return output_param
 
                 f.write('Start    ('
                         + o(econ.ElecPrice).CurrentUnits.value +

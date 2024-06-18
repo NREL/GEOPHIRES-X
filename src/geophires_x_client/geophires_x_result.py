@@ -277,6 +277,7 @@ class GeophiresXResult:
                 'Average Annual Total Heating Production',
                 'Average Annual Electricity Use for Pumping',
             ],
+            'Simulation Metadata': [_StringValueField('GEOPHIRES Version')],
         }
     )
 
@@ -310,8 +311,9 @@ class GeophiresXResult:
                 else:
                     is_string_field = isinstance(field, _StringValueField)
                     field_name = field.field_name if is_string_field else field
+                    indent = 4 if category != 'Simulation Metadata' else 1
                     self.result[category][field_name] = self._get_result_field(
-                        field_name, is_string_value_field=is_string_field
+                        field_name, is_string_value_field=is_string_field, min_indentation_spaces=indent
                     )
 
         try:
@@ -422,9 +424,9 @@ class GeophiresXResult:
         except FileNotFoundError:
             return {}
 
-    def _get_result_field(self, field_name: str, is_string_value_field: bool = False):
+    def _get_result_field(self, field_name: str, is_string_value_field: bool = False, min_indentation_spaces: int = 4):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'    {field_name}: ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'{min_indentation_spaces * " "}{field_name}: ' in line, self._lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Field not found: {field_name}')

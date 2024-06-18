@@ -50,5 +50,7 @@ Time steps per year,6,		  				---[1/year]
 ***Output unit conversions you wish to make***
 ***************************
 Units:Bottom-hole temperature, degF,  ---[This is what I want the units to be for this output parameter
-Units:Exploration cost,MEUR,  ---[This is what I want the units to be for this output parameter
-Units:O&M Make-up Water costs, MEUR/yr
+
+-- See https://github.com/NREL/GEOPHIRES-X/issues/236 re: currency conversions.
+-- Units:Exploration cost,MEUR,  ---[This is what I want the units to be for this output parameter
+-- Units:O&M Make-up Water costs, MEUR/yr

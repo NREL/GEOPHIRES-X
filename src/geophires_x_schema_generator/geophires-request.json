@@ -27,8 +27,9 @@
     "Injection Well Diameter",
     "Ramey Production Wellbore Model",
     "Injection Temperature",
-    "Heat Transfer Fluid",
     "Closed-loop Configuration",
+    "Well Geometry Configuration",
+    "Heat Transfer Fluid",
     "Total Nonvertical Length",
     "Circulation Pump Efficiency",
     "Utilization Factor",
@@ -44,1063 +45,1686 @@
       "description": "0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA",
       "type": "integer",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": "Annual Percentage Thermal Drawdown",
+      "minimum": 0,
+      "maximum": 7
     },
     "Reservoir Depth": {
       "description": "Depth of the reservoir",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 3.0,
+      "minimum": 0.1,
+      "maximum": 15
     },
     "Maximum Temperature": {
       "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints).             GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
       "type": "number",
       "units": "degC",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 400.0,
+      "minimum": 50,
+      "maximum": 600
     },
     "Number of Segments": {
       "description": "Number of rock segments from surface to reservoir depth with specific geothermal gradient",
       "type": "integer",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 4
     },
     "Gradients": {
       "description": "Geothermal gradients",
       "type": "number",
       "units": "degC/m",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": [
+        0.05,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "minimum": 0.0,
+      "maximum": 500.0
     },
     "Gradient 1": {
       "description": "Geothermal gradient 1 in rock segment 1",
       "type": "number",
       "units": "degC/m",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.05,
+      "minimum": 0.0,
+      "maximum": 500.0
     },
     "Gradient 2": {
       "description": "Geothermal gradient 2 in rock segment 2",
       "type": "number",
       "units": "degC/km",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 500.0
     },
     "Gradient 3": {
       "description": "Geothermal gradient 3 in rock segment 3",
       "type": "number",
       "units": "degC/km",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 500.0
     },
     "Gradient 4": {
       "description": "Geothermal gradient 4 in rock segment 4",
       "type": "number",
       "units": "degC/km",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 500.0
     },
     "Thicknesses": {
       "description": "Thicknesses of rock segments",
       "type": "array",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": [
+        100000.0,
+        0.01,
+        0.01,
+        0.01,
+        0.01
+      ],
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Thickness 1": {
       "description": "Thickness of rock segment 1",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 2.0,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Thickness 2": {
       "description": "Thickness of rock segment 2",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.01,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Thickness 3": {
       "description": "Thickness of rock segment 3",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.01,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Thickness 4": {
       "description": "Thickness of rock segment 4",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.01,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Reservoir Volume Option": {
       "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2)             are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The             fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2:             Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation,             3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only             (sufficient for reservoir models 3, 4, 5 and 6)",
       "type": "integer",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": "Specify reservoir volume and number of fractures",
+      "minimum": 1,
+      "maximum": 4
     },
     "Fracture Shape": {
       "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir:             1: Circular fracture with known area, 2: Circular fracture with known diameter,             3: Square fracture, 4: Rectangular fracture",
       "type": "integer",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": "Circular fracture with known area",
+      "minimum": 1,
+      "maximum": 4
     },
     "Fracture Area": {
       "description": "Effective heat transfer area per fracture",
       "type": "number",
       "units": "m**2",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 250000.0,
+      "minimum": 1,
+      "maximum": 100000000.0
     },
     "Fracture Height": {
       "description": "Diameter (if fracture shape = 2) or height (if fracture shape = 3 or 4) of each fracture",
       "type": "number",
       "units": "meter",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 500.0,
+      "minimum": 1,
+      "maximum": 10000
     },
     "Fracture Width": {
       "description": "Width of each fracture",
       "type": "number",
       "units": "meter",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 500.0,
+      "minimum": 1,
+      "maximum": 10000
     },
     "Number of Fractures": {
       "description": "Number of identical parallel fractures in EGS fracture-based reservoir model.",
       "type": "integer",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 149
     },
     "Fracture Separation": {
       "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",
       "type": "number",
       "units": "meter",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 50.0,
+      "minimum": 1,
+      "maximum": 10000.0
     },
     "Reservoir Volume": {
       "description": "Geothermal reservoir volume",
       "type": "number",
       "units": "m**3",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 125000000.0,
+      "minimum": 10,
+      "maximum": 1000000000000.0
     },
     "Water Loss Fraction": {
       "description": "Fraction of water lost in the reservoir defined as (total geofluid lost)/(total geofluid produced).",
       "type": "number",
       "units": "",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 0.99
     },
     "Reservoir Heat Capacity": {
       "description": "Constant and uniform reservoir rock heat capacity",
       "type": "number",
       "units": "J/kg/K",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 1000.0,
+      "minimum": 100,
+      "maximum": 10000
     },
     "Reservoir Density": {
       "description": "Constant and uniform reservoir rock density",
       "type": "number",
       "units": "kg/m**3",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 2700.0,
+      "minimum": 100,
+      "maximum": 10000
     },
     "Reservoir Thermal Conductivity": {
       "description": "Constant and uniform reservoir rock thermal conductivity",
       "type": "number",
       "units": "W/m/K",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 3.0,
+      "minimum": 0.01,
+      "maximum": 100
     },
     "Reservoir Permeability": {
       "description": "Constant and uniform reservoir permeability",
       "type": "number",
       "units": "m**2",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 1e-13,
+      "minimum": 1e-20,
+      "maximum": 1e-05
     },
     "Reservoir Porosity": {
       "description": "Constant and uniform reservoir porosity",
       "type": "number",
       "units": "",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.04,
+      "minimum": 0.001,
+      "maximum": 0.99
     },
     "Surface Temperature": {
       "description": "Surface temperature used for calculating bottom-hole temperature             (with geothermal gradient and reservoir depth)",
       "type": "number",
       "units": "degC",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 15.0,
+      "minimum": -50,
+      "maximum": 50
     },
     "Drawdown Parameter": {
       "description": "specify the thermal drawdown for reservoir model 3 and 4",
       "type": "number",
       "units": "1/year",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.005,
+      "minimum": 0,
+      "maximum": 0.2
     },
     "Cylindrical Reservoir Input Depth": {
       "description": "Depth of the inflow end of a cylindrical reservoir",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 3.0,
+      "minimum": 0.1,
+      "maximum": 15
     },
     "Cylindrical Reservoir Output Depth": {
       "description": "Depth of the outflow end of a cylindrical reservoir",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 3.0,
+      "minimum": 0.1,
+      "maximum": 15
     },
     "Cylindrical Reservoir Length": {
       "description": "Length of cylindrical reservoir",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 4.0,
+      "minimum": 0.1,
+      "maximum": 10.0
     },
     "Cylindrical Reservoir Radius of Effect": {
       "description": "The radius of effect - the distance into the rock from the center of the cylinder that will be perturbed by at least 1 C",
       "type": "number",
       "units": "meter",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 30.0,
+      "minimum": 0,
+      "maximum": 1000.0
     },
     "Cylindrical Reservoir Radius of Effect Factor": {
       "description": "The radius of effect reduction factor - to account for the fact that we cannot extract 100% of the heat in the cylinder.",
       "type": "number",
       "units": "",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 10.0
     },
     "Drilled length": {
       "description": "Depth of the inflow end of a cyclindrical reservoir",
       "type": "number",
       "units": "kilometer",
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 150
     },
     "SUTRA Annual Heat File Name": {
       "description": "SUTRA file with heat stored, heat supplied and efficiency for each year",
       "type": "string",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": null,
+      "minimum": null,
+      "maximum": null
     },
     "SUTRA Heat Budget File Name": {
       "description": "SUTRA file with target heat and simulated heat for each SUTRA time step over lifetime",
       "type": "string",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": null,
+      "minimum": null,
+      "maximum": null
     },
     "SUTRA Balance and Storage Well Output File Name": {
       "description": "SUTRA file with well flow rate and temperature for each SUTRA time step over lifetime",
       "type": "string",
       "units": null,
-      "category": "Reservoir"
+      "category": "Reservoir",
+      "default": null,
+      "minimum": null,
+      "maximum": null
     },
     "Number of Production Wells": {
       "description": "Number of (identical) production wells",
       "type": "integer",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 200
     },
     "Number of Injection Wells": {
       "description": "Number of (identical) injection wells",
       "type": "integer",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1,
+      "minimum": 0,
+      "maximum": 200
     },
     "Production Well Diameter": {
       "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",
       "units": "in",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 8.0,
+      "minimum": 1.0,
+      "maximum": 30.0
     },
     "Injection Well Diameter": {
       "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",
       "units": "in",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 8.0,
+      "minimum": 1.0,
+      "maximum": 30.0
     },
     "Ramey Production Wellbore Model": {
       "description": "Select whether to use Rameys model to estimate the geofluid temperature drop in the             production wells",
       "type": "boolean",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": true,
+      "minimum": null,
+      "maximum": null
     },
     "Production Wellbore Temperature Drop": {
       "description": "Specify constant production well geofluid temperature drop in case Rameys model is disabled.",
       "type": "number",
       "units": "degC",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 5.0,
+      "minimum": -5.0,
+      "maximum": 50.0
     },
     "Injection Wellbore Temperature Gain": {
       "description": "Specify constant injection well geofluid temperature gain.",
       "type": "number",
       "units": "degC",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 0.0,
+      "minimum": -5.0,
+      "maximum": 50.0
     },
     "Production Flow Rate per Well": {
       "description": "Geofluid flow rate per production well.",
       "type": "number",
       "units": "kg/sec",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 50.0,
+      "minimum": 1.0,
+      "maximum": 500.0
     },
     "Reservoir Impedance": {
       "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well             is in hydraulic communication with the production well, this parameter specifies the overall pressure drop             in the reservoir between injection well and production well (see docs)",
       "type": "number",
       "units": "GPa.s/m**3",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1000.0,
+      "minimum": 0.0001,
+      "maximum": 10000.0
     },
     "Well Separation": {
       "description": "Well separation for built-in TOUGH2 doublet reservoir model",
       "type": "number",
       "units": "in",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1000.0,
+      "minimum": 10.0,
+      "maximum": 10000.0
     },
     "Injection Temperature": {
       "description": "Constant geofluid injection temperature at injection wellhead.",
       "type": "number",
       "units": "degC",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 70.0,
+      "minimum": 0.0,
+      "maximum": 200.0
     },
-    "Average reservoir Pressure": {
-      "description": "Average reservoir far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
+    "Reservoir Hydrostatic Pressure": {
+      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
       "type": "number",
       "units": "kPa",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 29430,
+      "minimum": 100.0,
+      "maximum": 100000.0
     },
     "Production Wellhead Pressure": {
       "description": "Constant production wellhead pressure; Required if specifying productivity index",
       "type": "number",
       "units": "kPa",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 446.02,
+      "minimum": 0.0,
+      "maximum": 10000.0
     },
     "Injectivity Index": {
       "description": "Injectivity index defined as ratio of injection well flow rate over injection well outflow             pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure).",
       "type": "number",
       "units": "kg/sec/bar",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 10.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
     },
     "Productivity Index": {
       "description": "Productivity index defined as ratio of production well flow rate over production well inflow             pressure drop (see docs)",
       "type": "number",
       "units": "kg/sec/bar",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 10.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
     },
     "Maximum Drawdown": {
       "description": "Maximum allowable thermal drawdown before redrilling of all wells into new reservoir             (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that             all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of             its initial temperature",
       "type": "number",
       "units": "",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.000001
     },
     "Is AGS": {
       "description": "Set to true if the model is for an Advanced Geothermal System (AGS)",
       "type": "boolean",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
-    "Heat Transfer Fluid": {
-      "description": "",
-      "type": "integer",
-      "units": null,
-      "category": "Well Bores"
+    "Overpressure Percentage": {
+      "description": "enter the amount of pressure over the hydrostatic pressure in the reservoir (100%=hydrostatic)",
+      "type": "number",
+      "units": "%",
+      "category": "Well Bores",
+      "default": 100.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
+    },
+    "Overpressure Depletion Rate": {
+      "description": "enter the amount of pressure over the hydrostatic pressure in the reservoir (100%=hydrostatic)",
+      "type": "number",
+      "units": "%/yr",
+      "category": "Well Bores",
+      "default": 0.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
+    },
+    "Injection Reservoir Temperature": {
+      "description": "enter the temperature of the injection reservoir (100 C)",
+      "type": "number",
+      "units": "degC",
+      "category": "Well Bores",
+      "default": 100.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
+    },
+    "Injection Reservoir Depth": {
+      "description": "enter the depth of the injection reservoir (1000 m)",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 1000.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
+    },
+    "Injection Reservoir Initial Pressure": {
+      "description": "enter the depth of the injection reservoir initial pressure (use lithostatic pressure)",
+      "type": "number",
+      "units": "kPa",
+      "category": "Well Bores",
+      "default": 0.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
+    },
+    "Injection Reservoir Inflation Rate": {
+      "description": "enter the rate at which the pressure increases per year in the injection reservoir (1000 kPa/yr)",
+      "type": "number",
+      "units": "kPa/yr",
+      "category": "Well Bores",
+      "default": 1000.0,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
     },
     "Closed-loop Configuration": {
       "description": "",
       "type": "integer",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": "vertical",
+      "minimum": 1,
+      "maximum": 4
     },
-    "Total Nonvertical Length": {
+    "Well Geometry Configuration": {
       "description": "",
-      "type": "number",
-      "units": "meter",
-      "category": "Well Bores"
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores",
+      "default": "vertical",
+      "minimum": 1,
+      "maximum": 4
     },
     "Water Thermal Conductivity": {
       "description": "Water Thermal Conductivity",
       "type": "number",
       "units": "W/m/K",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 0.6,
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "Heat Transfer Fluid": {
+      "description": "",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores",
+      "default": "water",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "Total Nonvertical Length": {
+      "description": "",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 1000.0,
+      "minimum": 50.0,
+      "maximum": 20000.0
     },
     "Nonvertical Wellbore Diameter": {
       "description": "Non-vertical Wellbore Diameter",
       "type": "number",
       "units": "meter",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 0.156,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "Number of Multilateral Sections": {
       "description": "Number of Nonvertical Wellbore Sections",
       "type": "integer",
       "units": null,
-      "category": "Well Bores"
-    },
-    "Closed Loop Calculation Start Year": {
-      "description": "Closed Loop Calculation Start Year",
-      "type": "number",
-      "units": "yr",
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": 1,
+      "minimum": 0,
+      "maximum": 100
     },
     "Multilaterals Cased": {
       "description": "",
       "type": "boolean",
       "units": null,
-      "category": "Well Bores"
+      "category": "Well Bores",
+      "default": false,
+      "minimum": null,
+      "maximum": null
+    },
+    "Closed Loop Calculation Start Year": {
+      "description": "Closed Loop Calculation Start Year",
+      "type": "number",
+      "units": "yr",
+      "category": "Well Bores",
+      "default": 0.01,
+      "minimum": 0.01,
+      "maximum": 100.0
     },
     "End-Use Option": {
       "description": "Select the end-use application of the geofluid heat (see docs for details)",
       "type": "integer",
       "units": null,
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": null,
+      "minimum": 1,
+      "maximum": 52
     },
     "Power Plant Type": {
       "description": "Specify the type of physical plant. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump 7: District Heating, 8: Reservoir Thermal Energy Storage",
       "type": "integer",
       "units": null,
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": "Subcritical ORC",
+      "minimum": 1,
+      "maximum": 9
     },
     "Circulation Pump Efficiency": {
       "description": "Specify the overall efficiency of the injection and production well pumps",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.75,
+      "minimum": 0.1,
+      "maximum": 1.0
     },
     "Utilization Factor": {
       "description": "Ratio of the time the plant is running in normal production in a 1-year time period.",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.9,
+      "minimum": 0.1,
+      "maximum": 1.0
     },
     "End-Use Efficiency Factor": {
       "description": "Constant thermal efficiency of the direct-use application",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.9,
+      "minimum": 0.1,
+      "maximum": 1.0
     },
     "CHP Fraction": {
       "description": "Fraction of produced geofluid flow rate going to direct-use heat application in CHP parallel cycle",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.5,
+      "minimum": 0.0001,
+      "maximum": 0.9999
     },
     "CHP Bottoming Entering Temperature": {
       "description": "Power plant entering geofluid temperature used in CHP bottoming cycle",
       "type": "number",
       "units": "degC",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 150.0,
+      "minimum": 0,
+      "maximum": 400
     },
     "Ambient Temperature": {
       "description": "Ambient (or dead-state) temperature used for calculating power plant utilization efficiency",
       "type": "number",
       "units": "degC",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 15.0,
+      "minimum": -50,
+      "maximum": 50
     },
     "Plant Lifetime": {
       "description": "System lifetime",
       "type": "integer",
       "units": "yr",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 30,
+      "minimum": 1,
+      "maximum": 100
     },
     "Surface Piping Length": {
       "description": "",
       "type": "number",
       "units": "kilometer",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Plant Outlet Pressure": {
       "description": "Constant plant outlet pressure equal to injection well pump(s) suction pressure",
       "type": "number",
       "units": "kPa",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 100.0,
+      "minimum": 0.01,
+      "maximum": 15000.0
     },
     "Electricity Rate": {
       "description": "Price of electricity to calculate pumping costs in direct-use heat only mode or revenue from electricity sales in CHP mode.",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.07,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Heat Rate": {
       "description": "Price of heat to calculate revenue from heat sales in CHP mode.",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.02,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Construction Years": {
       "description": "Number of years spent in construction (assumes whole years, no fractions)",
       "type": "integer",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 14
     },
     "Dead-state Pressure": {
       "description": "",
       "type": "number",
       "units": "Pa",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 100000.0,
+      "minimum": 80000.0,
+      "maximum": 110000.0
     },
     "Isentropic Efficiency for CO2 Turbine": {
       "description": "",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.9,
+      "minimum": 0.8,
+      "maximum": 1.0
     },
     "Generator Conversion Efficiency": {
       "description": "",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.98,
+      "minimum": 0.8,
+      "maximum": 1.0
     },
     "Isentropic Efficiency for CO2 Compressor": {
       "description": "",
       "type": "number",
       "units": "",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 0.9,
+      "minimum": 0.8,
+      "maximum": 1.0
     },
     "CO2 Temperature Decline with Cooling": {
       "description": "",
       "type": "number",
       "units": "degC",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 12.0,
+      "minimum": 0.0,
+      "maximum": 15.0
     },
     "CO2 Turbine Outlet Pressure": {
       "description": "",
       "type": "number",
       "units": "bar",
-      "category": "Surface Plant"
+      "category": "Surface Plant",
+      "default": 81.0,
+      "minimum": 75.0,
+      "maximum": 200.0
     },
     "Economic Model": {
       "description": "Specify the economic model to calculate the levelized cost of energy. 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS",
       "type": "integer",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": "Standard Levelized Cost",
+      "minimum": 1,
+      "maximum": 4
     },
     "Reservoir Stimulation Capital Cost": {
       "description": "Total reservoir stimulation capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Reservoir Stimulation Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in reservoir stimulation capital cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Exploration Capital Cost": {
       "description": "Total exploration capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Exploration Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in exploration capital cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Well Drilling and Completion Capital Cost": {
       "description": "Well Drilling and Completion Capital Cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 200
+    },
+    "Injection Well Drilling and Completion Capital Cost": {
+      "description": "Injection Well Drilling and Completion Capital Cost",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 200
     },
     "Well Drilling and Completion Capital Cost Adjustment Factor": {
       "description": "Well Drilling and Completion Capital Cost Adjustment Factor",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
+    },
+    "Injection Well Drilling and Completion Capital Cost Adjustment Factor": {
+      "description": "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Wellfield O&M Cost": {
       "description": "Total annual wellfield O&M cost",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Wellfield O&M Cost Adjustment Factor": {
       "description": "Multiplier for built-in wellfield O&M cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Surface Plant Capital Cost": {
       "description": "Total surface plant capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "Surface Plant Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in surface plant capital cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Field Gathering System Capital Cost": {
       "description": "Total field gathering system capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Field Gathering System Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in field gathering system capital cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Surface Plant O&M Cost": {
       "description": "Total annual surface plant O&M cost",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Surface Plant O&M Cost Adjustment Factor": {
       "description": "Multiplier for built-in surface plant O&M cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Water Cost": {
       "description": "Total annual make-up water cost",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Water Cost Adjustment Factor": {
       "description": "Multiplier for built-in make-up water cost correlation",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0,
+      "maximum": 10
     },
     "Total Capital Cost": {
       "description": "Total initial capital cost.",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "Total O&M Cost": {
       "description": "Total initial O&M cost.",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Time steps per year": {
       "description": "Number of internal simulation time steps per year",
       "type": "integer",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": 4,
+      "minimum": 1,
+      "maximum": 100
     },
     "Fixed Charge Rate": {
       "description": "Fixed charge rate (FCR) used in the Fixed Charge Rate Model",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.1,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Discount Rate": {
       "description": "Discount rate used in the Standard Levelized Cost Model",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.07,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Fraction of Investment in Bonds": {
       "description": "Fraction of geothermal project financing through bonds (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.5,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Inflated Bond Interest Rate": {
       "description": "Inflated bond interest rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.05,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Inflated Equity Interest Rate": {
       "description": "Inflated equity interest rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.1,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Inflation Rate": {
       "description": "Inflation rate",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.02,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Combined Income Tax Rate": {
       "description": "Combined income tax rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.02,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Gross Revenue Tax Rate": {
       "description": "Gross revenue tax rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.02,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Investment Tax Credit Rate": {
       "description": "Investment tax credit rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Property Tax Rate": {
       "description": "Property tax rate (see docs)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Inflation Rate During Construction": {
       "description": "",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Well Drilling Cost Correlation": {
       "description": "Select the built-in well drilling and completion cost correlation: 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
       "type": "integer",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": "",
+      "minimum": 1,
+      "maximum": 17
     },
     "Do AddOn Calculations": {
       "description": "Set to true if you want the add-on economics calculations to be made",
       "type": "boolean",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
     "Do Carbon Price Calculations": {
       "description": "Set to true if you want the Carbon Credit economics calculations to be made",
       "type": "boolean",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
     "Do S-DAC-GT Calculations": {
       "description": "Set to true if you want the S-DAC-GT economics calculations to be made",
       "type": "boolean",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
     "All-in Vertical Drilling Costs": {
       "description": "Set user specified all-in cost per meter of vertical drilling, including drilling, casing, cement, insulated insert",
       "type": "number",
       "units": "USD/m",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1000.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
     },
     "All-in Nonvertical Drilling Costs": {
       "description": "Set user specified all-in cost per meter of non-vertical drilling, including drilling, casing, cement, insulated insert",
       "type": "number",
       "units": "USD/m",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1300.0,
+      "minimum": 0.0,
+      "maximum": 15000.0
     },
     "Absorption Chiller Capital Cost": {
       "description": "Absorption chiller capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Absorption Chiller O&M Cost": {
       "description": "Absorption chiller O&M cost",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1,
+      "minimum": 0,
+      "maximum": 100
     },
     "Heat Pump Capital Cost": {
       "description": "Heat pump capital cost",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Peaking Fuel Cost Rate": {
       "description": "Price of peaking fuel for peaking boilers",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.034,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Peaking Boiler Efficiency": {
       "description": "Peaking boiler efficiency",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.85,
+      "minimum": 0,
+      "maximum": 1
     },
     "District Heating Piping Cost Rate": {
       "description": "District heating piping cost rate ($/m)",
       "type": "number",
       "units": "USD/m",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1200,
+      "minimum": 0,
+      "maximum": 10000
     },
     "Total District Heating Network Cost": {
       "description": "Total district heating network cost ($M)",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 10,
+      "minimum": 0,
+      "maximum": 1000
     },
     "District Heating O&M Cost": {
       "description": "Total annual district heating O&M cost ($M/year)",
       "type": "number",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 1,
+      "minimum": 0,
+      "maximum": 100
     },
     "District Heating Network Piping Length": {
       "description": "District heating network piping length (km)",
       "type": "number",
       "units": "kilometer",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 10.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "District Heating Road Length": {
       "description": "District heating road length (km)",
       "type": "number",
       "units": "kilometer",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 10.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "District Heating Land Area": {
       "description": "District heating land area (km2)",
       "type": "number",
       "units": "km**2",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 10.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "District Heating Population": {
       "description": "Specify the population in the district heating network",
       "type": "number",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": 200,
+      "minimum": 0,
+      "maximum": 1000000
     },
     "Starting Heat Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.025,
+      "minimum": 0,
+      "maximum": 100
     },
     "Ending Heat Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.025,
+      "minimum": 0,
+      "maximum": 100
     },
     "Heat Escalation Start Year": {
       "description": "Number of years after start of project before start of escalation",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Heat Escalation Rate Per Year": {
       "description": "additional cost per year of price after escalation starts",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Starting Electricity Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.055,
+      "minimum": 0,
+      "maximum": 100
     },
     "Ending Electricity Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.055,
+      "minimum": 0,
+      "maximum": 100
     },
     "Electricity Escalation Start Year": {
       "description": "Number of years after start of project before start of escalation",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Electricity Escalation Rate Per Year": {
       "description": "additional cost per year of price after escalation starts",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Starting Cooling Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.025,
+      "minimum": 0,
+      "maximum": 100
     },
     "Ending Cooling Sale Price": {
       "description": "",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.025,
+      "minimum": 0,
+      "maximum": 100
     },
     "Cooling Escalation Start Year": {
       "description": "Number of years after start of project before start of escalation",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Cooling Escalation Rate Per Year": {
       "description": "additional cost per year of price after escalation starts",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Starting Carbon Credit Value": {
       "description": "",
       "type": "number",
       "units": "USD/lb",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "Ending Carbon Credit Value": {
       "description": "",
       "type": "number",
       "units": "USD/lb",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "Carbon Escalation Start Year": {
       "description": "Number of years after start of project before start of Carbon incentives",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
     },
     "Carbon Escalation Rate Per Year": {
       "description": "additional value per year of price after escalation starts",
       "type": "number",
       "units": "USD/lb",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Current Grid CO2 production": {
       "description": "CO2 intensity of the grid (how much CO2 is produced per kWh of electricity produced (0.93916924 lbs/kWh for Texas ERCOT))",
       "type": "number",
       "units": "lbs/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.93916924,
+      "minimum": 0,
+      "maximum": 50000
     },
     "CO2 produced by Natural Gas": {
       "description": "CO2 intensity of buring natural gas (how much CO2 is produced per kWh of heat produced (0.407855 lbs/kWh))",
       "type": "number",
       "units": "lbs/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.070324961,
+      "minimum": 0,
+      "maximum": 50000
     },
     "Annual License Fees Etc": {
       "description": "",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": -1000.0,
+      "maximum": 1000.0
     },
     "One-time Flat License Fees Etc": {
       "description": "",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": -1000.0,
+      "maximum": 1000.0
     },
     "Other Incentives": {
       "description": "",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": -1000.0,
+      "maximum": 1000.0
     },
     "Tax Relief Per Year": {
       "description": "Fixed percent reduction in annual tax rate",
       "type": "number",
       "units": "%",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "One-time Grants Etc": {
       "description": "",
       "type": "number",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": -1000.0,
+      "maximum": 1000.0
     },
     "Fixed Internal Rate": {
       "description": "Fixed Internal Rate (used in NPV calculation)",
       "type": "number",
       "units": "%",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 6.25,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "CHP Electrical Plant Cost Allocation Ratio": {
       "description": "CHP Electrical Plant Cost Allocation Ratio (cost electrical plant/total CAPEX)",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": -1.0,
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Production Tax Credit Electricity": {
       "description": "Production tax credit for electricity in $/kWh",
       "type": "number",
       "units": "USD/kWh",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.04,
+      "minimum": 0.0,
+      "maximum": 10.0
     },
     "Production Tax Credit Heat": {
       "description": "Production tax credit for heat in $/MMBTU",
       "type": "number",
       "units": "USD/MMBTU",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Production Tax Credit Cooling": {
       "description": "Production tax credit for cooling in $/MMBTU",
       "type": "number",
       "units": "USD/MMBTU",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Production Tax Credit Duration": {
       "description": "Production tax credit for duration in years",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 10,
+      "minimum": 0,
+      "maximum": 99
     },
     "Production Tax Credit Inflation Adjusted": {
       "description": "Production tax credit inflation adjusted",
       "type": "boolean",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
     "Operation & Maintenance Cost of Surface Plant": {
       "description": "",
       "type": "number",
       "units": "",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.015,
+      "minimum": 0.0,
+      "maximum": 0.2
     },
     "Capital Cost for Surface Plant for Direct-use System": {
       "description": "",
       "type": "number",
       "units": "USD/kW",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 100.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
     },
     "Capital Cost for Power Plant for Electricity Generation": {
       "description": "",
       "type": "number",
       "units": "USD/kW",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 3000.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
     },
     "Do CCUS Calculations": {
       "description": "Set to true if you want the CCUS economics calculations to be made",
       "type": "boolean",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
     },
     "Ending CCUS Credit Value": {
       "description": "",
       "type": "number",
       "units": "USD/lb",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "CCUS Escalation Start Year": {
       "description": "Number of years after start of project before start of CCUS incentives",
       "type": "integer",
       "units": "yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
     },
     "CCUS Escalation Rate Per Year": {
       "description": "additional value per year of price after escalation starts",
       "type": "number",
       "units": "USD/mt",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
     },
     "Starting CCUS Credit Value": {
       "description": "",
       "type": "number",
       "units": "USD/mt",
-      "category": "Economics"
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0,
+      "maximum": 1000
     },
     "AddOn Nickname": {
       "description": "",
       "type": "array",
       "units": null,
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     },
     "AddOn CAPEX": {
       "description": "",
       "type": "array",
       "units": "MUSD",
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     },
     "AddOn OPEX": {
       "description": "",
       "type": "array",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     },
     "AddOn Electricity Gained": {
       "description": "",
       "type": "array",
       "units": "kW/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     },
     "AddOn Heat Gained": {
       "description": "",
       "type": "array",
       "units": "kW/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     },
     "AddOn Profit Gained": {
       "description": "",
       "type": "array",
       "units": "MUSD/yr",
-      "category": "Economics"
+      "category": "Economics",
+      "default": [],
+      "minimum": 0.0,
+      "maximum": 1000.0
     }
   }
 }

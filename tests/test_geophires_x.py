@@ -174,9 +174,11 @@ class GeophiresXTestCase(BaseTestCase):
                 )
                 geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
                 del geophires_result.result['metadata']
+                del geophires_result.result['Simulation Metadata']
 
                 expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                 del expected_result.result['metadata']
+                del expected_result.result['Simulation Metadata']
 
                 try:
                     self.assertDictEqual(
@@ -345,3 +347,56 @@ Print Output to Console, 1"""
         self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
         self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
         self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)
+
+    def test_vapor_pressure_above_critical_temperature(self):
+        """https://github.com/NREL/GEOPHIRES-X/issues/214"""
+
+        input_params = GeophiresInputParameters(
+            {
+                'End-Use Option': 2,
+                'Reservoir Depth': 6,
+                'Gradient 1': 75,
+                'Reservoir Model': 1,
+                'Time steps per year': 1,
+                'Maximum Temperature': 500,
+                'Print Output to Console': 0,
+            }
+        )
+
+        result = GeophiresXClient().get_geophires_result(input_params)
+        self.assertIsNotNone(result)
+        self.assertIn('SUMMARY OF RESULTS', result.result)
+
+    def test_heat_price(self):
+        def input_for_heat_prices(params) -> GeophiresInputParameters:
+            return GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/example1.txt'), params=params
+            )
+
+        result_escalating = GeophiresXClient().get_geophires_result(
+            input_for_heat_prices({'Starting Heat Sale Price': 0.015, 'Ending Heat Sale Price': 0.015})
+        )
+        self.assertIsNotNone(result_escalating)
+        cashflow_constant = result_escalating.result['REVENUE & CASHFLOW PROFILE']
+        self.assertEqual(cashflow_constant[0][4], 'Heat Price (cents/kWh)')
+
+        # First entry (index 1 - header is index 0) is hardcoded to zero per
+        # https://github.com/NREL/GEOPHIRES-X/blob/becec79cc7510a35f7a9cb01127dabc829720015/src/geophires_x/Economics.py#L2920-L2925
+        # so start test at index 2.
+        for i in range(2, len(cashflow_constant[0])):
+            self.assertEqual(cashflow_constant[i][4], 1.5)
+
+        result_escalating = GeophiresXClient().get_geophires_result(
+            input_for_heat_prices(
+                {
+                    'Starting Heat Sale Price': 0.015,
+                    'Ending Heat Sale Price': 0.030,
+                    'Heat Escalation Rate Per Year': 0.005,
+                    'Heat Escalation Start Year': 0,
+                }
+            )
+        )
+        cashflow_escalating = result_escalating.result['REVENUE & CASHFLOW PROFILE']
+
+        self.assertEqual(cashflow_escalating[2][4], 1.5)
+        self.assertEqual(cashflow_escalating[-1][4], 3.0)

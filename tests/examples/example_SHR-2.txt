@@ -1,4 +1,4 @@
---- Superhot Rock (SHR) Example 2
+# Example: Superhot Rock (SHR) 2
 
 Reservoir Model, 1
 Reservoir Depth, 7.5

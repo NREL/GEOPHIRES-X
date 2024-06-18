@@ -1,3 +1,5 @@
+# Example 1 with Addons
+
 Do AddOn Calculations, True
 Do Carbon Price Calculations, True
 
@@ -65,8 +67,8 @@ Reservoir Heat Capacity,1000,		  			---[J/kg/K]
 Reservoir Density,2700,			  			---[kg/m^3]
 Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
 
-***SURFACE TECHNICAL PARAMETERS***
-**********************************
+# ***SURFACE TECHNICAL PARAMETERS***
+# **********************************
 End-Use Option,1,			  			---[-] Electricity
 Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Power Plant Type,2,			  			---[-] Supercritcal ORC
@@ -75,14 +77,14 @@ Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]
 Ambient Temperature,20,		 				---[deg.C]
 
-***FINANCIAL PARAMETERS***
-**************************
+# ***FINANCIAL PARAMETERS***
+# **************************
 Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]

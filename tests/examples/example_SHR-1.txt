@@ -1,4 +1,4 @@
---- Superhot Rock (SHR) Example 1
+# Example: Superhot Rock (SHR) 1
 
 Reservoir Model, 1
 Reservoir Depth, 7.5
@@ -46,4 +46,4 @@ Annual License Etc, 0
 Flat License Etc, 0
 Tax Relief Per Year, 2.212
 
---- See relevant discussion regarding thermosiphoning: https://github.com/NREL/GEOPHIRES-X/issues/188?#issuecomment-2102937796
+# See relevant discussion regarding thermosiphoning: https://github.com/NREL/GEOPHIRES-X/issues/188?#issuecomment-2102937796

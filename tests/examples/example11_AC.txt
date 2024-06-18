@@ -1,7 +1,7 @@
+# Example 11: Absorption Chiller
 
-
-***Subsurface technical parameters***
-*************************************
+# ***Subsurface technical parameters***
+# *************************************
 Reservoir Model,3,						---m/A Single Fracture Thermal Drawdown
 Drawdown Parameter,.00002,					---[kg/s/m2]
 Reservoir Depth,2.1,						---[km]
@@ -29,8 +29,8 @@ Reservoir Density,3000,						---[kg/m3]
 Reservoir Thermal Conductivity,3,				---[W/m/K]
 Water Loss Fraction,0.02,						---[-]
 
-***Surface Technical Parameters***
-**********************************
+# ***Surface Technical Parameters***
+# **********************************
 End-Use Option,2, --- Direct use
 Power Plant Type, 5,				---[-] Absorption Chiller
 Circulation Pump Efficiency,.80,				---[-]
@@ -40,16 +40,16 @@ Surface Temperature,15,						---[deg.C]
 Ambient Temperature,15,						---[deg.C]
 Absorption Chiller COP, 0.72,            --- [-]
 
-***Financial Parameters***
-**************************
+# ***Financial Parameters***
+# **************************
 
 Plant Lifetime,30,						---[years]
 Economic Model,2,						---BICYCLE Levelized Cost Model
 Discount Rate, 0.05,			--- [-] Required if Standard LCOE/LCOH model is selected. See manual for details.
 Inflation Rate During Construction,0.05,				---[-]
 
-***Capital and O&M Cost Parameters***
-*************************************
+# ***Capital and O&M Cost Parameters***
+# *************************************
 
 Well Drilling and Completion Capital Cost Adjustment Factor,1, 	---[-] use built in correlations
 Well Drilling Cost Correlation,1,				---[-] use built in correlations
@@ -64,8 +64,8 @@ Electricity Rate,.07,							---[$/kWh]
 Absorption Chiller Capital Cost,3.74,               --- [$M]
 Absorption Chiller O&M Cost,0.065,               --- [$M/year]
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 
 Print Output to Console,1,					---Should be 1 (to print) or 0 (to not print)
 Time steps per year,10,						---[-]

@@ -595,23 +595,26 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
-    # param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
-    # ParamToModify.value = param_modified.value
-    # ParamToModify.CurrentUnits = param_modified.CurrentUnits
-    # ParamToModify.UnitType = param_modified.UnitType
 
     try:
         ParamToModify.value = _ureg.Quantity(ParamToModify.value, ParamToModify.CurrentUnits.value).to(ParamToModify.PreferredUnits.value).magnitude
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
     except AttributeError as ae:
-        # FIXME WIP
-        model.logger.warning(f'Error: {ae}')
-    #ParamToModify.UnitType = param_modified.UnitType
+        model.logger.warning(f'Failed to convert units with pint, falling back to legacy conversion heuristics ({ae})')
+
+        param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
+        ParamToModify.value = param_modified.value
+        ParamToModify.CurrentUnits = param_modified.CurrentUnits
+        ParamToModify.UnitType = param_modified.UnitType
 
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
 def parameter_with_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
+    """
+    TODO clean up and consolidate with pint-based conversion in ConvertUnitsBack
+    """
+
     param_with_units_converted_back = copy.deepcopy(param)
 
     # deal with the currency case
@@ -856,6 +859,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     """
     ConvertOutputUnits Given an output parameter, convert the value(s) from what they contain
     (as calculated by GEOPHIRES) to what the user specified as what they want for outputs.  Conversion happens inline.
+
+    TODO switch to pint-based conversion like in ConvertUnitsBack
+
     :param oparam: The parameter you want to be converted (value or list of values).  Because Parameters know the
         PreferredUnits and CurrentUnits, this routine knows what to do. It will convert the value(s) in the parameter
         to the new units, and then reset the CurrentUnits to the new units. This is done so that the user can see the units

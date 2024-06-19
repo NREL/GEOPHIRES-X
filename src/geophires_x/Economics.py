@@ -1818,6 +1818,10 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+        self.jobs_created = self.OutputParameterDict[self.jobs_created.Name] = OutputParameter(
+            Name="Estimated Jobs Created",
+            UnitType=Units.NONE,
+        )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -2889,6 +2893,10 @@ class Economics:
 
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
+
+        # https://github.com/NREL/GEOPHIRES-X/issues/232
+        self.jobs_created.value = round(
+            np.average(model.surfaceplant.ElectricityProduced.quantity().to('MW').magnitude * 2.13))
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

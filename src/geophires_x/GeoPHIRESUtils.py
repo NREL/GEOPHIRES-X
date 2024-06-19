@@ -520,8 +520,9 @@ def read_input_file(return_dict_1, logger=None, input_file_name=None):
         # successful read of data into list.  Now make a dictionary with all the parameter entries.
         # Index will be the unique name of the parameter.
         # The value will be a "ParameterEntry" structure, with name, value (optionally with units), optional comment
-        for line in content:
-            if line.startswith('#'):
+        for raw_line in content:
+            line = raw_line.strip()
+            if any([line.startswith(x) for x in ['#', '--', '*']]):
                 # skip any line that starts with "#" - # will be the comment parameter
                 continue
 

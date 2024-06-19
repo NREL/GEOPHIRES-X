@@ -4,11 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.28
- GEOPHIRES Build Date: 2024-03-05
- Simulation Date: 2024-05-14
- Simulation Time:  17:15
- Calculation Time:      3.638 sec
+ GEOPHIRES Version: 3.4.34
+ Simulation Date: 2024-06-18
+ Simulation Time:  15:56
+ Calculation Time:      1.619 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -33,6 +32,7 @@ Simulation Metadata
       Project VIR=PI=PIR:                                   -0.09
       Project MOIC:                                         -0.85
       Project Payback Period:                          N/A
+      Estimated Jobs Created:                                 2
 
                           ***ENGINEERING PARAMETERS***
 

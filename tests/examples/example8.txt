@@ -1,11 +1,7 @@
-GEOPHIRES v2.0 Input File
-Created on 2018-06-11
-Last modified on 2018-06-12
-Geothermal Direct-Use Heat using Multiple Parallel Fractures Model (EGS)
-
-Example 8 Description: This problem considers an EGS reservoir at 2.8 km depth for direct-use (Cornell conditions).
-Ramey's model is applied to simulate production wellbore heat losses. The heat
-is used in for direct-use heating with a reinjection temperature of 30deg.C.
+# Example 8: Geothermal Direct-Use Heat using Multiple Parallel Fractures Model (EGS)
+# This problem considers an EGS reservoir at 2.8 km depth for direct-use (Cornell conditions).
+# Ramey's model is applied to simulate production wellbore heat losses. The heat
+# is used in for direct-use heating with a reinjection temperature of 30deg.C.
 
 
 ***Subsurface technical parameters***

@@ -1,9 +1,7 @@
---- GEOPHIRES v3 Input File
---- Created on 2024-04-12
---- Production Tax Credit (PTC) Example
+# Example: Production Tax Credit (PTC)
 
-***Subsurface technical parameters***
-*************************************
+# ***Subsurface technical parameters***
+# *************************************
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
 Reservoir Depth,5,                     				---[km]
 Number of Segments,1,                  				---[-]
@@ -31,8 +29,8 @@ Reservoir Heat Capacity,1000,		  			---[J/kg/K]
 Reservoir Density,2700,			  			---[kg/m^3]
 Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
 
-***SURFACE TECHNICAL PARAMETERS***
-**********************************
+# ***SURFACE TECHNICAL PARAMETERS***
+# **********************************
 End-Use Option,1,			  			---[-] Electricity
 Power Plant Type,2,			  			---[-] Supercritical ORC
 Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
@@ -40,8 +38,8 @@ Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]
 Ambient Temperature,20,		 				---[deg.C]
 
-***CAPITAL AND O&M COST PARAMETERS***
-*************************************
+# ***CAPITAL AND O&M COST PARAMETERS***
+# *************************************
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
 Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
 Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
@@ -53,8 +51,8 @@ Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
 Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
 
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Plant Lifetime,30,			--- [years]
 Economic Model,3,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) or 3 (Bicycle model).
 Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
@@ -81,8 +79,8 @@ Production Tax Credit Cooling, 0.05,				--- [-] Production tax credit for electr
 Production Tax Credit Duration, 10,				--- [-] Production tax credit for duration in years
 Production Tax Credit Inflation Adjusted, True,				--- [-] Is the Production tax credit inflation adjusted (T/F)
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]

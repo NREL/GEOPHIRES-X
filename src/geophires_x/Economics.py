@@ -1509,6 +1509,15 @@ class Economics:
             ToolTipText="Production tax credit inflation adjusted"
         )
 
+        self.jobs_created_per_MW_electricity = self.ParameterDict[
+            self.jobs_created_per_MW_electricity.Name] = floatParameter(
+            "Estimated Jobs Created per MW of Electricity Produced",
+            DefaultValue=2.13,
+            UnitType=Units.NONE,
+            Required=False,
+            ToolTipText="Estimated jobs created per MW of electricity produced, per https://geothermal.org/resources/geothermal-basics"
+        )
+
         # local variable initialization
         self.CAPEX_cost_electricity_plant = 0.0
         self.CAPEX_cost_heat_plant = 0.0
@@ -1817,6 +1826,10 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
+        )
+        self.jobs_created = self.OutputParameterDict[self.jobs_created.Name] = OutputParameter(
+            Name="Estimated Jobs Created",
+            UnitType=Units.NONE,
         )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
@@ -2889,6 +2902,11 @@ class Economics:
 
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
+
+        # https://github.com/NREL/GEOPHIRES-X/issues/232
+        self.jobs_created.value = round(
+            np.average(model.surfaceplant.ElectricityProduced.quantity().to(
+                'MW').magnitude * self.jobs_created_per_MW_electricity.value))
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

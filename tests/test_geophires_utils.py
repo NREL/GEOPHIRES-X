@@ -1,6 +1,8 @@
 import sys
 import unittest
+from pathlib import Path
 
+from geophires_x import GeoPHIRESUtils
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
 from geophires_x.GeoPHIRESUtils import _interp_util_eff_func
@@ -12,6 +14,8 @@ from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
+from geophires_x.Parameter import ParameterEntry
+from tests.base_test_case import BaseTestCase
 
 
 class TestCelsiusToKelvin(unittest.TestCase):
@@ -522,6 +526,24 @@ class TestEnthalpyWater(unittest.TestCase):
         temperature = 100.001
         result = enthalpy_water_kJ_per_kg(temperature)
         self.assertAlmostEqual(result, 419.1703812859442, places=3)
+
+
+class GeophiresUtilsTestCase(BaseTestCase):
+    def test_input_comments(self):
+        d = {}
+        GeoPHIRESUtils.read_input_file(
+            d, input_file_name=Path(self._get_test_file_path('geophires_x_client_tests/input_comments.txt')).absolute()
+        )
+        self.assertIsNotNone(d)
+        self.assertDictEqual(
+            d,
+            {
+                'Gradient 1': ParameterEntry(Name='Gradient 1', sValue='69', Comment=''),
+                'Reservoir Depth': ParameterEntry(Name='Reservoir Depth', sValue='5', Comment='-- comment here'),
+                'End-Use Option': ParameterEntry(Name='End-Use Option', sValue='1', Comment='# another comment'),
+                'Power Plant Type': ParameterEntry(Name='Power Plant Type', sValue='4', Comment='comments galore'),
+            },
+        )
 
 
 if __name__ == '__main__':

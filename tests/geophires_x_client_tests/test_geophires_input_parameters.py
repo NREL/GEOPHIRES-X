@@ -3,6 +3,7 @@ import uuid
 from pathlib import Path
 
 from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresXClient
 from tests.base_test_case import BaseTestCase
 
 
@@ -44,3 +45,9 @@ class GeophiresInputParametersTestCase(BaseTestCase):
 
         with open(input_params.as_file_path(), encoding='UTF-8') as f:
             self.assertEqual('Foo, Bar\nBaz, Qux\nBaz, Quux\nQuuz, 2\n', f.read())
+
+    def test_input_file_comments(self):
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(from_file_path=self._get_test_file_path('input_comments.txt'))
+        )
+        self.assertIsNotNone(result)

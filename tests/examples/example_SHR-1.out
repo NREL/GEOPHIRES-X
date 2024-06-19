@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.34
- Simulation Date: 2024-06-18
- Simulation Time:  15:54
- Calculation Time:      0.591 sec
+ Simulation Date: 2024-06-19
+ Simulation Time:  07:44
+ Calculation Time:      0.587 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -18,7 +18,7 @@ Simulation Metadata
       Number of injection wells:                              2
       Flowrate per production well:                          55.0 kg/sec
       Well depth (or total length, if not vertical):          7.5 kilometer
-      Geothermal gradient:                                    0.0500 degC/m
+      Geothermal gradient:                                     50 degC/km
 
 
                            ***ECONOMIC PARAMETERS***
@@ -56,7 +56,7 @@ Simulation Metadata
 
       Maximum reservoir temperature:                        500.0 degC
       Number of segments:                                     1
-      Geothermal gradient:                                    0.0500 degC/m
+      Geothermal gradient:                                        50 degC/km
 
 
                            ***RESERVOIR PARAMETERS***

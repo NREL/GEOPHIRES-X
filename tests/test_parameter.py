@@ -31,12 +31,12 @@ class ParameterTestCase(BaseTestCase):
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.INCHES,
             CurrentUnits=LengthUnit.METERS,
-            UnitsMatch=False,
             value=0.17779999999999999,
             DefaultValue=8.0,
             Min=1.0,
             Max=30.0,
         )
+        self.assertFalse(param_to_modify.UnitsMatch)
 
         result = parameter_with_units_converted_back_to_preferred_units(param_to_modify, model)
 

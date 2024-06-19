@@ -848,19 +848,20 @@ class Outputs:
                                        model.reserv.depth.CurrentUnits.value))
 
         if model.reserv.numseg.value == 1:
-            summary.append(OutputTableItem('Geothermal gradient', '{0:10.4f}'.format(model.reserv.gradient.value[0]),
+            summary.append(OutputTableItem('Geothermal gradient', '{0:10.4g}'.format(model.reserv.gradient.value[0]),
                                            model.reserv.gradient.CurrentUnits.value))
         else:
             for i in range(1, model.reserv.numseg.value):
                 summary.append(OutputTableItem(f'Segment {str(i)} Geothermal gradient',
-                                               '{0:10.4f}'.format(model.reserv.gradient.value[i - 1]),
+                                               '{0:10.4g}'.format(model.reserv.gradient.value[i - 1]),
                                                model.reserv.gradient.CurrentUnits.value))
                 summary.append(OutputTableItem(f'Segment {str(i)} Thickness',
                                                '{0:10.0f}'.format(model.reserv.layerthickness.value[i - 1]),
                                                model.reserv.layerthickness.CurrentUnits.value))
             summary.append(OutputTableItem(f'Segment {str(i + 1)} Geothermal gradient',
-                                           '{0:10.4f}'.format(model.reserv.gradient.value[i]),
+                                           '{0:10.4g}'.format(model.reserv.gradient.value[i]),
                                            model.reserv.gradient.CurrentUnits.value))
+
         if model.economics.DoCarbonCalculations.value:
             summary.append(OutputTableItem('Total Avoided Carbon Emissions', '{0:10.2f}'.format(
                 model.economics.CarbonThatWouldHaveBeenProducedTotal.value * 0.000453592), 'metric tonnes'))
@@ -947,18 +948,18 @@ class Outputs:
                                 model.reserv.Tmax.CurrentUnits.value))
             resource_characteristics.append(OutputTableItem('Number of segments', '{0:10.0f}'.format(model.reserv.numseg.value)))
             if model.reserv.numseg.value == 1:
-                resource_characteristics.append(OutputTableItem('Geothermal gradient', '{0:10.4f}'.format(model.reserv.gradient.value[0]),
+                resource_characteristics.append(OutputTableItem('Geothermal gradient', '{0:10.4g}'.format(model.reserv.gradient.value[0]),
                                     model.reserv.gradient.CurrentUnits.value))
             else:
                 for i in range(1, model.reserv.numseg.value):
                     resource_characteristics.append(OutputTableItem(f'Segment {str(i)} Geothermal gradient',
-                                                                    '{0:10.4f}'.format(
+                                                                    '{0:10.4g}'.format(
                                                                         model.reserv.gradient.value[i - 1]),
                                                                     model.reserv.gradient.CurrentUnits.value))
                     resource_characteristics.append(OutputTableItem(f'Segment {str(i)} Thickness', '{0:10.0f}'.format(
                         model.reserv.layerthickness.value[i - 1]), model.reserv.layerthickness.CurrentUnits.value))
                 resource_characteristics.append(OutputTableItem(f'Segment {str(i + 1)} Geothermal gradient',
-                                                                '{0:10.4f}'.format(model.reserv.gradient.value[i]),
+                                                                '{0:10.4g}'.format(model.reserv.gradient.value[i]),
                                                                 model.reserv.gradient.CurrentUnits.value))
         if model.wellbores.IsAGS.value:
             reservoir_parameters.append(OutputTableItem('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.'))
@@ -1597,12 +1598,12 @@ class Outputs:
                 f.write(f'      Well depth (or total length, if not vertical):   {model.reserv.depth.value:10.1f} ' +model.reserv.depth.CurrentUnits.value + NL)
 
                 if model.reserv.numseg.value == 1:
-                    f.write(f'      Geothermal gradient:                                {model.reserv.gradient.value[0]:10.4f} ' + model.reserv.gradient.CurrentUnits.value + NL)
+                    f.write(f'      Geothermal gradient:                             {model.reserv.gradient.value[0]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 else:
                     for i in range(1, model.reserv.numseg.value):
-                        f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4f} ' + model.reserv.gradient.CurrentUnits.value +NL)
+                        f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4g} ' + model.reserv.gradient.CurrentUnits.value +NL)
                         f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} ' + model.reserv.layerthickness.CurrentUnits.value + NL)
-                    f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4f} ' + model.reserv.gradient.CurrentUnits.value + NL)
+                    f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 if model.economics.DoCarbonCalculations.value:
                     f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} metric tonnes' + NL)
 
@@ -1671,12 +1672,12 @@ class Outputs:
                 f.write(f'      Maximum reservoir temperature:                   {model.reserv.Tmax.value:10.1f} ' + model.reserv.Tmax.CurrentUnits.value + NL)
                 f.write(f'      Number of segments:                            {model.reserv.numseg.value:10.0f} ' + NL)
                 if model.reserv.numseg.value == 1:
-                    f.write(f'      Geothermal gradient:                                {model.reserv.gradient.value[0]:10.4f} ' + model.reserv.gradient.CurrentUnits.value + NL)
+                    f.write(f'      Geothermal gradient:                                {model.reserv.gradient.value[0]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 else:
                     for i in range(1, model.reserv.numseg.value):
-                        f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4f} ' + model.reserv.gradient.CurrentUnits.value +NL)
+                        f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4g} ' + model.reserv.gradient.CurrentUnits.value +NL)
                         f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} ' + model.reserv.layerthickness.CurrentUnits.value + NL)
-                    f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4f} ' + model.reserv.gradient.CurrentUnits.value + NL)
+                    f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
 
                 f.write(NL)
                 f.write(NL)

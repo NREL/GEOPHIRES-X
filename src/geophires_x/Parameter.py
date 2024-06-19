@@ -107,13 +107,22 @@ class Parameter(HasQuantity):
     InputComment: str = ""
     ToolTipText: str = Name
     UnitType: IntEnum = Units.NONE
-    PreferredUnits: Enum = Units.NONE
+    PreferredUnits: Enum = None
 
     # set to PreferredUnits assuming that the current units are the preferred units
     # - they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    UnitsMatch: bool = True
+    #UnitsMatch: bool = True
+
+    @property
+    def UnitsMatch(self) -> bool:
+        return self.PreferredUnits == self.CurrentUnits
+
     parameter_category: str = None
+
+    def __post_init__(self):
+        if self.PreferredUnits is None:
+            self.PreferredUnits = self.CurrentUnits
 
 
 @dataclass
@@ -176,6 +185,7 @@ class floatParameter(Parameter):
     def __post_init__(self):
         if self.value is None:
             self.value = self.DefaultValue
+        super().__post_init__()
 
     value: float = None
 
@@ -271,7 +281,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     else:
         # The value came in without any units, so it must be using the default PreferredUnits
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
-        ParamToModify.UnitsMatch = True
+        # ParamToModify.UnitsMatch = True
 
     def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
         return (
@@ -414,7 +424,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         # user has provided a currency that is the currency expected, so just strip off the currency
         if prefType == currType:
             strUnit = str(val)
-            ParamToModify.UnitsMatch = True
+            # ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -470,7 +480,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
             val = float(val) * Factor
             strUnit = str(val)
-            ParamToModify.UnitsMatch = True
+            # ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -494,7 +504,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
         New_val = (conv_rate * float(val)) * Factor
         strUnit = str(New_val)
-        ParamToModify.UnitsMatch = False
+        # ParamToModify.UnitsMatch = False
         ParamToModify.CurrentUnits = parts[1]
 
         if len(prefSuff) > 0:
@@ -562,7 +572,7 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             if new_val_units_lookup is not None and new_val_units_lookup[0] is not None:
                 ParamToModify.CurrentUnits = new_val_units_lookup[0]
 
-            ParamToModify.UnitsMatch = False
+            # ParamToModify.UnitsMatch = False
         else:
             # if we come here, we must have a unit declared, but the unit must be the same as the preferred unit,
             # so we need to just get rid of the extra text after the space
@@ -585,10 +595,19 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
-    param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
-    ParamToModify.value = param_modified.value
-    ParamToModify.CurrentUnits = param_modified.CurrentUnits
-    ParamToModify.UnitType = param_modified.UnitsMatch
+    # param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
+    # ParamToModify.value = param_modified.value
+    # ParamToModify.CurrentUnits = param_modified.CurrentUnits
+    # ParamToModify.UnitType = param_modified.UnitType
+
+    try:
+        ParamToModify.value = _ureg.Quantity(ParamToModify.value, ParamToModify.CurrentUnits.value).to(ParamToModify.PreferredUnits.value).magnitude
+        ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+    except AttributeError as ae:
+        # FIXME WIP
+        model.logger.warning(f'Error: {ae}')
+    #ParamToModify.UnitType = param_modified.UnitType
+
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
@@ -651,7 +670,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
             # so just do the simple factor conversion
             param_with_units_converted_back.value = param.value * Factor
-            param_with_units_converted_back.UnitsMatch = True
+            # param_with_units_converted_back.UnitsMatch = True
             param_with_units_converted_back.CurrentUnits = currType
             return param_with_units_converted_back
 
@@ -677,7 +696,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             raise RuntimeError(msg, ex)
 
         param_with_units_converted_back.value = (conv_rate * float(param.value)) / prefFactor
-        param_with_units_converted_back.UnitsMatch = False
+        # param_with_units_converted_back.UnitsMatch = False
         return param_with_units_converted_back
 
     else:
@@ -703,7 +722,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             if isinstance(param.CurrentUnits, pint.Quantity):
                 currQ = param.CurrentUnits
             else:
-                currQ = _ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
+                currQ = _ureg.Quantity(val, currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (
@@ -1061,5 +1080,5 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
 
         oparam.value = Factor * conv_rate * float(oparam.value)
         oparam.CurrentUnits = DefUnit
-        oparam.UnitsMatch = False
+        # oparam.UnitsMatch = False
         model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')

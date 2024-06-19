@@ -668,7 +668,7 @@ class HIP_RA:
                 self.OutputParameterDict[key.replace('Units:', '')].CurrentUnits = LookupUnits(
                     self.InputParameters[key].sValue
                 )[0]
-                self.OutputParameterDict[key.replace('Units:', '')].UnitsMatch = False
+                # self.OutputParameterDict[key.replace('Units:', '')].UnitsMatch = False
 
         self.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

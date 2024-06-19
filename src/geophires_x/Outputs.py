@@ -745,7 +745,8 @@ class Outputs:
         for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
             for key in obj.ParameterDict:
                 param = obj.ParameterDict[key]
-                if not param.UnitsMatch: ConvertUnitsBack(param, model)
+                if not param.UnitsMatch:
+                    ConvertUnitsBack(param, model)
 
         # now we need to loop through all the output parameters to update their units to
         # whatever units the user has specified.

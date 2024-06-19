@@ -1264,11 +1264,11 @@ class WellBores:
         if self.injwelldiam.value > 2.0:
             self.injwelldiam.value = self.injwelldiam.value * 0.0254
             self.injwelldiam.CurrentUnits = LengthUnit.METERS
-            self.injwelldiam.UnitsMatch = False
+            # self.injwelldiam.UnitsMatch = False
         if self.prodwelldiam.value > 2.0:
             self.prodwelldiam.value = self.prodwelldiam.value * 0.0254
             self.prodwelldiam.CurrentUnits = LengthUnit.METERS
-            self.prodwelldiam.UnitsMatch = False
+            # self.prodwelldiam.UnitsMatch = False
 
         # calculate wellbore temperature drop
         self.ProdTempDrop.value = self.tempdropprod.value  # if not Ramey, hard code a user-supplied temperature drop.

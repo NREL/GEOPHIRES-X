@@ -1,9 +1,4 @@
-GEOPHIRES v3.0 Input File
-Created on 2023-11-11
-Last modified on 2023-11-11
-Unit test for multiple geothermal gradients
-
-Description: This problem considers an EGS reservoir at 4km depth with multiple geothermal gradients.
+# Example: Multiple Gradients: This problem considers an EGS reservoir at 4km depth with multiple geothermal gradients.
 
 
 ***Subsurface technical parameters***

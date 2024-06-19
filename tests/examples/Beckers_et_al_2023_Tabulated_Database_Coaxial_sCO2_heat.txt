@@ -1,10 +1,8 @@
-#GEOPHIRES v3.0 Input File
-#Last modified on 2024-01-29
-#Example Description: Example 1 from "Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based Technical and Economic Modeling of Heat Production and Electricity Generation"
-#Koenraad Beckers Yaroslav Vasyliv Gabriela A. Bran-Anleu Mario Martinez Chad Augustine and Mark White
-#Presented at the 48th Stanford Geothermal Workshop Stanford California February 6-8 2023
-#This configuration is water filled U-loop with 1 lateral for direct-use heat
-#----------------------------------------------------------------------------------------
+# Example 1 from "Tabulated Database of Closed-Loop Geothermal Systems Performance for Cloud-Based Technical and
+#   Economic Modeling of Heat Production and Electricity Generation"
+# Koenraad Beckers Yaroslav Vasyliv Gabriela A. Bran-Anleu Mario Martinez Chad Augustine and Mark White
+# Presented at the 48th Stanford Geothermal Workshop Stanford California February 6-8 2023
+# This configuration is water filled U-loop with 1 lateral for direct-use heat.
 
 Is AGS, True
 Closed-loop Configuration, 1
@@ -30,8 +28,8 @@ Circulation Pump Efficiency, 0.8, -----[-]
 #same as default Capital Cost for Surface Plant for Direct-use System, 100.00,    ----$/kWth
 #same as default Dead-state Pressure, 1e5,     ---- bar
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Economic Model,4,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) 3 (Bicycle model) 4 CLGS.
 Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
 Inflated Bond Interest Rate,0.07,	--- [-] Required if Bicycle model is selected. See manual for details.
@@ -41,5 +39,5 @@ Combined Income Tax Rate,0.392,		--- [-] Required if Bicycle model is selected. 
 Gross Revenue Tax Rate,0,		--- [-] Required if Bicycle model is selected. See manual for details.
 Reservoir Stimulation Capital Cost,0,				--- [M$/injection well] Reservoir stimulation capital cost per injection well
 
-*** Simulation Parameters ***
+# *** Simulation Parameters ***
 Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)

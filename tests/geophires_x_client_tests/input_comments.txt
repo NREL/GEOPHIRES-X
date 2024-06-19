@@ -1,0 +1,20 @@
+# comment
+# foo, bar
+# foo, bar, baz
+# foo, bar, baz, qux corge
+
+Gradient 1, 69
+Reservoir Depth, 5, -- comment here
+End-Use Option, 1, # another comment
+Power Plant Type, 4, comments galore
+
+# another, comment, with, commas, down here
+ # comment with space
+ # comment with space, and comma
+ # comment with space, and commas, plural?!
+
+-- another comment style
+--- three is not the charm, hopefully
+
+**** A legacy-but-still-supported header comment style, indeed ****
+*******************************************************************

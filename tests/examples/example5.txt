@@ -1,18 +1,12 @@
-----------------------------------------------------------------------------------------
-GEOPHIRES v2.0 Input File
-Geothermal Direct-Use Example Problem using User-Provided Temperature Data (Example 5)
-Created by NREL on 3/26/2018-03-26
-Last modified on 2018-06-12
+# Example 5: Geothermal Direct-Use Example Problem using User-Provided Temperature Data
+# This example problem considers an EGS reservoir at 3 km depth with
+# bottom-hole temperature of 150deg.C. The reservoir output temperature is imported from
+# the text file "ReservoirOutput.txt". Ramey's model is applied to simulate production
+# wellbore heat losses. The heat is used in a direct-use heat application with reinjection
+# temperature of 80deg.C.
 
-Example 5 Description: This example problem considers an EGS reservoir at 3 km depth with
-bottom-hole temperature of 150deg.C. The reservoir output temperature is imported from
-the text file "ReservoirOutput.txt". Ramey's model is applied to simulate production
-wellbore heat losses. The heat is used in a direct-use heat application with reinjection
-temperature of 80deg.C.
-----------------------------------------------------------------------------------------
-
-*** Subsurface technical parameters ***
-****************************************
+# *** Subsurface technical parameters ***
+# ****************************************
 Reservoir Model,5,			--- User provided reservoir output temperature data
 Reservoir Output File Name,Examples/ReservoirOutput.txt,	--- File name with produced temperature
 Reservoir Depth,3, 			--- [km]
@@ -36,8 +30,8 @@ Reservoir Density,2700,			--- [kg/m3]
 Reservoir Thermal Conductivity,3,	--- [W/m/K]
 
 
-*** Surface technical parameters ***
-************************************
+# *** Surface technical parameters ***
+# ************************************
 End-Use Option,2,			--- [-] Direct-Use
 Circulation Pump Efficiency,0.8,	--- [-]
 Utilization Factor,0.9,			--- [-]
@@ -45,8 +39,8 @@ Surface Temperature,15,			--- [deg.C]
 Ambient Temperature,15,			--- [deg.C]
 End-Use Efficiency Factor,0.9,		--- [-]
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Plant Lifetime,30,			--- [years]
 Economic Model,3,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) or 3 (Bicycle model).
 Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
@@ -70,6 +64,6 @@ Inflation Rate During Construction,0,	--- [-]
 Electricity Rate,0.07,			--- [$/kWh] for pumping power
 
 
-*** Simulation Parameters ***
+# *** Simulation Parameters ***
 Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
 Time steps per year,4,			--- [1/year]

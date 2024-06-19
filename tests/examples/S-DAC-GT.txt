@@ -1,11 +1,9 @@
-GEOPHIRES v3.0 Input File
-Geothermal Combined Heat and Power Problem using a Thermal Drawdown Reservoir Model and BICYCLE Economic Model and Solid Sorbent Direct Air Capture powered by geothermal
-
-Based on Example 3 description: This example problem considers an EGS reservoir at 3.1km depth.
-The heat is used in a combined heat and power topping cycle model with double flash as
-topping cycle and electricity considered as the main product.
-
-But only lists those parameters that are different than their default values
+# Geothermal Combined Heat and Power Problem using a Thermal Drawdown Reservoir Model and BICYCLE Economic Model and
+# Solid Sorbent Direct Air Capture powered by geothermal
+# Based on Example 3 description: This example problem considers an EGS reservoir at 3.1km depth.
+# The heat is used in a combined heat and power topping cycle model with double flash as
+# topping cycle and electricity considered as the main product.
+# But only lists those parameters that are different than their default values
 
 Do S-DAC-GT Calculations, True
 

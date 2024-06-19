@@ -1,12 +1,7 @@
-----------------------------------------------------------------------------------------
-GEOPHIRES v3.0 Input File
-Example 13
-This example file tests redrilling due to excessive drawdown and use of cogen bottoming cycle as end-use
-Created by Koenraad Beckers on 2023-11-20
-----------------------------------------------------------------------------------------
+# Example 13: This example file tests redrilling due to excessive drawdown and use of cogen bottoming cycle as end-use
 
-*** Subsurface technical parameters ***
-****************************************
+# *** Subsurface technical parameters ***
+# ****************************************
 Reservoir Model,4,			--- Percentage thermal drawdown model
 Drawdown Parameter,0.01, 		--- In [1/year].
 Reservoir Depth,4, 			--- [km]
@@ -33,8 +28,8 @@ Reservoir Density,2700,			--- [kg/m3]
 Reservoir Thermal Conductivity,3,	--- [W/m/K]
 
 
-*** Surface technical parameters ***
-************************************
+# *** Surface technical parameters ***
+# ************************************
 End-Use Option,42,			--- [-] Co-gen bottoming cycle with heat the main product
 Circulation Pump Efficiency,0.8,	--- [-]
 Utilization Factor,0.8,			--- [-]
@@ -53,8 +48,8 @@ District Heating Piping Cost Rate,1200,					--- [$/m] used for calculating surfa
 District Heating Road Length,3, 				---[km] supersedes model option 2 if any value is entered
 
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Plant Lifetime,30,						--- [years]
 Economic Model,2,						--- Should be 1 (FCR model), 2 (Standard LCOE/LCOH model), or 3 (Bicycle model).
 Discount Rate,0.05,
@@ -70,6 +65,6 @@ Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation 
 Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
 
 
-*** Simulation Parameters ***
+# *** Simulation Parameters ***
 Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
 Time steps per year,3,			--- [1/year]

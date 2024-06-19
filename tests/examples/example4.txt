@@ -1,17 +1,10 @@
-----------------------------------------------------------------------------------------
-GEOPHIRES v2.0 Input File
-Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example 4)
-Created by NREL on 2018-03-26
-Last modified on 2018-06-12
+# Example 4: Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model
+# This example problem considers a simple hydrothermal reservoir
+# at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown
+# is assumed linear at 0.5%/year. The heat is converted to electricity with a subcritical ORC.
 
-Example 4 Description: This example problem considers a simple hydrothermal reservoir
-at 2 km depth with an initial production temperature of 145deg.C. The thermal drawdown
-is assumed linear at 0.5%/year. The heat is converted to electricity with a subcritical
-ORC.
-----------------------------------------------------------------------------------------
-
-*** Subsurface technical parameters ***
-****************************************
+# *** Subsurface technical parameters ***
+# ****************************************
 Reservoir Model,4,			--- Percentage thermal drawdown model
 Drawdown Parameter,0.005, 		--- In [1/year].
 Reservoir Depth,2, 			--- [km]
@@ -38,8 +31,8 @@ Reservoir Density,2700,			--- [kg/m3]
 Reservoir Thermal Conductivity,3,	--- [W/m/K]
 
 
-*** Surface technical parameters ***
-************************************
+# *** Surface technical parameters ***
+# ************************************
 End-Use Option,1,			--- [-] Electricity
 Power Plant Type,1,			--- [1] Subcritical ORC
 Circulation Pump Efficiency,0.8,	--- [-]
@@ -47,8 +40,8 @@ Utilization Factor,0.9,			--- [-]
 Surface Temperature,15,			--- [deg.C]
 Ambient Temperature,15,			--- [deg.C]
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Plant Lifetime,30,			--- [years]
 Economic Model,3,			--- Should be 1 (FCR model) 2 (Standard LCOE/LCOH model) or 3 (Bicycle model).
 Fraction of Investment in Bonds,0.65,	--- [-] Required if Bicycle model is selected. See manual for details.
@@ -71,6 +64,6 @@ Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation 
 Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
 
 
-*** Simulation Parameters ***
+# *** Simulation Parameters ***
 Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
 Time steps per year,4,			--- [1/year]

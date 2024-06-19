@@ -1,17 +1,17 @@
---- Case Study: Fervo Energy Whitepaper
---- Norbeck J.H. and Latimer T.M. 2023.
----   "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
----   https://doi.org/10.31223/X52X0B
----  Drilling Price paper:
----     "Review Of Drilling Performance In A Horizontal EGS Development"
----     Kareem El-Sadi Brittany Gierke Elliot Howard Christian Gradl
----     https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Elsadi.pdf
---- Looking to make:
----         gross power production of 2 to 3.5 MWe
----         production temperature of 336 degF (169 degC)
----         pumping power 500 to 1000 kW
+# Case Study: Fervo Energy Whitepaper
+#  Norbeck J.H. and Latimer T.M. 2023.
+#    "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
+#    https://doi.org/10.31223/X52X0B
+#   Drilling Price paper:
+#      "Review Of Drilling Performance In A Horizontal EGS Development"
+#      Kareem El-Sadi Brittany Gierke Elliot Howard Christian Gradl
+#      https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Elsadi.pdf
+#  Looking to make:
+#          gross power production of 2 to 3.5 MWe
+#          production temperature of 336 degF (169 degC)
+#          pumping power 500 to 1000 kW
 
-***Reservoir Parameters***
+# ***Reservoir Parameters***
 Reservoir Model, 1
 Reservoir Volume Option,1,					---Should be 1 2 3 or 4. See manual for details.
 Reservoir Density, 2800, per the paper phyllite + quartzite + diorite + granodiorite,
@@ -27,7 +27,7 @@ Number of Segments,1
 Gradient 1, 76.74, per the paper
 Plant Outlet Pressure, 1500 psi, per the paper
 
-*** Wellbore Parameters***
+# *** Wellbore Parameters***
 Number of Injection Wells, 1,					---[-]
 Number of Production Wells,1,					---[-]
 Well Geometry Configuration, 4,       ----L
@@ -49,7 +49,7 @@ Utilization Factor,.9,						---[-]Water Loss Fraction, .02x
 Water Loss Fraction,0.02,						---[-]
 Maximum Drawdown,1,						---[-] no redrilling considered
 
-***Surfaceplant Parameters***
+# ***Surfaceplant Parameters***
 Ambient Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
 Surface Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
 End-Use Option,1,						---electricity as the main product
@@ -58,7 +58,7 @@ Power Plant Type,2,						---supercritical binary cycle
 End-Use Efficiency Factor,.9,					---[-]
 Circulation Pump Efficiency, 0.80, per the paper
 
-*** Economic Parameters***
+# *** Economic Parameters***
 Economic Model,3,						---BICYCLE Levelized Cost Model
 Starting Electricity Sale Price,0.15
 Ending Electricity Sale Price,1.00, essentially no limit s the rate can rise continuously with inflation
@@ -74,6 +74,6 @@ Investment Tax Credit Rate,0,					---[-] Required for BICYCLE model
 Inflation Rate During Construction, 0.05,				---[-]
 Property Tax Rate,0,						---[-] Required for BICYCLE model
 
-***Other Parameters***
+# ***Other Parameters***
 Print Output to Console, 1,					---Should be 1 (to print) or 0 (to not print)
 Time steps per year,10,						---[-]

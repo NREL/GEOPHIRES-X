@@ -1,14 +1,10 @@
-GEOPHIRES v2.0 Input File
-Created on 2018-06-11
-Last modified on 2018-06-11
-Geothermal Direct-Use Example Problem using a Linear Heat Sweep Model.
+# Example 2: Geothermal Direct-Use Example Problem using a Linear Heat Sweep Model.
+# This problem considers an EGS reservoir at 3km depth.
+# Ramey's model is applied to simulate production wellbore heat losses. The heat
+# is used in direct-use heat application with reinjection temperature of 70deg.C
 
-Example 2 Description: This problem considers an EGS reservoir at 3km depth.
-Ramey's model is applied to simulate production wellbore heat losses. The heat
-is used in direct-use heat application with reinjection temperature of 70deg.C
-
-***Subsurface Technical Parameters***
-*************************************
+# ***Subsurface Technical Parameters***
+# *************************************
 
 Reservoir Model,2,						---Linear Heat Sweep Model
 Reservoir Depth,3,						---[km]
@@ -33,24 +29,24 @@ Reservoir Density,3000,						---[kg/m3]
 Reservoir Thermal Conductivity,3.2,				---[W/m/K]
 Reservoir Porosity,.1,						---[-]
 
-***Surface Technical Parameters***
-**********************************
+# ***Surface Technical Parameters***
+# **********************************
 End-Use Option,2,						---Direct Use Heat
 Circulation Pump Efficiency,.8,					---[-]
 Utilization Factor,.9,						---[-]
 End-Use Efficiency Factor,.9,					---[-]
 Surface Temperature,15,						---[deg.C]
 
-***Financial Parameters***
-**************************
+# ***Financial Parameters***
+# **************************
 
 Plant Lifetime,25,						---[years]
 Economic Model,2,						---Standard Levelized Cost Model
 Discount Rate,.05,						---[-]
 Inflation Rate During Construction,0,				---[-]
 
-***Capital and O&M Cost Parameters***
-*************************************
+# ***Capital and O&M Cost Parameters***
+# *************************************
 
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[M$/well] Use built-in correlations
 Well Drilling Cost Correlation,1,				---[-]
@@ -63,7 +59,7 @@ Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
 Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
 Electricity Rate,.05,						---[$/kWh]
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 Print Output to Console,1,					---should be either 0 (do not show) or 1 (show)
 Time steps per year,3,						---[-]

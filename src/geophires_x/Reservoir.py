@@ -585,7 +585,6 @@ class Reservoir:
                         # FIXME TODO only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
-                        # ParameterToModify.UnitsMatch = False
 
                     elif ParameterToModify.Name == "Reservoir Volume Option":
                         if ParameterReadIn.sValue == '1':

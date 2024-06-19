@@ -112,7 +112,6 @@ class Parameter(HasQuantity):
     # set to PreferredUnits assuming that the current units are the preferred units
     # - they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    #UnitsMatch: bool = True
 
     @property
     def UnitsMatch(self) -> bool:
@@ -281,7 +280,6 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     else:
         # The value came in without any units, so it must be using the default PreferredUnits
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
-        # ParamToModify.UnitsMatch = True
 
     def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
         return (
@@ -424,7 +422,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         # user has provided a currency that is the currency expected, so just strip off the currency
         if prefType == currType:
             strUnit = str(val)
-            # ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -480,7 +477,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
             val = float(val) * Factor
             strUnit = str(val)
-            # ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -504,7 +500,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
         New_val = (conv_rate * float(val)) * Factor
         strUnit = str(New_val)
-        # ParamToModify.UnitsMatch = False
         ParamToModify.CurrentUnits = parts[1]
 
         if len(prefSuff) > 0:
@@ -572,7 +567,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             if new_val_units_lookup is not None and new_val_units_lookup[0] is not None:
                 ParamToModify.CurrentUnits = new_val_units_lookup[0]
 
-            # ParamToModify.UnitsMatch = False
         else:
             # if we come here, we must have a unit declared, but the unit must be the same as the preferred unit,
             # so we need to just get rid of the extra text after the space
@@ -673,7 +667,6 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
             # so just do the simple factor conversion
             param_with_units_converted_back.value = param.value * Factor
-            # param_with_units_converted_back.UnitsMatch = True
             param_with_units_converted_back.CurrentUnits = currType
             return param_with_units_converted_back
 
@@ -699,7 +692,6 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             raise RuntimeError(msg, ex)
 
         param_with_units_converted_back.value = (conv_rate * float(param.value)) / prefFactor
-        # param_with_units_converted_back.UnitsMatch = False
         return param_with_units_converted_back
 
     else:
@@ -1029,7 +1021,6 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             # so just do the simple factor conversion and exit
             oparam.value = oparam.value * Factor
             oparam.CurrentUnits = DefUnit
-            # oparam.UnitsMatch = False
             return
 
         # start the currency conversion process
@@ -1086,5 +1077,4 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
 
         oparam.value = Factor * conv_rate * float(oparam.value)
         oparam.CurrentUnits = DefUnit
-        # oparam.UnitsMatch = False
         model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')

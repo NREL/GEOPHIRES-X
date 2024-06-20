@@ -4,11 +4,13 @@ import unittest
 from pathlib import Path
 
 from geophires_x.Model import Model
+from geophires_x.Parameter import ConvertUnitsBack
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import listParameter
-from geophires_x.Parameter import parameter_with_units_converted_back_to_preferred_units
+from geophires_x.Units import CostPerMassUnit
+from geophires_x.Units import CurrencyUnit
 from geophires_x.Units import EnergyCostUnit
 from geophires_x.Units import LengthUnit
 from geophires_x.Units import PressureUnit
@@ -38,10 +40,10 @@ class ParameterTestCase(BaseTestCase):
         )
         self.assertFalse(param_to_modify.UnitsMatch)
 
-        result = parameter_with_units_converted_back_to_preferred_units(param_to_modify, model)
+        ConvertUnitsBack(param_to_modify, model)
 
-        self.assertEqual(result.value, 7.0)
-        self.assertEqual(result.CurrentUnits, LengthUnit.INCHES)
+        self.assertEqual(param_to_modify.value, 7.0)
+        self.assertEqual(param_to_modify.CurrentUnits, LengthUnit.INCHES)
 
     def test_set_default_value(self):
         without_val = floatParameter(
@@ -148,6 +150,35 @@ class ParameterTestCase(BaseTestCase):
         self.assertIsNotNone(result)
         self.assertEqual(5.5, result.value[0])
         self.assertEqual(5.5, result.value[-1])
+
+    def test_convert_units_back_currency(self):
+        model = self._new_model()
+
+        param = floatParameter(
+            'CAPEX',
+            DefaultValue=1379.0,
+            UnitType=Units.COSTPERMASS,
+            PreferredUnits=CostPerMassUnit.DOLLARSPERMT,
+            CurrentUnits=CostPerMassUnit.CENTSSPERMT,
+        )
+
+        ConvertUnitsBack(param, model)
+        self.assertEqual(param.CurrentUnits, CostPerMassUnit.DOLLARSPERMT)
+        self.assertAlmostEqual(param.value, 13.79, places=2)
+
+        with self.assertRaises(RuntimeError) as re:
+            # TODO update once https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled is
+            #   addressed
+            param2 = floatParameter(
+                'OPEX',
+                DefaultValue=240,
+                UnitType=Units.CURRENCY,
+                PreferredUnits=CurrencyUnit.DOLLARS,
+                CurrentUnits=CurrencyUnit.EUR,
+            )
+            ConvertUnitsBack(param2, model)
+
+            self.assertIn('GEOPHIRES failed to convert your units for OPEX', str(re))
 
     def _new_model(self) -> Model:
         stash_cwd = Path.cwd()

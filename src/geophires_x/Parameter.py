@@ -594,17 +594,34 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
         ParamToModify.value = _ureg.Quantity(ParamToModify.value, ParamToModify.CurrentUnits.value).to(ParamToModify.PreferredUnits.value).magnitude
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
     except AttributeError as ae:
-        model.logger.warning(f'Failed to convert units with pint, falling back to legacy conversion heuristics ({ae})')
+        # TODO refactor to check for/convert currency instead of relying on try/except once currency conversion is
+        #  re-enabled - https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled
+        model.logger.warning(f'Failed to convert units with pint, attempting currency conversion ({ae})')
 
-        param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
-        ParamToModify.value = param_modified.value
-        ParamToModify.CurrentUnits = param_modified.CurrentUnits
-        ParamToModify.UnitType = param_modified.UnitType
+        try:
+            param_modified: Parameter = parameter_with_currency_units_converted_back_to_preferred_units(ParamToModify,
+                                                                                                        model)
+            ParamToModify.value = param_modified.value
+            ParamToModify.CurrentUnits = param_modified.CurrentUnits
+            ParamToModify.UnitType = param_modified.UnitType
+        except AttributeError as cce:
+            model.logger.error(f'Currency conversion failed ({cce})')
+
+            msg = (
+                f'Error: GEOPHIRES failed to convert your units for {ParamToModify.Name} to something it understands. '
+                f'You gave {ParamToModify.CurrentUnits}  - Are the units defined for Pint library, '
+                f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
+                f'Cannot continue. Exiting.'
+            )
+            model.logger.critical(msg)
+
+            raise RuntimeError(msg)
+
 
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
-def parameter_with_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
+def parameter_with_currency_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
     """
     TODO clean up and consolidate with pint-based conversion in ConvertUnitsBack
     """
@@ -682,7 +699,7 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             msg = (
                 f'Error: GEOPHIRES failed to convert your currency for {param.Name} to something it understands.'
                 f'You gave {currType} - Are these currency units defined for forex-python? '
-                f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value}'
+                f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
@@ -695,66 +712,10 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
         return param_with_units_converted_back
 
     else:
-        # must be something other than currency
-        if isinstance(param.CurrentUnits, pint.Quantity):
-            val = param.CurrentUnits.value
-            currType = str(param.CurrentUnits.value)
-        else:
-            if ' ' in param.CurrentUnits.value:
-                parts = param.CurrentUnits.value.split(' ')
-                val = parts[0].strip()
-                currType = parts[1].strip()
-            else:
-                val = param.value
-                currType = param.CurrentUnits.value
-
-        try:
-            if isinstance(param.PreferredUnits, pint.Quantity):
-                prefQ = param.PreferredUnits
-            else:
-                # Make a Pint Quantity out of the old value
-                prefQ = param.PreferredUnits
-            if isinstance(param.CurrentUnits, pint.Quantity):
-                currQ = param.CurrentUnits
-            else:
-                currQ = _ureg.Quantity(val, currType)  # Make a Pint Quantity out of the new value
-        except BaseException as ex:
-            print(str(ex))
-            msg = (
-                f'Error: GEOPHIRES failed to initialize your units for {param.Name} to something it understands. '
-                f'You gave {currType} - Are the units defined for Pint library, '
-                f'or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
-                f'Cannot continue. Exiting.'
-            )
-            print(msg)
-            model.logger.critical(str(ex))
-            model.logger.critical(msg)
-
-            raise RuntimeError(msg)
-        try:
-            # update The quantity back to the current units (the units that we started with) units
-            # so the display will be in the right units
-            currQ = currQ.to(prefQ)
-        except BaseException as ex:
-            print(str(ex))
-            msg = (
-                f'Error: GEOPHIRES failed to convert your units for {param.Name} to something it understands. '
-                f'You gave {currType}  - Are the units defined for Pint library, '
-                f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
-                f'Cannot continue. Exiting.'
-            )
-            print(msg)
-            model.logger.critical(str(ex))
-            model.logger.critical(msg)
-
-            raise RuntimeError(msg)
-
-        # reset the values
-        if param.value != currQ.magnitude:
-            param_with_units_converted_back.value = currQ.magnitude
-            param_with_units_converted_back.CurrentUnits = param.PreferredUnits
-
-    return param_with_units_converted_back
+        raise AttributeError(
+            f'Unit/unit type ({param.CurrentUnits}/{param.UnitType} for {param.Name} '
+            f'is not a recognized currency unit'
+        )
 
 
 def LookupUnits(sUnitText: str):

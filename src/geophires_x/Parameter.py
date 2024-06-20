@@ -599,8 +599,8 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
         model.logger.warning(f'Failed to convert units with pint, attempting currency conversion ({ae})')
 
         try:
-            param_modified: Parameter = parameter_with_currency_units_converted_back_to_preferred_units(ParamToModify,
-                                                                                                        model)
+            param_modified: Parameter = _parameter_with_currency_units_converted_back_to_preferred_units(ParamToModify,
+                                                                                                         model)
             ParamToModify.value = param_modified.value
             ParamToModify.CurrentUnits = param_modified.CurrentUnits
             ParamToModify.UnitType = param_modified.UnitType
@@ -621,7 +621,7 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
-def parameter_with_currency_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
+def _parameter_with_currency_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
     """
     TODO clean up and consolidate with pint-based conversion in ConvertUnitsBack
     """

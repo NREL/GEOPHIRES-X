@@ -94,13 +94,13 @@ class Reservoir:
             ToolTipText="Number of rock segments from surface to reservoir depth with specific geothermal gradient"
         )
 
-        self.gradient = self.ParameterDict[self.gradient.Name] = floatParameter(
+        self.gradient = self.ParameterDict[self.gradient.Name] = listParameter(
             "Gradients",
             DefaultValue=[0.05, 0.0, 0.0, 0.0],
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
-            PreferredUnits=TemperatureGradientUnit.DEGREESCPERM,
+            PreferredUnits=TemperatureGradientUnit.DEGREESCPERKM,
             CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradients 1 (50, 0, 0, 0 deg.C/km)",
@@ -109,12 +109,12 @@ class Reservoir:
 
         self.gradient1 = self.ParameterDict[self.gradient1.Name] = floatParameter(
             "Gradient 1",
-            DefaultValue=0.05,
+            DefaultValue=50,
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
-            PreferredUnits=TemperatureGradientUnit.DEGREESCPERM,
-            CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
+            PreferredUnits=TemperatureGradientUnit.DEGREESCPERKM,
+            CurrentUnits=TemperatureGradientUnit.DEGREESCPERKM,
             Required=True,
             ErrMessage="assume default geothermal gradient 1 (50 deg.C/km)",
             ToolTipText="Geothermal gradient 1 in rock segment 1"
@@ -585,7 +585,6 @@ class Reservoir:
                         # FIXME TODO only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
-                        ParameterToModify.UnitsMatch = False
 
                     elif ParameterToModify.Name == "Reservoir Volume Option":
                         if ParameterReadIn.sValue == '1':

@@ -6,7 +6,7 @@ SUMMARY OF RESULTS,Number of production wells,,2,count
 SUMMARY OF RESULTS,Number of injection wells,,2,count
 SUMMARY OF RESULTS,Flowrate per production well,,55.0,kg/sec
 SUMMARY OF RESULTS,"Well depth (or total length\, if not vertical)",,3.0,kilometer
-SUMMARY OF RESULTS,Geothermal gradient,,0.05,degC/m
+SUMMARY OF RESULTS,Geothermal gradient,,50,degC/km
 SUMMARY OF RESULTS,Total Avoided Carbon Emissions,,472017.81,
 ECONOMIC PARAMETERS,Economic Model,,Fixed Charge Rate (FCR),
 ECONOMIC PARAMETERS,Accrued financing during construction,,0.0,
@@ -47,7 +47,7 @@ ENGINEERING PARAMETERS,Number of times redrilling,,0,count
 ENGINEERING PARAMETERS,Power plant type,,Supercritical ORC,
 RESOURCE CHARACTERISTICS,Maximum reservoir temperature,,400.0,degC
 RESOURCE CHARACTERISTICS,Number of segments,,1,count
-RESOURCE CHARACTERISTICS,Geothermal gradient,,0.05,degC/m
+RESOURCE CHARACTERISTICS,Geothermal gradient,,50,degC/km
 RESERVOIR PARAMETERS,Reservoir Model,,Multiple Parallel Fractures Model,
 RESERVOIR PARAMETERS,Fracture model,,Square,
 RESERVOIR PARAMETERS,Bottom-hole temperature,,170.0,degC

@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.34
- Simulation Date: 2024-06-18
- Simulation Time:  15:54
- Calculation Time:      0.606 sec
+ Simulation Date: 2024-06-19
+ Simulation Time:  07:44
+ Calculation Time:      0.596 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -18,13 +18,13 @@ Simulation Metadata
       Number of injection wells:                              2
       Flowrate per production well:                          60.0 kg/sec
       Well depth (or total length, if not vertical):          4.0 kilometer
-      Segment 1   Geothermal gradient:                        0.0500 degC/m
-      Segment 1   Thickness:                               1000 meter
-      Segment 2   Geothermal gradient:                        0.0400 degC/m
-      Segment 2   Thickness:                               1000 meter
-      Segment 3   Geothermal gradient:                        0.0300 degC/m
-      Segment 3   Thickness:                               1000 meter
-      Segment 4   Geothermal gradient:                        0.0500 degC/m
+      Segment 1   Geothermal gradient:                            50 degC/km
+      Segment 1   Thickness:                                  1 kilometer
+      Segment 2   Geothermal gradient:                            40 degC/km
+      Segment 2   Thickness:                                  1 kilometer
+      Segment 3   Geothermal gradient:                            30 degC/km
+      Segment 3   Thickness:                                  1 kilometer
+      Segment 4   Geothermal gradient:                            50 degC/km
 
 
                            ***ECONOMIC PARAMETERS***
@@ -62,13 +62,13 @@ Simulation Metadata
 
       Maximum reservoir temperature:                        400.0 degC
       Number of segments:                                     4
-      Segment 1   Geothermal gradient:                        0.0500 degC/m
-      Segment 1   Thickness:                               1000 meter
-      Segment 2   Geothermal gradient:                        0.0400 degC/m
-      Segment 2   Thickness:                               1000 meter
-      Segment 3   Geothermal gradient:                        0.0300 degC/m
-      Segment 3   Thickness:                               1000 meter
-      Segment 4   Geothermal gradient:                        0.0500 degC/m
+      Segment 1   Geothermal gradient:                            50 degC/km
+      Segment 1   Thickness:                                  1 kilometer
+      Segment 2   Geothermal gradient:                            40 degC/km
+      Segment 2   Thickness:                                  1 kilometer
+      Segment 3   Geothermal gradient:                            30 degC/km
+      Segment 3   Thickness:                                  1 kilometer
+      Segment 4   Geothermal gradient:                            50 degC/km
 
 
                            ***RESERVOIR PARAMETERS***

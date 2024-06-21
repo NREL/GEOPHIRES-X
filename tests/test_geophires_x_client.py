@@ -107,23 +107,23 @@ class GeophiresXClientTestCase(BaseTestCase):
 
         categories = ['SUMMARY OF RESULTS', 'RESOURCE CHARACTERISTICS']
         for category in categories:
-            assert result.result[category]['Segment 1   Geothermal gradient']['value'] == 0.0500
-            assert result.result[category]['Segment 1   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 1   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 1   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 1   Geothermal gradient']['value'] == 50
+            assert result.result[category]['Segment 1   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 1   Thickness']['value'] == 1
+            assert result.result[category]['Segment 1   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 2   Geothermal gradient']['value'] == 0.0400
-            assert result.result[category]['Segment 2   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 2   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 2   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 2   Geothermal gradient']['value'] == 40
+            assert result.result[category]['Segment 2   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 2   Thickness']['value'] == 1
+            assert result.result[category]['Segment 2   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 3   Geothermal gradient']['value'] == 0.0300
-            assert result.result[category]['Segment 3   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 3   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 3   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 3   Geothermal gradient']['value'] == 30
+            assert result.result[category]['Segment 3   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 3   Thickness']['value'] == 1
+            assert result.result[category]['Segment 3   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 0.0500
-            assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/m'
+            assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 50
+            assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/km'
 
     def test_example_absorption_chiller_result(self):
         test_result_path = self._get_test_file_path('examples/example11_AC.out')

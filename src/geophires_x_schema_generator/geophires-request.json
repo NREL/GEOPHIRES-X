@@ -79,7 +79,7 @@
     },
     "Gradients": {
       "description": "Geothermal gradients",
-      "type": "number",
+      "type": "array",
       "units": "degC/m",
       "category": "Reservoir",
       "default": [
@@ -94,9 +94,9 @@
     "Gradient 1": {
       "description": "Geothermal gradient 1 in rock segment 1",
       "type": "number",
-      "units": "degC/m",
+      "units": "degC/km",
       "category": "Reservoir",
-      "default": 0.05,
+      "default": 50,
       "minimum": 0.0,
       "maximum": 500.0
     },
@@ -1599,6 +1599,15 @@
       "default": false,
       "minimum": null,
       "maximum": null
+    },
+    "Estimated Jobs Created per MW of Electricity Produced": {
+      "description": "Estimated jobs created per MW of electricity produced, per https://geothermal.org/resources/geothermal-basics",
+      "type": "number",
+      "units": null,
+      "category": "Economics",
+      "default": 2.13,
+      "minimum": -1.8e+30,
+      "maximum": 1.8e+30
     },
     "Operation & Maintenance Cost of Surface Plant": {
       "description": "",

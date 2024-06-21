@@ -331,6 +331,23 @@ Print Output to Console, 1"""
 
         self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)
 
+        result_gradient_c_per_m_input = client.get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('examples/example1.txt')),
+                params={
+                    'Gradient 1': 0.017  # Values less than 1.0 interpreted as being in degC/m (instead of degC/km)
+                },
+            )
+        )
+        del result_gradient_c_per_m_input.result['metadata']
+
+        self.assertEqual(
+            result_gradient_c_per_m_input.result['SUMMARY OF RESULTS']['Geothermal gradient']['value'], 17.0
+        )
+        self.assertEqual(
+            result_gradient_c_per_m_input.result['SUMMARY OF RESULTS']['Geothermal gradient']['unit'], 'degC/km'
+        )
+
     def test_fcr_sensitivity(self):
         def input_for_fcr(fcr: float) -> GeophiresInputParameters:
             return GeophiresInputParameters(

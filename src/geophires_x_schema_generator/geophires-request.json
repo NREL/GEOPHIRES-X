@@ -692,7 +692,7 @@
       "maximum": 100.0
     },
     "End-Use Option": {
-      "description": "Select the end-use application of the geofluid heat (see docs for details)",
+      "description": "Select the end-use application of the geofluid heat:\n1: Electricity;\n2: Direct-Use Heat;\n31: Cogeneration Topping Cycle, Heat sales considered as extra income;\n32: Cogeneration Topping Cycle, Electricity sales considered as extra income;\n41: Cogeneration Bottoming Cycle, Heat sales considered as extra income;\n42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income;\n51: Cogeneration Parallel Cycle, Heat sales considered as extra income;\n52: Cogeneration Parallel Cycle, Electricity sales considered as extra income",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",

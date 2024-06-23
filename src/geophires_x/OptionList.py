@@ -12,6 +12,32 @@ class EndUseOptions(str, Enum):
     COGENERATION_PARALLEL_EXTRA_HEAT = "Cogeneration Parallel Cycle, Heat sales considered as extra income"  # 51
     COGENERATION_PARALLEL_EXTRA_ELECTRICITY = "Cogeneration Parallel Cycle, Electricity sales considered as extra income"  # 52
 
+    @staticmethod
+    def get_end_use_option_from_input_string(input_string:str):
+        """
+        :rtype: EndUseOptions
+        """
+
+        if input_string == str(1):
+            return EndUseOptions.ELECTRICITY
+        elif input_string == str(2):
+            return EndUseOptions.HEAT
+            self.plant_type.value = PlantType.INDUSTRIAL
+        elif input_string == str(31):
+            return EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
+        elif input_string == str(32):
+            return EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY
+        elif input_string == str(41):
+            return EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
+        elif input_string == str(42):
+            return EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY
+        elif input_string == str(51):
+            return EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
+        elif input_string == str(52):
+            return EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
+
+        raise ValueError(f'Unknown End-Use Option value: {input_string}')
+
 
 class PlantType(str, Enum):
     SUB_CRITICAL_ORC = "Subcritical ORC" # 1

@@ -519,23 +519,10 @@ class SurfacePlant:
 
                     # handle special cases
                     if ParameterToModify.Name == 'End-Use Option':
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = EndUseOptions.HEAT
+                        end_use_option = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        ParameterToModify.value = end_use_option
+                        if end_use_option == EndUseOptions.HEAT:
                             self.plant_type.value = PlantType.INDUSTRIAL
-                        elif ParameterReadIn.sValue == str(31):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(32):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(41):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(42):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(51):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(52):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
 
                     elif ParameterToModify.Name == 'Power Plant Type':
                         if ParameterReadIn.sValue == str(1):

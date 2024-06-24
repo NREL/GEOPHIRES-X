@@ -11,6 +11,10 @@ class EndUseOptionsTestCase(BaseTestCase):
         with self.assertRaises(ValueError):
             EndUseOptions.get_end_use_option_from_input_string('2034982309')
 
+    def test_cast_from_name_string(self):
+        self.assertIs(EndUseOptions('Electricity'), EndUseOptions.ELECTRICITY)
+        self.assertIs(EndUseOptions('Direct-Use Heat'), EndUseOptions.HEAT)
+
     def test_equality(self):
         self.assertFalse(EndUseOptions.HEAT == EndUseOptions.ELECTRICITY)
         self.assertTrue(EndUseOptions.HEAT == EndUseOptions.HEAT)

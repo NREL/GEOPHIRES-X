@@ -1638,7 +1638,7 @@ class Outputs:
                                                               EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
                                                               EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
-                    f.write(f'      CHP: Percent cost allocation for electrical plant: {model.economics.CAPEX_heat_electricity_plant_ratio.value*100.0:10.2f}%' + NL)
+                    f.write(f'      CHP: Percent cost allocation for electrical plant: {model.economics.CAPEX_heat_electricity_plant_ratio.value*100.0:10.2f} %\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
                     f.write(f'      Estimated Jobs Created:                                 {model.economics.jobs_created.value}\n')

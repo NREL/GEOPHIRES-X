@@ -110,6 +110,9 @@ class WellDrillingCostCorrelation(str, Enum):
         self._c1 = c1
         self._c0 = c0
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 

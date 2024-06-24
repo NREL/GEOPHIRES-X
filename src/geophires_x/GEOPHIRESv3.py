@@ -5,6 +5,8 @@ import logging
 import logging.config
 import os
 import sys
+from pathlib import Path
+
 import geophires_x.Model as Model
 import geophires_x.OptionList as OptionList
 
@@ -61,9 +63,9 @@ def main(enable_geophires_logging_config=True):
 
     json_outputfile = 'HDR.json'
     if len(sys.argv) > 2:
-        json_outputfile = str(sys.argv[2])
-        segs = json_outputfile.split('.')
-        json_outputfile = segs[0] + '.json'
+        output_arg = str(sys.argv[2])
+        output_arg_path = Path(output_arg)
+        json_outputfile = output_arg.replace(output_arg_path.name, f'{output_arg_path.stem}.json')
     with open(json_outputfile, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(json_merged))
 

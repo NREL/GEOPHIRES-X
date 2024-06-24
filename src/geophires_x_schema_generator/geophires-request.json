@@ -692,7 +692,7 @@
       "maximum": 100.0
     },
     "End-Use Option": {
-      "description": "Select the end-use application of the geofluid heat:\n1: Electricity;\n2: Direct-Use Heat;\n31: Cogeneration Topping Cycle, Heat sales considered as extra income;\n32: Cogeneration Topping Cycle, Electricity sales considered as extra income;\n41: Cogeneration Bottoming Cycle, Heat sales considered as extra income;\n42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income;\n51: Cogeneration Parallel Cycle, Heat sales considered as extra income;\n52: Cogeneration Parallel Cycle, Electricity sales considered as extra income",
+      "description": "Select the end-use application of the geofluid heat: 1: Electricity; 2: Direct-Use Heat; 31: Cogeneration Topping Cycle, Heat sales considered as extra income; 32: Cogeneration Topping Cycle, Electricity sales considered as extra income; 41: Cogeneration Bottoming Cycle, Heat sales considered as extra income; 42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income; 51: Cogeneration Parallel Cycle, Heat sales considered as extra income; 52: Cogeneration Parallel Cycle, Electricity sales considered as extra income",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
@@ -1169,7 +1169,7 @@
       "maximum": 1.0
     },
     "Well Drilling Cost Correlation": {
-      "description": "Select the built-in well drilling and completion cost correlation: 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
+      "description": "Select the built-in well drilling and completion cost correlation: 1: vertical small diameter, baseline; 2: deviated small diameter, baseline; 3: vertical large diameter, baseline; 4: deviated large diameter, baseline; 5: Simple; 6: vertical small diameter, intermediate1; 7: vertical small diameter, intermediate2; 8: deviated small diameter, intermediate1; 9: deviated small diameter, intermediate2; 10: vertical large diameter, intermediate1; 11: vertical large diameter, intermediate2; 12: deviated large diameter, intermediate1; 13: deviated large diameter, intermediate2; 14: vertical open-hole, small diameter, ideal; 15: deviated liner, small diameter, ideal; 16: vertical open-hole, large diameter, ideal; 17: deviated liner, large diameter, ideal",
       "type": "integer",
       "units": null,
       "category": "Economics",

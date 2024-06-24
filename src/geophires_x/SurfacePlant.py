@@ -193,7 +193,7 @@ class SurfacePlant:
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
                 NetkWhProduced[i] = np.trapz(NetElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
-        if enduse_option != EndUseOptions.ELECTRICITY:
+        if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
@@ -236,15 +236,15 @@ class SurfacePlant:
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
-            ToolTipText="""Select the end-use application of the geofluid heat:
-1: Electricity;
-2: Direct-Use Heat;
-31: Cogeneration Topping Cycle, Heat sales considered as extra income;
-32: Cogeneration Topping Cycle, Electricity sales considered as extra income;
-41: Cogeneration Bottoming Cycle, Heat sales considered as extra income;
-42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income;
-51: Cogeneration Parallel Cycle, Heat sales considered as extra income;
-52: Cogeneration Parallel Cycle, Electricity sales considered as extra income"""
+            ToolTipText="Select the end-use application of the geofluid heat: " +
+                        "1: Electricity; " +
+                        "2: Direct-Use Heat; " +
+                        "31: Cogeneration Topping Cycle, Heat sales considered as extra income; " +
+                        "32: Cogeneration Topping Cycle, Electricity sales considered as extra income; " +
+                        "41: Cogeneration Bottoming Cycle, Heat sales considered as extra income; " +
+                        "42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income; " +
+                        "51: Cogeneration Parallel Cycle, Heat sales considered as extra income; " +
+                        "52: Cogeneration Parallel Cycle, Electricity sales considered as extra income"
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",

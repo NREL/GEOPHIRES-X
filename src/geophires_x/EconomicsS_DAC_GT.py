@@ -654,13 +654,13 @@ class EconomicsS_DAC_GT(Economics.Economics):
         # some (all) of it to do the capture, so when they get used in the final economic calculation (below),
         # the new values reflect the impact of S-DAC-GT
         for i in range(0, model.surfaceplant.plant_lifetime.value):
-            if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:
+            if model.surfaceplant.enduse_option.value is not EndUseOptions.HEAT:
                 # all these end-use options have an electricity generation component
                 model.surfaceplant.TotalkWhProduced.value[i] = model.surfaceplant.TotalkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
                 model.surfaceplant.NetkWhProduced.value[i] = model.surfaceplant.NetkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
-                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] - (
                         self.CarbonExtractedAnnually.value[i] * self.therm.value)
             else:

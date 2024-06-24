@@ -3,14 +3,25 @@ from enum import Enum
 
 
 class EndUseOptions(str, Enum):
-    ELECTRICITY = "Electricity"  # 1
-    HEAT = "Direct-Use Heat"  # 2
-    COGENERATION_TOPPING_EXTRA_HEAT = "Cogeneration Topping Cycle, Heat sales considered as extra income"  # 31
-    COGENERATION_TOPPING_EXTRA_ELECTRICITY = "Cogeneration Topping Cycle, Electricity sales considered as extra income"  # 32
-    COGENERATION_BOTTOMING_EXTRA_HEAT = "Cogeneration Bottoming Cycle, Heat sales considered as extra income"  # 41
-    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"  # 42
-    COGENERATION_PARALLEL_EXTRA_HEAT = "Cogeneration Parallel Cycle, Heat sales considered as extra income"  # 51
-    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = "Cogeneration Parallel Cycle, Electricity sales considered as extra income"  # 52
+    ELECTRICITY = 1, "Electricity"
+    HEAT = 2, "Direct-Use Heat"
+    COGENERATION_TOPPING_EXTRA_HEAT = 31, "Cogeneration Topping Cycle, Heat sales considered as extra income"
+    COGENERATION_TOPPING_EXTRA_ELECTRICITY = 32, "Cogeneration Topping Cycle, Electricity sales considered as extra income"
+    COGENERATION_BOTTOMING_EXTRA_HEAT = 41, "Cogeneration Bottoming Cycle, Heat sales considered as extra income"
+    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = 42, "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"
+    COGENERATION_PARALLEL_EXTRA_HEAT = 51, "Cogeneration Parallel Cycle, Heat sales considered as extra income"
+    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
+
+    def __new__(cls, *args, **kwds):
+        obj = str.__new__(cls)
+        obj._value_ = args[1]
+        return obj
+
+    def __init__(self, numerical_input_value: int, _: str):
+        self._numerical_input_value = numerical_input_value
+
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     @staticmethod
     def get_end_use_option_from_input_string(input_string:str):
@@ -18,25 +29,11 @@ class EndUseOptions(str, Enum):
         :rtype: EndUseOptions
         """
 
-        if input_string == str(1):
-            return EndUseOptions.ELECTRICITY
-        elif input_string == str(2):
-            return EndUseOptions.HEAT
-            self.plant_type.value = PlantType.INDUSTRIAL
-        elif input_string == str(31):
-            return EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
-        elif input_string == str(32):
-            return EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY
-        elif input_string == str(41):
-            return EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
-        elif input_string == str(42):
-            return EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY
-        elif input_string == str(51):
-            return EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
-        elif input_string == str(52):
-            return EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
+        for option in EndUseOptions:
+            if input_string == str(option._numerical_input_value):
+                return option
 
-        raise ValueError(f'Unknown End-Use Option value: {input_string}')
+        raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
 
 class PlantType(str, Enum):
@@ -99,20 +96,24 @@ class WellDrillingCostCorrelation(str, Enum):
     VERTICAL_LARGE_IDEAL = 16, "vertical open-hole, large diameter, ideal", -0.00240, 752.93946, 524337.65380
     DEVIATED_LARGE_IDEAL = 17, "deviated liner, large diameter, ideal", 0.00376, 762.52696, 765103.07690
 
+    def calculate_cost_MUSD(self, meters) -> float:
+        return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
     def __new__(cls, *args, **kwds):
         obj = str.__new__(cls)
         obj._value_ = args[1]
         return obj
 
-    def __init__(self, idx: int, _: str, c2:float, c1:float, c0:float):
+    def __init__(self, numerical_input_value: int, _: str, c2: float, c1: float, c0: float):
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
-
 
 
 class FractureShape(str, Enum):

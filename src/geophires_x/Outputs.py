@@ -795,7 +795,7 @@ class Outputs:
             summary.append(OutputTableItem('Average Net Electricity Production', '{0:10.2f}'.format(
                 np.average(model.surfaceplant.NetElectricityProduced.value)),
                                            model.surfaceplant.NetElectricityProduced.CurrentUnits.value))
-        if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:  # there is a direct-use component
+        if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:  # there is a direct-use component
             summary.append(OutputTableItem('Average Direct-Use Heat Production',
                                            '{0:10.2f}'.format(np.average(model.surfaceplant.HeatProduced.value)),
                                            model.surfaceplant.HeatProduced.CurrentUnits.value))
@@ -1567,7 +1567,7 @@ class Outputs:
                     f.write('      Surface Application: ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]: # there is an electricity component
                     f.write(f'      Average Net Electricity Production:               {np.average(model.surfaceplant.NetElectricityProduced.value):10.2f} ' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + NL)
-                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:    # there is a direct-use component
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:    # there is a direct-use component
                     f.write(f'      Average Direct-Use Heat Production:               {np.average(model.surfaceplant.HeatProduced.value):10.2f} '+ model.surfaceplant.HeatProduced.CurrentUnits.value + NL)
                 if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                     f.write(f'      Annual District Heating Demand:                   {np.average(model.surfaceplant.annual_heating_demand.value):10.2f} ' + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)

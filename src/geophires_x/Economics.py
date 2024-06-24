@@ -994,23 +994,7 @@ class Economics:
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        "1. vertical small diameter, baseline; " +
-                        "2. deviated small diameter, baseline; " +
-                        "3. vertical large diameter, baseline; " +
-                        "4. deviated large diameter, baseline; " +
-                        "5. Simple; " +
-                        "6. vertical small diameter, intermediate1; " +
-                        "7. vertical small diameter, intermediate2; " +
-                        "8. deviated small diameter, intermediate1; " +
-                        "9. deviated small diameter, intermediate2; " +
-                        "10. vertical large diameter, intermediate1; " +
-                        "11. vertical large diameter, intermediate2; " +
-                        "12. deviated large diameter, intermediate1; " +
-                        "13. deviated large diameter, intermediate2; " +
-                        "14. vertical open-hole, small diameter, ideal; " +
-                        "15. deviated liner, small diameter, ideal; " +
-                        "16. vertical open-hole, large diameter, ideal; " +
-                        "17. deviated liner, large diameter, ideal"
+                        '; '.join([f'{it._numerical_input_value}: {it.value}' for it in WellDrillingCostCorrelation])
         )
 
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(

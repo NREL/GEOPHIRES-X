@@ -105,6 +105,7 @@ class WellDrillingCostCorrelation(str, Enum):
         return obj
 
     def __init__(self, numerical_input_value: int, _: str, c2: float, c1: float, c0: float):
+        self._numerical_input_value = numerical_input_value
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0

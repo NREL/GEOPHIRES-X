@@ -193,7 +193,7 @@ class SurfacePlant:
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
                 NetkWhProduced[i] = np.trapz(NetElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
-        if enduse_option != EndUseOptions.ELECTRICITY:
+        if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):

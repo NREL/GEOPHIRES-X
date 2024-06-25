@@ -65,6 +65,39 @@ class ReservoirModel(str, Enum):
     TOUGH2_SIMULATOR = "TOUGH2 Simulator"
     SUTRA = "SUTRA"
 
+    @staticmethod
+    def get_reservoir_model_from_input_string(input_string:str):
+        """
+        :rtype: ReservoirModel
+        """
+
+        if input_string == '0':
+            # Simply Cylindrical Model
+            return ReservoirModel.CYLINDRICAL
+        elif input_string == '1':
+            # Multiple parallel fractures model (LANL)
+            return ReservoirModel.MULTIPLE_PARALLEL_FRACTURES
+        elif input_string == '2':
+            # Volumetric block model (1D linear heat sweep model (Stanford))
+            return ReservoirModel.LINEAR_HEAT_SWEEP
+        elif input_string == '3':
+            # Drawdown parameter model (Tester)
+            return ReservoirModel.SINGLE_FRACTURE
+        elif input_string == '4':
+            # Thermal drawdown percentage model (GETEM)
+            return ReservoirModel.ANNUAL_PERCENTAGE
+        elif input_string == '5':
+            # Generic user-provided temperature profile
+            return ReservoirModel.USER_PROVIDED_PROFILE
+        elif input_string == '6':
+            # TOUGH2 is called
+            return ReservoirModel.TOUGH2_SIMULATOR
+        elif input_string == '7':
+            # SUTRA Simulator
+            return ReservoirModel.SUTRA
+
+        raise ValueError(f'Unknown Reservoir Model input value: {input_string}')
+
 
 class ReservoirVolume(str, Enum):
     FRAC_NUM_SEP = "Specify number of fractures and fracture separation"

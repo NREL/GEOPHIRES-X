@@ -558,30 +558,8 @@ class Reservoir:
 
                     # handle special cases
                     if ParameterToModify.Name == "Reservoir Model":
-                        if ParameterReadIn.sValue == '0':
-                            # Simply Cylindrical Model
-                            ParameterToModify.value = ReservoirModel.CYLINDRICAL
-                        elif ParameterReadIn.sValue == '1':
-                            # Multiple parallel fractures model (LANL)
-                            ParameterToModify.value = ReservoirModel.MULTIPLE_PARALLEL_FRACTURES
-                        elif ParameterReadIn.sValue == '2':
-                            # Volumetric block model (1D linear heat sweep model (Stanford))
-                            ParameterToModify.value = ReservoirModel.LINEAR_HEAT_SWEEP
-                        elif ParameterReadIn.sValue == '3':
-                            # Drawdown parameter model (Tester)
-                            ParameterToModify.value = ReservoirModel.SINGLE_FRACTURE
-                        elif ParameterReadIn.sValue == '4':
-                            # Thermal drawdown percentage model (GETEM)
-                            ParameterToModify.value = ReservoirModel.ANNUAL_PERCENTAGE
-                        elif ParameterReadIn.sValue == '5':
-                            # Generic user-provided temperature profile
-                            ParameterToModify.value = ReservoirModel.USER_PROVIDED_PROFILE
-                        elif ParameterReadIn.sValue == '6':
-                            # TOUGH2 is called
-                            ParameterToModify.value = ReservoirModel.TOUGH2_SIMULATOR
-                        elif ParameterReadIn.sValue == '7':
-                            # SUTRA Simulator
-                            ParameterToModify.value = ReservoirModel.SUTRA
+                        ParameterToModify.value = ReservoirModel.get_reservoir_model_from_input_string(
+                            ParameterReadIn.sValue)
 
                     elif ParameterToModify.Name == 'Reservoir Depth':
                         # FIXME TODO only convert if current units are km

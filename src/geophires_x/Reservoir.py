@@ -52,9 +52,7 @@ class Reservoir:
             AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
             ErrMessage="run default reservoir model (Thermal Drawdown Percentage Model)",
-            ToolTipText="0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
-            3: m/a single fracture drawdown model, 4: Linear thermal drawdown model, \
-            5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA"
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in ReservoirModel])
         )
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(

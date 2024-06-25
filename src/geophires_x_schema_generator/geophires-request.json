@@ -42,7 +42,7 @@
   ],
   "properties": {
     "Reservoir Model": {
-      "description": "0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA",
+      "description": "0: Simple cylindrical; 1: Multiple Parallel Fractures; 2: 1-D Linear Heat Sweep; 3: Single Fracture m/A Thermal Drawdown; 4: Annual Percentage Thermal Drawdown; 5: User-Provided Temperature Profile; 6: TOUGH2 Simulator; 7: SUTRA",
       "type": "integer",
       "units": null,
       "category": "Reservoir",

@@ -61,15 +61,15 @@ class EconomicModel(str, Enum):
     BICYCLE = "BICYCLE"
 
 
-class ReservoirModel(str, Enum):
-    CYLINDRICAL = "Simple cylindrical"
-    MULTIPLE_PARALLEL_FRACTURES = "Multiple Parallel Fractures"
-    LINEAR_HEAT_SWEEP = "1-D Linear Heat Sweep"
-    SINGLE_FRACTURE = "Single Fracture m/A Thermal Drawdown"
-    ANNUAL_PERCENTAGE = "Annual Percentage Thermal Drawdown"
-    USER_PROVIDED_PROFILE = "User-Provided Temperature Profile"
-    TOUGH2_SIMULATOR = "TOUGH2 Simulator"
-    SUTRA = "SUTRA"
+class ReservoirModel(GeophiresInputEnum):
+    CYLINDRICAL = 0, "Simple cylindrical"
+    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures"
+    LINEAR_HEAT_SWEEP = 2, "1-D Linear Heat Sweep"
+    SINGLE_FRACTURE = 3, "Single Fracture m/A Thermal Drawdown"
+    ANNUAL_PERCENTAGE = 4, "Annual Percentage Thermal Drawdown"
+    USER_PROVIDED_PROFILE = 5, "User-Provided Temperature Profile"
+    TOUGH2_SIMULATOR = 6, "TOUGH2 Simulator"
+    SUTRA = 7, "SUTRA"
 
     @staticmethod
     def get_reservoir_model_from_input_string(input_string:str):
@@ -77,30 +77,9 @@ class ReservoirModel(str, Enum):
         :rtype: ReservoirModel
         """
 
-        if input_string == '0':
-            # Simply Cylindrical Model
-            return ReservoirModel.CYLINDRICAL
-        elif input_string == '1':
-            # Multiple parallel fractures model (LANL)
-            return ReservoirModel.MULTIPLE_PARALLEL_FRACTURES
-        elif input_string == '2':
-            # Volumetric block model (1D linear heat sweep model (Stanford))
-            return ReservoirModel.LINEAR_HEAT_SWEEP
-        elif input_string == '3':
-            # Drawdown parameter model (Tester)
-            return ReservoirModel.SINGLE_FRACTURE
-        elif input_string == '4':
-            # Thermal drawdown percentage model (GETEM)
-            return ReservoirModel.ANNUAL_PERCENTAGE
-        elif input_string == '5':
-            # Generic user-provided temperature profile
-            return ReservoirModel.USER_PROVIDED_PROFILE
-        elif input_string == '6':
-            # TOUGH2 is called
-            return ReservoirModel.TOUGH2_SIMULATOR
-        elif input_string == '7':
-            # SUTRA Simulator
-            return ReservoirModel.SUTRA
+        for model in ReservoirModel:
+            if input_string == str(model.int_value):
+                return model
 
         raise ValueError(f'Unknown Reservoir Model input value: {input_string}')
 

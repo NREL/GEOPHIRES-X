@@ -48,7 +48,7 @@ class Reservoir:
 
         self.resoption = self.ParameterDict[self.resoption.Name] = intParameter(
             "Reservoir Model",
-            DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
+            DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE.int_value,
             AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
             ErrMessage="run default reservoir model (Thermal Drawdown Percentage Model)",

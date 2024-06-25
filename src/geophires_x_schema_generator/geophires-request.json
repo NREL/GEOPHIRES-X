@@ -46,7 +46,7 @@
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Annual Percentage Thermal Drawdown",
+      "default": 4,
       "minimum": 0,
       "maximum": 7
     },

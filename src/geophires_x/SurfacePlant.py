@@ -234,10 +234,11 @@ class SurfacePlant:
             "End-Use Option",
             value=EndUseOptions.ELECTRICITY,
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
+            values_enum=EndUseOptions,
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
             ToolTipText="Select the end-use application of the geofluid heat: " +
-                        '; '.join([f'{it._numerical_input_value}: {it.value}' for it in EndUseOptions])
+                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in EndUseOptions])
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",

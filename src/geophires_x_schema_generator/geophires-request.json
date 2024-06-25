@@ -48,7 +48,49 @@
       "category": "Reservoir",
       "default": 4,
       "minimum": 0,
-      "maximum": 7
+      "maximum": 7,
+      "enum_values": [
+        {
+          "name": "CYLINDRICAL",
+          "value": "Simple cylindrical",
+          "int_value": 0
+        },
+        {
+          "name": "MULTIPLE_PARALLEL_FRACTURES",
+          "value": "Multiple Parallel Fractures",
+          "int_value": 1
+        },
+        {
+          "name": "LINEAR_HEAT_SWEEP",
+          "value": "1-D Linear Heat Sweep",
+          "int_value": 2
+        },
+        {
+          "name": "SINGLE_FRACTURE",
+          "value": "Single Fracture m/A Thermal Drawdown",
+          "int_value": 3
+        },
+        {
+          "name": "ANNUAL_PERCENTAGE",
+          "value": "Annual Percentage Thermal Drawdown",
+          "int_value": 4
+        },
+        {
+          "name": "USER_PROVIDED_PROFILE",
+          "value": "User-Provided Temperature Profile",
+          "int_value": 5
+        },
+        {
+          "name": "TOUGH2_SIMULATOR",
+          "value": "TOUGH2 Simulator",
+          "int_value": 6
+        },
+        {
+          "name": "SUTRA",
+          "value": "SUTRA",
+          "int_value": 7
+        }
+      ]
     },
     "Reservoir Depth": {
       "description": "Depth of the reservoir",

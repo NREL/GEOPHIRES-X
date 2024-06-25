@@ -2,15 +2,10 @@
 from enum import Enum
 
 
-class EndUseOptions(str, Enum):
-    ELECTRICITY = 1, "Electricity"
-    HEAT = 2, "Direct-Use Heat"
-    COGENERATION_TOPPING_EXTRA_HEAT = 31, "Cogeneration Topping Cycle, Heat sales considered as extra income"
-    COGENERATION_TOPPING_EXTRA_ELECTRICITY = 32, "Cogeneration Topping Cycle, Electricity sales considered as extra income"
-    COGENERATION_BOTTOMING_EXTRA_HEAT = 41, "Cogeneration Bottoming Cycle, Heat sales considered as extra income"
-    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = 42, "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"
-    COGENERATION_PARALLEL_EXTRA_HEAT = 51, "Cogeneration Parallel Cycle, Heat sales considered as extra income"
-    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
+class GeophiresInputEnum(str, Enum):
+    """
+    Input enums have a name, integer input value, and string value
+    """
 
     def __new__(cls, *args, **kwds):
         obj = str.__new__(cls)
@@ -22,6 +17,17 @@ class EndUseOptions(str, Enum):
 
     def __eq__(self, other):
         return str(self) == str(other)
+
+
+class EndUseOptions(GeophiresInputEnum):
+    ELECTRICITY = 1, "Electricity"
+    HEAT = 2, "Direct-Use Heat"
+    COGENERATION_TOPPING_EXTRA_HEAT = 31, "Cogeneration Topping Cycle, Heat sales considered as extra income"
+    COGENERATION_TOPPING_EXTRA_ELECTRICITY = 32, "Cogeneration Topping Cycle, Electricity sales considered as extra income"
+    COGENERATION_BOTTOMING_EXTRA_HEAT = 41, "Cogeneration Bottoming Cycle, Heat sales considered as extra income"
+    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = 42, "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"
+    COGENERATION_PARALLEL_EXTRA_HEAT = 51, "Cogeneration Parallel Cycle, Heat sales considered as extra income"
+    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
 
     @staticmethod
     def get_end_use_option_from_input_string(input_string:str):
@@ -106,7 +112,7 @@ class ReservoirVolume(str, Enum):
     RES_VOL_ONLY = "Specify reservoir volume only"
 
 
-class WellDrillingCostCorrelation(str, Enum):
+class WellDrillingCostCorrelation(GeophiresInputEnum):
     """Note: order must be retained since input is read as an int; first int arg is duplicative of order"""
 
     VERTICAL_SMALL = 1, "vertical small diameter, baseline", 0.30212, 584.91124, 751368.47270
@@ -132,19 +138,11 @@ class WellDrillingCostCorrelation(str, Enum):
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
-    def __new__(cls, *args, **kwds):
-        obj = str.__new__(cls)
-        obj._value_ = args[1]
-        return obj
-
     def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float):
-        self.int_value = int_value
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0
-
-    def __eq__(self, other):
-        return str(self) == str(other)
+        super().__init__(int_value, _)
 
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6

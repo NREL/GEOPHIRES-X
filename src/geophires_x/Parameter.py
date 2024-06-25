@@ -698,8 +698,8 @@ def _parameter_with_currency_units_converted_back_to_preferred_units(param: Para
             print(str(ex))
             msg = (
                 f'Error: GEOPHIRES failed to convert your currency for {param.Name} to something it understands.'
-                f'You gave {currType} - Are these currency units defined for forex-python? '
-                f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value} '
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {param.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
@@ -990,9 +990,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         symbol = cc.get_symbol(currShort)
         if symbol is None:
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {currType}  - Are these currency units defined for forex-python? '
-                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
@@ -1005,9 +1005,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         # try some tricks to make it into something it does do recognize
         if symbol is None:
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {prefType}  - Are these currency units defined for forex-python? '
-                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
 
@@ -1022,11 +1022,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             print(str(ex))
 
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {currType} - Are these currency units defined for forex-python?'
-                f'or perhaps the currency server is down? '
-                f'Please change your units to {oparam.PreferredUnits.value} to continue.'
-                f'Cannot continue unless you do.  Exiting.'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
+                f'to continue. Cannot continue unless you do.  Exiting.'
             )
 
             print(msg)

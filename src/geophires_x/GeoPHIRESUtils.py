@@ -8,7 +8,7 @@ import dataclasses
 import json
 import numbers
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Any
 
 import scipy
 from pint.facets.plain import PlainQuantity

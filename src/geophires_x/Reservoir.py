@@ -724,7 +724,7 @@ class Reservoir:
                                             model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
-        if self.resoption.value != ReservoirModel.SUTRA:
+        if self.resoption.value is not ReservoirModel.SUTRA:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,

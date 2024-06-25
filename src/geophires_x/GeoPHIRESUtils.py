@@ -585,8 +585,8 @@ class _EnhancedJSONEncoder(json.JSONEncoder):
                     'value': member.value
                 }
 
-                if hasattr(member, 'numerical_input_value'):
-                    d['numerical_input_value'] = member.numerical_input_value
+                if hasattr(member, 'int_value'):
+                    d['int_value'] = member.int_value
 
                 return d
 

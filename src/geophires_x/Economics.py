@@ -994,7 +994,7 @@ class Economics:
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in WellDrillingCostCorrelation])
+                        '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
         )
 
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(

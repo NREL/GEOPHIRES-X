@@ -703,42 +703,42 @@
         {
           "name": "ELECTRICITY",
           "value": "Electricity",
-          "numerical_input_value": 1
+          "int_value": 1
         },
         {
           "name": "HEAT",
           "value": "Direct-Use Heat",
-          "numerical_input_value": 2
+          "int_value": 2
         },
         {
           "name": "COGENERATION_TOPPING_EXTRA_HEAT",
           "value": "Cogeneration Topping Cycle, Heat sales considered as extra income",
-          "numerical_input_value": 31
+          "int_value": 31
         },
         {
           "name": "COGENERATION_TOPPING_EXTRA_ELECTRICITY",
           "value": "Cogeneration Topping Cycle, Electricity sales considered as extra income",
-          "numerical_input_value": 32
+          "int_value": 32
         },
         {
           "name": "COGENERATION_BOTTOMING_EXTRA_HEAT",
           "value": "Cogeneration Bottoming Cycle, Heat sales considered as extra income",
-          "numerical_input_value": 41
+          "int_value": 41
         },
         {
           "name": "COGENERATION_BOTTOMING_EXTRA_ELECTRICITY",
           "value": "Cogeneration Bottoming Cycle, Electricity sales considered as extra income",
-          "numerical_input_value": 42
+          "int_value": 42
         },
         {
           "name": "COGENERATION_PARALLEL_EXTRA_HEAT",
           "value": "Cogeneration Parallel Cycle, Heat sales considered as extra income",
-          "numerical_input_value": 51
+          "int_value": 51
         },
         {
           "name": "COGENERATION_PARALLEL_EXTRA_ELECTRICITY",
           "value": "Cogeneration Parallel Cycle, Electricity sales considered as extra income",
-          "numerical_input_value": 52
+          "int_value": 52
         }
       ]
     },

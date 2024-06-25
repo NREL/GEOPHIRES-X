@@ -238,7 +238,7 @@ class SurfacePlant:
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
             ToolTipText="Select the end-use application of the geofluid heat: " +
-                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in EndUseOptions])
+                        '; '.join([f'{it.int_value}: {it.value}' for it in EndUseOptions])
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",

@@ -17,8 +17,8 @@ class EndUseOptions(str, Enum):
         obj._value_ = args[1]
         return obj
 
-    def __init__(self, numerical_input_value: int, _: str):
-        self.numerical_input_value = numerical_input_value
+    def __init__(self, int_value: int, _: str):
+        self.int_value = int_value
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -30,7 +30,7 @@ class EndUseOptions(str, Enum):
         """
 
         for option in EndUseOptions:
-            if input_string == str(option.numerical_input_value):
+            if input_string == str(option.int_value):
                 return option
 
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
@@ -104,8 +104,8 @@ class WellDrillingCostCorrelation(str, Enum):
         obj._value_ = args[1]
         return obj
 
-    def __init__(self, numerical_input_value: int, _: str, c2: float, c1: float, c0: float):
-        self.numerical_input_value = numerical_input_value
+    def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float):
+        self.int_value = int_value
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0

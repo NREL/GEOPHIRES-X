@@ -991,6 +991,7 @@ class Economics:
             "Well Drilling Cost Correlation",
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            ValuesEnum=WellDrillingCostCorrelation,
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +

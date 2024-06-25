@@ -1217,7 +1217,94 @@
       "category": "Economics",
       "default": "",
       "minimum": 1,
-      "maximum": 17
+      "maximum": 17,
+      "enum_values": [
+        {
+          "name": "VERTICAL_SMALL",
+          "value": "vertical small diameter, baseline",
+          "int_value": 1
+        },
+        {
+          "name": "DEVIATED_SMALL",
+          "value": "deviated small diameter, baseline",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL_LARGE",
+          "value": "vertical large diameter, baseline",
+          "int_value": 3
+        },
+        {
+          "name": "DEVIATED_LARGE",
+          "value": "deviated large diameter, baseline",
+          "int_value": 4
+        },
+        {
+          "name": "SIMPLE",
+          "value": "Simple",
+          "int_value": 5
+        },
+        {
+          "name": "VERTICAL_SMALL_INT1",
+          "value": "vertical small diameter, intermediate1",
+          "int_value": 6
+        },
+        {
+          "name": "VERTICAL_SMALL_INT2",
+          "value": "vertical small diameter, intermediate2",
+          "int_value": 7
+        },
+        {
+          "name": "DEVIATED_SMALL_INT1",
+          "value": "deviated small diameter, intermediate1",
+          "int_value": 8
+        },
+        {
+          "name": "DEVIATED_SMALL_INT2",
+          "value": "deviated small diameter, intermediate2",
+          "int_value": 9
+        },
+        {
+          "name": "VERTICAL_LARGE_INT1",
+          "value": "vertical large diameter, intermediate1",
+          "int_value": 10
+        },
+        {
+          "name": "VERTICAL_LARGE_INT2",
+          "value": "vertical large diameter, intermediate2",
+          "int_value": 11
+        },
+        {
+          "name": "DEVIATED_LARGE_INT1",
+          "value": "deviated large diameter, intermediate1",
+          "int_value": 12
+        },
+        {
+          "name": "DEVIATED_LARGE_INT2",
+          "value": "deviated large diameter, intermediate2",
+          "int_value": 13
+        },
+        {
+          "name": "VERTICAL_SMALL_IDEAL",
+          "value": "vertical open-hole, small diameter, ideal",
+          "int_value": 14
+        },
+        {
+          "name": "DEVIATED_SMALL_IDEAL",
+          "value": "deviated liner, small diameter, ideal",
+          "int_value": 15
+        },
+        {
+          "name": "VERTICAL_LARGE_IDEAL",
+          "value": "vertical open-hole, large diameter, ideal",
+          "int_value": 16
+        },
+        {
+          "name": "DEVIATED_LARGE_IDEAL",
+          "value": "deviated liner, large diameter, ideal",
+          "int_value": 17
+        }
+      ]
     },
     "Do AddOn Calculations": {
       "description": "Set to true if you want the add-on economics calculations to be made",

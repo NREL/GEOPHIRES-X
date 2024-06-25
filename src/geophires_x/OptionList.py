@@ -53,6 +53,33 @@ class PlantType(str, Enum):
     RTES = "Reservoir Thermal Energy Storage"  # 8
     INDUSTRIAL = "Industrial"  # 9
 
+    @staticmethod
+    def get_plant_type_from_input_string(input_string:str):
+        """
+        :rtype: PlantType
+        """
+
+        if input_string == str(1):
+            return PlantType.SUB_CRITICAL_ORC
+        elif input_string == str(2):
+            return PlantType.SUPER_CRITICAL_ORC
+        elif input_string == str(3):
+            return PlantType.SINGLE_FLASH
+        elif input_string == str(4):
+            return PlantType.DOUBLE_FLASH
+        elif input_string == str(5):
+            return PlantType.ABSORPTION_CHILLER
+        elif input_string == str(6):
+            return PlantType.HEAT_PUMP
+        elif input_string == str(7):
+            return PlantType.DISTRICT_HEATING
+        elif input_string == str(8):
+            return PlantType.RTES
+        else:
+            return PlantType.INDUSTRIAL
+
+        raise ValueError(f'Unknown End-Use Option input value: {input_string}')
+
 
 class EconomicModel(str, Enum):
     CLGS = "Simple (CLGS)"

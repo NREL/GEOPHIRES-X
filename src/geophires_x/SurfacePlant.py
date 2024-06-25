@@ -519,24 +519,7 @@ class SurfacePlant:
                             self.plant_type.value = PlantType.INDUSTRIAL
 
                     elif ParameterToModify.Name == 'Power Plant Type':
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = PlantType.SUB_CRITICAL_ORC
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = PlantType.SUPER_CRITICAL_ORC
-                        elif ParameterReadIn.sValue == str(3):
-                            ParameterToModify.value = PlantType.SINGLE_FLASH
-                        elif ParameterReadIn.sValue == str(4):
-                            ParameterToModify.value = PlantType.DOUBLE_FLASH
-                        elif ParameterReadIn.sValue == str(5):
-                            ParameterToModify.value = PlantType.ABSORPTION_CHILLER
-                        elif ParameterReadIn.sValue == str(6):
-                            ParameterToModify.value = PlantType.HEAT_PUMP
-                        elif ParameterReadIn.sValue == str(7):
-                            ParameterToModify.value = PlantType.DISTRICT_HEATING
-                        elif ParameterReadIn.sValue == str(8):
-                            ParameterToModify.value = PlantType.RTES
-                        else:
-                            ParameterToModify.value = PlantType.INDUSTRIAL
+                        ParameterToModify.value = PlantType.get_plant_type_from_input_string(ParameterReadIn.sValue)
                         if self.enduse_option.value == EndUseOptions.ELECTRICITY:
                             # simple single- or double-flash power plant assumes no production well pumping
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:

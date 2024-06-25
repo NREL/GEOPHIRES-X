@@ -119,6 +119,8 @@ class Parameter(HasQuantity):
 
     parameter_category: str = None
 
+    ValuesEnum:Enum = None
+
     def __post_init__(self):
         if self.PreferredUnits is None:
             self.PreferredUnits = self.CurrentUnits

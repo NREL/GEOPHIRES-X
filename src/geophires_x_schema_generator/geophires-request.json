@@ -698,7 +698,49 @@
       "category": "Surface Plant",
       "default": null,
       "minimum": 1,
-      "maximum": 52
+      "maximum": 52,
+      "enum_values": [
+        {
+          "name": "ELECTRICITY",
+          "value": "Electricity",
+          "numerical_input_value": 1
+        },
+        {
+          "name": "HEAT",
+          "value": "Direct-Use Heat",
+          "numerical_input_value": 2
+        },
+        {
+          "name": "COGENERATION_TOPPING_EXTRA_HEAT",
+          "value": "Cogeneration Topping Cycle, Heat sales considered as extra income",
+          "numerical_input_value": 31
+        },
+        {
+          "name": "COGENERATION_TOPPING_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Topping Cycle, Electricity sales considered as extra income",
+          "numerical_input_value": 32
+        },
+        {
+          "name": "COGENERATION_BOTTOMING_EXTRA_HEAT",
+          "value": "Cogeneration Bottoming Cycle, Heat sales considered as extra income",
+          "numerical_input_value": 41
+        },
+        {
+          "name": "COGENERATION_BOTTOMING_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Bottoming Cycle, Electricity sales considered as extra income",
+          "numerical_input_value": 42
+        },
+        {
+          "name": "COGENERATION_PARALLEL_EXTRA_HEAT",
+          "value": "Cogeneration Parallel Cycle, Heat sales considered as extra income",
+          "numerical_input_value": 51
+        },
+        {
+          "name": "COGENERATION_PARALLEL_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Parallel Cycle, Electricity sales considered as extra income",
+          "numerical_input_value": 52
+        }
+      ]
     },
     "Power Plant Type": {
       "description": "Specify the type of physical plant. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump 7: District Heating, 8: Reservoir Thermal Energy Storage",

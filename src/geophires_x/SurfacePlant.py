@@ -193,7 +193,7 @@ class SurfacePlant:
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
                 NetkWhProduced[i] = np.trapz(NetElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
-        if enduse_option != EndUseOptions.ELECTRICITY:
+        if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
@@ -236,7 +236,8 @@ class SurfacePlant:
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
-            ToolTipText="Select the end-use application of the geofluid heat (see docs for details)"
+            ToolTipText="Select the end-use application of the geofluid heat: " +
+                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in EndUseOptions])
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",
@@ -511,23 +512,10 @@ class SurfacePlant:
 
                     # handle special cases
                     if ParameterToModify.Name == 'End-Use Option':
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = EndUseOptions.HEAT
+                        end_use_option = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        ParameterToModify.value = end_use_option
+                        if end_use_option == EndUseOptions.HEAT:
                             self.plant_type.value = PlantType.INDUSTRIAL
-                        elif ParameterReadIn.sValue == str(31):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(32):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(41):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(42):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(51):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(52):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
 
                     elif ParameterToModify.Name == 'Power Plant Type':
                         if ParameterReadIn.sValue == str(1):

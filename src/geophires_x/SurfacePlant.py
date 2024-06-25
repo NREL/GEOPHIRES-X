@@ -244,11 +244,11 @@ class SurfacePlant:
             "Power Plant Type",
             DefaultValue=PlantType.SUB_CRITICAL_ORC,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ValuesEnum=PlantType,
             UnitType=Units.NONE,
             ErrMessage="assume default power plant type (1: subcritical ORC)",
-            ToolTipText="Specify the type of physical plant. 1: Subcritical ORC," +
-            " 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump" +  # 6
-            " 7: District Heating, 8: Reservoir Thermal Energy Storage"
+            ToolTipText="Specify the type of physical plant. " +
+                        '; '.join([f'{it.int_value}: {it.value}' for it in PlantType])
         )
         self.pump_efficiency = self.ParameterDict[self.pump_efficiency.Name] = floatParameter(
             "Circulation Pump Efficiency",

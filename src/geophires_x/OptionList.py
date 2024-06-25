@@ -42,16 +42,16 @@ class EndUseOptions(GeophiresInputEnum):
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
 
-class PlantType(str, Enum):
-    SUB_CRITICAL_ORC = "Subcritical ORC" # 1
-    SUPER_CRITICAL_ORC = "Supercritical ORC" # 2
-    SINGLE_FLASH = "Single-Flash" # 3
-    DOUBLE_FLASH = "Double-Flash" # 4
-    ABSORPTION_CHILLER = "Absorption Chiller"  # 5
-    HEAT_PUMP = "Heat Pump"  # 6
-    DISTRICT_HEATING = "District Heating"  # 7
-    RTES = "Reservoir Thermal Energy Storage"  # 8
-    INDUSTRIAL = "Industrial"  # 9
+class PlantType(GeophiresInputEnum):
+    SUB_CRITICAL_ORC = 1, "Subcritical ORC"
+    SUPER_CRITICAL_ORC = 2, "Supercritical ORC"
+    SINGLE_FLASH = 3, "Single-Flash"
+    DOUBLE_FLASH = 4, "Double-Flash"
+    ABSORPTION_CHILLER = 5, "Absorption Chiller"
+    HEAT_PUMP = 6, "Heat Pump"
+    DISTRICT_HEATING = 7, "District Heating"
+    RTES = 8, "Reservoir Thermal Energy Storage"
+    INDUSTRIAL = 9, "Industrial"
 
     @staticmethod
     def get_plant_type_from_input_string(input_string:str):
@@ -59,26 +59,11 @@ class PlantType(str, Enum):
         :rtype: PlantType
         """
 
-        if input_string == str(1):
-            return PlantType.SUB_CRITICAL_ORC
-        elif input_string == str(2):
-            return PlantType.SUPER_CRITICAL_ORC
-        elif input_string == str(3):
-            return PlantType.SINGLE_FLASH
-        elif input_string == str(4):
-            return PlantType.DOUBLE_FLASH
-        elif input_string == str(5):
-            return PlantType.ABSORPTION_CHILLER
-        elif input_string == str(6):
-            return PlantType.HEAT_PUMP
-        elif input_string == str(7):
-            return PlantType.DISTRICT_HEATING
-        elif input_string == str(8):
-            return PlantType.RTES
-        else:
-            return PlantType.INDUSTRIAL
+        for type in PlantType:
+            if input_string == str(type.int_value):
+                return type
 
-        raise ValueError(f'Unknown End-Use Option input value: {input_string}')
+        raise ValueError(f'Unknown Power Plant Type input value: {input_string}')
 
 
 class EconomicModel(str, Enum):

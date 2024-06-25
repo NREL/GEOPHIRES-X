@@ -785,13 +785,60 @@
       ]
     },
     "Power Plant Type": {
-      "description": "Specify the type of physical plant. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump 7: District Heating, 8: Reservoir Thermal Energy Storage",
+      "description": "Specify the type of physical plant. 1: Subcritical ORC; 2: Supercritical ORC; 3: Single-Flash; 4: Double-Flash; 5: Absorption Chiller; 6: Heat Pump; 7: District Heating; 8: Reservoir Thermal Energy Storage; 9: Industrial",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
-      "default": "Subcritical ORC",
+      "default": "",
       "minimum": 1,
-      "maximum": 9
+      "maximum": 9,
+      "enum_values": [
+        {
+          "name": "SUB_CRITICAL_ORC",
+          "value": "Subcritical ORC",
+          "int_value": 1
+        },
+        {
+          "name": "SUPER_CRITICAL_ORC",
+          "value": "Supercritical ORC",
+          "int_value": 2
+        },
+        {
+          "name": "SINGLE_FLASH",
+          "value": "Single-Flash",
+          "int_value": 3
+        },
+        {
+          "name": "DOUBLE_FLASH",
+          "value": "Double-Flash",
+          "int_value": 4
+        },
+        {
+          "name": "ABSORPTION_CHILLER",
+          "value": "Absorption Chiller",
+          "int_value": 5
+        },
+        {
+          "name": "HEAT_PUMP",
+          "value": "Heat Pump",
+          "int_value": 6
+        },
+        {
+          "name": "DISTRICT_HEATING",
+          "value": "District Heating",
+          "int_value": 7
+        },
+        {
+          "name": "RTES",
+          "value": "Reservoir Thermal Energy Storage",
+          "int_value": 8
+        },
+        {
+          "name": "INDUSTRIAL",
+          "value": "Industrial",
+          "int_value": 9
+        }
+      ]
     },
     "Circulation Pump Efficiency": {
       "description": "Specify the overall efficiency of the injection and production well pumps",

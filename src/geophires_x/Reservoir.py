@@ -638,6 +638,12 @@ class Reservoir:
         else:
             model.logger.info("No parameters read because no content provided")
 
+        if not isinstance(self.resoption.value, ReservoirModel):
+            # resoption is an intParameter with an int default value whose working value gets set to a ReservoirModel
+            # enum when the parameter is read, so convert to the enum from the default if it's not read as a parameter.
+            # (TODO: resolve the enum/int value discrepancy so this workaround can be removed)
+            self.resoption.value = ReservoirModel.get_reservoir_model_from_input_string(str(self.resoption.value))
+
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     @lru_cache(maxsize=1024)

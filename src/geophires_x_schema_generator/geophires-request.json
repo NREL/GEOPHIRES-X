@@ -1426,7 +1426,7 @@
       "type": "integer",
       "units": null,
       "category": "Economics",
-      "default": "",
+      "default": 10,
       "minimum": 1,
       "maximum": 17,
       "enum_values": [

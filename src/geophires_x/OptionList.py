@@ -195,6 +195,12 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
 
         raise ValueError(f'Unknown Well Drilling Cost Correlation input value: {input_string}')
 
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
 
 class FractureShape(GeophiresInputEnum):
     CIRCULAR_AREA = 1, "Circular fracture with known area"

@@ -6,7 +6,8 @@ import numpy as np
 from pint.facets.plain import PlainQuantity
 
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
-from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter
+from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from .Units import *
 import geophires_x.Model as Model
 
@@ -638,11 +639,7 @@ class Reservoir:
         else:
             model.logger.info("No parameters read because no content provided")
 
-        if not isinstance(self.resoption.value, ReservoirModel):
-            # resoption is an intParameter with an int default value whose working value gets set to a ReservoirModel
-            # enum when the parameter is read, so convert to the enum from the default if it's not read as a parameter.
-            # (TODO: resolve the enum/int value discrepancy so this workaround can be removed)
-            self.resoption.value = ReservoirModel.get_reservoir_model_from_input_string(str(self.resoption.value))
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

@@ -1,8 +1,10 @@
 import sys
 import os
 import numpy as np
+
 from .OptionList import EndUseOptions, PlantType
-from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter
+from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from .Units import *
 import geophires_x.Model as Model
 import pandas as pd
@@ -232,7 +234,7 @@ class SurfacePlant:
 
         self.enduse_option = self.ParameterDict[self.enduse_option.Name] = intParameter(
             "End-Use Option",
-            value=EndUseOptions.ELECTRICITY,
+            value=EndUseOptions.ELECTRICITY, # TODO should be DefaultValue instead
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
             ValuesEnum=EndUseOptions,
             UnitType=Units.NONE,
@@ -242,7 +244,7 @@ class SurfacePlant:
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",
-            DefaultValue=PlantType.SUB_CRITICAL_ORC,
+            DefaultValue=PlantType.SUB_CRITICAL_ORC.int_value,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9],
             ValuesEnum=PlantType,
             UnitType=Units.NONE,
@@ -576,6 +578,8 @@ class SurfacePlant:
                     model.logger.warning(msg)
         else:
             model.logger.info('No parameters read because no content provided')
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
 

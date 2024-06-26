@@ -5,7 +5,8 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType
-from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter
+from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
+    coerce_int_params_to_enum_values
 from geophires_x.Units import *
 
 
@@ -2222,6 +2223,8 @@ class Economics:
             if key.startswith("S-DAC-GT"):
                 self.DoSDACGTCalculations.value = True
                 break
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

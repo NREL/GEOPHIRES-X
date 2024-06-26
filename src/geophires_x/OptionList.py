@@ -1,4 +1,5 @@
 # copyright, 2023, Malcolm I Ross
+
 from enum import Enum
 
 
@@ -41,6 +42,12 @@ class EndUseOptions(GeophiresInputEnum):
 
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
 
 class PlantType(GeophiresInputEnum):
     SUB_CRITICAL_ORC = 1, "Subcritical ORC"
@@ -64,6 +71,12 @@ class PlantType(GeophiresInputEnum):
                 return type
 
         raise ValueError(f'Unknown Power Plant Type input value: {input_string}')
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
 class EconomicModel(str, Enum):
@@ -94,6 +107,12 @@ class ReservoirModel(GeophiresInputEnum):
                 return model
 
         raise ValueError(f'Unknown Reservoir Model input value: {input_string}')
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
 class ReservoirVolume(str, Enum):

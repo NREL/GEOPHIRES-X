@@ -234,7 +234,7 @@ class SurfacePlant:
 
         self.enduse_option = self.ParameterDict[self.enduse_option.Name] = intParameter(
             "End-Use Option",
-            value=EndUseOptions.ELECTRICITY, # TODO should be DefaultValue instead
+            DefaultValue=EndUseOptions.ELECTRICITY.int_value,
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
             ValuesEnum=EndUseOptions,
             UnitType=Units.NONE,

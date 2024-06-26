@@ -223,8 +223,9 @@ class Reservoir:
 
         self.resvoloption = self.ParameterDict[self.resvoloption.Name] = intParameter(
             "Reservoir Volume Option",
-            DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM,
+            DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=ReservoirVolume,
             Required=True,
             UnitType=Units.NONE,
             ErrMessage="assume default reservoir volume option",
@@ -567,14 +568,7 @@ class Reservoir:
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
 
                     elif ParameterToModify.Name == "Reservoir Volume Option":
-                        if ParameterReadIn.sValue == '1':
-                            ParameterToModify.value = ReservoirVolume.FRAC_NUM_SEP
-                        elif ParameterReadIn.sValue == '2':
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_SEP
-                        elif ParameterReadIn.sValue == '3':
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_NUM
-                        else:
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_ONLY
+                        ParameterToModify.value = ReservoirVolume.from_input_string(ParameterReadIn.sValue)
 
                         if ParameterToModify.value == ReservoirVolume.RES_VOL_ONLY and ParameterToModify.value in [
                             ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:

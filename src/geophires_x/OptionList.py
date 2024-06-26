@@ -115,11 +115,25 @@ class ReservoirModel(GeophiresInputEnum):
                 return member
 
 
-class ReservoirVolume(str, Enum):
-    FRAC_NUM_SEP = "Specify number of fractures and fracture separation"
-    RES_VOL_FRAC_SEP = "Specify reservoir volume and fracture separation"
-    RES_VOL_FRAC_NUM = "Specify reservoir volume and number of fractures"
-    RES_VOL_ONLY = "Specify reservoir volume only"
+class ReservoirVolume(GeophiresInputEnum):
+    FRAC_NUM_SEP = 1, "Specify number of fractures and fracture separation"
+    RES_VOL_FRAC_SEP = 2, "Specify reservoir volume and fracture separation"
+    RES_VOL_FRAC_NUM = 3, "Specify reservoir volume and number of fractures"
+    RES_VOL_ONLY = 4, "Specify reservoir volume only"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for res_vol in ReservoirVolume:
+            if input_string == str(res_vol.int_value):
+                return res_vol
+
+        raise ValueError(f'Unknown Reservoir Volume input value: {input_string}')
 
 
 class WellDrillingCostCorrelation(GeophiresInputEnum):

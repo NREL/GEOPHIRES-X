@@ -225,9 +225,31 @@
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Specify reservoir volume and number of fractures",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "FRAC_NUM_SEP",
+          "value": "Specify number of fractures and fracture separation",
+          "int_value": 1
+        },
+        {
+          "name": "RES_VOL_FRAC_SEP",
+          "value": "Specify reservoir volume and fracture separation",
+          "int_value": 2
+        },
+        {
+          "name": "RES_VOL_FRAC_NUM",
+          "value": "Specify reservoir volume and number of fractures",
+          "int_value": 3
+        },
+        {
+          "name": "RES_VOL_ONLY",
+          "value": "Specify reservoir volume only",
+          "int_value": 4
+        }
+      ]
     },
     "Fracture Shape": {
       "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir:             1: Circular fracture with known area, 2: Circular fracture with known diameter,             3: Square fracture, 4: Rectangular fracture",

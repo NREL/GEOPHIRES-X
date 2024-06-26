@@ -888,20 +888,24 @@ class WellBores:
         # This is a alias for "Well Geometry Configuration" - putting it here for backwards compatibility
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Closed-loop Configuration",
-            DefaultValue=Configuration.VERTICAL,
+            DefaultValue=Configuration.VERTICAL.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume simple vertical well (3)"
+            ErrMessage="assume simple vertical well (3)",
+            ToolTipText = '; '.join([f'{it.int_value}: {it.value}' for it in Configuration])
         )
         # This is a alias for "Closed-loop Configuration" - putting it here for backwards compatibility
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Well Geometry Configuration",
-            DefaultValue=Configuration.VERTICAL,
+            DefaultValue=Configuration.VERTICAL.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume simple vertical well (3)"
+            ErrMessage="assume simple vertical well (3)",
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in Configuration])
         )
 
         self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
@@ -1169,16 +1173,7 @@ class WellBores:
                             self.usebuiltinppwellheadcorrelation = False
                     elif (ParameterToModify.Name == "Closed-loop Configuration" or
                           ParameterToModify.Name == "Well Geometry Configuration"):  # These two are alias of each other
-                        if ParameterReadIn.sValue == str(1):
-                            self.Configuration.value = Configuration.ULOOP
-                        elif ParameterReadIn.sValue == str(2):
-                            self.Configuration.value = Configuration.COAXIAL
-                        elif ParameterReadIn.sValue == str(3):
-                            self.Configuration.value = Configuration.VERTICAL
-                        elif ParameterReadIn.sValue == str(4):
-                            self.Configuration.value = Configuration.L
-                        else:
-                            raise ValueError(f'Invalid Configuration: {self.Configuration.value}')
+                        self.Configuration.value = Configuration.from_input_string(ParameterReadIn.sValue)
         else:
             model.logger.info("No parameters read because no content provided")
 

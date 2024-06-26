@@ -6,6 +6,8 @@ from enum import Enum
 class GeophiresInputEnum(str, Enum):
     """
     Input enums have a name, integer input value, and string value
+
+    TODO implement from_int/from_input_string here instead of child classes
     """
 
     def __new__(cls, *args, **kwds):
@@ -236,8 +238,22 @@ class WorkingFluid(GeophiresInputEnum):
 
 
 
-class Configuration(str, Enum):
-    ULOOP = "utube"
-    COAXIAL = "coaxial"
-    VERTICAL = "vertical"
-    L = "L"
+class Configuration(GeophiresInputEnum):
+    ULOOP = 1, "utube"
+    COAXIAL = 2, "coaxial"
+    VERTICAL = 3, "vertical"
+    L = 4, "L"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Configuration input value: {input_string}')

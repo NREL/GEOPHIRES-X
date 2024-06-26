@@ -697,22 +697,66 @@
       "maximum": 1.8e+30
     },
     "Closed-loop Configuration": {
-      "description": "",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "vertical",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "ULOOP",
+          "value": "utube",
+          "int_value": 1
+        },
+        {
+          "name": "COAXIAL",
+          "value": "coaxial",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL",
+          "value": "vertical",
+          "int_value": 3
+        },
+        {
+          "name": "L",
+          "value": "L",
+          "int_value": 4
+        }
+      ]
     },
     "Well Geometry Configuration": {
-      "description": "",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "vertical",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "ULOOP",
+          "value": "utube",
+          "int_value": 1
+        },
+        {
+          "name": "COAXIAL",
+          "value": "coaxial",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL",
+          "value": "vertical",
+          "int_value": 3
+        },
+        {
+          "name": "L",
+          "value": "L",
+          "int_value": 4
+        }
+      ]
     },
     "Water Thermal Conductivity": {
       "description": "Water Thermal Conductivity",

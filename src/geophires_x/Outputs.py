@@ -864,7 +864,7 @@ class Outputs:
 
         if model.economics.DoCarbonCalculations.value:
             summary.append(OutputTableItem('Total Avoided Carbon Emissions', '{0:10.2f}'.format(
-                model.economics.CarbonThatWouldHaveBeenProducedTotal.value * 0.000453592), 'metric tonnes'))
+                model.economics.CarbonThatWouldHaveBeenProducedTotal.value * 0.000453592), 'tonnes'))
 
         if model.economics.econmodel.value == EconomicModel.FCR:
             economic_parameters.append(OutputTableItem('Economic Model', model.economics.econmodel.value.value))
@@ -1605,7 +1605,7 @@ class Outputs:
                         f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} ' + model.reserv.layerthickness.CurrentUnits.value + NL)
                     f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 if model.economics.DoCarbonCalculations.value:
-                    f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} metric tonnes' + NL)
+                    f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} tonnes' + NL)
 
                 f.write(NL)
                 f.write(NL)

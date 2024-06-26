@@ -72,7 +72,7 @@ class AGSOutputs(Outputs.Outputs):
                                                        model.surfaceplant.NetElectricityProduced.value, fill_value="extrapolate")
                         model.surfaceplant.NetElectricityProduced.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
 
-            if not model.economics.econmodel.value == EconomicModel.CLGS:
+            if model.economics.econmodel.value is not EconomicModel.CLGS:
                 super().PrintOutputs(model)
             else:
                 with open(self.output_file, 'w', encoding='UTF-8') as f:

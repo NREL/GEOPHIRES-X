@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from enum import EnumType
+from enum import Enum
 from os.path import exists
 import dataclasses
 import json
@@ -578,7 +578,7 @@ class _EnhancedJSONEncoder(json.JSONEncoder):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
 
-        if isinstance(o, EnumType):
+        if issubclass(o, Enum):
             def get_entry(member) -> dict[str, Any]:
                 d = {
                     'name': member.name,

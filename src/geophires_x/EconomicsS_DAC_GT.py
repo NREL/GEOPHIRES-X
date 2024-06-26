@@ -43,14 +43,13 @@ class EconomicsS_DAC_GT(Economics.Economics):
         """
         model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
-        # These disctionaries contains a list of all the parameters set in this object, stored as "Parameter" and
-        # OutputParameter Objects.  This will alow us later to access them in a user interface and get that list,
+        # These dictionaries contains a list of all the parameters set in this object, stored as "Parameter" and
+        # OutputParameter Objects.  This will allow us later to access them in a user interface and get that list,
         # along with unit type, preferred units, etc.
         self.ParameterDict = {}
         self.OutputParameterDict = {}
         self.wacc = self.ParameterDict[self.wacc.Name] = floatParameter(
             "WACC",
-            value=10.0,
             DefaultValue=10.0,
             Min=0.1,
             Max=30.0,
@@ -62,7 +61,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.CAPEX = self.ParameterDict[self.CAPEX.Name] = floatParameter(
             "S-DAC-GT CAPEX",
-            value=1379.0,
             DefaultValue=1379.0,
             Min=100.0,
             Max=5000.0,
@@ -74,7 +72,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.OPEX = self.ParameterDict[self.OPEX.Name] = floatParameter(
             "S-DAC-GT OPEX",
-            value=56.0,
             DefaultValue=56.0,
             Min=10.0,
             Max=500.0,
@@ -86,7 +83,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.elec = self.ParameterDict[self.elec.Name] = floatParameter(
             "S-DAC-GT Electrical Energy",
-            value=916.0,
             DefaultValue=916.0,
             Min=100.0, Max=5000.0,
             UnitType=Units.ENERGYPERCO2,
@@ -97,7 +93,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.therm = self.ParameterDict[self.therm.Name] = floatParameter(
             "S-DAC-GT Thermal Energy",
-            value=1447.0,
             DefaultValue=1447.0,
             Min=100.0,
             Max=5000.0,
@@ -109,7 +104,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.NG_price = self.ParameterDict[self.NG_price.Name] = floatParameter(
             "S-DAC-GT Natural Gas Price",
-            value=5.0,
             DefaultValue=5.0,
             Min=0.5,
             Max=500.0,
@@ -121,7 +115,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.power_co2intensity = self.ParameterDict[self.power_co2intensity.Name] = floatParameter(
             "S-DAC-GT CO2 Intensity of Electricity",
-            value=0.4,
             DefaultValue=0.4,
             Min=0.0,
             Max=1.0,
@@ -133,7 +126,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.NG_co2intensity = self.ParameterDict[self.NG_co2intensity.Name] = floatParameter(
             "S-DAC-GT CO2 Intensity of Natural Gas",
-            value=0.194965384,
             DefaultValue=0.194965384,
             Min=0.0,
             Max=1.0,
@@ -593,15 +585,18 @@ class EconomicsS_DAC_GT(Economics.Economics):
             print(err_message + "  Exiting....")
             sys.exit()
 
-        self.CRF = self.calculate_CRF(self.wacc.value,
-                                      model.surfaceplant.plant_lifetime.value)  # Calculate initial CRF value based on default inputs
-        CAPEX = self.CAPEX.value * self.CRF  # don't change a parameters value directly - it throw off the rehydration
+        # Calculate initial CRF value based on default inputs
+        self.CRF = self.calculate_CRF(self.wacc.value, model.surfaceplant.plant_lifetime.value)
+
+        # don't change a parameters value directly - it throw off the rehydration
+        CAPEX = self.CAPEX.value * self.CRF
         CAPEX = CAPEX * self.CAPEX_mult.value
         self.OPEX.value = self.OPEX.value * self.OPEX_mult.value
         self.therm.value = self.therm.value * self.therm_index.value
         power_totalcost = self.elec.value * model.surfaceplant.electricity_cost_to_buy.value
         elec_heat_totalcost = self.therm.value * model.surfaceplant.electricity_cost_to_buy.value
-        # Convert from $/McF to $/kWh_th, but don't change a parameters value directly - it will throw off the rehydration
+
+        # Convert from $/McF to $/kWh_th, but don't change any parameters value directly - it will throw off the rehydration
         NG_price = self.NG_price.value / self.NG_EnergyDensity.value
         NG_totalcost = self.therm.value * NG_price
         self.LCOH.value, self.kWh_e_per_kWh_th.value = self.geo_therm_cost(model.surfaceplant.electricity_cost_to_buy.value,
@@ -659,17 +654,28 @@ class EconomicsS_DAC_GT(Economics.Economics):
         # some (all) of it to do the capture, so when they get used in the final economic calculation (below),
         # the new values reflect the impact of S-DAC-GT
         for i in range(0, model.surfaceplant.plant_lifetime.value):
-            if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
+            if model.surfaceplant.enduse_option.value is not EndUseOptions.HEAT:
+                # all these end-use options have an electricity generation component
                 model.surfaceplant.TotalkWhProduced.value[i] = model.surfaceplant.TotalkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
                 model.surfaceplant.NetkWhProduced.value[i] = model.surfaceplant.NetkWhProduced.value[i] - (
                     self.CarbonExtractedAnnually.value[i] * self.elec.value)
-                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] - (
                         self.CarbonExtractedAnnually.value[i] * self.therm.value)
             else:
-                model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] - (
-                    self.CarbonExtractedAnnually.value[
-                        i] * self.therm.value)  # all the end-use option of direct-use only component
+                # all the end-use option of direct-use only component
+                model.surfaceplant.HeatkWhProduced.value[i] = (model.surfaceplant.HeatkWhProduced.value[i] -
+                                                               (self.CarbonExtractedAnnually.value[i] * self.therm.value))
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        # Build a revenue generation model for the carbon capture, assuming the capture is being sequestered and that
+        # there is some sort of credit involved for doing that sequestering
+        # note that there may already be values in the CarbonRevenue array, so we need to
+        # add to them, not just set them. If there isn't values, there, the array will be filed with zeros, so adding won't be a problem
+        #total_duration = model.surfaceplant.plant_lifetime.value
+        #for i in range(0, total_duration, 1):
+        #    model.sdacgteconomics.CarbonRevenue.value[i] = (model.sdacgteconomics.CarbonRevenue.value[i] +
+        #                                              (self.CarbonExtractedAnnually.value[i] * model.economics.CarbonPrice.value[i]))
+#            if i > 0:
+#                model.economics.CarbonCummCashFlow.value[i] = model.economics.CarbonCummCashFlow.value[i - 1] + model.economics.CarbonRevenue.value[i]
+        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)

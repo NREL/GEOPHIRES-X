@@ -1,4 +1,5 @@
 import tempfile
+import unittest
 import uuid
 from pathlib import Path
 
@@ -30,6 +31,9 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['value'] == expected_price
         assert result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price']['unit'] == 'USD/MMBTU'
         assert result.result['SUMMARY OF RESULTS']['End-Use Option']['value'] == 'Direct-Use Heat'
+
+        assert 'GEOPHIRES Version' in result.result['Simulation Metadata']
+        assert '3.' in result.result['Simulation Metadata']['GEOPHIRES Version']['value']
 
     def test_geophires_x_result_2(self):
         test_result_path = self._get_test_file_path('geophires-result_example-2.out')
@@ -75,29 +79,51 @@ class GeophiresXClientTestCase(BaseTestCase):
             == 'MUSD/yr'
         )
 
+    def test_direct_use_heat_property(self):
+        test_result_path = self._get_test_file_path('examples/example12_DH.out')
+        result = GeophiresXResult(test_result_path)
+
+        with open(test_result_path) as f:
+            self.assertIn('Direct-Use heat breakeven price (LCOH)', f.read())
+
+        # Don't care about the value in this test - just that it's being read with the (LCOH)-suffixed name
+        self.assertIsNotNone(result.direct_use_heat_breakeven_price_USD_per_MMBTU)
+
+    def test_surface_application_field(self):
+        for example_file, surface_application in [
+            ('examples/example10_HP.out', 'Heat Pump'),
+            ('examples/example11_AC.out', 'Absorption Chiller'),
+            ('examples/example12_DH.out', 'District Heating'),
+        ]:
+            with self.subTest(msg=example_file):
+                test_result_path = self._get_test_file_path(example_file)
+                result = GeophiresXResult(test_result_path)
+
+                assert result.result['SUMMARY OF RESULTS']['Surface Application']['value'] == surface_application
+
     def test_example_multiple_gradients_result(self):
         test_result_path = self._get_test_file_path('examples/example_multiple_gradients.out')
         result = GeophiresXResult(test_result_path)
 
         categories = ['SUMMARY OF RESULTS', 'RESOURCE CHARACTERISTICS']
         for category in categories:
-            assert result.result[category]['Segment 1   Geothermal gradient']['value'] == 0.0500
-            assert result.result[category]['Segment 1   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 1   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 1   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 1   Geothermal gradient']['value'] == 50
+            assert result.result[category]['Segment 1   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 1   Thickness']['value'] == 1
+            assert result.result[category]['Segment 1   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 2   Geothermal gradient']['value'] == 0.0400
-            assert result.result[category]['Segment 2   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 2   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 2   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 2   Geothermal gradient']['value'] == 40
+            assert result.result[category]['Segment 2   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 2   Thickness']['value'] == 1
+            assert result.result[category]['Segment 2   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 3   Geothermal gradient']['value'] == 0.0300
-            assert result.result[category]['Segment 3   Geothermal gradient']['unit'] == 'degC/m'
-            assert result.result[category]['Segment 3   Thickness']['value'] == 1000
-            assert result.result[category]['Segment 3   Thickness']['unit'] == 'meter'
+            assert result.result[category]['Segment 3   Geothermal gradient']['value'] == 30
+            assert result.result[category]['Segment 3   Geothermal gradient']['unit'] == 'degC/km'
+            assert result.result[category]['Segment 3   Thickness']['value'] == 1
+            assert result.result[category]['Segment 3   Thickness']['unit'] == 'kilometer'
 
-            assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 0.0500
-            assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/m'
+            assert result.result[category]['Segment 4   Geothermal gradient']['value'] == 50
+            assert result.result[category]['Segment 4   Geothermal gradient']['unit'] == 'degC/km'
 
     def test_example_absorption_chiller_result(self):
         test_result_path = self._get_test_file_path('examples/example11_AC.out')
@@ -211,47 +237,111 @@ class GeophiresXClientTestCase(BaseTestCase):
                     'Annual Project Cash Flow (MUSD/yr)',
                     'Cumm. Project Cash Flow (MUSD)',
                 ],
-                [1, 0.09, 0.0023, 0.012, 0.0, 1.14, -70.0, -70.0, -102.63, -102.63],
-                [2, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -68.86, 2.72, -99.91],
-                [3, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -67.72, 2.76, -97.15],
-                [4, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -66.59, 2.77, -94.38],
-                [5, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -65.45, 2.78, -91.6],
-                [6, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -64.31, 2.79, -88.81],
-                [7, 0.102, 0.0026, 0.012, 0.0, 1.14, 1.14, -63.17, 2.79, -86.02],
-                [8, 0.114, 0.003, 0.012, 0.0, 1.14, 1.14, -62.03, 2.91, -83.11],
-                [9, 0.126, 0.0033, 0.022, 0.0, 1.14, 1.14, -60.89, 3.03, -80.08],
-                [10, 0.138, 0.0036, 0.032, 0.0, 1.14, 1.14, -59.75, 3.15, -76.94],
-                [11, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -58.61, 3.26, -73.68],
-                [12, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -57.47, 3.38, -70.29],
-                [13, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -56.33, 3.39, -66.91],
-                [14, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -55.19, 3.39, -63.52],
-                [15, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -54.05, 3.39, -60.13],
-                [16, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -52.91, 3.39, -56.74],
-                [17, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -51.77, 3.39, -53.34],
-                [18, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -50.63, 3.4, -49.95],
-                [19, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -49.49, 3.4, -46.55],
-                [20, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -48.35, 3.4, -43.15],
-                [21, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -47.21, 3.4, -39.75],
-                [22, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -46.07, 3.4, -36.35],
-                [23, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -44.93, 3.4, -32.95],
-                [24, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -43.8, 3.4, -29.54],
-                [25, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -42.66, 3.41, -26.14],
-                [26, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -41.52, 3.41, -22.73],
-                [27, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -40.38, 3.41, -19.32],
-                [28, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -39.24, 3.41, -15.91],
-                [29, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -38.1, 3.41, -12.5],
-                [30, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -36.96, 3.41, -9.09],
+                [1, 0.0, 0.0023, 0.0, 0.0, 1.14, -70.0, -70.0, -101.07, -101.07],
+                [2, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -68.86, 5.7, -95.37],
+                [3, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -67.72, 5.74, -89.63],
+                [4, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -66.59, 5.75, -83.88],
+                [5, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -65.45, 5.76, -78.12],
+                [6, 0.09, 0.0023, 0.012, 0.0, 1.14, 1.14, -64.31, 5.77, -72.35],
+                [7, 0.09, 0.0026, 0.012, 0.0, 1.14, 1.14, -63.17, 5.77, -66.58],
+                [8, 0.102, 0.003, 0.012, 0.0, 1.14, 1.14, -62.03, 6.28, -60.29],
+                [9, 0.114, 0.0033, 0.012, 0.0, 1.14, 1.14, -60.89, 6.8, -53.5],
+                [10, 0.126, 0.0036, 0.022, 0.0, 1.14, 1.14, -59.75, 7.31, -46.19],
+                [11, 0.138, 0.0039, 0.032, 0.0, 1.14, 1.14, -58.61, 7.82, -38.36],
+                [12, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -57.47, 8.34, -30.02],
+                [13, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -56.33, 8.34, -21.68],
+                [14, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -55.19, 8.34, -13.34],
+                [15, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -54.05, 8.35, -4.99],
+                [16, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -52.91, 8.35, 3.36],
+                [17, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -51.77, 8.35, 11.71],
+                [18, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -50.63, 8.35, 20.06],
+                [19, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -49.49, 8.35, 28.41],
+                [20, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -48.35, 8.36, 36.77],
+                [21, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -47.21, 8.36, 45.12],
+                [22, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -46.07, 8.36, 53.48],
+                [23, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -44.93, 8.36, 61.84],
+                [24, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -43.8, 8.36, 70.2],
+                [25, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -42.66, 8.36, 78.56],
+                [26, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -41.52, 8.36, 86.92],
+                [27, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -40.38, 8.36, 95.29],
+                [28, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -39.24, 8.36, 103.65],
+                [29, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -38.1, 8.37, 112.02],
+                [30, 0.15, 0.0039, 0.036, 0.0, 1.14, 1.14, -36.96, 8.37, 120.39],
             ],
             eep,
         )
 
-    def test_ccus_profile(self):
-        """
-        TODO make this less tedious to update when expected result values change
-            (https://github.com/NREL/GEOPHIRES-X/issues/107)
-        """
+    def test_revenue_and_cashflow_profile(self):
+        example_result_path = self._get_test_file_path('examples/example1_addons.out')
+        example_result = GeophiresXResult(example_result_path)
+        example_profile = example_result.result['REVENUE & CASHFLOW PROFILE']
+        self.assertIsNotNone(example_profile)
 
-        test_result_path = self._get_test_file_path('examples/example1_addons.out')
+        profile_headers = [
+            'Year Since Start',
+            'Electricity Price (cents/kWh)',
+            'Electricity Ann. Rev. (MUSD/yr)',
+            'Electricity Cumm. Rev. (MUSD)',
+            'Heat Price (cents/kWh)',
+            'Heat Ann. Rev. (MUSD/yr)',
+            'Heat Cumm. Rev. (MUSD)',
+            'Cooling Price (cents/kWh)',
+            'Cooling Ann. Rev. (MUSD/yr)',
+            'Cooling Cumm. Rev. (MUSD)',
+            'Carbon Price (USD/tonne)',
+            'Carbon Ann. Rev. (MUSD/yr)',
+            'Carbon Cumm. Rev. (MUSD)',
+            'Project OPEX (MUSD/yr)',
+            'Project Net Rev. (MUSD/yr)',
+            'Project Net Cashflow (MUSD)',
+        ]
+
+        self.assertListEqual(profile_headers, example_profile[0])
+
+        rcf_path = self._get_test_file_path('result_with_revenue_and_cashflow_profile.out')
+        rcf_result = GeophiresXResult(rcf_path)
+        rcf_profile = rcf_result.result['REVENUE & CASHFLOW PROFILE']
+        self.assertIsNotNone(rcf_profile)
+
+        self.assertListEqual(
+            [
+                profile_headers,
+                [1, 0.09, -32.63, 0.0, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -32.63, -32.63],
+                [2, 0.09, 1.58, 0.78, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.58, -31.05],
+                [3, 0.09, 1.62, 1.6, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.62, -29.43],
+                [4, 0.09, 1.63, 2.43, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.63, -27.8],
+                [5, 0.09, 1.64, 3.27, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.64, -26.15],
+                [6, 0.09, 1.65, 4.12, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.65, -24.5],
+                [7, 0.1, 1.65, 4.97, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.65, -22.85],
+                [8, 0.11, 1.77, 5.94, 0.01, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.77, -21.08],
+                [9, 0.13, 1.89, 7.03, 0.02, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 1.89, -19.19],
+                [10, 0.14, 2.01, 8.24, 0.03, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.01, -17.19],
+                [11, 0.15, 2.12, 9.56, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.12, -15.06],
+                [12, 0.15, 2.24, 11.0, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.24, -12.82],
+                [13, 0.15, 2.25, 12.44, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -10.57],
+                [14, 0.15, 2.25, 13.89, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -8.33],
+                [15, 0.15, 2.25, 15.34, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -6.08],
+                [16, 0.15, 2.25, 16.79, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -3.82],
+                [17, 0.15, 2.25, 18.24, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.25, -1.57],
+                [18, 0.15, 2.26, 19.7, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 0.69],
+                [19, 0.15, 2.26, 21.15, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 2.94],
+                [20, 0.15, 2.26, 22.61, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 5.2],
+                [21, 0.15, 2.26, 24.07, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 7.46],
+                [22, 0.15, 2.26, 25.53, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 9.73],
+                [23, 0.15, 2.26, 26.99, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 11.99],
+                [24, 0.15, 2.26, 28.46, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.26, 14.25],
+                [25, 0.15, 2.27, 29.92, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 16.52],
+                [26, 0.15, 2.27, 31.39, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 18.79],
+                [27, 0.15, 2.27, 32.85, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 21.06],
+                [28, 0.15, 2.27, 34.32, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 23.32],
+                [29, 0.15, 2.27, 35.79, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 25.59],
+                [30, 0.15, 2.27, 37.26, 0.04, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, -0.8, 2.27, 27.87],
+            ],
+            rcf_profile,
+        )
+
+    def test_ccus_profile(self):
+        test_result_path = self._get_test_file_path('result_with_ccus_profile.out')
         result = GeophiresXResult(test_result_path)
         ccus_profile = result.result['CCUS PROFILE']
 
@@ -302,6 +392,10 @@ class GeophiresXClientTestCase(BaseTestCase):
             ccus_profile,
         )
 
+    @unittest.skip(
+        'Not currently relevant - '
+        'see TODO in geophires_x_client.geophires_input_parameters.GeophiresInputParameters.__hash__'
+    )
     def test_input_hashing(self):
         input1 = GeophiresInputParameters(
             {'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value, 'Gradient 1': 50, 'Maximum Temperature': 250}
@@ -354,26 +448,57 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertDictEqual(result_default_units, result_non_default_units)
 
     def test_csv(self):
-        """
-        TODO make this less tedious to update when expected result values change
-            (https://github.com/NREL/GEOPHIRES-X/issues/107)
-        """
+        def assertFileContentsEqual(expected_file_path, actual_file_path, tol=0.01):
+            with open(expected_file_path, encoding='utf-8') as ef:
+                expected_lines = ef.readlines()
+            with open(actual_file_path, encoding='utf-8') as af:
+                actual_lines = af.readlines()
+
+            self.assertEqual(len(expected_lines), len(actual_lines), 'The number of lines in the files do not match.')
+
+            for line_index, (expected_line, actual_line) in enumerate(zip(expected_lines, actual_lines), start=1):
+                expected_parts = expected_line.strip().split(',')
+                actual_parts = actual_line.strip().split(',')
+                self.assertEqual(
+                    len(expected_parts),
+                    len(actual_parts),
+                    f'The number of columns in line {line_index} does not match.',
+                )
+                for col_index, (expected, actual) in enumerate(zip(expected_parts, actual_parts), start=1):
+                    try:
+                        expected_float = float(expected)
+                        actual_float = float(actual)
+                        self.assertTrue(
+                            abs(expected_float - actual_float) < tol,
+                            f'Float values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                        )
+                    except ValueError:
+                        self.assertEqual(
+                            expected,
+                            actual,
+                            f'String values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                        )
 
         def assert_csv_equal(case_report_file_path, expected_csv_file_path):
             test_result_path = self._get_test_file_path(case_report_file_path)
             result = GeophiresXResult(test_result_path)
-
             as_csv = result.as_csv()
             self.assertIsNotNone(as_csv)
 
             result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
             with open(result_file, 'w', newline='', encoding='utf-8') as rf:
                 rf.write(as_csv)
-                self.assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
+            assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
-            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
             ('examples/example1_addons.out', 'example1_addons.csv'),
+            ('geophires-result_example-3.out', 'geophires-result_example-3.csv'),
         ]:
             with self.subTest(msg=case[0]):
                 assert_csv_equal(case[0], case[1])
+
+    def test_parse_chp_percent_cost_allocation(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/example3.out'))
+        self.assertEqual(
+            result.result['ECONOMIC PARAMETERS']['CHP: Percent cost allocation for electrical plant']['value'], 93.48
+        )

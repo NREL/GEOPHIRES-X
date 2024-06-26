@@ -11,6 +11,15 @@ geophires_x
 .. automodule:: geophires_x.TDPReservoir
     :members:
 
+.. automodule:: geophires_x.LHSReservoir
+    :members:
+
+.. automodule:: geophires_x.MPFReservoir
+    :members:
+
+.. automodule:: geophires_x.SFReservoir
+    :members:
+
 .. automodule:: geophires_x.CylindricalReservoir
     :members:
 

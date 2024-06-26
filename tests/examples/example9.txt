@@ -1,15 +1,11 @@
-GEOPHIRES v2.0 Input File
-Created on 6/11/2018
-Last modified on 6/12/2018
-Geothermal Direct-Use Heat using Multiple Parallel Fractures Model (EGS)
-
-Example 9 Description: This problem considers an EGS reservoir at 3.5 km depth for ORC electricity production (Cornell conditions).
-Ramey's model is applied to simulate production wellbore heat losses. The heat
-is used in for direct-use heating with a reinjection temperature of 60deg.C.
+# Example 9: Geothermal Direct-Use Heat using Multiple Parallel Fractures Model (EGS)
+# This problem considers an EGS reservoir at 3.5 km depth for ORC electricity production (Cornell conditions).
+# Ramey's model is applied to simulate production wellbore heat losses. The heat
+# is used in for direct-use heating with a reinjection temperature of 60deg.C.
 
 
-***Subsurface technical parameters***
-*************************************
+# ***Subsurface technical parameters***
+# *************************************
 Reservoir Model,1,                        	---Multiple Fractures reservoir model
 Reservoir Depth,3.8,                     	---[km]
 Number of Segments,1,                  		---[-]
@@ -37,8 +33,8 @@ Reservoir Heat Capacity,825,		  	---[J/kg/K]
 Reservoir Density,2730,			  	---[kg/m^3]
 Reservoir Thermal Conductivity,2.83,	  	---[W/m/K]
 
-***SURFACE TECHNICAL PARAMETERS***
-**********************************
+# ***SURFACE TECHNICAL PARAMETERS***
+# **********************************
 End-Use Option,1,			  	---[-] Electricity
 Power Plant Type, 1,				---[-] Subcritical ORC
 Circulation Pump Efficiency,.8,	  		---[-]
@@ -48,15 +44,15 @@ Surface Temperature,20,		  		---[deg.C]
 Ambient Temperature,20,		 		---[deg.C]
 Electricity Rate,0.1,				---Electricity rate for pumping power [$/kWh]
 
-***FINANCIAL PARAMETERS***
-**************************
+# ***FINANCIAL PARAMETERS***
+# **************************
 Plant Lifetime,30,			  	---[years]
 Economic Model,1,			  	---[-] Fixed Charge Rate Model
 Fixed Charge Rate,.05,			 	---[-] between 0 and 1
 Inflation Rate During Construction,0,   	---[-]
 
-***CAPITAL AND O&M COST PARAMETERS***
-*************************************
+# ***CAPITAL AND O&M COST PARAMETERS***
+# *************************************
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
 Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
 Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
@@ -68,8 +64,8 @@ Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
 Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
 
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]

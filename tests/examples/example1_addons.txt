@@ -1,7 +1,12 @@
-Starting CCUS Credit Value,0.015
-Ending CCUS Credit Value, 0.1
-CCUS Escalation Start Year, 5
-CCUS Escalation Rate Per Year, 0.01
+# Example 1 with Addons
+
+Do AddOn Calculations, True
+Do Carbon Price Calculations, True
+
+Starting Carbon Credit Value,0.015
+Ending Carbon Credit Value, 0.1
+Carbon Escalation Start Year, 5
+Carbon Escalation Rate Per Year, 0.01
 Current Grid CO2 production,0.82
 Starting Heat Sale Price,0.0123
 Ending Heat Sale Price,0.0359
@@ -56,13 +61,14 @@ Water Loss Fraction,.02,					---[-]
 Productivity Index,5,						---[kg/s/bar]
 Injectivity Index,5,						---[kg/s/bar]
 Injection Temperature,50,		 			---[deg.C]
-Maximum Drawdown,1,			  			---[-] no redrilling considered
+Maximum Drawdown,1,			  			---[-] no redrilling considered,
+Well Drilling Cost Correlation,1,		---[-] Use built-in correlations
 Reservoir Heat Capacity,1000,		  			---[J/kg/K]
 Reservoir Density,2700,			  			---[kg/m^3]
 Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
 
-***SURFACE TECHNICAL PARAMETERS***
-**********************************
+# ***SURFACE TECHNICAL PARAMETERS***
+# **********************************
 End-Use Option,1,			  			---[-] Electricity
 Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Power Plant Type,2,			  			---[-] Supercritcal ORC
@@ -71,14 +77,14 @@ Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]
 Ambient Temperature,20,		 				---[deg.C]
 
-***FINANCIAL PARAMETERS***
-**************************
+# ***FINANCIAL PARAMETERS***
+# **************************
 Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]

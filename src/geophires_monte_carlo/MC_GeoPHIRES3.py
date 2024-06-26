@@ -9,6 +9,7 @@ Created on Wed November  16 10:43:04 2017
 
 import argparse
 import concurrent.futures
+import json
 import os
 import shutil
 import subprocess
@@ -21,8 +22,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pylocker import Locker
+from rich.console import Console
+from rich.table import Table
 
 from geophires_monte_carlo.common import _get_logger
+from geophires_x.GeoPHIRESUtils import InsertImagesIntoHTML
+from geophires_x.GeoPHIRESUtils import render_default
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -30,6 +36,98 @@ from hip_ra import HipRaClient
 from hip_ra import HipRaInputParameters
 from hip_ra import HipRaResult
 from hip_ra_x import HipRaXClient
+
+logger = _get_logger()
+
+
+def Write_HTML_Output(
+    html_path: str,
+    df: pd.DataFrame,
+    outputs: list,
+    mins: list,
+    maxs: list,
+    medians: list,
+    averages: list,
+    means: list,
+    std: list,
+    full_names: set,
+    short_names: set,
+) -> None:
+    """
+    Write_HTML_Output - write the results of the Monte Carlo simulation to an HTML file
+    :param html_path: the path to the HTML file to write
+    :type html_path: str
+    :param df: the DataFrame with the results
+    :type df: pd.DataFrame
+    :param outputs: the list of output variable names
+    :type outputs: list
+    :param mins: the list of minimum values for each output variable
+    :type mins: list
+    :param maxs: the list of maximum values for each output variable
+    :type maxs: list
+    :param medians: the list of median values for each output variable
+    :type medians: list
+    :param averages: the list of average values for each output variable
+    :type averages: list
+    :param means: the list of mean values for each output variable
+    :type means: list
+    :param std: the list of standard deviation values for each output variable
+    :type std: list
+    :param full_names: the list of full names for each output variable
+    :type full_names: set
+    :param short_names: the list of short names for each output variable
+    :type short_names: set
+    """
+
+    # Build the tables that will hold those results, along with the columns for the input variables
+    results_table = Table(title='GEOPHIRES/HIR-RA Monte Carlo Results')
+    results_table.add_column('Iteration #', no_wrap=True, justify='center')
+    for output in df.axes[1]:
+        results_table.add_column(output.replace(',', ''), no_wrap=True, justify='center')
+
+    statistics_table = Table(title='GEOPHIRES/HIR-RA Monte Carlo Statistics')
+    statistics_table.add_column('Output Parameter Name', no_wrap=True, justify='center')
+    statistics_table.add_column('minimum', no_wrap=True, justify='center')
+    statistics_table.add_column('maximum', no_wrap=True, justify='center')
+    statistics_table.add_column('median', no_wrap=True, justify='center')
+    statistics_table.add_column('average', no_wrap=True, justify='center')
+    statistics_table.add_column('mean', no_wrap=True, justify='center')
+    statistics_table.add_column('standard deviation', no_wrap=True, justify='center')
+
+    # Iterate over the rows of the DataFrame and add them to the results table
+    for index, row in df.iterrows():
+        data = row.values[0 : len(outputs)]
+
+        # have to deal with the special case where the last column is actually
+        # a compound string with multiple columns in it that looks like this:
+        # ' (Gradient 1:47.219846973456924;Reservoir Temperature:264.7789623351493;...)'
+        str_to_parse = str(row.values[len(outputs)]).strip().replace('(', '').replace(')', '')
+        fields = str_to_parse.split(';')
+        for field in fields:
+            if len(field) > 0:
+                key, value = field.split(':')
+                data = np.append(data, float(value))
+
+        results_table.add_row(str(int(index)), *[render_default(d) for d in data])
+
+    for i in range(len(outputs)):
+        statistics_table.add_row(
+            outputs[i],
+            render_default(mins[i]),
+            render_default(maxs[i]),
+            render_default(medians[i]),
+            render_default(averages[i]),
+            render_default(means[i]),
+            render_default(std[i]),
+        )
+
+    console = Console(style='bold white on black', force_terminal=True, record=True, width=500)
+    console.print(results_table)
+    console.print(' ')
+    console.print(statistics_table)
+    console.save_html(html_path)
+
+    InsertImagesIntoHTML(html_path, full_names, short_names)
 
 
 def check_and_replace_mean(input_value, args) -> list:
@@ -114,22 +212,21 @@ def work_package(pass_list: list):
         f.write(input_file_entries)
 
     if args.Code_File.endswith('GEOPHIRESv3.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         geophires_client: GeophiresXClient = GeophiresXClient()
         result: GeophiresXResult = geophires_client.get_geophires_result(
             GeophiresInputParameters(from_file_path=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('HIP_RA.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_client: HipRaClient = HipRaClient()
-        result: HipRaResult = hip_ra_client.get_hip_ra_result(HipRaInputParameters(from_file_path=Path(tmp_input_file)))
+        result: HipRaResult = hip_ra_client.get_hip_ra_result(
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
+        )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     elif args.Code_File.endswith('hip_ra_x.py'):
-        # FIXME verify client manipulation of sys.argv is threadsafe
         hip_ra_x_client: HipRaXClient = HipRaXClient()
         result: HipRaResult = hip_ra_x_client.get_hip_ra_result(
-            HipRaInputParameters(from_file_path=Path(tmp_input_file))
+            HipRaInputParameters(file_path_or_params_dict=Path(tmp_input_file))
         )
         shutil.copyfile(result.output_file_path, tmp_output_file)
     else:
@@ -160,27 +257,28 @@ def work_package(pass_list: list):
         exit(-33)
 
     with open(tmp_output_file) as f:
-        s1 = f.readline()
-        i = 0
-        while s1:  # read until the end of the file
-            for out in local_outputs:  # check for each requested output
-                if out in s1:  # If true, we found the output value that the user requested, so process it
-                    local_outputs.remove(out)  # as an optimization, drop the output from the list once we have found it
-                    s2 = s1.split(':')  # colon marks the split between the title and the data
-                    s2 = s2[1].strip()  # remove leading and trailing spaces
-                    s2 = s2.split(
-                        ' '
-                    )  # split on space because there is a unit string after the value we are looking for
-                    s2 = s2[0].strip()  # we finally have the result we were looking for
-                    result_s += s2 + ', '
-                    i += 1
-                    if i < (len(outputs) - 1):
-                        # go back to the beginning of the file in case the outputs that the user specified are not
-                        # in the order that they appear in the file.
-                        f.seek(0)
-                    break
+        result_lines = f.readlines()
 
-            s1 = f.readline()
+        def get_output(output):
+            matches = list(filter(lambda line: f'  {output}: ' in line, result_lines))
+            if len(matches) > 1:
+                logger.warning(f'Found more than 1 match for output {output}: {matches}')
+                return None
+
+            if len(matches) < 1:
+                logger.warning(f'Found no matches for output {output}: {matches}')
+                return None
+
+            return matches[0]
+
+        for out in local_outputs:
+            s1 = get_output(out)
+            if s1 is not None:
+                s2 = s1.split(':')  # colon marks the split between the title and the data
+                s2 = s2[1].strip()  # remove leading and trailing spaces
+                s2 = s2.split(' ')  # split on space because there is a unit string after the value we are looking for
+                s2 = s2[0].strip()  # we finally have the result we were looking for
+                result_s += s2 + ', '
 
         # append the input values to the output values so the optimal input values are easy to find,
         # the form "inputVar:Rando;nextInputVar:Rando..."
@@ -194,8 +292,13 @@ def work_package(pass_list: list):
     result_s = result_s.strip(' ').strip(',')  # get rid of last space and comma
     result_s += '\n'
 
-    with open(output_file, 'a') as f:
-        f.write(result_s)
+    # write the result to a file in a concurrent thread safe way
+    lock_pass = str(uuid.uuid1())
+    FL = Locker(filePath=output_file, lockPass=lock_pass, timeout=10, mode='a')
+    with FL as r:
+        acquired, code, fd = r
+        if fd is not None:
+            fd.write(result_s)
 
 
 def main(command_line_args=None):
@@ -235,11 +338,6 @@ def main(command_line_args=None):
     # keep track of execution time
     tic = time.time()
 
-    # set the starting directory to be the directory that this file is in
-    working_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(working_dir)
-    working_dir = working_dir + os.sep
-
     # get the values off the command line
     parser = argparse.ArgumentParser()
     parser.add_argument('Code_File', help='Code File')
@@ -263,8 +361,14 @@ def main(command_line_args=None):
     inputs = []
     outputs = []
     iterations = 0
-    output_file = args.MC_OUTPUT_FILE if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None else ''
+    output_file = (
+        args.MC_OUTPUT_FILE
+        if 'MC_OUTPUT_FILE' in args and args.MC_OUTPUT_FILE is not None
+        else str(Path(Path(args.Input_file).parent, 'MC_Result.txt').absolute())
+    )
+    code_file_name = Path(args.Code_File).name
     python_path = 'python'
+    html_path = ''
 
     for line in flist:
         clean = line.strip()
@@ -277,9 +381,13 @@ def main(command_line_args=None):
         elif pair[0].startswith('ITERATIONS'):
             iterations = int(pair[1])
         elif pair[0].startswith('MC_OUTPUT_FILE'):
+            # FIXME accepting relative paths here is likely to break MC, consolidate/align setting output file with
+            #   pattern in geophires_monte_carlo.MonteCarloRequest
             output_file = pair[1]
         elif pair[0].startswith('PYTHON_PATH'):
             python_path = pair[1]
+        elif pair[0].startswith('HTML_PATH'):
+            html_path = pair[1]
 
     # check to see if there is a "#" in an input, if so, use the results file to replace it with the value
     for input_value in inputs:
@@ -307,12 +415,17 @@ def main(command_line_args=None):
     with open(output_file, 'w') as f:
         f.write(s)
 
+    # set the starting directory to be the directory that this file is in
+    working_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(working_dir)
+    working_dir = working_dir + os.sep
+
     # build the args list
     pass_list = [inputs, outputs, args, output_file, working_dir, python_path]  # this list never changes
 
     args = []
     for _ in range(iterations):
-        args.append(pass_list)  # we need to make Iterations number of copies of this list fr the map
+        args.append(pass_list)  # we need to make Iterations number of copies of this list for the map
     args = tuple(args)  # convert to a tuple
 
     # Now run the executor with the map - that will run it Iterations number of times
@@ -333,18 +446,21 @@ def main(command_line_args=None):
         result_count = result_count + 1
         if '-9999.0' not in line and len(s) > 1:
             line = line.strip()
-            if len(line) > 3:
-                # FIXME doesn't work for HIP RA results
+            if len(line) > 10:
                 line, sep, tail = line.partition(', (')  # strip off the Input Variable Values
+                line = line.replace('(', '').replace(')', '')  # strip off the ()
                 results.append([float(y) for y in line.split(',')])
         else:
             logger.warning(f'-9999.0 or space found in line {result_count!s}')
 
     actual_records_count = len(results)
-
-    # Load the results into a pandas dataframe
-    results_pd = pd.read_csv(output_file)
-    df = pd.DataFrame(results_pd)
+    if len(results) < 1:
+        # TODO surface actual exceptions instead of giving this generic message
+        raise RuntimeError(
+            'No MC results generated, '
+            f'this is likely caused by {code_file_name} throwing an exception '
+            f'when run with your input file.'
+        )
 
     # Compute the stats along the specified axes.
     mins = np.nanmin(results, 0)
@@ -354,37 +470,87 @@ def main(command_line_args=None):
     means = np.nanmean(results, 0)
     std = np.nanstd(results, 0)
 
+    # Load the results into a pandas dataframe
+    results_pd = pd.read_csv(output_file)
+    df = pd.DataFrame(results_pd)
+
+    # Build a second dataframe to contain the input data. In the df dataframe, it is too encoded to be useful
+    input_df = pd.DataFrame()
+
+    # add the columns
+    input_row = df[df.columns[len(outputs)]].tolist()[0]
+    input_row = input_row.replace('(', '').replace(')', '')
+    input_row = input_row.strip().strip(';')
+    input_columns_data = input_row.split(';')
+    for input_column_data in input_columns_data:
+        input_column_name, input_column_value = input_column_data.split(':')
+        input_df[input_column_name] = []
+
+    # add the data
+    for i in range(actual_records_count):
+        input_row = str(df[df.columns[len(outputs)]].tolist()[i])
+        if len(input_row) < 10:
+            continue
+        input_row = input_row.replace('(', '').replace(')', '')
+        input_row = input_row.strip().strip(';')
+        input_columns_data = input_row.split(';')
+        data = []
+        for input_column_data in input_columns_data:
+            input_column_name, input_column_value = input_column_data.split(':')
+            data.append(float(input_column_value))
+        input_df.loc[i] = data
+
     logger.info(f'Calculation Time: {time.time() - tic:10.3f} sec')
     logger.info(f'Calculation Time per iteration: {(time.time() - tic) / actual_records_count:10.3f} sec')
     if iterations != actual_records_count:
-        logger.warning(
-            f'NOTE: {actual_records_count!s} iterations finished successfully and were used to calculate the '
-            f'statistics.'
-        )
+        msg = f'NOTE: {actual_records_count!s} iterations finished successfully and were used to calculate the statistics.'
+        logger.warning(msg)
 
-    # write them out
+    # write them out and make the graphs
     annotations = ''
+    outputs_result: dict[str, dict] = {}
+
+    input = ''
+    full_names: set = set()
+    short_names: set = set()
     with open(output_file, 'a') as f:
-        i = 0
-        if iterations != actual_records_count:
-            f.write(
-                f'\n\n{actual_records_count!s} iterations finished successfully and were used to calculate the '
-                f'statistics\n\n'
-            )
-        for output in outputs:
+
+        # First do the input graphs
+        for i in range(len(inputs)):
+            input = inputs[i][0]
+            plt.figure(figsize=(8, 6))
+            ax = plt.subplot()
+            ax.set_title(input)
+            ax.set_xlabel('Random Values')
+            ax.set_ylabel('Probability')
+
+            plt.figtext(0.11, 0.74, annotations, fontsize=8)
+            ret = plt.hist(input_df[input_df.columns[i]].tolist(), bins=50, density=True)
+            fname = input_df.columns[i].strip().replace('/', '-')
+            save_path = Path(Path(output_file).parent, f'{fname}.png')
+            if html_path:
+                save_path = Path(Path(html_path).parent, f'{fname}.png')
+            plt.savefig(save_path)
+            plt.close()
+            full_names.add(save_path)
+            short_names.add(fname)
+
+        # Now do the output graphs
+        for i in range(len(outputs)):
+            output = outputs[i]
             f.write(f'{output}:\n')
-            f.write(f'     minimum: {mins[i]:,.2f}\n')
-            annotations += f'     minimum: {mins[i]:,.2f}\n'
-            f.write(f'     maximum: {maxs[i]:,.2f}\n')
-            annotations += f'     maximum: {maxs[i]:,.2f}\n'
-            f.write(f'     median: {medians[i]:,.2f}\n')
-            annotations += f'     median: {medians[i]:,.2f}\n'
-            f.write(f'     average: {averages[i]:,.2f}\n')
-            annotations += f'     average: {averages[i]:,.2f}\n'
-            f.write(f'     mean: {means[i]:,.2f}\n')
-            annotations += f'     mean: {means[i]:,.2f}\n'
-            f.write(f'     standard deviation: {std[i]:,.2f}\n')
-            annotations += f'     standard deviation: {std[i]:,.2f}\n'
+            outputs_result[output]: dict[str, float] = {}
+            outputs_result[output]['minimum'] = mins[i]
+            outputs_result[output]['maximum'] = maxs[i]
+            outputs_result[output]['median'] = medians[i]
+            outputs_result[output]['average'] = averages[i]
+            outputs_result[output]['mean'] = means[i]
+            outputs_result[output]['standard deviation'] = std[i]
+
+            for k, v in outputs_result[output].items():
+                display = f'     {k}: {v:,.2f}\n'
+                f.write(display)
+                annotations += display
 
             plt.figure(figsize=(8, 6))
             ax = plt.subplot()
@@ -397,15 +563,26 @@ def main(command_line_args=None):
             f.write(f'bin values (as percentage): {ret[0]!s}\n')
             f.write(f'bin edges: {ret[1]!s}\n')
             fname = df.columns[i].strip().replace('/', '-')
-            plt.savefig(Path(Path(output_file).parent, f'{fname}.png'))
-            i += 1
+            save_path = Path(Path(output_file).parent, f'{fname}.png')
+            if html_path:
+                save_path = Path(Path(html_path).parent, f'{fname}.png')
+            plt.savefig(save_path)
+            plt.close()
+            full_names.add(save_path)
+            short_names.add(fname)
             annotations = ''
+
+    if html_path:
+        Write_HTML_Output(html_path, df, outputs, mins, maxs, medians, averages, means, std, full_names, short_names)
+
+    with open(Path(output_file).with_suffix('.json'), 'w') as json_output_file:
+        json_output_file.write(json.dumps(outputs_result))
+        logger.info(f'Wrote JSON results to {json_output_file.name}')
 
     logger.info(f'Complete {__name__!s}: {sys._getframe().f_code.co_name}')
 
 
 if __name__ == '__main__':
-    logger = _get_logger()
     logger.info(f'Init {__name__!s}')
 
     main(command_line_args=sys.argv[1:])

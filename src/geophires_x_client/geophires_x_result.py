@@ -27,10 +27,13 @@ class GeophiresXResult:
             'SUMMARY OF RESULTS': [
                 _StringValueField('End-Use Option'),
                 _StringValueField('End-Use'),
+                _StringValueField('Surface Application'),
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Average Direct-Use Heat Production',
                 'Direct-Use heat breakeven price',
+                'Direct-Use heat breakeven price (LCOH)',
+                'Direct-Use Cooling Breakeven Price (LCOC)',
                 'Annual District Heating Demand',
                 'Average Cooling Production',
                 'Average Annual Geothermal Heat Production',
@@ -40,6 +43,7 @@ class GeophiresXResult:
                 'Number of injection wells',
                 'Flowrate per production well',
                 'Well depth',
+                'Well depth (or total length, if not vertical)',
                 'Geothermal gradient',
                 'Segment 1   Geothermal gradient',
                 'Segment 1   Thickness',
@@ -51,8 +55,8 @@ class GeophiresXResult:
                 # AGS/CLGS
                 'LCOE',
                 'LCOH',
-                # SUTRA
-                'Lifetime Average Well Flow Rate',
+                'Lifetime Average Well Flow Rate',  # SUTRA
+                'Total Avoided Carbon Emissions',
             ],
             'ECONOMIC PARAMETERS': [
                 _EqualSignDelimitedField('Economic Model'),
@@ -64,8 +68,10 @@ class GeophiresXResult:
                 'Project IRR',
                 'Project VIR=PI=PIR',
                 'Project MOIC',
-                # SUTRA
-                'Fixed Charge Rate (FCR)',
+                'Fixed Charge Rate (FCR)',  # SUTRA
+                'Project Payback Period',
+                'CHP: Percent cost allocation for electrical plant',
+                'Estimated Jobs Created',
             ],
             'EXTENDED ECONOMICS': [
                 'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',
@@ -136,11 +142,12 @@ class GeophiresXResult:
                 # TODO moved to power generation profile, parse from there
                 #  'Annual Thermal Drawdown (%/year)',
                 'Bottom-hole temperature',
-                'Well seperation: fracture height',  # TODO correct typo upstream
+                'Well separation: fracture height',
                 'Fracture area',
                 'Fracture width',
                 'Reservoir volume',
                 'Reservoir hydrostatic pressure',
+                'Average reservoir pressure',
                 'Plant outlet pressure',
                 'Production wellhead pressure',
                 'Productivity Index',
@@ -184,6 +191,8 @@ class GeophiresXResult:
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
                 'Drilling and completion costs per well',
+                'Drilling and completion costs per production well',
+                'Drilling and completion costs per injection well',
                 'Stimulation costs',
                 'Surface power plant costs',
                 'of which Absorption Chiller Cost',
@@ -200,6 +209,8 @@ class GeophiresXResult:
                 # SUTRA
                 'Drilling and Completion Costs',
                 'Drilling and Completion Costs per Well',
+                'Drilling and completion costs per production well',
+                'Drilling and completion costs per injection well',
                 'Auxiliary Heater Cost',
                 'Pump Cost',
                 'Total Capital Costs',
@@ -267,6 +278,7 @@ class GeophiresXResult:
                 'Average Annual Total Heating Production',
                 'Average Annual Electricity Use for Pumping',
             ],
+            'Simulation Metadata': [_StringValueField('GEOPHIRES Version')],
         }
     )
 
@@ -276,7 +288,9 @@ class GeophiresXResult:
         'Reservoir Model',
     )
 
-    def __init__(self, output_file_path, logger_name='root'):
+    def __init__(self, output_file_path, logger_name=None):
+        if logger_name is None:
+            logger_name = __name__
         self._logger = _get_logger(logger_name)
         self.output_file_path = output_file_path
 
@@ -298,15 +312,16 @@ class GeophiresXResult:
                 else:
                     is_string_field = isinstance(field, _StringValueField)
                     field_name = field.field_name if is_string_field else field
+                    indent = 4 if category != 'Simulation Metadata' else 1
                     self.result[category][field_name] = self._get_result_field(
-                        field_name, is_string_value_field=is_string_field
+                        field_name, is_string_value_field=is_string_field, min_indentation_spaces=indent
                     )
 
         try:
             self.result['POWER GENERATION PROFILE'] = self._get_power_generation_profile()
-            self.result[
-                'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'
-            ] = self._get_heat_electricity_extraction_generation_profile()
+            self.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'] = (
+                self._get_heat_electricity_extraction_generation_profile()
+            )
         except Exception as e:
             # FIXME
             self._logger.error(f'Failed to parse power and/or extraction profiles: {e}')
@@ -314,6 +329,10 @@ class GeophiresXResult:
         eep = self._get_extended_economic_profile()
         if eep is not None:
             self.result['EXTENDED ECONOMIC PROFILE'] = eep
+
+        revenue_and_cashflow_profile = self._get_revenue_and_cashflow_profile()
+        if revenue_and_cashflow_profile is not None:
+            self.result['REVENUE & CASHFLOW PROFILE'] = revenue_and_cashflow_profile
 
         ccus_profile = self._get_ccus_profile()
         if ccus_profile is not None:
@@ -329,10 +348,15 @@ class GeophiresXResult:
     @property
     def direct_use_heat_breakeven_price_USD_per_MMBTU(self):
         summary = self.result['SUMMARY OF RESULTS']
-        if 'Direct-Use heat breakeven price' in summary and summary['Direct-Use heat breakeven price'] is not None:
-            return summary['Direct-Use heat breakeven price']['value']
-        else:
-            return None
+
+        # LCOH suffix added in 49ff3a1213ac778ed53120626807e9a680d1ddcf,
+        # check for either (could be reading result generated prior to addition of suffix)
+        field_names = ['Direct-Use heat breakeven price', 'Direct-Use heat breakeven price (LCOH)']
+        for field_name in field_names:
+            if field_name in summary and summary[field_name] is not None:
+                return summary[field_name]['value']
+
+        return None
 
     def as_csv(self) -> str:
         f = StringIO()
@@ -366,6 +390,7 @@ class GeophiresXResult:
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
                     'EXTENDED ECONOMIC PROFILE',
                     'CCUS PROFILE',
+                    'REVENUE & CASHFLOW PROFILE',
                 ):
                     raise RuntimeError('unexpected category')
 
@@ -400,9 +425,9 @@ class GeophiresXResult:
         except FileNotFoundError:
             return {}
 
-    def _get_result_field(self, field_name: str, is_string_value_field: bool = False):
+    def _get_result_field(self, field_name: str, is_string_value_field: bool = False, min_indentation_spaces: int = 4):
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'    {field_name}: ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'{min_indentation_spaces * " "}{field_name}: ' in line, self._lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Field not found: {field_name}')
@@ -467,6 +492,39 @@ class GeophiresXResult:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
+    def _get_revenue_and_cashflow_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Electricity Price (cents/kWh)',
+                'Electricity Ann. Rev. (MUSD/yr)',
+                'Electricity Cumm. Rev. (MUSD)',
+                'Heat Price (cents/kWh)',
+                'Heat Ann. Rev. (MUSD/yr)',
+                'Heat Cumm. Rev. (MUSD)',
+                'Cooling Price (cents/kWh)',
+                'Cooling Ann. Rev. (MUSD/yr)',
+                'Cooling Cumm. Rev. (MUSD)',
+                'Carbon Price (USD/tonne)',
+                'Carbon Ann. Rev. (MUSD/yr)',
+                'Carbon Cumm. Rev. (MUSD)',
+                'Project OPEX (MUSD/yr)',
+                'Project Net Rev. (MUSD/yr)',
+                'Project Net Cashflow (MUSD)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('REVENUE & CASHFLOW PROFILE')
+            profile = [extract_table_header(lines)]
+            if re.fullmatch('^_+$', lines[5]) is not None:
+                del lines[5]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get revenue & cashflow profile: {e}')
+            return None
+
     def _get_extended_economic_profile(self):
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
@@ -493,15 +551,20 @@ class GeophiresXResult:
             return None
 
     def _get_ccus_profile(self):
+        """
+        FIXME TODO - transform from revenue & cashflow if present (CCUS profile replaced by revenue & cashflow
+            profile in 49ff3a1213ac778ed53120626807e9a680d1ddcf)
+        """
+
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
             return [
                 'Year Since Start',
                 'Carbon Avoided (pound)',
-                'CCUS Price (USD/lb)',
-                'CCUS Revenue (MUSD/yr)',
+                'CCUS Price (USD/lb)',  # Carbon Price (USD/tonne)
+                'CCUS Revenue (MUSD/yr)',  # Carbon Ann. Rev. (MUSD/yr)
                 'CCUS Annual Cash Flow (MUSD/yr)',
-                'CCUS Cumm. Cash Flow (MUSD)',
+                'CCUS Cumm. Cash Flow (MUSD)',  # Carbon Cumm. Rev. (MUSD)
                 'Project Annual Cash Flow (MUSD/yr)',
                 'Project Cumm. Cash Flow (MUSD)',
             ]
@@ -519,7 +582,7 @@ class GeophiresXResult:
         """TODO consolidate with _get_data_from_profile_lines"""
 
         # Skip the lines up to the header and split the rest using whitespaces
-        lines_splitted = [line.split() for line in lines[5:]]
+        lines_splitted = [line.replace('|', '').split() for line in lines[5:]]
 
         # The number of columns is determined by the line with the most elements
         num_of_columns = max(len(line) for line in lines_splitted)

@@ -6,6 +6,7 @@ SUMMARY OF RESULTS,Average Direct-Use Heat Production,,11.06,MW
 SUMMARY OF RESULTS,Number of production wells,,3,count
 SUMMARY OF RESULTS,Number of injection wells,,3,count
 SUMMARY OF RESULTS,Flowrate per production well,,70.0,kg/sec
+SUMMARY OF RESULTS,"Well depth (or total length\, if not vertical)",,3.1,kilometer
 SUMMARY OF RESULTS,Geothermal gradient,,0.07,degC/m
 ECONOMIC PARAMETERS,Accrued financing during construction,,5.0,
 ECONOMIC PARAMETERS,Project lifetime,,35,yr
@@ -32,12 +33,12 @@ RESOURCE CHARACTERISTICS,Geothermal gradient,,0.07,degC/m
 RESERVOIR PARAMETERS,Reservoir Model,,Single Fracture m/A Thermal Drawdown Model,
 RESERVOIR PARAMETERS,Bottom-hole temperature,,232.0,degC
 RESERVOIR PARAMETERS,Reservoir volume,,176000000,m**3
-RESERVOIR PARAMETERS,Reservoir hydrostatic pressure,,100.0,kPa
+RESERVOIR PARAMETERS,Average reservoir pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Plant outlet pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Injectivity Index,,5.0,kg/sec/bar
 RESERVOIR PARAMETERS,Reservoir density,,3000.0,kg/m**3
-RESERVOIR PARAMETERS,Reservoir thermal conductivity,,3.0,watt/m/kelvin
-RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/kelvin
+RESERVOIR PARAMETERS,Reservoir thermal conductivity,,3.0,W/m/K
+RESERVOIR PARAMETERS,Reservoir heat capacity,,1000.0,J/kg/K
 RESERVOIR SIMULATION RESULTS,Maximum Production Temperature,,227.9,degC
 RESERVOIR SIMULATION RESULTS,Average Production Temperature,,220.9,degC
 RESERVOIR SIMULATION RESULTS,Minimum Production Temperature,,207.4,degC
@@ -77,6 +78,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Initial Net Heat Production,,11.67,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Heat Production,,87.2,GWh
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.18,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,100.0,%
+Simulation Metadata,GEOPHIRES Version,,3.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,0,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0081,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0097,

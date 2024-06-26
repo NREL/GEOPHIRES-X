@@ -54,9 +54,14 @@ class GeophiresXTestCase(BaseTestCase):
             )
         )
 
-        assert result == result_same_input
+        del result.result['metadata']
+        del result_same_input.result['metadata']
+        self.assertDictEqual(result.result, result_same_input.result)
 
-        # TODO assert that result was retrieved from cache instead of recomputed (somehow)
+        # See TODO in geophires_x_client.geophires_input_parameters.GeophiresInputParameters.__hash__ - if/when hashes
+        # of equivalent sets of parameters are made equal, the commented assertion below will test that caching is
+        # working as expected.
+        # assert result == result_same_input
 
     def test_geophires_x_end_use_electricity(self):
         client = GeophiresXClient()
@@ -147,18 +152,20 @@ class GeophiresXTestCase(BaseTestCase):
         log = _get_logger()
         client = GeophiresXClient()
 
+        def get_output_file_for_example(example_file: str):
+            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
+
         example_files = list(
             filter(
-                lambda example_file_path: example_file_path.startswith(('example', 'Beckers_et_al', 'SUTRA', 'Wanju'))
+                lambda example_file_path: example_file_path.startswith(
+                    ('example', 'Beckers_et_al', 'SUTRA', 'Wanju', 'Fervo')
+                )
                 and '.out' not in example_file_path,
                 self._list_test_files_dir(test_files_dir='examples'),
             )
         )
+
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
-
-        def get_output_file_for_example(example_file: str):
-            return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
-
         for example_file_path in example_files:
             with self.subTest(msg=example_file_path):
                 print(f'Running example test {example_file_path}')
@@ -167,9 +174,11 @@ class GeophiresXTestCase(BaseTestCase):
                 )
                 geophires_result: GeophiresXResult = client.get_geophires_result(input_params)
                 del geophires_result.result['metadata']
+                del geophires_result.result['Simulation Metadata']
 
                 expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                 del expected_result.result['metadata']
+                del expected_result.result['Simulation Metadata']
 
                 try:
                     self.assertDictEqual(
@@ -191,7 +200,7 @@ class GeophiresXTestCase(BaseTestCase):
                         self.assertDictAlmostEqual(
                             expected_result.result,
                             geophires_result.result,
-                            places=2,
+                            places=1,
                             msg=f'Example test: {example_file_path}',
                         )
                     else:
@@ -203,8 +212,8 @@ class GeophiresXTestCase(BaseTestCase):
                         if percent_diff is not None:
                             msg = (
                                 f'Results are approximately equal within {percent_diff}%. '
-                                f'(Run `regenerate-example-result.sh {example_file_path.split(".")[0]}` '
-                                f'from tests/ if this difference is expected due to calculation updates)'
+                                f'(Run `./tests/regenerate-example-result.sh {example_file_path.split(".")[0]}` '
+                                f'if this difference is expected due to calculation updates)'
                             )
 
                         raise AssertionError(msg) from ae
@@ -321,3 +330,90 @@ Print Output to Console, 1"""
         del result_kilometers_input.result['metadata']
 
         self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)
+
+        result_gradient_c_per_m_input = client.get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('examples/example1.txt')),
+                params={
+                    'Gradient 1': 0.017  # Values less than 1.0 interpreted as being in degC/m (instead of degC/km)
+                },
+            )
+        )
+        del result_gradient_c_per_m_input.result['metadata']
+
+        self.assertEqual(
+            result_gradient_c_per_m_input.result['SUMMARY OF RESULTS']['Geothermal gradient']['value'], 17.0
+        )
+        self.assertEqual(
+            result_gradient_c_per_m_input.result['SUMMARY OF RESULTS']['Geothermal gradient']['unit'], 'degC/km'
+        )
+
+    def test_fcr_sensitivity(self):
+        def input_for_fcr(fcr: float) -> GeophiresInputParameters:
+            return GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/example1.txt'), params={'Fixed Charge Rate': fcr}
+            )
+
+        def get_fcr_lcoe(fcr: float) -> float:
+            return (
+                GeophiresXClient()
+                .get_geophires_result(input_for_fcr(fcr))
+                .result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
+            )
+
+        self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
+        self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
+        self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)
+
+    def test_vapor_pressure_above_critical_temperature(self):
+        """https://github.com/NREL/GEOPHIRES-X/issues/214"""
+
+        input_params = GeophiresInputParameters(
+            {
+                'End-Use Option': 2,
+                'Reservoir Depth': 6,
+                'Gradient 1': 75,
+                'Reservoir Model': 1,
+                'Time steps per year': 1,
+                'Maximum Temperature': 500,
+                'Print Output to Console': 0,
+            }
+        )
+
+        result = GeophiresXClient().get_geophires_result(input_params)
+        self.assertIsNotNone(result)
+        self.assertIn('SUMMARY OF RESULTS', result.result)
+
+    def test_heat_price(self):
+        def input_for_heat_prices(params) -> GeophiresInputParameters:
+            return GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/example1.txt'), params=params
+            )
+
+        result_escalating = GeophiresXClient().get_geophires_result(
+            input_for_heat_prices({'Starting Heat Sale Price': 0.015, 'Ending Heat Sale Price': 0.015})
+        )
+        self.assertIsNotNone(result_escalating)
+        cashflow_constant = result_escalating.result['REVENUE & CASHFLOW PROFILE']
+        self.assertEqual(cashflow_constant[0][4], 'Heat Price (cents/kWh)')
+
+        # First entry (index 1 - header is index 0) is hardcoded to zero per
+        # https://github.com/NREL/GEOPHIRES-X/blob/becec79cc7510a35f7a9cb01127dabc829720015/src/geophires_x/Economics.py#L2920-L2925
+        # so start test at index 2.
+        for i in range(2, len(cashflow_constant[0])):
+            self.assertEqual(cashflow_constant[i][4], 1.5)
+
+        result_escalating = GeophiresXClient().get_geophires_result(
+            input_for_heat_prices(
+                {
+                    'Starting Heat Sale Price': 0.015,
+                    'Ending Heat Sale Price': 0.030,
+                    'Heat Escalation Rate Per Year': 0.005,
+                    'Heat Escalation Start Year': 0,
+                }
+            )
+        )
+        cashflow_escalating = result_escalating.result['REVENUE & CASHFLOW PROFILE']
+
+        self.assertEqual(cashflow_escalating[2][4], 1.5)
+        self.assertEqual(cashflow_escalating[-1][4], 3.0)

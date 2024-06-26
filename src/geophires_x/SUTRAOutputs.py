@@ -117,7 +117,6 @@ class SUTRAOutputs:
                 f.write("Simulation Metadata\n")
                 f.write("----------------------\n")
                 f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
-                f.write(" GEOPHIRES Build Date: 2023-11-06\n")
                 f.write(" Simulation Date: "+ datetime.datetime.now().strftime("%Y-%m-%d\n"))
                 f.write(" Simulation Time:  "+ datetime.datetime.now().strftime("%H:%M\n"))
                 f.write(" Calculation Time: "+"{0:10.3f}".format((time.time()-model.tic)) + " sec\n")
@@ -190,14 +189,20 @@ class SUTRAOutputs:
                 f.write(f"      Average Annual RTES Heating Production:        {np.average(model.surfaceplant.AnnualHeatProduced.value):10.2f} " + model.surfaceplant.AnnualHeatProduced.PreferredUnits.value + NL)
                 f.write(f"      Average Annual Auxiliary Heating Production:   {np.average(model.surfaceplant.AnnualAuxiliaryHeatProduced.value):10.2f} " + model.surfaceplant.AnnualAuxiliaryHeatProduced.PreferredUnits.value + NL)
                 f.write(f"      Average Annual Total Heating Production:       {np.average(model.surfaceplant.AnnualTotalHeatProduced.value):10.2f} " + model.surfaceplant.AnnualTotalHeatProduced.PreferredUnits.value + NL)
-                f.write(f"      Average Pumping Power:                         {np.average(model.wellbores.PumpingPower.value):10.2f} " + model.wellbores.PumpingPower.PreferredUnits.value + NL)
+                f.write(f"      Average Pumping Power:                         {np.average(model.wellbores.PumpingPower.value):10.2f} {model.wellbores.PumpingPower.CurrentUnits.value}{NL}")
                 f.write(f"      Average Annual Electricity Use for Pumping:    {np.average(model.surfaceplant.PumpingkWh.value):10.2f} " + model.surfaceplant.PumpingkWh.PreferredUnits.value + NL)
                 f.write(NL)
                 f.write(NL)
                 f.write('                          ***CAPITAL COSTS (M$)***\n')
                 f.write(NL)
                 f.write(f"      Drilling and Completion Costs:                 {model.economics.Cwell.value:10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
-                f.write(f"      Drilling and Completion Costs per Well:        {model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value):10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
+                if model.economics.cost_one_production_well.value != model.economics.cost_one_injection_well.value:
+                    f.write(
+                        f'             Drilling and completion costs per production well:   {model.economics.cost_one_production_well.value:10.2f} ' + model.economics.cost_one_production_well.CurrentUnits.value + NL)
+                    f.write(
+                        f'             Drilling and completion costs per injection well:    {model.economics.cost_one_injection_well.value:10.2f} ' + model.economics.cost_one_injection_well.CurrentUnits.value + NL)
+                else:
+                    f.write(f"      Drilling and Completion Costs per Well:        {model.economics.Cwell.value / (model.wellbores.nprod.value + model.wellbores.ninj.value):10.2f} " + model.economics.Cwell.CurrentUnits.value + NL)
                 f.write(f"      Auxiliary Heater Cost:                         {model.economics.peakingboilercost.value:10.2f} " + model.economics.peakingboilercost.CurrentUnits.value + NL)
                 f.write(f"      Pump Cost:                                     {model.economics.Cpumps:10.2f} " + model.economics.peakingboilercost.CurrentUnits.value + NL)
                 f.write(f"      Total Capital Costs:                           {model.economics.CCap.value:10.2f} " + model.economics.CCap.CurrentUnits.value + NL)

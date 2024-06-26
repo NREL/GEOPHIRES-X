@@ -8,6 +8,8 @@ import traceback
 from pathlib import Path
 
 import pint
+from rich.console import Console
+from rich.table import Table
 
 from geophires_x.GeoPHIRESUtils import RecoverableHeat
 from geophires_x.GeoPHIRESUtils import UtilEff_func
@@ -27,6 +29,7 @@ from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import ReadParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
+from geophires_x.Parameter import strParameter
 from geophires_x.Units import AreaUnit
 from geophires_x.Units import DensityUnit
 from geophires_x.Units import EnthalpyUnit
@@ -53,6 +56,19 @@ Geothermics 7.2-4 (1978): 53-89.
 and: Garg, S.K. and J. Combs. 2011.  A Reexamination of the USGS Volumetric "Heat in Place" Method.
 Stanford University, 36th Workshop on Geothermal Reservoir Engineering; SGP-TR-191, 5 pp.
 """
+
+
+def UpgradeSymbologyOfUnits(unit: str) -> str:
+    """
+    UpgradeSymbologyOfUnits is a function that takes a string that represents a unit and replaces the **2 and **3
+    with the appropriate unicode characters for superscript 2 and 3, and replaces "deg" with the unicode character
+    for degrees.
+    :param unit: a string that represents a unit
+    :return: a string that represents a unit with the appropriate unicode characters for superscript 2 and 3, and
+    replaces "deg" with the unicode character for degrees.
+    """
+    unit = unit.replace('**2', '\u00b2').replace('**3', '\u00b3').replace('deg', '\u00b0')
+    return unit
 
 
 class HIP_RA_X:
@@ -326,6 +342,16 @@ class HIP_RA_X:
                 ToolTipText='percent of fluid that is recoverable from the reservoir (0.75 = 75%)',
             )
         )
+        self.html_output_file: Parameter = parameter_dict_entry(
+            strParameter(
+                'HTML Output File',
+                value='HIP.html',
+                Required=False,
+                Provided=False,
+                ErrMessage='assume no HTML output',
+                ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
+            )
+        )
 
         # Output parameters
         self.reservoir_volume = self.OutputParameterDict[self.reservoir_volume.Name] = OutputParameter(
@@ -406,29 +432,29 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.wellhead_heat_recovery_rock = self.OutputParameterDict[
-            self.wellhead_heat_recovery_rock.Name
-        ] = OutputParameter(
-            Name='Wellhead Heat (rock)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.wellhead_heat_recovery_rock = self.OutputParameterDict[self.wellhead_heat_recovery_rock.Name] = (
+            OutputParameter(
+                Name='Wellhead Heat (rock)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
-        self.wellhead_heat_recovery_fluid = self.OutputParameterDict[
-            self.wellhead_heat_recovery_fluid.Name
-        ] = OutputParameter(
-            Name='Wellhead Heat (fluid)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.wellhead_heat_recovery_fluid = self.OutputParameterDict[self.wellhead_heat_recovery_fluid.Name] = (
+            OutputParameter(
+                Name='Wellhead Heat (fluid)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
-        self.reservoir_recovery_factor = self.OutputParameterDict[
-            self.reservoir_recovery_factor.Name
-        ] = OutputParameter(
-            Name='Recovery Factor (reservoir)',
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
+        self.reservoir_recovery_factor = self.OutputParameterDict[self.reservoir_recovery_factor.Name] = (
+            OutputParameter(
+                Name='Recovery Factor (reservoir)',
+                UnitType=Units.PERCENT,
+                PreferredUnits=PercentUnit.PERCENT,
+                CurrentUnits=PercentUnit.PERCENT,
+            )
         )
         self.recovery_factor_rock = self.OutputParameterDict[self.recovery_factor_rock.Name] = OutputParameter(
             Name='Recovery Factor (rock)',
@@ -460,13 +486,13 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.reservoir_producible_heat = self.OutputParameterDict[
-            self.reservoir_producible_heat.Name
-        ] = OutputParameter(
-            Name='Producible Heat (reservoir)',
-            UnitType=Units.HEAT,
-            PreferredUnits=HeatUnit.KJ,
-            CurrentUnits=HeatUnit.KJ,
+        self.reservoir_producible_heat = self.OutputParameterDict[self.reservoir_producible_heat.Name] = (
+            OutputParameter(
+                Name='Producible Heat (reservoir)',
+                UnitType=Units.HEAT,
+                PreferredUnits=HeatUnit.KJ,
+                CurrentUnits=HeatUnit.KJ,
+            )
         )
         self.producible_heat_rock = self.OutputParameterDict[self.producible_heat_rock.Name] = OutputParameter(
             Name='Producible Heat (rock)',
@@ -480,37 +506,37 @@ class HIP_RA_X:
             PreferredUnits=HeatUnit.KJ,
             CurrentUnits=HeatUnit.KJ,
         )
-        self.reservoir_producible_electricity = self.OutputParameterDict[
-            self.reservoir_producible_electricity.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (reservoir)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.reservoir_producible_electricity = self.OutputParameterDict[self.reservoir_producible_electricity.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (reservoir)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_electricity_rock = self.OutputParameterDict[
-            self.producible_electricity_rock.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (rock)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.producible_electricity_rock = self.OutputParameterDict[self.producible_electricity_rock.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (rock)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_electricity_fluid = self.OutputParameterDict[
-            self.producible_electricity_fluid.Name
-        ] = OutputParameter(
-            Name='Producible Electricity (fluid)',
-            UnitType=Units.POWER,
-            PreferredUnits=PowerUnit.MW,
-            CurrentUnits=PowerUnit.MW,
+        self.producible_electricity_fluid = self.OutputParameterDict[self.producible_electricity_fluid.Name] = (
+            OutputParameter(
+                Name='Producible Electricity (fluid)',
+                UnitType=Units.POWER,
+                PreferredUnits=PowerUnit.MW,
+                CurrentUnits=PowerUnit.MW,
+            )
         )
-        self.producible_heat_per_unit_area = self.OutputParameterDict[
-            self.producible_heat_per_unit_area.Name
-        ] = OutputParameter(
-            Name='Producible Heat/Unit Area (reservoir)',
-            UnitType=Units.HEATPERUNITAREA,
-            PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
-            CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+        self.producible_heat_per_unit_area = self.OutputParameterDict[self.producible_heat_per_unit_area.Name] = (
+            OutputParameter(
+                Name='Producible Heat/Unit Area (reservoir)',
+                UnitType=Units.HEATPERUNITAREA,
+                PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+                CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
+            )
         )
         self.heat_per_unit_area_rock = self.OutputParameterDict[self.heat_per_unit_area_rock.Name] = OutputParameter(
             Name='Producible Heat/Unit Area (rock)',
@@ -524,13 +550,13 @@ class HIP_RA_X:
             PreferredUnits=HeatPerUnitAreaUnit.KJPERSQKM,
             CurrentUnits=HeatPerUnitAreaUnit.KJPERSQKM,
         )
-        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[
-            self.heat_per_unit_volume_reservoir.Name
-        ] = OutputParameter(
-            Name='Producible Heat/Unit Volume (reservoir)',
-            UnitType=Units.HEATPERUNITVOLUME,
-            PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
-            CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+        self.heat_per_unit_volume_reservoir = self.OutputParameterDict[self.heat_per_unit_volume_reservoir.Name] = (
+            OutputParameter(
+                Name='Producible Heat/Unit Volume (reservoir)',
+                UnitType=Units.HEATPERUNITVOLUME,
+                PreferredUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+                CurrentUnits=HeatPerUnitVolumeUnit.KJPERCUBICKM,
+            )
         )
         self.producible_electricity_per_unit_area = self.OutputParameterDict[
             self.producible_electricity_per_unit_area.Name
@@ -540,21 +566,21 @@ class HIP_RA_X:
             PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
             CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
         )
-        self.electricity_per_unit_area_rock = self.OutputParameterDict[
-            self.electricity_per_unit_area_rock.Name
-        ] = OutputParameter(
-            Name='Producible Electricity/Unit Area (rock)',
-            UnitType=Units.POWERPERUNITAREA,
-            PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
-            CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+        self.electricity_per_unit_area_rock = self.OutputParameterDict[self.electricity_per_unit_area_rock.Name] = (
+            OutputParameter(
+                Name='Producible Electricity/Unit Area (rock)',
+                UnitType=Units.POWERPERUNITAREA,
+                PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+                CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+            )
         )
-        self.electricity_per_unit_area_fluid = self.OutputParameterDict[
-            self.electricity_per_unit_area_fluid.Name
-        ] = OutputParameter(
-            Name='Producible Electricity/Unit Area (fluid)',
-            UnitType=Units.POWERPERUNITAREA,
-            PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
-            CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+        self.electricity_per_unit_area_fluid = self.OutputParameterDict[self.electricity_per_unit_area_fluid.Name] = (
+            OutputParameter(
+                Name='Producible Electricity/Unit Area (fluid)',
+                UnitType=Units.POWERPERUNITAREA,
+                PreferredUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+                CurrentUnits=PowerPerUnitAreaUnit.MWPERSQKM,
+            )
         )
         self.electricity_per_unit_volume_reservoir = self.OutputParameterDict[
             self.electricity_per_unit_volume_reservoir.Name
@@ -602,7 +628,6 @@ class HIP_RA_X:
                 self.OutputParameterDict[key.replace('Units:', '')].CurrentUnits = LookupUnits(
                     self.InputParameters[key].sValue
                 )[0]
-                self.OutputParameterDict[key.replace('Units:', '')].UnitsMatch = False
 
         self.logger.info(f'complete {__class__.__name__!s}: {__name__}')
 
@@ -785,10 +810,10 @@ class HIP_RA_X:
         try:
             outputfile = 'HIP.out' if len(sys.argv) <= 2 else sys.argv[2]
 
-            def render_default(p: floatParameter | OutputParameter) -> str:
+            def render_default(p: Parameter) -> str:
                 return f'{p.value:10.2f} {p.CurrentUnits.value}'
 
-            def render_scientific(p: floatParameter | OutputParameter) -> str:
+            def render_scientific(p: Parameter) -> str:
                 return f'{p.value:10.2e} {p.CurrentUnits.value}'
 
             summary_of_inputs = {}
@@ -879,39 +904,109 @@ class HIP_RA_X:
                     f.write(f'      {k}:{kv_spaces}{v}{nl}')
 
         except FileNotFoundError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except PermissionError as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
         except Exception as ex:
-            print(str(ex))
             traceback_str = traceback.format_exc()
             msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
-            print(msg)
             self.logger.critical(str(ex))
             self.logger.critical(msg)
             raise
 
-        # copy the output file to the screen
-        with open(outputfile, encoding='UTF-8') as f:
-            content = f.readlines()  # store all output in one long list
+        if self.html_output_file.Provided:
+            # write the outputs to the output file as HTML and the screen as a table
+            self.PrintOutputsHTML(case_data_inputs, case_data_results, self.html_output_file.value)
+        else:
+            # copy the output file to the screen
+            with open(outputfile, encoding='UTF-8') as f:
+                content = f.readlines()  # store all output in one long list
 
-            # Now write each line to the screen
-            for line in content:
-                sys.stdout.write(line)
+                # Now write each line to the screen
+                for line in content:
+                    sys.stdout.write(line)
+
+    def PrintOutputsHTML(self, inputs, outputs, output_filename: str = 'HIP.html'):
+        """
+        PrintOutputs writes the standard outputs to the output file as HTML. The inputs and outputs are already prepared
+        by the calling function so we just pass them in and use them in writing the HTML. They are dictionaries that
+        contain the already formatted information for output.
+        args:
+            inputs: dict of inputs
+            outputs: dict of outputs
+            output_filename: name of the output file
+        """
+        self.logger.info(f'Init {__class__.__name__!s}: {__name__}')
+
+        try:
+            inputs_table = Table(title='***SUMMARY OF INPUTS***')
+            inputs_table.add_column('Parameter Name', no_wrap=True)
+            inputs_table.add_column('Value', no_wrap=True, justify='center')
+            inputs_table.add_column('Units', no_wrap=True)
+            outputs_table = Table(title='***SUMMARY OF RESULTS***')
+            outputs_table.add_column('Result Name', no_wrap=True)
+            outputs_table.add_column('Value', no_wrap=True, justify='center')
+            outputs_table.add_column('Units', no_wrap=True)
+
+            for key, value in inputs['SUMMARY OF INPUTS'].items():
+                name: str = key
+                val1 = value.strip().split(' ')
+                val = val1[0]
+                unit = ''
+                if len(val1) > 1:
+                    unit: str = UpgradeSymbologyOfUnits(str(val1[1]))
+                inputs_table.add_row(name, val, unit)
+
+            for key, value in outputs['SUMMARY OF RESULTS'].items():
+                name: str = key
+                val1 = value.strip().split(' ')
+                val = val1[0]
+                unit = ''
+                if len(val1) > 1:
+                    unit: str = UpgradeSymbologyOfUnits(str(val1[1]))
+
+                outputs_table.add_row(name, val, unit)
+
+            console = Console(style='bold white on blue', force_terminal=True, record=True)
+            console.print('                  *********************')
+            console.print('                  ***HIP CASE REPORT***')
+            console.print('                  *********************')
+            console.print(' ')
+            console.print(inputs_table)
+            console.print(' ')
+            console.print(outputs_table)
+            console.save_html('d:\\temp\\test_table.html')
+
+        except FileNotFoundError as ex:
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
+        except PermissionError as ex:
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
+
+        except Exception as ex:
+            traceback_str = traceback.format_exc()
+            msg = f'Error: HIP_RA_X Failed to write the output file. Exiting....\n{traceback_str}'
+            self.logger.critical(str(ex))
+            self.logger.critical(msg)
+            raise
 
     def __str__(self):
         return 'HIP_RA_X'

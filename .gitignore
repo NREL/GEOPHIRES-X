@@ -11,6 +11,8 @@ requirements.txt
 *~
 *.bak
 .DS_Store
+*.lock
+*.json
 
 # C extensions
 *.so
@@ -53,6 +55,7 @@ pip-log.txt
 coverage.xml
 htmlcov
 nosetests.xml
+--cov-report=term-missing
 
 # Translations
 *.mo

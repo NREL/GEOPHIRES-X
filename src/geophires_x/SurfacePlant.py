@@ -86,12 +86,14 @@ class SurfacePlant:
         reinjtul = D22*TenteringPP**2 + D12*TenteringPP + D02
         ReinjTemp = (1.-Tfraction)*reinjtll + Tfraction*reinjtul
 
-        # check if reinjectemp (model calculated) >= Tinj (user provided)
+        # check if reinjectemp (model calculated) < Tinj (user provided)
         if np.min(ReinjTemp) < Tinj:
+            user_injection_temp = Tinj
             Tinj = np.min(ReinjTemp)
-            msg = 'injection temperature lowered'
-            print(f'Warning: {msg}')
+            msg = (f'Model-calculated reinjection temperature ({Tinj}) is lower than input reinjection temperature '
+                   f'({user_injection_temp}); input reinjection temperature will be ignored.')
             model.logger.warning(msg)
+
         return Tinj, ReinjTemp, etau
 
     def electricity_heat_production(self, enduse_option: EndUseOptions, availability: np.ndarray, etau: np.ndarray, nprod: int,
@@ -121,20 +123,24 @@ class SurfacePlant:
         # next do the electricity produced - the same for all, except enduse=5, where it is recalculated
         ElectricityProduced = availability * etau * nprod * prodwellflowrate
 
-        if enduse_option == EndUseOptions.ELECTRICITY:  # pure electricity
+        if enduse_option == EndUseOptions.ELECTRICITY:
+            # pure electricity
             HeatExtractedTowardsElectricity = HeatExtracted
-        # enduse_option = 3: cogen topping cycle
+
         elif enduse_option in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:
+            # enduse_option = 3: cogen topping cycle
             # Useful heat for direct-use application [MWth]
             HeatProduced = enduse_efficiency_factor * nprod * prodwellflowrate * cpwater * (ReinjTemp - Tinj) / 1E6
             HeatExtractedTowardsElectricity = nprod * prodwellflowrate * cpwater * (ProducedTemperature - ReinjTemp) / 1E6
-        # enduse_option = 4: cogen bottoming cycle
+
         elif enduse_option in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:
+            # enduse_option = 4: cogen bottoming cycle
             # Useful heat for direct-use application [MWth]
             HeatProduced = enduse_efficiency_factor * nprod * prodwellflowrate * cpwater * (ProducedTemperature - T_chp_bottom) / 1E6
             HeatExtractedTowardsElectricity = nprod * prodwellflowrate * cpwater * (T_chp_bottom - Tinj) / 1E6
-        # enduse_option = 5: cogen split of mass flow rate
+
         elif enduse_option in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:
+            # enduse_option = 5: cogen split of mass flow rate
             # electricity part [MWe]
             ElectricityProduced = availability * etau * nprod * prodwellflowrate * (1. - chp_fraction)
             # useful heat part for direct-use application [MWth]
@@ -187,7 +193,7 @@ class SurfacePlant:
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
                 NetkWhProduced[i] = np.trapz(NetElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
-        if enduse_option != EndUseOptions.ELECTRICITY:
+        if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
@@ -230,11 +236,12 @@ class SurfacePlant:
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
-            ToolTipText="Select the end-use application of the geofluid heat (see docs for details)"
+            ToolTipText="Select the end-use application of the geofluid heat: " +
+                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in EndUseOptions])
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",
-            value=PlantType.SUB_CRITICAL_ORC,
+            DefaultValue=PlantType.SUB_CRITICAL_ORC,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9],
             UnitType=Units.NONE,
             ErrMessage="assume default power plant type (1: subcritical ORC)",
@@ -244,7 +251,6 @@ class SurfacePlant:
         )
         self.pump_efficiency = self.ParameterDict[self.pump_efficiency.Name] = floatParameter(
             "Circulation Pump Efficiency",
-            value=0.75,
             DefaultValue=0.75,
             Min=0.1,
             Max=1.0,
@@ -257,7 +263,6 @@ class SurfacePlant:
         )
         self.utilization_factor = self.ParameterDict[self.utilization_factor.Name] = floatParameter(
             "Utilization Factor",
-            value=0.9,
             DefaultValue=0.9,
             Min=0.1,
             Max=1.0,
@@ -270,7 +275,6 @@ class SurfacePlant:
         )
         self.enduse_efficiency_factor = self.ParameterDict[self.enduse_efficiency_factor.Name] = floatParameter(
             "End-Use Efficiency Factor",
-            value=0.9,
             DefaultValue=0.9,
             Min=0.1,
             Max=1.0,
@@ -282,7 +286,6 @@ class SurfacePlant:
         )
         self.chp_fraction = self.ParameterDict[self.chp_fraction.Name] = floatParameter(
             "CHP Fraction",
-            value=0.5,
             DefaultValue=0.5,
             Min=0.0001,
             Max=0.9999,
@@ -295,7 +298,6 @@ class SurfacePlant:
         )
         self.T_chp_bottom = self.ParameterDict[self.T_chp_bottom.Name] = floatParameter(
             "CHP Bottoming Entering Temperature",
-            value=150.0,
             DefaultValue=150.0,
             Min=0,
             Max=400,
@@ -307,7 +309,6 @@ class SurfacePlant:
         )
         self.ambient_temperature = self.ParameterDict[self.ambient_temperature.Name] = floatParameter(
             "Ambient Temperature",
-            value=15.0,
             DefaultValue=15.0,
             Min=-50,
             Max=50,
@@ -319,7 +320,6 @@ class SurfacePlant:
         )
         self.plant_lifetime = self.ParameterDict[self.plant_lifetime.Name] = intParameter(
             "Plant Lifetime",
-            value=30,
             DefaultValue=30,
             AllowableRange=list(range(1, 101, 1)),
             UnitType=Units.TIME,
@@ -331,7 +331,6 @@ class SurfacePlant:
         )
         self.piping_length = self.ParameterDict[self.piping_length.Name] = floatParameter(
             "Surface Piping Length",
-            value=0.0,
             DefaultValue=0.0,
             Min=0,
             Max=100,
@@ -342,10 +341,9 @@ class SurfacePlant:
         )
         self.plant_outlet_pressure = self.ParameterDict[self.plant_outlet_pressure.Name] = floatParameter(
             "Plant Outlet Pressure",
-            value=100.0,
             DefaultValue=100.0,
             Min=0.01,
-            Max=10000.0,
+            Max=15000.0,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
@@ -354,7 +352,6 @@ class SurfacePlant:
         )
         self.electricity_cost_to_buy = self.ParameterDict[self.electricity_cost_to_buy.Name] = floatParameter(
             "Electricity Rate",
-            value=0.07,
             DefaultValue=0.07,
             Min=0.0,
             Max=1.0,
@@ -367,7 +364,6 @@ class SurfacePlant:
         )
         self.heat_price = self.ParameterDict[self.heat_price.Name] = floatParameter(
             "Heat Rate",
-            value=0.02,
             DefaultValue=0.02,
             Min=0.0,
             Max=1.0,
@@ -379,7 +375,6 @@ class SurfacePlant:
         )
         self.construction_years = self.ParameterDict[self.construction_years.Name] = intParameter(
             "Construction Years",
-            value=1,
             DefaultValue=1,
             AllowableRange=list(range(1, 15, 1)),
             UnitType=Units.NONE,
@@ -517,23 +512,10 @@ class SurfacePlant:
 
                     # handle special cases
                     if ParameterToModify.Name == 'End-Use Option':
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = EndUseOptions.HEAT
+                        end_use_option = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        ParameterToModify.value = end_use_option
+                        if end_use_option == EndUseOptions.HEAT:
                             self.plant_type.value = PlantType.INDUSTRIAL
-                        elif ParameterReadIn.sValue == str(31):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(32):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(41):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(42):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY
-                        elif ParameterReadIn.sValue == str(51):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT
-                        elif ParameterReadIn.sValue == str(52):
-                            ParameterToModify.value = EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY
 
                     elif ParameterToModify.Name == 'Power Plant Type':
                         if ParameterReadIn.sValue == str(1):
@@ -582,15 +564,16 @@ class SurfacePlant:
                                 model.wellbores.impedancemodelallowed.value = False
                                 self.setinjectionpressurefixed = True
                     elif ParameterToModify.Name == 'Plant Outlet Pressure':
-                        if ParameterToModify.value < 0 or ParameterToModify.value > 10000:
+                        if ParameterToModify.value < self.plant_outlet_pressure.Min or ParameterToModify.value > self.plant_outlet_pressure.Max:
                                 if self.setinjectionpressurefixed:
                                     ParameterToModify.value = 100
-                                    msg = f'Provided plant outlet pressure outside of range 0-10000. GEOPHIRES will assume default plant outlet pressure ({ParameterToModify.value} kPa)'
+                                    msg = (f'Provided plant outlet pressure outside of range defined valid range. GEOPHIRES will '
+                                           f'assume default plant outlet pressure ({ParameterToModify.value} kPa)')
                                     print(f'Warning: {msg}')
                                     model.logger.warning(msg)
                                 else:
                                     self.usebuiltinoutletplantcorrelation.value = True
-                                    msg = ('Provided plant outlet pressure outside of range 0-10000 kPa. '
+                                    msg = ('Provided plant outlet pressure outside of defined valid range. '
                                            'GEOPHIRES will calculate plant outlet pressure based on production '
                                            'wellhead pressure and surface equipment pressure drop of 10 psi')
                                     print(f'Warning: {msg}')
@@ -601,13 +584,11 @@ class SurfacePlant:
                     self.plant_outlet_pressure.value = 100
                     msg = (f'No valid plant outlet pressure provided. '
                            f'GEOPHIRES will assume default plant outlet pressure ({self.plant_outlet_pressure.value} kPa)')
-                    print(f'Warning: {msg}')
                     model.logger.warning(msg)
                 else:
                     self.usebuiltinoutletplantcorrelation.value = True
                     msg = (f'No valid plant outlet pressure provided. GEOPHIRES will calculate plant outlet pressure '
                            f'based on production wellhead pressure and surface equipment pressure drop of 10 psi')
-                    print(f'Warning: {msg}')
                     model.logger.warning(msg)
         else:
             model.logger.info('No parameters read because no content provided')

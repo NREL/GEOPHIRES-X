@@ -47,9 +47,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/NREL/GEOPHIRES-X/v3.4.4.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.4.38.svg
     :alt: Commits since latest release
-    :target: https://github.com/NREL/GEOPHIRES-X/compare/v3.4.4...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.4.38...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -65,7 +65,9 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `tinyurl.com/geophires <https://tinyurl.com/geophires>`__
+A web interface is available at `scientificwebservices.com/tools/geophires <https://scientificwebservices.com/tools/geophires>`__.
+
+The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the same location.
 
 Installation
 ------------
@@ -100,7 +102,7 @@ Steps:
 
    - Windows::
 
-       venv\Scripts\Activate.ps1
+       venv\Scripts\activate
 
    - macOS/Linux::
 
@@ -118,6 +120,13 @@ Steps:
     python -mgeophires_x example1.txt
 
 7. View and edit source code by opening the ``my-geophires-project/`` directory in an IDE or editor such as `PyCharm <https://www.jetbrains.com/pycharm/>`__, `Spyder <https://www.spyder-ide.org/>`__, or `Visual Studio Code <https://code.visualstudio.com/>`__. The GEOPHIRES-X source code will be located in the ``my-geophires-project/geophires-x`` directory. You can add your own python files in ``my-geophires-x/`` that use the source as a module as shown below.
+
+To update the editable installation with the latest GEOPHIRES version::
+
+    cd geophires-x
+    git pull
+    # resolve merge conflicts, if any
+    pip install -e .
 
 Pip Package
 ^^^^^^^^^^^

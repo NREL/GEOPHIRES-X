@@ -1,26 +1,12 @@
-----------------------------------------------------------------------------------------
-GEOPHIRES v2.0 Input File
-Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model (Example 4)
-Created by Charley Walton on 7/25/2022
-Last modified on 8/12/2022
+# Example 12: District Heating: Geothermal Electricity Example Problem using Percentage Thermal Drawdown Model
+# This example considers Cornell's existing district heating network assesses
+# the performance of a proposed geothermal well. A known heat demand profile for the district
+# is processed using the district_heat.py module See Charley Walton's SULI Research Report
+# "Techno-Economic Simulations of Geothermal District Heating Systems with GEOPHIRES" for
+# more details on the case study.
 
-Description: This example considers Cornell's existing district heating network assesses
-the performance of a proposed geothermal well. A known heat demand profile for the district
-is processed using the district_heat.py module See Charley Walton's SULI Research Report
-"Techno-Economic Simulations of Geothermal District Heating Systems with GEOPHIRES" for
-more details on the case study.
-
-Note: The GEOPHIRES v2.0 python code scans the input file for each necessary "parameter,
-value". Therefore, the user cannot change the string before the parameter value and the
-comma is the required delimiter. Each parameter string may only appear once in this
-input file. However, the parameters can be in any order and comments can be added
-either by including extra lines or by typing it after the parameter value, separated by
-a comma (see examples below). If a necessary parameter is not provided, a default value
-is assumed, and a warning message is printed to the console.
-----------------------------------------------------------------------------------------
-
-*** Subsurface technical parameters ***
-****************************************
+# *** Subsurface technical parameters ***
+# ****************************************
 Reservoir Model,4,			--- Percentage thermal drawdown model
 Drawdown Parameter,0.003, 		--- In [1/year].
 Reservoir Depth,3.5, 			--- [km]
@@ -47,8 +33,8 @@ Reservoir Density,2700,			--- [kg/m3]
 Reservoir Thermal Conductivity,3,	--- [W/m/K]
 
 
-*** Surface technical parameters ***
-************************************
+# *** Surface technical parameters ***
+# ************************************
 End-Use Option,2, --- Direct use
 Power Plant Type, 7,				---[-] District Heating
 Circulation Pump Efficiency,0.8,	--- [-]
@@ -68,8 +54,8 @@ District Heating Piping Cost Rate,1200,					--- [$/m] used for calculating surfa
 District Heating Road Length,3, 				---[km] supersedes model option 2 if any value is entered
 
 
-*** Economic/Financial Parameters ***
-*************************************
+# *** Economic/Financial Parameters ***
+# *************************************
 Plant Lifetime,30,						--- [years]
 Economic Model,2,						--- Should be 1 (FCR model), 2 (Standard LCOE/LCOH model), or 3 (Bicycle model).
 Discount Rate,0.05,
@@ -85,6 +71,6 @@ Water Cost Adjustment Factor,1,					--- [-] Use built-in water cost correlation 
 Surface Plant O&M Cost Adjustment Factor,1,			--- [-] Use built-in surface plant O&M cost correlation as is
 
 
-*** Simulation Parameters ***
+# *** Simulation Parameters ***
 Print Output to Console,1,		--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
 Time steps per year,3,			--- [1/year]

@@ -1,13 +1,8 @@
-GEOPHIRES v3.0 Input File
-Created on 11/3/2023
-Last modified on 11/3/2023
-Reservoir thermal energy storage simulated with SUTRA
+# Example: SUTRA: Reservoir thermal energy storage simulated with SUTRA
+# This example reads in a SUTRA simulation result and calculate techno-economics of seasonal reservoir thermal energy storage.
 
-This example reads in a SUTRA simulation result and calculate techno-economics of seasonal reservoir thermal energy storage.
-
-
-***Subsurface technical parameters***
-*************************************
+# ***Subsurface technical parameters***
+# *************************************
 Reservoir Model,7,                        			---Reads in SUTRA result for seasonal reservoir thermal energy storage
 SUTRA Annual Heat File Name,Examples/annual_heat.csv,			---SUTRA file with heat stored, heat supplied and efficiency for each year
 SUTRA Heat Budget File Name,Examples/heat_budget.csv,			---SUTRA file with target heat and simulated heat for each SUTRA time step over lifetime
@@ -25,22 +20,22 @@ Production Wellbore Temperature Drop,0,				---[deg.C]
 Injection Wellbore Temperature Gain,0,   			---[deg.C]
 Reservoir Impedance,0.2,					---[GPa*s/m3]
 
-***SURFACE TECHNICAL PARAMETERS***
-**********************************
+# ***SURFACE TECHNICAL PARAMETERS***
+# **********************************
 End-Use Option,2,			  			        ---[-] Direct-Use Heat
 Circulation Pump Efficiency,.8,	  				---[-] between .1 and 1
 Power Plant Type,8,                             ---[-] Reservoir Thermal Energy Storage
 
-***FINANCIAL PARAMETERS***
-**************************
+# ***FINANCIAL PARAMETERS***
+# **************************
 Plant Lifetime,30,			  			---[years]
 Economic Model,2,			  			---[-] Standard Levelized Cost Model
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 End-Use Efficiency Factor,1,					---[-] End-Use Efficiency
 
-***CAPITAL AND O&M COST PARAMETERS***
-*************************************
+# ***CAPITAL AND O&M COST PARAMETERS***
+# *************************************
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
 Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
 Reservoir Stimulation Capital Cost Adjustment Factor,1,		---[-] Use built-in correlations
@@ -52,6 +47,6 @@ Surface Plant O&M Cost Adjustment Factor,1,			---[-] Use built-in correlations
 Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
 
 
-***Simulation Parameters***
-***************************
+# ***Simulation Parameters***
+# ***************************
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)

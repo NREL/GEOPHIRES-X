@@ -10,7 +10,6 @@ import numbers
 from functools import lru_cache
 from typing import Optional
 
-import pint
 import scipy
 from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
@@ -18,7 +17,8 @@ import numpy as np
 
 import CoolProp.CoolProp as CP
 
-from geophires_x.Parameter import ParameterEntry
+from geophires_x.Parameter import ParameterEntry, Parameter
+from geophires_x.Units import get_unit_registry
 
 _logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
@@ -55,7 +55,7 @@ _T = np.array(
     ]
 )
 
-# from https://www.engineeringtoolbox.com/water-properties-d_1508.html
+# TODO needs citation
 _UtilEff = np.array(
     [
         0.0,
@@ -85,14 +85,138 @@ _UtilEff = np.array(
         0.4,
         0.4,
         0.4,
-        0.4,
+        0.5, # Extrapolate from fig 2 in https://geothermal-energy-journal.springeropen.com/articles/10.1186/s40517-019-0119-6
     ]
 )
 
 _interp_util_eff_func = interp1d(_T, _UtilEff)
 
-_ureg = pint.get_application_registry()
-_ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+_ureg = get_unit_registry()
+
+
+def InsertImagesIntoHTML(html_path: str, short_names: set, full_names: set) -> None:
+
+    # Write a reference to the image(s) into the HTML file by inserting before the "</body>" tag
+    # build the string to be inserted first
+    insert_string = ''
+    for _ in range(len(full_names)):
+        name_to_use = short_names.pop()
+        insert_string = insert_string + f'<img src="{name_to_use}" alt="{name_to_use}">\n<br>'
+
+    match_string = '</body>'
+    with open(html_path, 'r+', encoding='UTF-8') as html_file:
+        contents = html_file.readlines()
+        if match_string in contents[-1]:  # Handle last line to prevent IndexError
+            pass
+        else:
+            for index, line in enumerate(contents):
+                if match_string in line and insert_string not in contents[index + 1]:
+                    contents.insert(index, insert_string)
+                    break
+        html_file.seek(0)
+        html_file.writelines(contents)
+
+
+def UpgradeSymbologyOfUnits(unit: str) -> str:
+    """
+    UpgradeSymbologyOfUnits is a function that takes a string that represents a unit and replaces the **2 and **3
+    with the appropriate unicode characters for superscript 2 and 3, and replaces "deg" with the unicode character
+    for degrees.
+    :param unit: a string that represents a unit
+    :return: a string that represents a unit with the appropriate unicode characters for superscript 2 and 3, and
+    replaces "deg" with the unicode character for degrees.
+    """
+
+    return unit.replace('**2', '\u00b2').replace('**3', '\u00b3').replace('deg', '\u00b0')
+
+
+def render_default(p: float, unit: str = '', fmt: str = '') -> str:
+    """
+    RenderDefault - render a float as a string with 2 decimal place by default, or whatever format the user specifies,
+     or in scientific notation if it is greater than 10,000
+     with the unit appended to it if it is not an empty string (the default)
+    :param p: the float to render
+    :type p: float
+    :param unit: the unit to append to the string
+    :type unit: str
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+    if not np.can_cast(p, float):
+        raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
+
+    unit = UpgradeSymbologyOfUnits(unit)
+    # if the number is greater than 10,000, render it in scientific notation
+    if p > 10_000:
+        return render_scientific(p, unit)
+    # otherwise, render it with 2 decimal places
+    else:
+        if not fmt:
+            return f'{p:10.2f} {unit}'.strip()
+        else:
+            if ':' in fmt:
+                fmt = fmt.split(':')[1]
+            fmt = '{0:' + fmt + '}{1:s}'
+            return fmt.format(p, unit.strip())
+
+
+def render_scientific(p: float, unit: str = '', fmt: str = '') -> str:
+    """
+    RenderScientific - render a float as a string in scientific notation with 2 decimal places by default, or whatever
+    format the user specifies, and the unit appended to it if it is not an empty string (the default)
+    :param p: the float to render
+    :type p: float
+    :param unit: the unit to append to the string
+    :type unit: str
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    :rtype: str
+    """
+
+    if not np.can_cast(p, float):
+        raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
+
+    unit = UpgradeSymbologyOfUnits(unit)
+    if not fmt:
+        return f'{p:10.2e} {unit}'.strip()
+    else:
+        pass
+
+
+def render_Parameter_default(p: Parameter, fmt: str = '') -> str:
+    """
+    RenderDefault - render a float parameter in scientific notation as a string with 2 decimal places,
+     or whatever format the user specifies with the unit appended to it if it is not an empty string (the default)
+    function
+    :param p: the parameter to render
+    :type p: Parameter
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+    if not np.can_cast(p.value, float):
+        raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
+
+    return render_default(p.value, p.CurrentUnits.value)
+
+
+def render_parameter_scientific(p: Parameter, fmt: str = '') -> str:
+    """
+    RenderScientific - render a float as a string in scientific notation with 2 decimal places
+    and the unit appended to it if it is not an empty string (the default) by calling the render_scientific base function
+    :param p: the parameter to render
+    :type p: float
+    :param fmt: the format to use for the string representation of the float
+    :type fmt: str
+    :return: the string representation of the float
+    """
+
+    if not np.can_cast(p.value, float):
+        raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
+
+    return render_scientific(p.value, p.CurrentUnits.value)
 
 
 def quantity(value: float, unit: str) -> PlainQuantity:
@@ -193,11 +317,12 @@ def heat_capacity_water_J_per_kg_per_K(
     Raises:
         ValueError: If Twater_degC is not a float or convertible to float.
     """
-    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > 500:
+    max_allowed_temp_degC = 600
+    if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > max_allowed_temp_degC:
         raise ValueError(
             f'Invalid input for Twater_degC.'
-            f'Twater_degC must be a non-negative number and must be within the range of 0 to 500 degrees Celsius.'
-            f'The input value was: {Twater_degC}'
+            f'Twater_degC must be a non-negative number and must be within the range of 0 to {max_allowed_temp_degC} '
+            f'degrees Celsius. The input value was: {Twater_degC}'
         )
 
     try:
@@ -244,37 +369,30 @@ def RecoverableHeat(Twater_degC: float) -> float:
 
 
 @lru_cache
-def vapor_pressure_water_kPa(Twater_degC: float, pressure: Optional[PlainQuantity] = None) -> float:
+def vapor_pressure_water_kPa(temperature_degC: float) -> float:
     """
     Calculate the vapor pressure of water as a function of temperature.
 
     Args:
-        Twater_degC: the temperature of water in degrees C
-        pressure: Pressure - should be provided as a Pint quantity that knows its units
+        temperature_degC: the temperature of water in degrees C
     Returns:
         The vapor pressure of water as a function of temperature in kPa
     Raises:
-        ValueError: If Twater_degC is not a float or convertible to float.
-        ValueError: If Twater_degC is below 0.
+        ValueError: If temperature_degC is not a float or convertible to float.
+        ValueError: If temperature_degC is below 0.
     """
 
-    if not isinstance(Twater_degC, (int, float)):
-        raise ValueError(f'Twater_degC ({Twater_degC}) must be a number')
-    if Twater_degC < 0:
-        raise ValueError(f'Twater_degC ({Twater_degC}) must be greater than or equal to 0')
+    if not isinstance(temperature_degC, (int, float)):
+        raise ValueError(f'Input temperature ({temperature_degC}) must be a number')
+    if temperature_degC < 0:
+        raise ValueError(f'Input temperature ({temperature_degC}C) must be greater than or equal to 0')
 
     try:
-        if pressure is not None:
-            return (quantity(
-                CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'P', pressure.to('Pa').magnitude, 'Water'), 'Pa')
-                    .to('kPa').magnitude)
-        else:
-            _logger.warning(f'vapor_pressure_water: No pressure provided, using vapor quality=0 instead')
-            return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(Twater_degC), 'Q', 0, 'Water'), 'Pa')
+        return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water'), 'Pa')
                     .to('kPa').magnitude)
 
     except (NotImplementedError, ValueError) as e:
-        raise ValueError(f'Input temperature {Twater_degC} is out of range or otherwise not implemented') from e
+        raise ValueError(f'Input temperature ({temperature_degC}C) is out of range or otherwise not implemented') from e
 
 
 @lru_cache
@@ -289,9 +407,9 @@ def entropy_water_kJ_per_kg_per_K(temperature_degC: float, pressure: Optional[Pl
         the entropy of water as a function of temperature in kJ/(kg·K)
     Raises:
         TypeError: If temperature is not a float or convertible to float.
-        ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
-
+        ValueError: If temperature and pressure combination are not within lookup range
     """
+
     try:
         temperature_degC = float(temperature_degC)
     except ValueError:
@@ -319,8 +437,9 @@ def enthalpy_water_kJ_per_kg(temperature_degC: float, pressure: Optional[PlainQu
         the enthalpy of water as a function of temperature in kJ/kg
     Raises:
         TypeError: If temperature is not a float or convertible to float.
-        ValueError: If temperature is not within the range of 0 to 373.946 degrees C.
+        ValueError: If temperature and pressure combination are not within lookup range
     """
+
     try:
         temperature_degC = float(temperature_degC)
     except ValueError:
@@ -401,8 +520,9 @@ def read_input_file(return_dict_1, logger=None, input_file_name=None):
         # successful read of data into list.  Now make a dictionary with all the parameter entries.
         # Index will be the unique name of the parameter.
         # The value will be a "ParameterEntry" structure, with name, value (optionally with units), optional comment
-        for line in content:
-            if line.startswith('#'):
+        for raw_line in content:
+            line = raw_line.strip()
+            if any([line.startswith(x) for x in ['#', '--', '*']]):
                 # skip any line that starts with "#" - # will be the comment parameter
                 continue
 
@@ -466,13 +586,13 @@ def json_dumpse(obj) -> str:
 
 def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
     """
-    Calculate litho- (or hydro-) static pressure in a reservoir.
+    Calculate static pressure in a reservoir (i.e. lithostatic pressure or hydrostatic pressure).
 
     Args:
         rho_kg_per_m3 (float): Density of the fluid in kg/m^3.
         depth_m (float): Depth of the reservoir in meters.
     Returns:
-        pint quantity: Lithostatic pressure in megapascals (MPa).
+        float: Static pressure in megapascals (MPa).
     """
 
     g = scipy.constants.g  # Acceleration due to gravity (m/s^2)

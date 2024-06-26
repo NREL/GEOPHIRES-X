@@ -5,7 +5,6 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.0
- GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2023-09-30
  Simulation Time:  17:51
  Calculation Time:      0.117 sec
@@ -70,14 +69,14 @@ Simulation Metadata
                They are only used for calculating remaining heat content.
       Reservoir volume provided as input
       Reservoir volume:                               125000000 m**3
-      Reservoir hydrostatic pressure:                       100.00 kPa
+      Average reservoir pressure:                             100.00 kPa
       Plant outlet pressure:                                445.96 kPa
       Production wellhead pressure:                         514.91 kPa
       Productivity Index:                                    10.00 kg/sec/bar
       Injectivity Index:                                     10.00 kg/sec/bar
       Reservoir density:                                   2700.00 kg/m**3
-      Reservoir thermal conductivity:                         3.00 watt/m/kelvin
-      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+      Reservoir thermal conductivity:                         3.00 W/m/K
+      Reservoir heat capacity:                             1000.00 J/kg/K
 
 
                            ***RESERVOIR SIMULATION RESULTS***

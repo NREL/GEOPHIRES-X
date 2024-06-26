@@ -61,7 +61,7 @@ class AGSOutputs(Outputs.Outputs):
                     f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                    model.wellbores.PumpingPower.value, fill_value="extrapolate")
                     model.wellbores.PumpingPower.value = f(np.arange(0, len(model.wellbores.ProducedTemperature.value), 1.0))
-                if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.HEAT:
                     if len(model.wellbores.PumpingPower.value) != len(model.wellbores.ProducedTemperature.value):
                         f = scipy.interpolate.interp1d(np.arange(0, len(model.wellbores.PumpingPower.value)),
                                                        model.wellbores.PumpingPower.value, fill_value="extrapolate")
@@ -83,7 +83,6 @@ class AGSOutputs(Outputs.Outputs):
                     f.write("Simulation Metadata\n")
                     f.write("----------------------\n")
                     f.write(f' GEOPHIRES Version: {geophires_x.__version__}\n')
-                    f.write(" GEOPHIRES Build Date: 2022-06-30\n")
                     f.write(" Simulation Date: " + datetime.datetime.now().strftime("%Y-%m-%d\n"))
                     f.write(" Simulation Time:  " + datetime.datetime.now().strftime("%H:%M\n"))
                     f.write(" Calculation Time: " + "{0:10.3f}".format((time.time() - model.tic)) + " sec\n")

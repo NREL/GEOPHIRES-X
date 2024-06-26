@@ -4,11 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.0
- GEOPHIRES Build Date: 2022-06-30
- Simulation Date: 2023-09-28
- Simulation Time:  15:39
- Calculation Time:     12.236 sec
+ GEOPHIRES Version: 3.4.4
+ Simulation Date: 2024-03-02
+ Simulation Time:  14:11
+ Calculation Time:      1.178 sec
 
 
                            ***AGS/CLGS STYLE OUTPUT***
@@ -19,11 +18,11 @@ Simulation Metadata
       Design: utube
       Flow rate:                                             40.0 kg/sec
       Lateral Length:                                      1000 meter
-      Vertical Depth:                                         3 kilometer
+      Vertical Depth:                                      3 kilometer
       Geothermal Gradient:                                   0.0600 degC/km
       Wellbore Diameter:                                      8.5000 in
       Injection Temperature:                                 60.0 degC
-      Thermal Conductivity:                                   3.00 watt/m/kelvin
+      Thermal Conductivity:                                   3.00 W/m/K
  ### Reservoir Simulation Results ###
       Average Production Temperature:                       71.2 degC
       Average Production Pressure:                          209.9 bar

@@ -5,7 +5,6 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.0
- GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2023-09-30
  Simulation Time:  11:08
  Calculation Time:      2.897 sec
@@ -63,17 +62,17 @@ Simulation Metadata
       Reservoir Model = Multiple Parallel Fractures Model
       Bottom-hole temperature:                              170.00 degC
       Fracture model = Square
-      Well seperation: fracture height:                     900.00 meter
+      Well separation: fracture height:                     900.00 meter
       Fracture area:                                     810000.00 m**2
       Reservoir volume:                              1000000000 m**3
-      Reservoir hydrostatic pressure:                       100.00 kPa
+      Average reservoir pressure:                             100.00 kPa
       Plant outlet pressure:                               1062.72 kPa
       Production wellhead pressure:                        1131.67 kPa
       Productivity Index:                                     5.00 kg/sec/bar
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   2700.00 kg/m**3
-      Reservoir thermal conductivity:                         2.70 watt/m/kelvin
-      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+      Reservoir thermal conductivity:                         2.70 W/m/K
+      Reservoir heat capacity:                             1000.00 J/kg/K
 
 
                            ***RESERVOIR SIMULATION RESULTS***

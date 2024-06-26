@@ -32,36 +32,30 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py38'
             os: 'ubuntu-latest'
-          - name: 'py38 (macos)'
-            python: '3.8'
-            toxpython: 'python3.8'
-            python_arch: 'x64'
-            tox_env: 'py38'
-            os: 'macos-latest'
           - name: 'py39 (ubuntu)'
             python: '3.9'
             toxpython: 'python3.9'
             python_arch: 'x64'
             tox_env: 'py39'
             os: 'ubuntu-latest'
-          - name: 'py39 (macos)'
+          - name: 'py39 (windows)'
             python: '3.9'
             toxpython: 'python3.9'
             python_arch: 'x64'
             tox_env: 'py39'
-            os: 'macos-latest'
+            os: 'windows-latest'
           - name: 'py310 (ubuntu)'
             python: '3.10'
             toxpython: 'python3.10'
             python_arch: 'x64'
             tox_env: 'py310'
             os: 'ubuntu-latest'
-          - name: 'py310 (macos)'
+          - name: 'py310 (windows)'
             python: '3.10'
             toxpython: 'python3.10'
             python_arch: 'x64'
             tox_env: 'py310'
-            os: 'macos-latest'
+            os: 'windows-latest'
           - name: 'py311 (ubuntu)'
             python: '3.11'
             toxpython: 'python3.11'
@@ -107,10 +101,10 @@ jobs:
 #            os: 'macos-latest'
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
         architecture: ${{ matrix.python_arch }}
@@ -137,10 +131,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         architecture: 'x64'
@@ -168,8 +162,8 @@ jobs:
         done
 
     - name: upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
 
     - name: deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4

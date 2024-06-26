@@ -1,6 +1,18 @@
 # copyright, 2023, Malcolm I Ross
 from enum import IntEnum, Enum, auto
 
+import pint
+import os
+
+
+_UREG = None
+def get_unit_registry():
+    global _UREG
+    if _UREG is None:
+        _UREG = pint.get_application_registry()
+        _UREG.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
+
+    return _UREG
 
 class Units(IntEnum):
     """All possible systems of measure"""
@@ -46,6 +58,8 @@ class Units(IntEnum):
     POWERPERUNITAREA = auto()
     HEATPERUNITVOLUME = auto()
     POWERPERUNITVOLUME = auto()
+    DECAY_RATE=auto()
+    INFLATION_RATE=auto()
 
 
 class TemperatureUnit(str, Enum):
@@ -117,7 +131,7 @@ class EnergyUnit(str, Enum):
 
 
 class PowerUnit(str, Enum):
-    """Power (electrcity or heat) Units"""
+    """Power (electricity or heat) Units"""
     W = "W"
     KW = "kW"
     MW = "MW"
@@ -219,7 +233,7 @@ class HeatUnit(str, Enum):
 
 class HeatCapacityUnit(str, Enum):
     """Heat Capacity Units"""
-    JPERKGPERK = "J/kg/kelvin"
+    JPERKGPERK = "J/kg/K"
     KJPERKM3C = "kJ/km**3C"
     kJPERKGC = "kJ/kgC"
 
@@ -236,7 +250,7 @@ class EnthalpyUnit(str, Enum):
 
 class ThermalConductivityUnit(str, Enum):
     """Thermal Conductivity Units"""
-    WPERMPERK = "watt/m/kelvin"
+    WPERMPERK = "W/m/K"
 
 
 class TimeUnit(str, Enum):
@@ -326,3 +340,13 @@ class HeatPerUnitVolumeUnit(str,Enum):
 class PowerPerUnitVolumeUnit(str,Enum):
     """Population Density Units"""
     MWPERCUBICKM = "MW/km**3"
+
+
+class Decay_RateUnit(str,Enum):
+    """Decay rate Units"""
+    PERCENTPERYEAR = "%/yr"
+
+
+class Inflation_RateUnit(str,Enum):
+    """Decay rate Units"""
+    KPASCALPERYEAR = "kPa/yr"

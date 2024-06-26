@@ -2,14 +2,14 @@ import math
 import unittest
 from pathlib import Path
 
-from base_test_case import BaseTestCase
+from tests.base_test_case import BaseTestCase
 
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001
 from geophires_x.Model import Model
 from geophires_x.Parameter import ParameterEntry
 
-from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3, static_pressure_MPa
 
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K as heatcapacitywater
 
@@ -110,7 +110,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         model = self._new_model_with_cylindrical_reservoir()
         reservoir = model.reserv
         reservoir.Calculate(model)
-        self.assertEqual(10.0, reservoir.depth.quantity().to('km').magnitude)
+        self.assertEqual(3.0, reservoir.depth.quantity().to('km').magnitude)
 
     def test_calculate_heat_capacity_water(self):
         """Calculates the heat capacity of water"""
@@ -119,7 +119,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir.Calculate(model)
         expected_heat_capacity = heatcapacitywater(
             model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         assert reservoir.cpwater.value == expected_heat_capacity
 
@@ -130,7 +130,7 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir.Calculate(model)
         expected_density = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (reservoir.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=reservoir.lithostatic_pressure(),
+            pressure=reservoir.hydrostatic_pressure(),
         )
         assert expected_density == reservoir.rhowater.value
 
@@ -162,3 +162,11 @@ class CylindricalReservoirTestCase(BaseTestCase):
         reservoir = model.reserv
         reservoir.RadiusOfEffectFactor.value = 10.0
         reservoir.resvolcalc.value = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+    def test_lithostatic_pressure_calculated_from_input_depth(self):
+        model = self._new_model_with_cylindrical_reservoir()
+        reservoir = model.reserv
+        reservoir.InputDepth.value = 4.20
+        assert reservoir.lithostatic_pressure().magnitude == static_pressure_MPa(
+            reservoir.rhorock.value, reservoir.InputDepth.quantity().to('m').magnitude
+        )

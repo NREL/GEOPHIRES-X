@@ -1,2 +1,5 @@
 HIP.out
 *.log
+MC_*Result.json
+MC_*Result.txt
+*.png

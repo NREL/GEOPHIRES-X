@@ -1,23 +1,20 @@
 # copyright, 2023, Malcolm I Ross
 import copy
-import os.path
+import dataclasses
+
 import sys
 from array import array
 from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from enum import IntEnum
 from forex_python.converter import CurrencyRates, CurrencyCodes
-import pint
 
 from abc import ABC
 
 from pint.facets.plain import PlainQuantity
-
 from geophires_x.Units import *
 
-ureg = pint.get_application_registry()
-ureg.load_definitions(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GEOPHIRES3_newunits.txt'))
-
+_ureg = get_unit_registry()
 
 class HasQuantity(ABC):
 
@@ -26,7 +23,7 @@ class HasQuantity(ABC):
         :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
             to import the Quantity TypeAlias
         """
-        return ureg.Quantity(self.value, str(self.CurrentUnits.value))
+        return _ureg.Quantity(self.value, str(self.CurrentUnits.value))
 
 
 @dataclass
@@ -67,7 +64,17 @@ class OutputParameter(HasQuantity):
     # set to PreferredUnits by default assuming that the current units are the preferred units -
     # they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    UnitsMatch: bool = True
+
+    @property
+    def UnitsMatch(self) -> str:
+        return self.CurrentUnits == self.PreferredUnits
+
+    def with_preferred_units(self) -> Any:  # Any is a proxy for Self
+        ret: OutputParameter = dataclasses.replace(self)
+        ret.value = ret.quantity().to(ret.PreferredUnits).magnitude
+        ret.CurrentUnits = ret.PreferredUnits
+        return ret
+
 
 
 @dataclass
@@ -100,13 +107,21 @@ class Parameter(HasQuantity):
     InputComment: str = ""
     ToolTipText: str = Name
     UnitType: IntEnum = Units.NONE
-    PreferredUnits: Enum = Units.NONE
+    PreferredUnits: Enum = None
 
     # set to PreferredUnits assuming that the current units are the preferred units
     # - they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
-    UnitsMatch: bool = True
+
+    @property
+    def UnitsMatch(self) -> bool:
+        return self.PreferredUnits == self.CurrentUnits
+
     parameter_category: str = None
+
+    def __post_init__(self):
+        if self.PreferredUnits is None:
+            self.PreferredUnits = self.CurrentUnits
 
 
 @dataclass
@@ -169,6 +184,7 @@ class floatParameter(Parameter):
     def __post_init__(self):
         if self.value is None:
             self.value = self.DefaultValue
+        super().__post_init__()
 
     value: float = None
 
@@ -243,9 +259,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     # these Parameter Types don't have units so don't do anything fancy, and ignore it if the user has supplied units
     if isinstance(ParamToModify, boolParameter) or isinstance(ParamToModify, strParameter):
         if isinstance(ParamToModify, boolParameter):
-            if ParameterReadIn.sValue.lower() in ['0', 'false']:
+            if ParameterReadIn.sValue in ['0', 'false', 'False', 'f', 'F', 'no', 'No', 'n', 'N']:
                 ParamToModify.value = False
-            elif ParameterReadIn.sValue.lower() in ['1', 'true']:
+            elif ParameterReadIn.sValue in ['1', 'true', 'True', 't', 'T', 'yes', 'Yes', 'y', 'Y']:
                 ParamToModify.value = True
             else:
                 ParamToModify.value = bool(ParameterReadIn.sValue)
@@ -264,24 +280,22 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     else:
         # The value came in without any units, so it must be using the default PreferredUnits
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
-        ParamToModify.UnitsMatch = True
+
+    def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
+        return (
+            f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is the same as the default value. '
+            f'Consider removing {ParamToModify.Name} from the input file unless you wish '
+            f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
+        )
 
     if isinstance(ParamToModify, intParameter):
         New_val = int(float(ParameterReadIn.sValue))
 
         if New_val == ParamToModify.DefaultValue:
-            # Warning - the value read in is the same as the default value, making it superfluous - add a warning and
-            # suggestion
-
             if len(ParamToModify.ErrMessage) > 0:
-                msg = (
-                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file to a '
-                    f'value that is the same as the default. No change was made to that value. Recommendation: remove '
-                    f'the {ParamToModify.Name} from the input file unless you wish to change it from the default value '
-                    f'of ({str(ParamToModify.DefaultValue)})'
-                )
-                print(f'Warning: {msg}')
-                model.logger.warning(msg)
+                msg = default_parameter_value_message(New_val, ParamToModify.Name, ParamToModify.DefaultValue)
+                model.logger.info(msg)
+
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
 
@@ -311,14 +325,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
 
             ParamToModify.Provided = True
             if len(ParamToModify.ErrMessage) > 0:
-                msg = (
-                    f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is being set by the input file '
-                    f'to a value that is the same as the default. No change was made to that value. '
-                    f'Recommendation: remove the {ParamToModify.Name} from the input file unless you wish '
-                    f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
-                )
-                print(f'Warning: {msg}')
-                model.logger.warning(msg)
+                msg = default_parameter_value_message(New_val, ParamToModify.Name, ParamToModify.DefaultValue)
+                model.logger.info(msg)
+
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
         if New_val == ParamToModify.value:
             # We have nothing to change - user provided value that was the same as the
@@ -413,7 +422,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         # user has provided a currency that is the currency expected, so just strip off the currency
         if prefType == currType:
             strUnit = str(val)
-            ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -469,7 +477,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
             val = float(val) * Factor
             strUnit = str(val)
-            ParamToModify.UnitsMatch = True
             ParamToModify.CurrentUnits = currType
             return strUnit
 
@@ -493,7 +500,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
         New_val = (conv_rate * float(val)) * Factor
         strUnit = str(New_val)
-        ParamToModify.UnitsMatch = False
         ParamToModify.CurrentUnits = parts[1]
 
         if len(prefSuff) > 0:
@@ -517,8 +523,8 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         try:
             # Make a Pint Quantity out of the old value: the amount of the unit doesn't matter,
             # just the units, so I set the amount to 0
-            Old_valQ = ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
-            New_valQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
+            Old_valQ = _ureg.Quantity(0.000, str(ParamToModify.CurrentUnits.value))
+            New_valQ = _ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
         except BaseException as ex:
             print(str(ex))
             msg = (
@@ -561,7 +567,6 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
             if new_val_units_lookup is not None and new_val_units_lookup[0] is not None:
                 ParamToModify.CurrentUnits = new_val_units_lookup[0]
 
-            ParamToModify.UnitsMatch = False
         else:
             # if we come here, we must have a unit declared, but the unit must be the same as the preferred unit,
             # so we need to just get rid of the extra text after the space
@@ -584,14 +589,43 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     :return: None
     """
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
-    param_modified: Parameter = parameter_with_units_converted_back_to_preferred_units(ParamToModify, model)
-    ParamToModify.value = param_modified.value
-    ParamToModify.CurrentUnits = param_modified.CurrentUnits
-    ParamToModify.UnitType = param_modified.UnitsMatch
+
+    try:
+        ParamToModify.value = _ureg.Quantity(ParamToModify.value, ParamToModify.CurrentUnits.value).to(ParamToModify.PreferredUnits.value).magnitude
+        ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+    except AttributeError as ae:
+        # TODO refactor to check for/convert currency instead of relying on try/except once currency conversion is
+        #  re-enabled - https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled
+        model.logger.warning(f'Failed to convert units with pint, attempting currency conversion ({ae})')
+
+        try:
+            param_modified: Parameter = _parameter_with_currency_units_converted_back_to_preferred_units(ParamToModify,
+                                                                                                         model)
+            ParamToModify.value = param_modified.value
+            ParamToModify.CurrentUnits = param_modified.CurrentUnits
+            ParamToModify.UnitType = param_modified.UnitType
+        except AttributeError as cce:
+            model.logger.error(f'Currency conversion failed ({cce})')
+
+            msg = (
+                f'Error: GEOPHIRES failed to convert your units for {ParamToModify.Name} to something it understands. '
+                f'You gave {ParamToModify.CurrentUnits}  - Are the units defined for Pint library, '
+                f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
+                f'Cannot continue. Exiting.'
+            )
+            model.logger.critical(msg)
+
+            raise RuntimeError(msg)
+
+
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 
 
-def parameter_with_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
+def _parameter_with_currency_units_converted_back_to_preferred_units(param: Parameter, model) -> Parameter:
+    """
+    TODO clean up and consolidate with pint-based conversion in ConvertUnitsBack
+    """
+
     param_with_units_converted_back = copy.deepcopy(param)
 
     # deal with the currency case
@@ -650,7 +684,6 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             # this is true, then we just have a conversion between KUSD and USD, MUSD to KUSD, MUER to EUR, etc.,
             # so just do the simple factor conversion
             param_with_units_converted_back.value = param.value * Factor
-            param_with_units_converted_back.UnitsMatch = True
             param_with_units_converted_back.CurrentUnits = currType
             return param_with_units_converted_back
 
@@ -665,8 +698,8 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             print(str(ex))
             msg = (
                 f'Error: GEOPHIRES failed to convert your currency for {param.Name} to something it understands.'
-                f'You gave {currType} - Are these currency units defined for forex-python? '
-                f'or perhaps the currency server is down?  Please change your units to {param.PreferredUnits.value}'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {param.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
@@ -676,70 +709,13 @@ def parameter_with_units_converted_back_to_preferred_units(param: Parameter, mod
             raise RuntimeError(msg, ex)
 
         param_with_units_converted_back.value = (conv_rate * float(param.value)) / prefFactor
-        param_with_units_converted_back.UnitsMatch = False
         return param_with_units_converted_back
 
     else:
-        # must be something other than currency
-        if isinstance(param.CurrentUnits, pint.Quantity):
-            val = param.CurrentUnits.value
-            currType = str(param.CurrentUnits.value)
-        else:
-            if ' ' in param.CurrentUnits.value:
-                parts = param.CurrentUnits.value.split(' ')
-                val = parts[0].strip()
-                currType = parts[1].strip()
-            else:
-                val = param.value
-                currType = param.CurrentUnits.value
-
-        try:
-            if isinstance(param.PreferredUnits, pint.Quantity):
-                prefQ = param.PreferredUnits
-            else:
-                # Make a Pint Quantity out of the old value
-                prefQ = param.PreferredUnits
-            if isinstance(param.CurrentUnits, pint.Quantity):
-                currQ = param.CurrentUnits
-            else:
-                currQ = ureg.Quantity(float(val), currType)  # Make a Pint Quantity out of the new value
-        except BaseException as ex:
-            print(str(ex))
-            msg = (
-                f'Error: GEOPHIRES failed to initialize your units for {param.Name} to something it understands. '
-                f'You gave {currType} - Are the units defined for Pint library, '
-                f'or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
-                f'Cannot continue. Exiting.'
-            )
-            print(msg)
-            model.logger.critical(str(ex))
-            model.logger.critical(msg)
-
-            raise RuntimeError(msg)
-        try:
-            # update The quantity back to the current units (the units that we started with) units
-            # so the display will be in the right units
-            currQ = currQ.to(prefQ)
-        except BaseException as ex:
-            print(str(ex))
-            msg = (
-                f'Error: GEOPHIRES failed to convert your units for {param.Name} to something it understands. '
-                f'You gave {currType}  - Are the units defined for Pint library, '
-                f' or have you defined them in the user defined units file (GEOPHIRES3_newunits)? '
-                f'Cannot continue. Exiting.'
-            )
-            print(msg)
-            model.logger.critical(str(ex))
-            model.logger.critical(msg)
-
-            raise RuntimeError(msg)
-
-        # reset the values
-        if param.value != currQ.magnitude:
-            param_with_units_converted_back.value = currQ.magnitude
-            param_with_units_converted_back.CurrentUnits = param.PreferredUnits
-
-    return param_with_units_converted_back
+        raise AttributeError(
+            f'Unit/unit type ({param.CurrentUnits}/{param.UnitType} for {param.Name} '
+            f'is not a recognized currency unit'
+        )
 
 
 def LookupUnits(sUnitText: str):
@@ -836,6 +812,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     """
     ConvertOutputUnits Given an output parameter, convert the value(s) from what they contain
     (as calculated by GEOPHIRES) to what the user specified as what they want for outputs.  Conversion happens inline.
+
+    TODO switch to pint-based conversion like in ConvertUnitsBack
+
     :param oparam: The parameter you want to be converted (value or list of values).  Because Parameters know the
         PreferredUnits and CurrentUnits, this routine knows what to do. It will convert the value(s) in the parameter
         to the new units, and then reset the CurrentUnits to the new units. This is done so that the user can see the units
@@ -862,10 +841,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             # this is a simple unit conversion: it could be just units (meters->feet) or simple currency ($->EUR)
             # or compound Currency (MUSD-EUR)
             try:
-                fromQ = ureg.Quantity(
+                fromQ = _ureg.Quantity(
                     oparam.value, str(oparam.PreferredUnits.value)
                 )  # Make a Pint Quantity out of the value
-                toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
+                toQ = _ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
             except BaseException as ex:
                 print(str(ex))
                 msg = (
@@ -906,10 +885,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             i = 0
             for arrayval in oparam.value:
                 try:
-                    fromQ = ureg.Quantity(
+                    fromQ = _ureg.Quantity(
                         oparam.value[i], str(oparam.PreferredUnits.value)
                     )  # Make a Pint Quantity out of from the value
-                    toQ = ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
+                    toQ = _ureg.Quantity(0, str(newUnit.value))  # Make a Pint Quantity out of the new value
                 except BaseException as ex:
                     print(str(ex))
                     msg = (
@@ -1003,7 +982,6 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             # so just do the simple factor conversion and exit
             oparam.value = oparam.value * Factor
             oparam.CurrentUnits = DefUnit
-            oparam.UnitsMatch = False
             return
 
         # start the currency conversion process
@@ -1012,9 +990,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         symbol = cc.get_symbol(currShort)
         if symbol is None:
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {currType}  - Are these currency units defined for forex-python? '
-                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
             print(msg)
@@ -1027,9 +1005,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
         # try some tricks to make it into something it does do recognize
         if symbol is None:
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {prefType}  - Are these currency units defined for forex-python? '
-                f' or perhaps the currency server is down?  Please change your units to {oparam.PreferredUnits.value}'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
                 f'to continue. Cannot continue unless you do.  Exiting.'
             )
 
@@ -1044,11 +1022,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             print(str(ex))
 
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
-                f'You gave {currType} - Are these currency units defined for forex-python?'
-                f'or perhaps the currency server is down? '
-                f'Please change your units to {oparam.PreferredUnits.value} to continue.'
-                f'Cannot continue unless you do.  Exiting.'
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Please change your units to {oparam.PreferredUnits.value} '
+                f'to continue. Cannot continue unless you do.  Exiting.'
             )
 
             print(msg)
@@ -1060,5 +1037,4 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
 
         oparam.value = Factor * conv_rate * float(oparam.value)
         oparam.CurrentUnits = DefUnit
-        oparam.UnitsMatch = False
         model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')

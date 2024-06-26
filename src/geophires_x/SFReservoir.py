@@ -36,7 +36,6 @@ class SFReservoir(Reservoir):
         # and set all these parameters to your class.
         self.drawdp = self.ParameterDict[self.drawdp.Name] = floatParameter(
             "Drawdown Parameter",
-            value=0.005,
             DefaultValue=0.005,
             Min=0,
             Max=0.2,
@@ -50,7 +49,7 @@ class SFReservoir(Reservoir):
         model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
 
     def __str__(self):
-        return "LHSReservoir"
+        return 'SFReservoir'
 
     def read_parameters(self, model: Model) -> None:
         """

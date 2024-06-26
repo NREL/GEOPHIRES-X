@@ -5,7 +5,6 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.0
- GEOPHIRES Build Date: 2022-06-30
  Simulation Date: 2023-09-30
  Simulation Time:  11:11
  Calculation Time:      0.057 sec
@@ -67,12 +66,12 @@ Simulation Metadata
       Number of fractures:                                   12.00
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
-      Reservoir hydrostatic pressure:                       100.00 kPa
+      Average reservoir pressure:                             100.00 kPa
       Plant outlet pressure:                                100.00 kPa
       Injectivity Index:                                      5.00 kg/sec/bar
       Reservoir density:                                   3000.00 kg/m**3
-      Reservoir thermal conductivity:                         3.00 watt/m/kelvin
-      Reservoir heat capacity:                             1000.00 J/kg/kelvin
+      Reservoir thermal conductivity:                         3.00 W/m/K
+      Reservoir heat capacity:                             1000.00 J/kg/K
 
 
                            ***RESERVOIR SIMULATION RESULTS***

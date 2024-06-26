@@ -8,7 +8,86 @@ from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
 from .Units import *
 import geophires_x.Model as Model
-from .OptionList import ReservoirModel
+from .OptionList import ReservoirModel, Configuration, WorkingFluid
+
+
+# code from Koenraad
+
+
+def InjectionReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
+                                        inflation_rate: float) -> list:
+    """
+    InjectionReservoirPressurePredictor builds the Injection Reservoir Pressure Array for the project lifetime
+     based on the initial (perhaps hydrostatic) pressure and the inflation rate. There is no limit to how high the
+        pressure can go.
+    :param project_lifetime_yr: The lifetime of the project in years
+    :type project_lifetime_yr: int
+    :param timesteps_per_year: The number of timesteps per year
+    :type timesteps_per_year: int
+    :param initial_pressure_kPa: The initial pressure in kPa
+    :type initial_pressure_kPa: float
+    :param inflation_rate: The inflation rate in %/yr
+    :type inflation_rate: float
+    :return: pressure: The pressure array as a function of time.
+    :rtype: list
+    """
+
+    # Initialize the pressure array with the initial hydrostatic pressure
+    pressure = [initial_pressure_kPa] * project_lifetime_yr * timesteps_per_year
+
+    # If the overpressure percentage is 0,
+    # return the hydrostatic pressure array as a constant value equal to the initial hydrostatic pressure
+    if inflation_rate == 0:
+        return pressure
+
+    # Calculate the initial pressure
+    pressure[0] = initial_pressure_kPa
+    pressure_change_per_timestep = inflation_rate / timesteps_per_year
+    for current_timestep in range(1, project_lifetime_yr * timesteps_per_year):
+        pressure[current_timestep] = initial_pressure_kPa + (pressure_change_per_timestep * current_timestep)
+    return pressure
+
+
+def ReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
+                               overpressure_percentage: float, depletion_rate: float) -> list:
+    """
+    ReservoirPressurePredictor builds the Reservoir Pressure Array for the project lifetime based on the initial
+    (likely hydrostatic) pressure. the overpressure percentage and the depletion rate. Don't let the pressure drop
+    below the initial pressure.
+    :param project_lifetime_yr: The lifetime of the project in years
+    :type project_lifetime_yr: int
+    :param timesteps_per_year: The number of timesteps per year
+    :type timesteps_per_year: int
+    :param initial_pressure_kPa: The hydrostatic pressure in kPa
+    :type initial_pressure_kPa: float
+    :param overpressure_percentage: The overpressure percentage in %
+    :type overpressure_percentage: float
+    :param depletion_rate: The depletion rate in %/yr
+    :type depletion_rate: float
+    :return: hydrostatic_pressure: The hydrostatic pressure array as a function of time.
+    :rtype: list
+    """
+
+    # Initialize the hydrostatic pressure array with the initial hydrostatic pressure
+    pressure = [initial_pressure_kPa] * project_lifetime_yr * timesteps_per_year
+
+    # If the overpressure percentage is 100,
+    # return the hydrostatic pressure array as a constant value equal to the initial pressure
+    if overpressure_percentage == 100.0:
+        return pressure
+
+    # Calculate the initial overpressure
+    pressure[0] = initial_pressure_kPa * (overpressure_percentage / 100)
+    delta_pressure = (pressure[0] - initial_pressure_kPa)
+    depletion_timesteps = int((100.0 / depletion_rate) * timesteps_per_year)
+    pressure_change_per_timestep = delta_pressure / depletion_timesteps
+    for timestep in range(1, project_lifetime_yr * timesteps_per_year):
+        pressure[timestep] = pressure[0] - (pressure_change_per_timestep * timestep)
+        if pressure[timestep] < initial_pressure_kPa:
+            # If the pressure drops below the hydrostatic pressure, set it to the hydrostatic pressure and break out
+            pressure[timestep] = initial_pressure_kPa
+            break
+    return pressure
 
 
 def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, utilfactor: float, flowrate: float,
@@ -88,7 +167,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     rhowater = np.array([
         density_water_kg_per_m3(
             t,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -96,7 +175,7 @@ def WellPressureDrop(model: Model, Taverage: float, wellflowrate: float, welldia
     muwater = np.array([
         viscosity_water_Pa_sec(
             t,
-            pressure=model.reserv.lithostatic_pressure(),
+            pressure=model.reserv.hydrostatic_pressure(),
         )
         for t in Taverage
     ])  # replace with correlation based on Tprodaverage
@@ -152,11 +231,11 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
     """
     # start by calculating wellbore fluid conditions [kPa], noting that most temperature drop happens in
     # upper section (because surrounding rock temperature is lowest in upper section)
-    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.lithostatic_pressure())
+    rhowater = (density_water_kg_per_m3(Taverage, pressure=model.reserv.hydrostatic_pressure())
                 * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value)))
 
     # replace with correlation based on Tinjaverage
-    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.lithostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
+    muwater = viscosity_water_Pa_sec(Taverage, pressure=model.reserv.hydrostatic_pressure()) * np.linspace(1, 1, len(model.wellbores.ProducedTemperature.value))
     v = nprod / ninj * wellflowrate * (1.0 + waterloss) / rhowater / (math.pi / 4. * welldiam ** 2)
     Rewater = 4. * nprod / ninj * wellflowrate * (1.0 + waterloss) / (
         muwater * math.pi * welldiam)  # laminar or turbulent flow?
@@ -304,73 +383,68 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         usebuiltinppwellheadcorrelation: bool,
         Trock_degC: float,
         depth_m: float,
-        ppwellhead: float,
-        PI: float,
-        wellflowrate: float,
+        ppwellhead_kPa: float,
+        PI_kg_per_sec_per_bar: float,
+        wellflowrate_kg_per_sec: float,
         f3: float,
-        vprod: float,
-        prodwelldiam: float,
+        vprod_m: float,
+        prodwelldiam_m: float,
         nprod: int,
         pumpeff: float,
-        rhowaterprod: float) -> tuple:
+        rhowaterprod_kg_per_m3: float) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using indexes
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
-        :param usebuiltinhydrostaticpressurecorrelation: whether or not to use the built-in hydrostatic pressure correlation (True or False) [-]
-        :type usebuiltinhydrostaticpressurecorrelation: bool
         :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
         :type productionwellpumping: bool
         :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
         :param Trock_degC: rock temperature [C]
         :type Trock_degC: float
-        :param Tsurf_degC: surface temperature [C]
-        :type Tsurf_degC: float
         :param depth_m: depth of the well [m]
         :type depth_m: float
-        :param gradient_C_per_km: geothermal gradient [C/km]
-        :param ppwellhead: production wellhead pressure [kPa]
-        :type ppwellhead: float
-        :param PI: productivity index [kg/s/bar]
-        :type PI: float
-        :param wellflowrate: flow rate of the fluid in the well [kg/s]
-        :type wellflowrate: float
+        :param ppwellhead_kPa: production wellhead pressure [kPa]
+        :type ppwellhead_kPa: float
+        :param PI_kg_per_sec_per_bar: productivity index [kg/s/bar]
+        :type PI_kg_per_sec_per_bar: float
+        :param wellflowrate_kg_per_sec: flow rate of the fluid in the well [kg/s]
+        :type wellflowrate_kg_per_sec: float
         :param f3: friction factor [-]
         :type f3: float
-        :param vprod: velocity of the fluid in the production well [m/s]
-        :type vprod: float
-        :param prodwelldiam: diameter of the well [m]
-        :type prodwelldiam: float
+        :param vprod_m: velocity of the fluid in the production well [m/s]
+        :type vprod_m: float
+        :param prodwelldiam_m: diameter of the well [m]
+        :type prodwelldiam_m: float
         :param nprod: number of production wells [-]
         :type nprod: int
         :param pumpeff: pump efficiency [-]
         :type pumpeff: float
-        :param rhowaterprod: density of the water in the production well [kg/m3]
-        :type rhowaterprod: float
+        :param rhowaterprod_kg_per_m3: density of the water in the production well [kg/m3]
+        :type rhowaterprod_kg_per_m3: float
         :return: tuple of PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead [kPa]
         :rtype: tuple
     """
     # initialize PumpingPower value in case it doesn't get set.
-    PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod))
+    PumpingPower = PumpingPowerProd = DPProdWell = Pprodwellhead = ([0.0] * len(vprod_m))
 
     # reservoir hydrostatic pressure
-    Phydrostaticcalc_kPa = model.wellbores.Phydrostaticcalc.quantity().to('kPa').magnitude
+    Phydrostaticcalc_kPa = model.wellbores.production_reservoir_pressure.quantity().to('kPa').magnitude
 
     if productionwellpumping:
         # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess_kPa = 344.7  # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock_degC,
-            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
-        ) + Pexcess_kPa
+        if Trock_degC < 373.9:
+            Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
+        else: #above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
+            Pminimum_kPa = 100 #setting artificially to 1 bar = 100 kPa
 
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
-            Pprodwellhead = ppwellhead
+            Pprodwellhead = ppwellhead_kPa
             if Pprodwellhead < Pminimum_kPa:
                 Pprodwellhead = Pminimum_kPa
                 msg = (f'Provided production wellhead pressure ({Pprodwellhead}kPa) '
@@ -380,29 +454,30 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)
 
-        PI_kPa = PI / 100.0  # convert PI from kg/s/bar to kg/s/kPa
+        PI_kPa = PI_kg_per_sec_per_bar / 100.0  # convert PI from kg/s/bar to kg/s/kPa
 
         # calculate pumping depth
-        pumpdepth_m = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate / PI_kPa) / (
-            f3 * (rhowaterprod * vprod ** 2 / 2.) * (1 / prodwelldiam) / 1E3 + rhowaterprod * 9.81 / 1E3)
+        pumpdepth_m = depth_m + (Pminimum_kPa - Phydrostaticcalc_kPa + wellflowrate_kg_per_sec / PI_kPa) / (
+            f3 * (rhowaterprod_kg_per_m3 * vprod_m ** 2 / 2.) * (
+            1 / prodwelldiam_m) / 1E3 + rhowaterprod_kg_per_m3 * 9.81 / 1E3)
         pumpdepthfinal_m = np.max(pumpdepth_m)
         if pumpdepthfinal_m < 0.0:
             pumpdepthfinal_m = 0.0
-            msg = (f'GEOPHIRES calculates negative production well pumping depth. ({pumpdepthfinal_m}m)'
+            msg = (f'GEOPHIRES calculates negative production well pumping depth. ({pumpdepthfinal_m:.2f}m)'
                    f'No production well pumps will be assumed')
             print(f'Warning: {msg}')
             model.logger.warning(msg)
         elif pumpdepthfinal_m > 600.0:
-            msg = (f'GEOPHIRES calculates production pump depth to be deeper than 600m ({pumpdepthfinal_m}m). '
+            msg = (f'GEOPHIRES calculates production pump depth to be deeper than 600m ({pumpdepthfinal_m:.2f}m). '
                    f'Verify reservoir pressure, production well flow rate and production well dimensions')
-            print(f'Warning: {msg}')
             model.logger.warning(msg)
 
         # calculate production well pumping pressure [kPa]
-        DPProdWell = Pprodwellhead - (Phydrostaticcalc_kPa - wellflowrate / PI_kPa - rhowaterprod * 9.81 * depth_m / 1E3 - f3 *
-                                      (rhowaterprod * vprod ** 2 / 2.) * (depth_m / prodwelldiam) / 1E3)
+        DPProdWell = Pprodwellhead - (
+            Phydrostaticcalc_kPa - wellflowrate_kg_per_sec / PI_kPa - rhowaterprod_kg_per_m3 * 9.81 * depth_m / 1E3 - f3 *
+            (rhowaterprod_kg_per_m3 * vprod_m ** 2 / 2.) * (depth_m / prodwelldiam_m) / 1E3)
         # [MWe] total pumping power for production wells
-        PumpingPowerProd = DPProdWell * nprod * wellflowrate / rhowaterprod / pumpeff / 1E3
+        PumpingPowerProd = DPProdWell * nprod * wellflowrate_kg_per_sec / rhowaterprod_kg_per_m3 / pumpeff / 1E3
         PumpingPowerProd = np.array([0. if x < 0. else x for x in PumpingPowerProd])
 
     # total pumping power
@@ -410,7 +485,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         PumpingPower = PumpingPowerProd
 
     # negative pumping power values become zero (b/c we are not generating electricity)
-    PumpingPower = [0. if x < 0. else x for x in PumpingPower]
+    PumpingPower = [max(x, 0.) for x in PumpingPower]
 
     return PumpingPower, PumpingPowerProd, DPProdWell, Pprodwellhead
 
@@ -433,8 +508,7 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         waterloss: float,
         pumpeff: float,
         rhowaterinj: float,
-        Pplantoutlet: float,
-        PumpingPowerProd) -> tuple:
+        Pplantoutlet: float) -> tuple:
     """
      Calculate PressureDrops and Pumping Power needed for the injection well using indexes
         :param depth_m: depth of the well [m]
@@ -447,18 +521,12 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         :type nprod: int
         :param ppwellhead: production wellhead pressure [kPa]
         :type ppwellhead: float
-        :param gradient_C_per_km: geothermal gradient [C/km]
-        :type gradient_C_per_km: float
-        :param Tsurf: surface temperature [C]
-        :type Tsurf: float
         :param Trock_degC: rock temperature [C]
         :type Trock_degC: float
-        :param usebuiltinppwellheadcorrelation: whether or not to use the built-in wellhead pressure correlation (True or False) [-]
+        :param usebuiltinppwellheadcorrelation: whether to use the built-in wellhead pressure correlation (True or False) [-]
         :type usebuiltinppwellheadcorrelation: bool
-        :param productionwellpumping: whether or not the production well is pumping (True or False) [-]
+        :param productionwellpumping: whether the production well is pumping (True or False) [-]
         :type productionwellpumping: bool
-        :param usebuiltinhydrostaticpressurecorrelation:
-        :type usebuiltinhydrostaticpressurecorrelation: bool
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
         :param Pplantoutlet: plant outlet pressure [kPa]
@@ -477,28 +545,25 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         :type f1: float
         :param usebuiltinoutletplantcorrelation: whether or not to use the built-in outlet plant pressure correlation (True or False) [-]
         :type usebuiltinoutletplantcorrelation: bool
-        :param PumpingPowerProd: pumping power for production wells [MWe]
-        :type PumpingPowerProd: float
         :param II: injectivity index [kg/s/bar]
         :type II: float
-        :return: tuple of PumpingPower, PumpingPowerInj, DPInjWell, plant_outlet_pressure, Pprodwellhead [kPa]
+        :return: tuple of PumpingPowerInj, DPInjWell, plant_outlet_pressure, Pprodwellhead [kPa]
         :rtype: tuple
     """
     PumpingPowerInj = DPInjWell = Pprodwellhead = [0.0]  # initialize value in case it doesn't get set.
 
     # reservoir hydrostatic pressure
-    Phydrostaticcalc_kPa = model.wellbores.Phydrostaticcalc.quantity().to('kPa').magnitude
+    Phydrostaticcalc_kPa = model.wellbores.injection_reservoir_pressure.value
 
     if productionwellpumping:
         # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
         Pexcess_kPa = 344.7 # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
-        Pminimum_kPa = vapor_pressure_water_kPa(
-            Trock_degC,
-            pressure=quantity(Phydrostaticcalc_kPa, 'kPa'),
-        ) + Pexcess_kPa
-
+        if Trock_degC < 373.9:
+            Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
+        else: #above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
+            Pminimum_kPa = 100 #setting artificially to 1 bar = 100 kPa
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
@@ -513,9 +578,12 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
     IIkPa = II / 100.0  # convert II from kg/s/bar to kg/s/kPa
 
     # necessary injection wellhead pressure [kPa]
-    Pinjwellhead = Phydrostaticcalc_kPa + wellflowrate * (
-        1 + waterloss) * nprod / ninj / IIkPa - rhowaterinj * 9.81 * depth_m / 1E3 + f1 * (
-                       rhowaterinj * vinj ** 2 / 2) * (depth_m / injwelldiam) / 1E3
+    Pinjwellhead = [0] * len(Phydrostaticcalc_kPa)
+    for i in range(len(Phydrostaticcalc_kPa)):
+        Pinjwellhead[i] = (Phydrostaticcalc_kPa[i] +
+                        wellflowrate * (1 + waterloss) * nprod / ninj / IIkPa -
+                        rhowaterinj[i] * 9.81 * depth_m / 1E3 + f1[i] *
+                        (rhowaterinj[i] * vinj[i] ** 2 / 2) * (depth_m / injwelldiam) / 1E3)
 
     # plant outlet pressure [kPa]
     if usebuiltinoutletplantcorrelation:
@@ -523,21 +591,17 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
         Pplantoutlet = Pprodwellhead - DPSurfaceplant
 
     # injection pump pressure [kPa]
-    DPInjWell = Pinjwellhead - Pplantoutlet
+    DPInjWell = [0.0] * len(Phydrostaticcalc_kPa)
+    for i in range(len(DPInjWell)):
+        DPInjWell[i] = Pinjwellhead[i] - Pplantoutlet
+
     # [MWe] total pumping power for injection wells
-    PumpingPowerInj = DPInjWell * nprod * wellflowrate * (1 + waterloss) / rhowaterinj / pumpeff / 1E3
+    PumpingPowerInj = [0.0] * len(DPInjWell)
+    for i in range(len(DPInjWell)):
+        PumpingPowerInj[i] = DPInjWell[i] * nprod * wellflowrate * (1 + waterloss) / rhowaterinj[i] / pumpeff / 1E3
     PumpingPowerInj = np.array([0. if x < 0. else x for x in PumpingPowerInj])
 
-    # total pumping power
-    if productionwellpumping:
-        PumpingPower = PumpingPowerInj + PumpingPowerProd
-    else:
-        PumpingPower = PumpingPowerInj
-
-    # negative pumping power values become zero (b/c we are not generating electricity)
-    PumpingPower = [0. if x < 0. else x for x in PumpingPower]
-
-    return PumpingPower, PumpingPowerInj, DPInjWell, Pplantoutlet, Pprodwellhead
+    return PumpingPowerInj, DPInjWell, Pplantoutlet, Pprodwellhead
 
 
 class WellBores:
@@ -572,7 +636,6 @@ class WellBores:
 
         self.nprod = self.ParameterDict[self.nprod.Name] = intParameter(
             "Number of Production Wells",
-            value=2,
             DefaultValue=2,
             AllowableRange=list(range(1, 201, 1)),
             UnitType=Units.NONE,
@@ -582,7 +645,6 @@ class WellBores:
         )
         self.ninj = self.ParameterDict[self.ninj.Name] = intParameter(
             "Number of Injection Wells",
-            value=2,
             DefaultValue=2,
             AllowableRange=list(range(0, 201, 1)),
             UnitType=Units.NONE,
@@ -592,7 +654,6 @@ class WellBores:
         )
         self.prodwelldiam = self.ParameterDict[self.prodwelldiam.Name] = floatParameter(
             "Production Well Diameter",
-            value=8.0,
             DefaultValue=8.0,
             Min=1.,
             Max=30.,
@@ -606,7 +667,6 @@ class WellBores:
         )
         self.injwelldiam = self.ParameterDict[self.injwelldiam.Name] = floatParameter(
             "Injection Well Diameter",
-            value=8.0,
             DefaultValue=8.0,
             Min=1.,
             Max=30.,
@@ -620,7 +680,6 @@ class WellBores:
         )
         self.rameyoptionprod = self.ParameterDict[self.rameyoptionprod.Name] = boolParameter(
             "Ramey Production Wellbore Model",
-            value=True,
             DefaultValue=True,
             UnitType=Units.NONE,
             Required=True,
@@ -630,7 +689,6 @@ class WellBores:
         )
         self.tempdropprod = self.ParameterDict[self.tempdropprod.Name] = floatParameter(
             "Production Wellbore Temperature Drop",
-            value=5.0,
             DefaultValue=5.0,
             Min=-5.,
             Max=50.,
@@ -642,7 +700,6 @@ class WellBores:
         )
         self.tempgaininj = self.ParameterDict[self.tempgaininj.Name] = floatParameter(
             "Injection Wellbore Temperature Gain",
-            value=0.0,
             DefaultValue=0.0,
             Min=-5.,
             Max=50.,
@@ -654,7 +711,6 @@ class WellBores:
         )
         self.prodwellflowrate = self.ParameterDict[self.prodwellflowrate.Name] = floatParameter(
             "Production Flow Rate per Well",
-            value=50.0,
             DefaultValue=50.0,
             Min=1.,
             Max=500.,
@@ -666,7 +722,6 @@ class WellBores:
         )
         self.impedance = self.ParameterDict[self.impedance.Name] = floatParameter(
             "Reservoir Impedance",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=1E-4,
             Max=1E4,
@@ -680,7 +735,6 @@ class WellBores:
         )
         self.wellsep = self.ParameterDict[self.wellsep.Name] = floatParameter(
             "Well Separation",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=10.,
             Max=10000.,
@@ -692,7 +746,6 @@ class WellBores:
         )
         self.Tinj = self.ParameterDict[self.Tinj.Name] = floatParameter(
             "Injection Temperature",
-            value=70.0,
             DefaultValue=70.0,
             Min=0.,
             Max=200.,
@@ -717,7 +770,6 @@ class WellBores:
         )
         self.ppwellhead = self.ParameterDict[self.ppwellhead.Name] = floatParameter(
             "Production Wellhead Pressure",
-            value=101.3200 + 344.7,
             DefaultValue=101.3200 + 344.7,
             Min=0.0,
             Max=1E4,
@@ -729,7 +781,6 @@ class WellBores:
         )
         self.II = self.ParameterDict[self.II.Name] = floatParameter(
             "Injectivity Index",
-            value=10.0,
             DefaultValue=10.0,
             Min=1E-2,
             Max=1E4,
@@ -742,7 +793,6 @@ class WellBores:
         )
         self.PI = self.ParameterDict[self.PI.Name] = floatParameter(
             "Productivity Index",
-            value=10.0,
             DefaultValue=10.0,
             Min=1E-2,
             Max=1E4,
@@ -755,7 +805,6 @@ class WellBores:
         )
         self.maxdrawdown = self.ParameterDict[self.maxdrawdown.Name] = floatParameter(
             "Maximum Drawdown",
-            value=1.0,
             DefaultValue=1.0,
             Min=0.0,
             Max=1.000001,
@@ -770,12 +819,150 @@ class WellBores:
         )
         self.IsAGS = self.ParameterDict[self.IsAGS.Name] = boolParameter(
             "Is AGS",
-            value=False,
             DefaultValue=False,
             UnitType=Units.NONE,
             Required=False,
             ErrMessage="assume default is not AGS",
             ToolTipText="Set to true if the model is for an Advanced Geothermal System (AGS)"
+        )
+        self.overpressure_percentage = self.ParameterDict[self.overpressure_percentage.Name] = floatParameter(
+            "Overpressure Percentage",
+            DefaultValue=100.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            Required=False,
+            ErrMessage="assume there is no overpressure",
+            ToolTipText="enter the amount of pressure over the hydrostatic pressure in the reservoir (100%=hydrostatic)"
+        )
+        self.overpressure_depletion_rate = self.ParameterDict[self.overpressure_depletion_rate.Name] = floatParameter(
+            "Overpressure Depletion Rate",
+            DefaultValue=0.0,
+            UnitType=Units.DECAY_RATE,
+            PreferredUnits=Decay_RateUnit.PERCENTPERYEAR,
+            CurrentUnits=Decay_RateUnit.PERCENTPERYEAR,
+            Required=False,
+            ErrMessage="assume there is no overpressure",
+            ToolTipText="enter the amount of pressure over the hydrostatic pressure in the reservoir (100%=hydrostatic)"
+        )
+        self.injection_reservoir_temperature = self.ParameterDict[self.injection_reservoir_temperature.Name] = floatParameter(
+            "Injection Reservoir Temperature",
+            DefaultValue=100.0,
+            UnitType=Units.TEMPERATURE,
+            PreferredUnits=TemperatureUnit.CELSIUS,
+            CurrentUnits=TemperatureUnit.CELSIUS,
+            Required=False,
+            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir temperature",
+            ToolTipText="enter the temperature of the injection reservoir (100 C)"
+        )
+        self.injection_reservoir_depth = self.ParameterDict[self.injection_reservoir_depth.Name] = floatParameter(
+            "Injection Reservoir Depth",
+            DefaultValue=1000.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS,
+            Required=False,
+            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir depth",
+            ToolTipText="enter the depth of the injection reservoir (1000 m)"
+        )
+        self.injection_reservoir_initial_pressure = self.ParameterDict[self.injection_reservoir_initial_pressure.Name] = floatParameter(
+            "Injection Reservoir Initial Pressure",
+            DefaultValue=0.0,
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL,
+            Required=False,
+            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir initial pressure",
+            ToolTipText="enter the depth of the injection reservoir initial pressure (use lithostatic pressure)"
+        )
+        self.injection_reservoir_inflation_rate = self.ParameterDict[self.injection_reservoir_inflation_rate.Name] = floatParameter(
+            "Injection Reservoir Inflation Rate",
+            DefaultValue=1000.0,
+            UnitType=Units.INFLATION_RATE,
+            CurrentUnits=Inflation_RateUnit.KPASCALPERYEAR,
+            Required=False,
+            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir inflation rate",
+            ToolTipText="enter the rate at which the pressure increases per year in the injection reservoir (1000 kPa/yr)"
+        )
+        # This is a alias for "Well Geometry Configuration" - putting it here for backwards compatibility
+        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
+            "Closed-loop Configuration",
+            DefaultValue=Configuration.VERTICAL,
+            AllowableRange=[1, 2, 3, 4],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume simple vertical well (3)"
+        )
+        # This is a alias for "Closed-loop Configuration" - putting it here for backwards compatibility
+        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
+            "Well Geometry Configuration",
+            DefaultValue=Configuration.VERTICAL,
+            AllowableRange=[1, 2, 3, 4],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume simple vertical well (3)"
+        )
+
+        self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
+            "Water Thermal Conductivity",
+            DefaultValue=0.6,
+            Min=0.0,
+            Max=100.0,
+            UnitType=Units.THERMAL_CONDUCTIVITY,
+            PreferredUnits=ThermalConductivityUnit.WPERMPERK,
+            CurrentUnits=ThermalConductivityUnit.WPERMPERK,
+            ErrMessage="assume default for water thermal conductivity (0.6 W/m/K)",
+            ToolTipText="Water Thermal Conductivity"
+        )
+
+        self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
+            "Heat Transfer Fluid",
+            DefaultValue=WorkingFluid.WATER,
+            AllowableRange=[1, 2],
+            UnitType=Units.NONE,
+            Required=True,
+            ErrMessage="assume default Heat transfer fluid is water (1)"
+        )
+
+        # Input data for subsurface condition
+        self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
+            "Total Nonvertical Length",
+            DefaultValue=1000.0,
+            Min=50.0,
+            Max=20000.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS,
+            Required=True,
+            ErrMessage="assume default Total nonvertical length (1000 m)"
+        )
+
+        self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
+            "Nonvertical Wellbore Diameter",
+            DefaultValue=0.156,
+            Min=0.01,
+            Max=100.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS,
+            ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
+            ToolTipText="Non-vertical Wellbore Diameter"
+        )
+        self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
+            "Number of Multilateral Sections",
+            DefaultValue=1,
+            AllowableRange=list(range(0, 101, 1)),
+            UnitType=Units.NONE,
+            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
+            ToolTipText="Number of Nonvertical Wellbore Sections"
+        )
+        self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
+            "Multilaterals Cased",
+            DefaultValue=False,
+            Required=False,
+            Provided=False,
+            Valid=True,
+            ErrMessage="assume default value (False)"
         )
 
         # local variable initiation
@@ -788,9 +975,22 @@ class WellBores:
         self.MyPath = __file__
 
         # Results - used by other objects or printed in output downstream
-        self.Phydrostaticcalc = self.OutputParameterDict[self.Phydrostaticcalc.Name] = floatParameter(
-            Name="Calculated Reservoir Hydrostatic Pressure",
+        self.production_reservoir_pressure = self.OutputParameterDict[self.production_reservoir_pressure.Name] = OutputParameter(
+            Name="Calculated Reservoir Pressure",
             value=self.Phydrostatic.value,
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL
+        )
+        self.average_production_reservoir_pressure = self.OutputParameterDict[self.average_production_reservoir_pressure.Name] = OutputParameter(
+            Name="Average Reservoir Pressure",
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL
+        )
+        self.injection_reservoir_pressure = self.OutputParameterDict[self.injection_reservoir_pressure.Name] = OutputParameter(
+            Name="Calculated Injection Reservoir Pressure",
+            value=-1,
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
@@ -884,6 +1084,20 @@ class WellBores:
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
         )
+        self.NonverticalProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
+            Name="Nonvertical Produced Temperature",
+            value=[0.0],
+            UnitType=Units.TEMPERATURE,
+            PreferredUnits=TemperatureUnit.CELSIUS,
+            CurrentUnits=TemperatureUnit.CELSIUS
+        )
+        self.NonverticalPressureDrop = self.OutputParameterDict[self.NonverticalPressureDrop.Name] = OutputParameter(
+            Name="Nonvertical Pressure Drop",
+            value=[0.0],
+            UnitType=Units.PRESSURE,
+            PreferredUnits=PressureUnit.KPASCAL,
+            CurrentUnits=PressureUnit.KPASCAL
+        )
 
     def __str__(self):
         return "WellBores"
@@ -921,6 +1135,11 @@ class WellBores:
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this should handle all non-special cases
 
                     # handle special cases
+                    if ParameterToModify.Name == "Heat Transfer Fluid":
+                        if ParameterReadIn.sValue == str(1):
+                            self.Fluid.value = WorkingFluid.WATER
+                        else:
+                            self.Fluid.value = WorkingFluid.SCO2
                     # IsAGS is false by default - if it equal 1, then it is true
                     if ParameterToModify.Name == "Ramey Production Wellbore Model":
                         if ParameterReadIn.sValue == '0':
@@ -947,6 +1166,18 @@ class WellBores:
                             self.usebuiltinppwellheadcorrelation = True
                         else:
                             self.usebuiltinppwellheadcorrelation = False
+                    elif (ParameterToModify.Name == "Closed-loop Configuration" or
+                          ParameterToModify.Name == "Well Geometry Configuration"):  # These two are alias of each other
+                        if ParameterReadIn.sValue == str(1):
+                            self.Configuration.value = Configuration.ULOOP
+                        elif ParameterReadIn.sValue == str(2):
+                            self.Configuration.value = Configuration.COAXIAL
+                        elif ParameterReadIn.sValue == str(3):
+                            self.Configuration.value = Configuration.VERTICAL
+                        elif ParameterReadIn.sValue == str(4):
+                            self.Configuration.value = Configuration.L
+                        else:
+                            raise ValueError(f'Invalid Configuration: {self.Configuration.value}')
         else:
             model.logger.info("No parameters read because no content provided")
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
@@ -967,24 +1198,75 @@ class WellBores:
         # If you choose to subclass this master class, you can also choose to override this method (or not),
         # and if you do, do it before or after you call you own version of this method.  If you do, you can also
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all thr values available to your methods. but you had better have set all the parameters!
+        # making all the values available to your methods. but you had better have set all the parameters!
 
-        self.Phydrostaticcalc.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
-                                                                   model.reserv.depth.quantity().to('m').magnitude,
-                                                                   model.reserv.averagegradient.value,
-                                                                   model.reserv.lithostatic_pressure()) if self.usebuiltinhydrostaticpressurecorrelation else self.Phydrostatic.quantity().to(
-            self.Phydrostaticcalc.CurrentUnits).magnitude
+        # calculate the reservoir pressure as a function of time
+        if self.usebuiltinhydrostaticpressurecorrelation:
+            self.production_reservoir_pressure.value = get_hydrostatic_pressure_kPa(model.reserv.Trock.value, model.reserv.Tsurf.value,
+                                                                                model.reserv.depth.quantity().to('m').magnitude,
+                                                                                model.reserv.averagegradient.value,
+                                                                                model.reserv.hydrostatic_pressure())
+        else:
+            self.production_reservoir_pressure.value = self.Phydrostatic.quantity().to(self.production_reservoir_pressure.CurrentUnits).magnitude
+
+        self.production_reservoir_pressure.value = ReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,
+                                                                              model.economics.timestepsperyear.value,
+                                                                              self.production_reservoir_pressure.value,
+                                                                              self.overpressure_percentage.value,
+                                                                              self.overpressure_depletion_rate.value)
+        self.average_production_reservoir_pressure.value = np.average(self.production_reservoir_pressure.value)
+
+        if self.overpressure_percentage.Provided:
+            # if we are doing an overpressure calculation, it is possible that the user has chosen to
+            # split the reservoir into two parts - the deeper, overpressured Production Reservoir,
+            # and a shallower, lower pressure Injection Reservoir.
+            # If so, calculate the injection reservoir pressure as a function of time if overpressure is provided.
+            # If the injection reservoir temperature or pressure are not provided, calculate a default for them.
+            if self.injection_reservoir_depth.Provided or self.injection_reservoir_inflation_rate.Provided:
+                # this means they must be doing a split reservoir -
+                # now deal give default values to whatever values they didn't set
+                if not self.injection_reservoir_temperature.Provided:
+                    self.injection_reservoir_temperature.value = model.reserv.Trock.value
+                if not self.injection_reservoir_depth.Provided:
+                    self.injection_reservoir_depth.value = model.reserv.depth.value
+                if not self.injection_reservoir_temperature.Provided:
+                    self.injection_reservoir_temperature.value = (model.reserv.averagegradient.value * self.injection_reservoir_depth.value) + model.reserv.Tsurf.value
+
+                injection_reservoir_static_pressure = quantity(static_pressure_MPa(
+                    model.reserv.rhorock.value, self.injection_reservoir_depth.quantity().to('m').magnitude), 'MPa')
+
+                if self.injection_reservoir_pressure.value < 0: # they didn't provide a pressure so assume hydrostatic.
+                    self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
+                                                                                        model.reserv.Tsurf.value,
+                                                                                        self.injection_reservoir_depth.value,
+                                                                                        model.reserv.averagegradient.value * 1000.0,
+                                                                                        injection_reservoir_static_pressure)
+            self.injection_reservoir_initial_pressure.value = self.injection_reservoir_pressure.value = get_hydrostatic_pressure_kPa(self.injection_reservoir_temperature.value,
+                                                                                   model.reserv.Tsurf.value,
+                                                                                   self.injection_reservoir_depth.value,
+                                                                                   model.reserv.averagegradient.value,
+                                                                                   injection_reservoir_static_pressure)
+
+#            if not self.injection_reservoir_initial_pressure.Provided:
+            self.injection_reservoir_pressure.value = InjectionReservoirPressurePredictor(model.surfaceplant.plant_lifetime.value,
+                                                                                 model.economics.timestepsperyear.value,
+                                                                                 self.injection_reservoir_initial_pressure.value,
+                                                                                    self.injection_reservoir_inflation_rate.value)
+        else:
+            # assume it is the same as the production reservoir pressure if not
+            self.injection_reservoir_pressure.value = self.production_reservoir_pressure.value
+            self.injection_reservoir_temperature.value = model.reserv.Trock.value
+            self.injection_reservoir_depth.value = model.reserv.depth.value
 
         # special case: production and injection well diameters are input as inches and call calculations
         # assume meters! Check and change if needed, assuming anything > 2 must be talking about inches
+        # TODO: heuristic calculation
         if self.injwelldiam.value > 2.0:
             self.injwelldiam.value = self.injwelldiam.value * 0.0254
             self.injwelldiam.CurrentUnits = LengthUnit.METERS
-            self.injwelldiam.UnitsMatch = False
         if self.prodwelldiam.value > 2.0:
             self.prodwelldiam.value = self.prodwelldiam.value * 0.0254
             self.prodwelldiam.CurrentUnits = LengthUnit.METERS
-            self.prodwelldiam.UnitsMatch = False
 
         # calculate wellbore temperature drop
         self.ProdTempDrop.value = self.tempdropprod.value  # if not Ramey, hard code a user-supplied temperature drop.
@@ -1059,19 +1341,26 @@ class WellBores:
                                                             self.PI.value, self.prodwellflowrate.value, f3, vprod,
                                                             self.prodwelldiam.value, self.nprod.value,
                                                             model.surfaceplant.pump_efficiency.value, self.rhowaterprod)
-            self.PumpingPower.value, self.PumpingPowerInj.value, self.DPInjWell.value, model.surfaceplant.plant_outlet_pressure.value, self.Pprodwellhead.value = \
+            self.PumpingPowerInj.value, self.DPInjWell.value, model.surfaceplant.plant_outlet_pressure.value, self.Pprodwellhead.value = \
                 InjPressureDropAndPumpingPowerUsingIndexes(model,
                                                            self.productionwellpumping.value,
                                                            self.usebuiltinppwellheadcorrelation,
                                                            model.surfaceplant.usebuiltinoutletplantcorrelation.value,
-                                                           model.reserv.Trock.value,
-                                                           model.reserv.depth.value,
+                                                           self.injection_reservoir_temperature.value,
+                                                           self.injection_reservoir_depth.value,
                                                            self.ppwellhead.value, self.II.value,
                                                            self.prodwellflowrate.value, f1, vinj,
                                                            self.injwelldiam.value, self.nprod.value,
                                                            self.ninj.value, model.reserv.waterloss.value,
                                                            model.surfaceplant.pump_efficiency.value, self.rhowaterinj,
-                                                           model.surfaceplant.plant_outlet_pressure.value,
-                                                           self.PumpingPowerProd.value)
+                                                           model.surfaceplant.plant_outlet_pressure.value)
+            # total pumping power
+            if self.productionwellpumping.value:
+                self.PumpingPower.value = self.PumpingPowerInj.value + self.PumpingPowerProd.value
+            else:
+                self.PumpingPower.value = self.PumpingPowerInj.value
+
+            # negative pumping power values become zero (b/c we are not generating electricity)
+            self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
         model.logger.info(f'complete {self.__class__.__name__}: {__name__}')

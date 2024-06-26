@@ -1,6 +1,6 @@
 import unittest
 
-from base_test_case import BaseTestCase
+from tests.base_test_case import BaseTestCase
 
 
 class TestBaseTestCase(BaseTestCase):

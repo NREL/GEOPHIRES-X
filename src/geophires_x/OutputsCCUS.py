@@ -35,7 +35,6 @@ class OutputsCCUS(Outputs):
                 f.write(f"      Project IRR            (including carbon credit):      {model.ccuseconomics.ProjectIRR.value:10.2f} " + model.ccuseconomics.ProjectIRR.PreferredUnits.value + NL)
                 f.write(f"      Project VIR=IR=PIR     (including carbon credit):      {model.ccuseconomics.ProjectVIR.value:10.2f}" + NL)
                 f.write(f"      Project MOIC           (including carbon credit):      {model.ccuseconomics.ProjectMOIC.value:10.2f}" + NL)
-                f.write(f"      Project Payback Period (including carbon credit):      {model.ccuseconomics.ProjectPaybackPeriod.value:10.2f} " + model.ccuseconomics.ProjectPaybackPeriod.PreferredUnits.value + NL)
                 f.write(NL)
                 f.write(NL)
                 f.write("                    ******************" + NL)

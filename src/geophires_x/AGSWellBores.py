@@ -515,76 +515,8 @@ class AGSWellBores(WellBores):
         # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the
         # last possible time
 
-        self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
-            "Heat Transfer Fluid",
-            value=WorkingFluid.WATER,
-            DefaultValue=WorkingFluid.WATER,
-            AllowableRange=[1, 2],
-            UnitType=Units.NONE,
-            Required=True,
-            ErrMessage="assume default Heat transfer fluid is water (1)"
-        )
-        self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
-            "Closed-loop Configuration",
-            value=Configuration.COAXIAL,
-            DefaultValue=Configuration.COAXIAL,
-            AllowableRange=[1, 2],
-            UnitType=Units.NONE,
-            Required=True,
-            ErrMessage="assume default closed-loop configuration is co-axial with injection in annulus (2)"
-        )
-
-        # Input data for subsurface condition
-        self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
-            "Total Nonvertical Length",
-            value=1000.0,
-            DefaultValue=1000.0,
-            Min=1000.0,
-            Max=20000.0,
-            UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.METERS,
-            CurrentUnits=LengthUnit.METERS,
-            Required=True,
-            ErrMessage="assume default Total nonvertical length (1000 m)"
-        )
-
-        self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
-            "Water Thermal Conductivity",
-            value=0.6,
-            DefaultValue=0.6,
-            Min=0.0,
-            Max=100.0,
-            UnitType=Units.THERMAL_CONDUCTIVITY,
-            PreferredUnits=ThermalConductivityUnit.WPERMPERK,
-            CurrentUnits=ThermalConductivityUnit.WPERMPERK,
-            ErrMessage="assume default for water thermal conductivity (0.6 W/m/K)",
-            ToolTipText="Water Thermal Conductivity"
-        )
-
-        self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
-            "Nonvertical Wellbore Diameter",
-            value=0.156,
-            DefaultValue=0.156,
-            Min=0.01,
-            Max=100.0,
-            UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.METERS,
-            CurrentUnits=LengthUnit.METERS,
-            ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
-            ToolTipText="Non-vertical Wellbore Diameter"
-        )
-        self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
-            "Number of Multilateral Sections",
-            value=1,
-            DefaultValue=1,
-            AllowableRange=list(range(0, 101, 1)),
-            UnitType=Units.NONE,
-            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
-            ToolTipText="Number of Nonvertical Wellbore Sections"
-        )
         self.time_operation = self.ParameterDict[self.time_operation.Name] = floatParameter(
             "Closed Loop Calculation Start Year",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -593,15 +525,6 @@ class AGSWellBores(WellBores):
             CurrentUnits=TimeUnit.YEAR,
             ErrMessage="assume default for Closed Loop Calculation Start Year (0.01)",
             ToolTipText="Closed Loop Calculation Start Year"
-        )
-        self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
-            "Multilaterals Cased",
-            value=False,
-            DefaultValue=False,
-            Required=False,
-            Provided=False,
-            Valid=True,
-            ErrMessage="assume default value (False)"
         )
 
         # local variable initiation
@@ -620,20 +543,6 @@ class AGSWellBores(WellBores):
 
         # results are stored here and in the parent ProducedTemperature array
         self.Tini = 0.0
-        self.NonverticalProducedTemperature = self.OutputParameterDict[self.ProducedTemperature.Name] = OutputParameter(
-            Name="Nonvertical Produced Temperature",
-            value=[0.0],
-            UnitType=Units.TEMPERATURE,
-            PreferredUnits=TemperatureUnit.CELSIUS,
-            CurrentUnits=TemperatureUnit.CELSIUS
-        )
-        self.NonverticalPressureDrop = self.OutputParameterDict[self.NonverticalPressureDrop.Name] = OutputParameter(
-            Name="Nonvertical Pressure Drop",
-            value=[0.0],
-            UnitType=Units.PRESSURE,
-            PreferredUnits=PressureUnit.KPASCAL,
-            CurrentUnits=PressureUnit.KPASCAL
-        )
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -664,41 +573,26 @@ class AGSWellBores(WellBores):
                     ParameterReadIn = model.InputParameters[key]
                     # just handle special cases for this class - the call to super set all the values,
                     # including the value unique to this class
-                    if ParameterToModify.Name == "Multilaterals Cased":
-                        if ParameterReadIn.sValue == str(1):
-                            self.NonverticalsCased.value = True
-                        else:
-                            self.NonverticalsCased.value = False
-                    elif ParameterToModify.Name == "Heat Transfer Fluid":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Fluid.value = WorkingFluid.WATER
-                        else:
-                            self.Fluid.value = WorkingFluid.SCO2
-                    elif ParameterToModify.Name == "Closed-loop Configuration":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Configuration.value = Configuration.ULOOP
-                        else:
-                            self.Configuration.value = Configuration.COAXIAL
         else:
             model.logger.info("No parameters read because no content provided")
 
         # handle error checking and special cases:
         if model.reserv.numseg.value > 1:
-            msg = "Warning: CLGS model can only handle a single layer gradient segment. Number of Segments set to 1, \
-                Gradient set to Gradient[0], and Depth set to Reservoir Depth."
+            msg = ('Warning: CLGS model can only handle a single layer gradient segment. '
+                   'Number of Segments set to 1, Gradient set to Gradient[0], and Depth set to Reservoir Depth.')
             print(msg)
             model.logger.warning(msg)
             model.reserv.numseg.value = 1
 
         if self.ninj.value > 0:
-            msg = "Warning: CLGS model considers the only the production wellbore parameters. Anything related to the \
-                injection wellbore is ignored."
+            msg = ('Warning: CLGS model considers the only the production wellbore parameters. '
+                   'Anything related to the injection wellbore is ignored.')
             print(msg)
             model.logger.warning(msg)
 
         if self.nprod.value != 1:
-            msg = "Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). \
-                Number of production wellboreset set 1."
+            msg = ('Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). '
+                   'Number of production wellboreset set 1.')
             print(msg)
             model.logger.warning(msg)
 
@@ -707,7 +601,7 @@ class AGSWellBores(WellBores):
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-    # code from Koenraad
+
     def calculatedrillinglengths(self, model) -> tuple:
         """
         returns the total length, vertical length, and horizontal lengths, depending on the configuration
@@ -879,12 +773,12 @@ class AGSWellBores(WellBores):
             # nonvertical wellbore fluid conditions based on current temperature
             rhowater = density_water_kg_per_m3(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
 
             muwater = viscosity_water_Pa_sec(
                 self.NonverticalProducedTemperature.value[year],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
             vhoriz = self.q_circulation / rhowater / (math.pi / 4. * self.nonverticalwellborediameter.value ** 2)
 
@@ -970,10 +864,10 @@ class AGSWellBores(WellBores):
 
                 self.alpha_fluid = self.WaterThermalConductivity.value / density_water_kg_per_m3(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) / heat_capacity_water_J_per_kg_per_K(
                     self.NonverticalProducedTemperature.value[year],
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * 24.0 * 3600.0
                 self.time_operation.value += self.al
 
@@ -987,7 +881,7 @@ class AGSWellBores(WellBores):
             self.ProdTempDrop.value = self.tempdropprod.value
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.NonverticalProducedTemperature.value[0],
-                pressure=model.reserv.lithostatic_pressure()
+                pressure=model.reserv.hydrostatic_pressure()
             )
             if self.rameyoptionprod.value:
                 self.ProdTempDrop.value = RameyCalc(model.reserv.krock.value,
@@ -1010,13 +904,13 @@ class AGSWellBores(WellBores):
             if self.productionwellpumping.value:
                 self.rhowaterinj = density_water_kg_per_m3(
                     model.reserv.Tsurf.value,
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * np.linspace(1, 1,
                                 len(self.ProducedTemperature.value))
 
                 self.rhowaterprod = density_water_kg_per_m3(
                     model.reserv.Trock.value,
-                    pressure=model.reserv.lithostatic_pressure()
+                    pressure=model.reserv.hydrostatic_pressure()
                 ) * np.linspace(1, 1, len(self.ProducedTemperature.value))
 
                 self.DPProdWell.value, f3, vprod, self.rhowaterprod = WellPressureDrop(model,
@@ -1054,7 +948,7 @@ class AGSWellBores(WellBores):
                     DowngoingPumpingPower, ppp2, dppw, ppwh = ProdPressureDropAndPumpingPowerUsingIndexes(
                         model, self.productionwellpumping.value,
                         self.usebuiltinppwellheadcorrelation,
-                        model.reserv.Trock.value, model.reserv.depth.value,
+                        model.reserv.Trock.value, model.reserv.InputDepth.value,
                         self.ppwellhead.value, self.PI.value,
                         self.prodwellflowrate.value, f3, vprod,
                         self.injwelldiam.value, self.nprod.value, model.surfaceplant.pump_efficiency.value,
@@ -1077,8 +971,7 @@ class AGSWellBores(WellBores):
 
                 # recalculate the pumping power by looking at the difference between the upgoing and downgoing and the nonvertical
                 self.PumpingPower.value = DowngoingPumpingPower + NonverticalPumpingPower - UpgoingPumpingPower
-                self.PumpingPower.value = [0. if x < 0. else x for x in
-                                           self.PumpingPower.value]  # cannot be negative, so set to 0
+                self.PumpingPower.value = [max(x, 0.) for x in self.PumpingPower.value]  # cannot be negative, so set to 0
 
         else:
             # do the CLGS-style calculation
@@ -1128,7 +1021,7 @@ class AGSWellBores(WellBores):
 
             model.reserv.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 self.Tout[0],
-                pressure=model.reserv.lithostatic_pressure(),
+                pressure=model.reserv.hydrostatic_pressure(),
             )  # Need this for surface plant output calculation
 
             # set pumping power to zero for all times, assuming that the thermosphere wil always
@@ -1137,7 +1030,7 @@ class AGSWellBores(WellBores):
             self.PumpingPower.value = self.DPOverall.value * self.prodwellflowrate.value / rho_water / model.surfaceplant.pump_efficiency.value / 1E3
             # in GEOPHIRES v1.2, negative pumping power values become zero
             # (b/c we are not generating electricity) = thermosiphon is happening!
-            self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
+            self.PumpingPower.value = [max(x, 0.) for x in self.PumpingPower.value]
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

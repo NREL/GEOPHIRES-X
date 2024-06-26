@@ -2,12 +2,15 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Any
 
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001
 from geophires_x.Model import Model
 
+from geophires_x.SFReservoir import SFReservoir
+from geophires_x.LHSReservoir import LHSReservoir
+from geophires_x.MPFReservoir import MPFReservoir
 from geophires_x.AGSEconomics import AGSEconomics
 from geophires_x.AGSWellBores import AGSWellBores
 from geophires_x.CylindricalReservoir import CylindricalReservoir
@@ -20,6 +23,7 @@ from geophires_x.SurfacePlantSUTRA import SurfacePlantSUTRA
 from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
+from geophires_x.TDPReservoir import TDPReservoir
 
 
 class GeophiresXSchemaGenerator:
@@ -49,6 +53,10 @@ class GeophiresXSchemaGenerator:
 
         parameter_sources = [
             (dummy_model.reserv, 'Reservoir'),
+            (TDPReservoir(dummy_model), 'Reservoir'),
+            (LHSReservoir(dummy_model), 'Reservoir'),
+            (MPFReservoir(dummy_model), 'Reservoir'),
+            (SFReservoir(dummy_model), 'Reservoir'),
             (CylindricalReservoir(dummy_model), 'Reservoir'),
             (SUTRAReservoir(dummy_model), 'Reservoir'),
             (dummy_model.wellbores, 'Well Bores'),
@@ -83,11 +91,15 @@ class GeophiresXSchemaGenerator:
             param = input_params[param_name]
 
             units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
+            min_val, max_val = _get_min_and_max(param, default_val=None)
             properties[param_name] = {
                 'description': param['ToolTipText'],
                 'type': param['json_parameter_type'],
                 'units': units_val,
                 'category': param['parameter_category'],
+                'default': param['DefaultValue'],
+                'minimum': min_val,
+                'maximum': max_val,
             }
 
             if param['Required']:
@@ -137,27 +149,13 @@ class GeophiresXSchemaGenerator:
                 # if param['Required']:
                 #     TODO designate required params
 
-                def get_key(k):
-                    if k in param and str(param[k]) != '':  # noqa
-                        return param[k]  # noqa
-                    else:
-                        return ''
-
-                min_val = get_key('Min')
-                max_val = get_key('Max')
-
-                if 'AllowableRange' in param:
-                    # TODO warn if min/max are defined and at odds with allowable range
-                    min_val = min(param['AllowableRange'])
-                    max_val = max(param['AllowableRange'])
-
-                    # TODO include full AllowableRange in reference (or fully describe if possible using min/max/increment)
+                min_val, max_val = _get_min_and_max(param)
 
                 input_rst += f"""\n       * - {param['Name']}
-         - {get_key('ToolTipText')}
-         - {get_key('PreferredUnits')}
-         - {get_key('json_parameter_type')}
-         - {get_key('DefaultValue')}
+         - {_get_key(param, 'ToolTipText')}
+         - {_get_key(param, 'PreferredUnits')}
+         - {_get_key(param, 'json_parameter_type')}
+         - {_get_key(param, 'DefaultValue')}
          - {min_val}
          - {max_val}"""
 
@@ -210,3 +208,22 @@ Output Parameters
          - {get_key('json_parameter_type')}"""
 
         return output_rst
+
+
+def _get_key(param: dict, k: str, default_val='') -> Any:
+    if k in param and str(param[k]) != '':
+        return param[k]
+    else:
+        return default_val
+
+
+def _get_min_and_max(param: dict, default_val='') -> Tuple:
+    min_val = _get_key(param, 'Min', default_val=default_val)
+    max_val = _get_key(param, 'Max', default_val=default_val)
+
+    if 'AllowableRange' in param:
+        # TODO warn if min/max are defined and at odds with allowable range
+        min_val = min(param['AllowableRange'])
+        max_val = max(param['AllowableRange'])
+
+    return (min_val, max_val)

@@ -298,10 +298,8 @@ class SurfacePlantAGS(SurfacePlant):
 
                     # handle special cases
                     if ParameterToModify.Name == "End-Use Option":
-                        if ParameterReadIn.sValue == '1':
-                            ParameterToModify.value = EndUseOptions.ELECTRICITY
-                        elif ParameterReadIn.sValue == '2':
-                            ParameterToModify.value = EndUseOptions.HEAT
+                        ParameterToModify.value = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+
         else:
             model.logger.info("No parameters read because no content provided")
 
@@ -753,7 +751,7 @@ class SurfacePlantAGS(SurfacePlant):
         self.RemainingReservoirHeatContent.value = model.reserv.InitialReservoirHeatContent.value - np.cumsum(
             self.HeatkWhExtracted.value) * 3600 * 1E3 / 1E15
 
-        if self.End_use != EndUseOptions.ELECTRICITY:
+        if self.End_use is not EndUseOptions.ELECTRICITY:
             self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
             for i in range(0, self.plant_lifetime.value):
                 self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[

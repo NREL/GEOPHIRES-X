@@ -5,6 +5,8 @@ import logging
 import logging.config
 import os
 import sys
+from pathlib import Path
+
 import geophires_x.Model as Model
 import geophires_x.OptionList as OptionList
 
@@ -41,6 +43,7 @@ def main(enable_geophires_logging_config=True):
 
     # write the outputs as JSON
     import jsons, json
+
     jsons.suppress_warnings(True)
     json_resrv = jsons.dumps(model.reserv.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
     json_wells = jsons.dumps(model.wellbores.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
@@ -53,10 +56,6 @@ def main(enable_geophires_logging_config=True):
         json_addons = jsons.dumps(model.addeconomics.OutputParameterDict, indent=4, sort_keys=True,
                                   supress_warnings=True)
         json_merged = {**json_merged, **json.loads(json_addons)}
-    if model.economics.DoCCUSCalculations.value:
-        json_ccus = jsons.dumps(model.ccuseconomics.OutputParameterDict, indent=4, sort_keys=True,
-                                supress_warnings=True)
-        json_merged = {**json_merged, **json.loads(json_ccus)}
     if model.economics.DoSDACGTCalculations.value:
         json_sdacgt = jsons.dumps(model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True,
                                   supress_warnings=True)
@@ -64,9 +63,9 @@ def main(enable_geophires_logging_config=True):
 
     json_outputfile = 'HDR.json'
     if len(sys.argv) > 2:
-        json_outputfile = str(sys.argv[2])
-        segs = json_outputfile.split('.')
-        json_outputfile = segs[0] + '.json'
+        output_arg = str(sys.argv[2])
+        output_arg_path = Path(output_arg)
+        json_outputfile = output_arg.replace(output_arg_path.name, f'{output_arg_path.stem}.json')
     with open(json_outputfile, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(json_merged))
 
@@ -77,15 +76,12 @@ def main(enable_geophires_logging_config=True):
             outputfile = sys.argv[2]
 
         with open(outputfile, 'r', encoding='UTF-8') as f:
+            sys.stdout.write('\n')
             content = f.readlines()  # store all output in one long list
 
             # Now write each line to the screen
             for line in content:
                 sys.stdout.write(line)
-
-    # make district heating plot
-    if model.surfaceplant.plant_type.value == OptionList.PlantType.DISTRICT_HEATING:
-        model.outputs.MakeDistrictHeatingPlot(model)
 
     logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
 

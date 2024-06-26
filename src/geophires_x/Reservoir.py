@@ -48,7 +48,6 @@ class Reservoir:
 
         self.resoption = self.ParameterDict[self.resoption.Name] = intParameter(
             "Reservoir Model",
-            value=ReservoirModel.ANNUAL_PERCENTAGE,
             DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
             AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
             Required=True,
@@ -60,7 +59,6 @@ class Reservoir:
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
             "Reservoir Depth",
-            value=3.0,
             DefaultValue=3.0,
             Min=0.1,
             Max=15,
@@ -76,7 +74,7 @@ class Reservoir:
             "Maximum Temperature",
             DefaultValue=400.0,
             Min=50,
-            Max=500,
+            Max=600,
             UnitType=Units.TEMPERATURE,
             PreferredUnits=TemperatureUnit.CELSIUS,
             CurrentUnits=TemperatureUnit.CELSIUS,
@@ -88,7 +86,6 @@ class Reservoir:
 
         self.numseg = self.ParameterDict[self.numseg.Name] = intParameter(
             "Number of Segments",
-            value=1,
             DefaultValue=1,
             AllowableRange=[1, 2, 3, 4],
             UnitType=Units.NONE,
@@ -97,15 +94,14 @@ class Reservoir:
             ToolTipText="Number of rock segments from surface to reservoir depth with specific geothermal gradient"
         )
 
-        self.gradient = self.ParameterDict[self.gradient.Name] = floatParameter(
+        self.gradient = self.ParameterDict[self.gradient.Name] = listParameter(
             "Gradients",
-            value=[0.05, 0.0, 0.0, 0.0],
             DefaultValue=[0.05, 0.0, 0.0, 0.0],
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
             PreferredUnits=TemperatureGradientUnit.DEGREESCPERKM,
-            CurrentUnits=TemperatureGradientUnit.DEGREESCPERKM,
+            CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradients 1 (50, 0, 0, 0 deg.C/km)",
             ToolTipText="Geothermal gradients"
@@ -113,8 +109,7 @@ class Reservoir:
 
         self.gradient1 = self.ParameterDict[self.gradient1.Name] = floatParameter(
             "Gradient 1",
-            value=0.05,
-            DefaultValue=0.05,
+            DefaultValue=50,
             Min=0.0,
             Max=500.0,
             UnitType=Units.TEMP_GRADIENT,
@@ -127,7 +122,6 @@ class Reservoir:
 
         self.gradient2 = self.ParameterDict[self.gradient2.Name] = floatParameter(
             "Gradient 2",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -141,7 +135,6 @@ class Reservoir:
 
         self.gradient3 = self.ParameterDict[self.gradient3.Name] = floatParameter(
             "Gradient 3",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -155,7 +148,6 @@ class Reservoir:
 
         self.gradient4 = self.ParameterDict[self.gradient4.Name] = floatParameter(
             "Gradient 4",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=500.0,
@@ -169,8 +161,6 @@ class Reservoir:
 
         self.layerthickness = self.ParameterDict[self.layerthickness.Name] = listParameter(
             "Thicknesses",
-            value=[100_000.0, 0.01, 0.01,
-                   0.01, 0.01],
             DefaultValue=[100_000.0,
                           0.01, 0.01,
                           0.01, 0.01],
@@ -185,7 +175,6 @@ class Reservoir:
 
         self.layerthickness1 = self.ParameterDict[self.layerthickness1.Name] = floatParameter(
             "Thickness 1",
-            value=2.0,
             DefaultValue=2.0,
             Min=0.01,
             Max=100.0,
@@ -198,7 +187,6 @@ class Reservoir:
 
         self.layerthickness2 = self.ParameterDict[self.layerthickness2.Name] = floatParameter(
             "Thickness 2",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -211,7 +199,6 @@ class Reservoir:
 
         self.layerthickness3 = self.ParameterDict[self.layerthickness3.Name] = floatParameter(
             "Thickness 3",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -224,7 +211,6 @@ class Reservoir:
 
         self.layerthickness4 = self.ParameterDict[self.layerthickness4.Name] = floatParameter(
             "Thickness 4",
-            value=0.01,
             DefaultValue=0.01,
             Min=0.01,
             Max=100.0,
@@ -237,23 +223,23 @@ class Reservoir:
 
         self.resvoloption = self.ParameterDict[self.resvoloption.Name] = intParameter(
             "Reservoir Volume Option",
-            value=ReservoirVolume.RES_VOL_FRAC_NUM,
             DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM,
             AllowableRange=[1, 2, 3, 4],
             Required=True,
             UnitType=Units.NONE,
             ErrMessage="assume default reservoir volume option",
-            ToolTipText="Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) \
-            are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The \
-            fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: \
-            Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, \
-            3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only \
-            (sufficient for reservoir models 3, 4, 5 and 6)"
+            ToolTipText=(
+                "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) "
+                "are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The "
+                "fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: "
+                "Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, "
+                "3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only "
+                "(sufficient for reservoir models 3, 4, 5 and 6)"
+            )
         )
 
         self.fracshape = self.ParameterDict[self.fracshape.Name] = intParameter(
             "Fracture Shape",
-            value=FractureShape.CIRCULAR_AREA,
             DefaultValue=FractureShape.CIRCULAR_AREA,
             AllowableRange=[1, 2, 3, 4],
             UnitType=Units.NONE,
@@ -265,7 +251,6 @@ class Reservoir:
 
         self.fracarea = self.ParameterDict[self.fracarea.Name] = floatParameter(
             "Fracture Area",
-            value=250_000.0,
             DefaultValue=250_000.0,
             Min=1,
             Max=1E8,
@@ -278,7 +263,6 @@ class Reservoir:
 
         self.fracheight = self.ParameterDict[self.fracheight.Name] = floatParameter(
             "Fracture Height",
-            value=500.0,
             DefaultValue=500.0,
             Min=1,
             Max=10000,
@@ -291,7 +275,6 @@ class Reservoir:
 
         self.fracwidth = self.ParameterDict[self.fracwidth.Name] = floatParameter(
             "Fracture Width",
-            value=500.0,
             DefaultValue=500.0,
             Min=1,
             Max=10000,
@@ -304,9 +287,8 @@ class Reservoir:
 
         self.fracnumb = self.ParameterDict[self.fracnumb.Name] = intParameter(
             "Number of Fractures",
-            value=10,
             DefaultValue=10,
-            AllowableRange=list(range(1, 21, 1)),
+            AllowableRange=list(range(1, 150, 1)),
             UnitType=Units.NONE,
             ErrMessage="assume default number of fractures (10)",
             ToolTipText="Number of identical parallel fractures in EGS fracture-based reservoir model."
@@ -314,7 +296,6 @@ class Reservoir:
 
         self.fracsep = self.ParameterDict[self.fracsep.Name] = floatParameter(
             "Fracture Separation",
-            value=50.0,
             DefaultValue=50.0,
             Min=1,
             Max=1E4,
@@ -328,7 +309,6 @@ class Reservoir:
 
         self.resvol = self.ParameterDict[self.resvol.Name] = floatParameter(
             "Reservoir Volume",
-            value=125_000_000.0,
             DefaultValue=125_000_000.0,
             Min=10,
             Max=1E12,
@@ -341,7 +321,6 @@ class Reservoir:
 
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
-            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=0.99,
@@ -354,7 +333,6 @@ class Reservoir:
 
         self.cprock = self.ParameterDict[self.cprock.Name] = floatParameter(
             "Reservoir Heat Capacity",
-            value=1000.0,
             DefaultValue=1000.0,
             Min=100,
             Max=10000,
@@ -368,7 +346,6 @@ class Reservoir:
 
         self.rhorock = self.ParameterDict[self.rhorock.Name] = floatParameter(
             "Reservoir Density",
-            value=2700.0,
             DefaultValue=2700.0,
             Min=100,
             Max=10000,
@@ -382,7 +359,6 @@ class Reservoir:
 
         self.krock = self.ParameterDict[self.krock.Name] = floatParameter(
             "Reservoir Thermal Conductivity",
-            value=3.0,
             DefaultValue=3.0,
             Min=0.01,
             Max=100,
@@ -395,7 +371,6 @@ class Reservoir:
 
         self.permrock = self.ParameterDict[self.permrock.Name] = floatParameter(
             "Reservoir Permeability",
-            value=1E-13,
             DefaultValue=1E-13,
             Min=1E-20,
             Max=1E-5,
@@ -408,7 +383,6 @@ class Reservoir:
 
         self.porrock = self.ParameterDict[self.porrock.Name] = floatParameter(
             "Reservoir Porosity",
-            value=0.04,
             DefaultValue=0.04,
             Min=0.001,
             Max=0.99,
@@ -421,7 +395,6 @@ class Reservoir:
 
         self.Tsurf = self.ParameterDict[self.Tsurf.Name] = floatParameter(
             "Surface Temperature",
-            value=15.0,
             DefaultValue=15.0,
             Min=-50,
             Max=50,
@@ -614,7 +587,6 @@ class Reservoir:
                         # FIXME TODO only convert if current units are km
                         ParameterToModify.value = ParameterToModify.value * 1000
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
-                        ParameterToModify.UnitsMatch = False
 
                     elif ParameterToModify.Name == "Reservoir Volume Option":
                         if ParameterReadIn.sValue == '1':
@@ -629,12 +601,11 @@ class Reservoir:
                         if ParameterToModify.value == ReservoirVolume.RES_VOL_ONLY and ParameterToModify.value in [
                             ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:
                             ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_NUM
-                            print("Warning: If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
-                            model.logger.warning("If user-selected reservoir model is 1 or 2, then user-selected \
-                            reservoir volume option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume \
-                            reservoir volume option 3.")
+                            msg = ('If user-selected reservoir model is 1 or 2, then user-selected reservoir volume '
+                                   'option cannot be 4 but should be 1, 2, or 3. GEOPHIRES will assume reservoir '
+                                   'volume option 3.')
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
 
                     elif ParameterToModify.Name == "Fracture Shape":
                         if ParameterReadIn.sValue == '1':
@@ -650,19 +621,21 @@ class Reservoir:
                             # fracshape = 4  Rectangular fracture
                             ParameterToModify.value = FractureShape.RECTANGULAR
 
-                    elif ParameterToModify.Name.startswith("Gradient"):
+                    elif ParameterToModify.Name.startswith('Gradient'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
                         if model.reserv.gradient.value[position] > 1.0:
+                            # TODO refactor to avoid heuristic-based unit conversions
                             model.reserv.gradient.value[position] = model.reserv.gradient.value[
                                                                         position] / 1000.0  # convert C/m
                             model.reserv.gradient.CurrentUnits = TemperatureGradientUnit.DEGREESCPERM
+
                         if model.reserv.gradient.value[position] < 1e-6:
                             # convert 0 C/m gradients to very small number, avoids divide by zero errors later
                             model.reserv.gradient.value[position] = 1e-6
 
-                    elif ParameterToModify.Name.startswith("Thickness"):
+                    elif ParameterToModify.Name.startswith('Thickness'):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.layerthickness.value[position] = ParameterToModify.value
@@ -758,7 +731,7 @@ class Reservoir:
         totaldepth = np.append(np.array([0.0]), np.cumsum(self.layerthickness.value))
         temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val)
 
-#        temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
+        # temperatureindex = max(loc for loc, val in enumerate(self.depth.value > totaldepth) if val is True)
         self.Trock.value = intersecttemperature[temperatureindex] + self.gradient.value[temperatureindex] * \
                            (self.depth.value - totaldepth[temperatureindex])
 
@@ -777,12 +750,12 @@ class Reservoir:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-                pressure=self.lithostatic_pressure()
+                pressure=self.hydrostatic_pressure()
             )
 
             self.rhowater.value = density_water_kg_per_m3(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-                pressure=self.lithostatic_pressure()
+                pressure=self.hydrostatic_pressure()
             )
 
             # temperature gain in injection wells
@@ -796,6 +769,10 @@ class Reservoir:
 
     def lithostatic_pressure(self) -> PlainQuantity:
         return quantity(static_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
+                                            self.depth.quantity().to('m').magnitude), 'MPa')
+
+    def hydrostatic_pressure(self) -> PlainQuantity:
+        return quantity(static_pressure_MPa(1000.0,
                                             self.depth.quantity().to('m').magnitude), 'MPa')
 
 

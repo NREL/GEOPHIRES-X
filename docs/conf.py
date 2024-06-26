@@ -15,10 +15,10 @@ extensions = [
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
 project = 'geophires-x'
-year = '2023'
+year = '2024'
 author = 'NREL'
 copyright = f'{year}, {author}'
-version = release = '3.4.4'
+version = release = '3.4.38'
 
 pygments_style = 'trac'
 templates_path = ['./templates']

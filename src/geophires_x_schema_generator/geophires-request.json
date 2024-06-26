@@ -1047,13 +1047,35 @@
       "maximum": 200.0
     },
     "Economic Model": {
-      "description": "Specify the economic model to calculate the levelized cost of energy. 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS",
+      "description": "Specify the economic model to calculate the levelized cost of energy.1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
       "type": "integer",
       "units": null,
       "category": "Economics",
-      "default": "Standard Levelized Cost",
+      "default": 2,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "FCR",
+          "value": "Fixed Charge Rate (FCR)",
+          "int_value": 1
+        },
+        {
+          "name": "STANDARDIZED_LEVELIZED_COST",
+          "value": "Standard Levelized Cost",
+          "int_value": 2
+        },
+        {
+          "name": "BICYCLE",
+          "value": "BICYCLE",
+          "int_value": 3
+        },
+        {
+          "name": "CLGS",
+          "value": "Simple (CLGS)",
+          "int_value": 4
+        }
+      ]
     },
     "Reservoir Stimulation Capital Cost": {
       "description": "Total reservoir stimulation capital cost",

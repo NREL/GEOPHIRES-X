@@ -609,12 +609,13 @@ class Economics:
         # This is the default.
         self.econmodel = self.ParameterDict[self.econmodel.Name] = intParameter(
             "Economic Model",
-            DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
+            DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=EconomicModel,
             Required=True,
             ErrMessage="assume default economic model (2)",
             ToolTipText="Specify the economic model to calculate the levelized cost of energy." +
-                        " 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS"
+                        '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
         )
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost",
@@ -1853,17 +1854,10 @@ class Economics:
 
                     # handle special cases
                     if ParameterToModify.Name == "Economic Model":
-                        if ParameterReadIn.sValue == '1':
-                            self.econmodel.value = EconomicModel.FCR
-                        elif ParameterReadIn.sValue == '2':
-                            # use standard LCOE/LCOH calculation as found on wikipedia (requires an interest rate).
-                            self.econmodel.value = EconomicModel.STANDARDIZED_LEVELIZED_COST
-                        elif ParameterReadIn.sValue == '3':
-                            # use Bicycle LCOE/LCOH model (requires several financial input parameters)
-                            self.econmodel.value = EconomicModel.BICYCLE
-                        else:
-                            self.econmodel.value = EconomicModel.CLGS  # CLGS
+                        self.econmodel.value = EconomicModel.from_input_string(ParameterReadIn.sValue)
+
                     elif ParameterToModify.Name == "Well Drilling Cost Correlation":
+                        # TODO WellDrillingCostCorrelation.from_input_string
                         if ParameterReadIn.sValue == '1':
                             ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL
                         elif ParameterReadIn.sValue == '2':

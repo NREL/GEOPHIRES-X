@@ -79,11 +79,25 @@ class PlantType(GeophiresInputEnum):
                 return member
 
 
-class EconomicModel(str, Enum):
-    CLGS = "Simple (CLGS)"
-    FCR = "Fixed Charge Rate (FCR)"
-    STANDARDIZED_LEVELIZED_COST = "Standard Levelized Cost"
-    BICYCLE = "BICYCLE"
+class EconomicModel(GeophiresInputEnum):
+    FCR = 1, "Fixed Charge Rate (FCR)"
+    STANDARDIZED_LEVELIZED_COST = 2, "Standard Levelized Cost"
+    BICYCLE = 3, "BICYCLE"
+    CLGS = 4, "Simple (CLGS)"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Economic Model input value: {input_string}')
 
 
 class ReservoirModel(GeophiresInputEnum):

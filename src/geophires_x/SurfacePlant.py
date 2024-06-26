@@ -515,13 +515,13 @@ class SurfacePlant:
 
                     # handle special cases
                     if ParameterToModify.Name == 'End-Use Option':
-                        end_use_option = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        end_use_option = EndUseOptions.from_input_string(ParameterReadIn.sValue)
                         ParameterToModify.value = end_use_option
                         if end_use_option == EndUseOptions.HEAT:
                             self.plant_type.value = PlantType.INDUSTRIAL
 
                     elif ParameterToModify.Name == 'Power Plant Type':
-                        ParameterToModify.value = PlantType.get_plant_type_from_input_string(ParameterReadIn.sValue)
+                        ParameterToModify.value = PlantType.from_input_string(ParameterReadIn.sValue)
                         if self.enduse_option.value == EndUseOptions.ELECTRICITY:
                             # simple single- or double-flash power plant assumes no production well pumping
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:

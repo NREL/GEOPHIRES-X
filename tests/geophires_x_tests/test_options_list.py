@@ -6,10 +6,10 @@ from geophires_x.OptionList import WellDrillingCostCorrelation
 
 class EndUseOptionsTestCase(BaseTestCase):
     def test_get_end_use_option_from_input_string(self):
-        self.assertEqual(EndUseOptions.get_end_use_option_from_input_string('1'), EndUseOptions.ELECTRICITY)
+        self.assertEqual(EndUseOptions.from_input_string('1'), EndUseOptions.ELECTRICITY)
 
         with self.assertRaises(ValueError):
-            EndUseOptions.get_end_use_option_from_input_string('2034982309')
+            EndUseOptions.from_input_string('2034982309')
 
     def test_get_end_use_option_from_int_val(self):
         self.assertEqual(EndUseOptions.from_int(1), EndUseOptions.ELECTRICITY)

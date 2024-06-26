@@ -298,7 +298,7 @@ class SurfacePlantAGS(SurfacePlant):
 
                     # handle special cases
                     if ParameterToModify.Name == "End-Use Option":
-                        ParameterToModify.value = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        ParameterToModify.value = EndUseOptions.from_input_string(ParameterReadIn.sValue)
 
         else:
             model.logger.info("No parameters read because no content provided")

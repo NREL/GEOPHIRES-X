@@ -31,14 +31,14 @@ class EndUseOptions(GeophiresInputEnum):
     COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
 
     @staticmethod
-    def get_end_use_option_from_input_string(input_string:str):
+    def from_input_string(input_string:str):
         """
         :rtype: EndUseOptions
         """
 
-        for option in EndUseOptions:
-            if input_string == str(option.int_value):
-                return option
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
 
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
@@ -61,14 +61,14 @@ class PlantType(GeophiresInputEnum):
     INDUSTRIAL = 9, "Industrial"
 
     @staticmethod
-    def get_plant_type_from_input_string(input_string:str):
+    def from_input_string(input_string:str):
         """
         :rtype: PlantType
         """
 
-        for type in PlantType:
-            if input_string == str(type.int_value):
-                return type
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
 
         raise ValueError(f'Unknown Power Plant Type input value: {input_string}')
 

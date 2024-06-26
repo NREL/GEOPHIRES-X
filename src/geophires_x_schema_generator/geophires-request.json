@@ -252,13 +252,35 @@
       ]
     },
     "Fracture Shape": {
-      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir:             1: Circular fracture with known area, 2: Circular fracture with known diameter,             3: Square fracture, 4: Rectangular fracture",
+      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir: 1: Circular fracture with known area; 2: Circular fracture with known diameter; 3: Square; 4: Rectangular",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Circular fracture with known area",
+      "default": 1,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "CIRCULAR_AREA",
+          "value": "Circular fracture with known area",
+          "int_value": 1
+        },
+        {
+          "name": "CIRCULAR_DIAMETER",
+          "value": "Circular fracture with known diameter",
+          "int_value": 2
+        },
+        {
+          "name": "SQUARE",
+          "value": "Square",
+          "int_value": 3
+        },
+        {
+          "name": "RECTANGULAR",
+          "value": "Rectangular",
+          "int_value": 4
+        }
+      ]
     },
     "Fracture Area": {
       "description": "Effective heat transfer area per fracture",

@@ -241,13 +241,13 @@ class Reservoir:
 
         self.fracshape = self.ParameterDict[self.fracshape.Name] = intParameter(
             "Fracture Shape",
-            DefaultValue=FractureShape.CIRCULAR_AREA,
+            DefaultValue=FractureShape.CIRCULAR_AREA.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=FractureShape,
             UnitType=Units.NONE,
             ErrMessage="assume default fracture shape (1)",
-            ToolTipText="Specifies the shape of the (identical) fractures in a fracture-based reservoir: \
-            1: Circular fracture with known area, 2: Circular fracture with known diameter, \
-            3: Square fracture, 4: Rectangular fracture"
+            ToolTipText="Specifies the shape of the (identical) fractures in a fracture-based reservoir: " +
+                        '; '.join([f'{it.int_value}: {it.value}' for it in FractureShape])
         )
 
         self.fracarea = self.ParameterDict[self.fracarea.Name] = floatParameter(

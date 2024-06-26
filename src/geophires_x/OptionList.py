@@ -129,9 +129,9 @@ class ReservoirVolume(GeophiresInputEnum):
 
     @staticmethod
     def from_input_string(input_string:str):
-        for res_vol in ReservoirVolume:
-            if input_string == str(res_vol.int_value):
-                return res_vol
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
 
         raise ValueError(f'Unknown Reservoir Volume input value: {input_string}')
 
@@ -172,12 +172,25 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
 
-class FractureShape(str, Enum):
-    CIRCULAR_AREA = "Circular fracture with known area"
-    CIRCULAR_DIAMETER = "Circular fracture with known diameter"
-    SQUARE = "Square"
-    RECTANGULAR = "Rectangular"
+class FractureShape(GeophiresInputEnum):
+    CIRCULAR_AREA = 1, "Circular fracture with known area"
+    CIRCULAR_DIAMETER = 2, "Circular fracture with known diameter"
+    SQUARE = 3, "Square"
+    RECTANGULAR = 4, "Rectangular"
 
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Fracture Shape input value: {input_string}')
 
 class WorkingFluid(str, Enum):
     WATER = "water"

@@ -179,7 +179,7 @@
       "maximum": 100.0
     },
     "Reservoir Volume Option": {
-      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2)             are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The             fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2:             Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation,             3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only             (sufficient for reservoir models 3, 4, 5 and 6)",
+      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, 3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only (sufficient for reservoir models 3, 4, 5 and 6)",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
@@ -692,7 +692,7 @@
       "maximum": 100.0
     },
     "End-Use Option": {
-      "description": "Select the end-use application of the geofluid heat (see docs for details)",
+      "description": "Select the end-use application of the geofluid heat: 1: Electricity; 2: Direct-Use Heat; 31: Cogeneration Topping Cycle, Heat sales considered as extra income; 32: Cogeneration Topping Cycle, Electricity sales considered as extra income; 41: Cogeneration Bottoming Cycle, Heat sales considered as extra income; 42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income; 51: Cogeneration Parallel Cycle, Heat sales considered as extra income; 52: Cogeneration Parallel Cycle, Electricity sales considered as extra income",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
@@ -1169,7 +1169,7 @@
       "maximum": 1.0
     },
     "Well Drilling Cost Correlation": {
-      "description": "Select the built-in well drilling and completion cost correlation: 1. vertical small diameter, baseline; 2. deviated small diameter, baseline; 3. vertical large diameter, baseline; 4. deviated large diameter, baseline; 5. Simple; 6. vertical small diameter, intermediate1; 7. vertical small diameter, intermediate2; 8. deviated small diameter, intermediate1; 9. deviated small diameter, intermediate2; 10. vertical large diameter, intermediate1; 11. vertical large diameter, intermediate2; 12. deviated large diameter, intermediate1; 13. deviated large diameter, intermediate2; 14. vertical open-hole, small diameter, ideal; 15. deviated liner, small diameter, ideal; 16. vertical open-hole, large diameter, ideal; 17. deviated liner, large diameter, ideal",
+      "description": "Select the built-in well drilling and completion cost correlation: 1: vertical small diameter, baseline; 2: deviated small diameter, baseline; 3: vertical large diameter, baseline; 4: deviated large diameter, baseline; 5: Simple; 6: vertical small diameter, intermediate1; 7: vertical small diameter, intermediate2; 8: deviated small diameter, intermediate1; 9: deviated small diameter, intermediate2; 10: vertical large diameter, intermediate1; 11: vertical large diameter, intermediate2; 12: deviated large diameter, intermediate1; 13: deviated large diameter, intermediate2; 14: vertical open-hole, small diameter, ideal; 15: deviated liner, small diameter, ideal; 16: vertical open-hole, large diameter, ideal; 17: deviated liner, large diameter, ideal",
       "type": "integer",
       "units": null,
       "category": "Economics",

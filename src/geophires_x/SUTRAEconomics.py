@@ -436,8 +436,7 @@ class SUTRAEconomics(Economics.Economics):
                     'Warning: simple user-specified cost per meter used for drilling depth < 500 or > 7000 m'
                 )
 
-            if self.wellcorrelation.value == WellDrillingCostCorrelation.SIMPLE:
-                self.C1well = self.wellcorrelation.value.calculate_cost_MUSD(model.reserv.depth.value)
+            self.C1well = self.wellcorrelation.value.calculate_cost_MUSD(model.reserv.depth.value)
 
             self.C1well = self.C1well * self.ccwelladjfactor.value
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)

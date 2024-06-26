@@ -279,10 +279,10 @@ class EconomicsAddOns(Economics.Economics):
         # so we need to update them here so when they get used in the final economic calculation (below),
         # the new values reflect the addition of the AddOns
         for i in range(0, model.surfaceplant.plant_lifetime.value):
-            if model.surfaceplant.enduse_option.value != EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
+            if model.surfaceplant.enduse_option.value is not EndUseOptions.HEAT:  # all these end-use options have an electricity generation component
                 model.surfaceplant.TotalkWhProduced.value[i] = model.surfaceplant.TotalkWhProduced.value[i] + self.AddOnElecGainedTotalPerYear.value
                 model.surfaceplant.NetkWhProduced.value[i] = model.surfaceplant.NetkWhProduced.value[i] + self.AddOnElecGainedTotalPerYear.value
-                if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:
                     model.surfaceplant.HeatkWhProduced.value[i] = model.surfaceplant.HeatkWhProduced.value[i] + self.AddOnHeatGainedTotalPerYear.value
             else:
                 # all the end-use option of direct-use only components have a heat generation component

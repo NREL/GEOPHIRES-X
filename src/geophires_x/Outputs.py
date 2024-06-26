@@ -1641,7 +1641,11 @@ class Outputs:
                     f.write(f'      CHP: Percent cost allocation for electrical plant: {model.economics.CAPEX_heat_electricity_plant_ratio.value*100.0:10.2f} %\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
-                    f.write(f'      Estimated Jobs Created:                                 {model.economics.jobs_created.value}\n')
+                    f.write(f'      Estimates from https://geothermal.org/resources/geothermal-basics:' + NL)
+                    f.write(f'         Estimated Jobs Created:                       {model.economics.jobs_created.value}' + NL)
+                    f.write(f'         Estimated Proporty tax that will be paid:     {model.economics.property_tax_created.value:10.2f }' + model.economics.property_tax_created.PreferredUnits.value + NL)
+                    f.write(f'         Estimated total royalties that will be paid:  {model.economics.total_royalties_created.value:10.2f }' + model.economics.total_royalties_created.PreferredUnits.value + NL)
+                    f.write(f'         Estimated government royalties to be paid:    {model.economics.gov_royalties_created.value:10.2f }'  + model.economics.gov_royalties_created.PreferredUnits.value+ NL)
 
 
                 f.write(NL)

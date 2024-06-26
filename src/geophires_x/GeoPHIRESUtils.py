@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import logging
-import os
 import sys
+from enum import Enum
 from os.path import exists
 import dataclasses
 import json
 import numbers
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Any
 
 import scipy
 from pint.facets.plain import PlainQuantity
@@ -577,6 +577,22 @@ class _EnhancedJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
+
+        if issubclass(o, Enum):
+            def get_entry(member) -> dict[str, Any]:
+                d = {
+                    'name': member.name,
+                    'value': member.value
+                }
+
+                if hasattr(member, 'int_value'):
+                    d['int_value'] = member.int_value
+
+                return d
+
+            ret = [get_entry(member) for member in o]
+            return ret
+
         return super().default(o)
 
 
@@ -603,3 +619,4 @@ def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
     pressure_mpa = quantity(pressure_Pa, 'Pa').to('MPa').magnitude
 
     return pressure_mpa
+

@@ -183,7 +183,7 @@ class AGSEconomics(Economics.Economics):
         """
         model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
-        if self.econmodel.value != EconomicModel.CLGS:  # do a classical econ calculation
+        if self.econmodel.value is not EconomicModel.CLGS:  # do a classical econ calculation
             super().Calculate(model)
         else:
             # use the CLGS-Style economic calculations

@@ -965,10 +965,10 @@ class Outputs:
             reservoir_parameters.append(OutputTableItem('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.'))
         else:
             reservoir_parameters.append(OutputTableItem('Reservoir Model', str(model.reserv.resoption.value.value) + ' Model'))
-            if model.reserv.resoption.value == ReservoirModel.SINGLE_FRACTURE:
+            if model.reserv.resoption.value is ReservoirModel.SINGLE_FRACTURE:
                 reservoir_parameters.append(OutputTableItem('m/A Drawdown Parameter', '{0:.5f}'.format(model.reserv.drawdp.value),
                                     model.reserv.drawdp.CurrentUnits.value))
-            elif model.reserv.resoption.value == ReservoirModel.ANNUAL_PERCENTAGE:
+            elif model.reserv.resoption.value is ReservoirModel.ANNUAL_PERCENTAGE:
                 reservoir_parameters.append(OutputTableItem('Annual Thermal Drawdown', '{0:.3f}'.format(model.reserv.drawdp.value * 100),
                                     model.reserv.drawdp.CurrentUnits.value))
             reservoir_parameters.append(OutputTableItem('Bottom-hole temperature', '{0:10.2f}'.format(model.reserv.Trock.value),
@@ -1046,11 +1046,11 @@ class Outputs:
                                     model.reserv.krock.CurrentUnits.value))
             reservoir_parameters.append(OutputTableItem('Reservoir heat capacity', '{0:10.2f}'.format(model.reserv.cprock.value),
                                 model.reserv.cprock.CurrentUnits.value))
-            if model.reserv.resoption.value == ReservoirModel.LINEAR_HEAT_SWEEP or (
-                model.reserv.resoption.value == ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model):
+            if model.reserv.resoption.value is ReservoirModel.LINEAR_HEAT_SWEEP or (
+                model.reserv.resoption.value is ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model):
                 reservoir_parameters.append(OutputTableItem('Reservoir porosity', '{0:10.2f}'.format(model.reserv.porrock.value * 100),
                                     model.reserv.porrock.CurrentUnits.value))
-            if model.reserv.resoption.value == ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model:
+            if model.reserv.resoption.value is ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model:
                 reservoir_parameters.append(OutputTableItem('Reservoir permeability', '{0:10.2E}'.format(model.reserv.permrock.value),
                                     model.reserv.permrock.CurrentUnits.value))
                 reservoir_parameters.append(OutputTableItem('Reservoir thickness', '{0:10.2f}'.format(model.reserv.resthickness.value),
@@ -1687,9 +1687,9 @@ class Outputs:
                     f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.' + NL)
                 else:
                     f.write('      Reservoir Model = ' + str(model.reserv.resoption.value.value) + ' Model\n')
-                    if model.reserv.resoption.value == ReservoirModel.SINGLE_FRACTURE:
+                    if model.reserv.resoption.value is ReservoirModel.SINGLE_FRACTURE:
                         f.write(f'      m/A Drawdown Parameter:                                 {model.reserv.drawdp.value:.5f} ' + model.reserv.drawdp.CurrentUnits.value + NL)
-                    elif model.reserv.resoption.value == ReservoirModel.ANNUAL_PERCENTAGE:
+                    elif model.reserv.resoption.value is ReservoirModel.ANNUAL_PERCENTAGE:
                         f.write(f'      Annual Thermal Drawdown:                                {model.reserv.drawdp.value*100:.3f} ' + model.reserv.drawdp.CurrentUnits.value + NL)
                     f.write(f'      Bottom-hole temperature:                          {model.reserv.Trock.value:10.2f} ' + model.reserv.Trock.CurrentUnits.value +  NL)
                     if model.reserv.resoption.value in [ReservoirModel.ANNUAL_PERCENTAGE, ReservoirModel.USER_PROVIDED_PROFILE, ReservoirModel.TOUGH2_SIMULATOR]:
@@ -1740,9 +1740,9 @@ class Outputs:
                     if model.wellbores.rameyoptionprod.value or model.reserv.resoption.value in [ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP, ReservoirModel.SINGLE_FRACTURE, ReservoirModel.TOUGH2_SIMULATOR]:
                         f.write(f'      Reservoir thermal conductivity:                   {model.reserv.krock.value:10.2f} {model.reserv.krock.CurrentUnits.value}{NL}')
                     f.write(f'      Reservoir heat capacity:                          {model.reserv.cprock.value:10.2f} ' + model.reserv.cprock.CurrentUnits.value + NL)
-                    if model.reserv.resoption.value == ReservoirModel.LINEAR_HEAT_SWEEP or (model.reserv.resoption.value == ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model):
+                    if model.reserv.resoption.value is ReservoirModel.LINEAR_HEAT_SWEEP or (model.reserv.resoption.value is ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model):
                         f.write(f'      Reservoir porosity:                               {model.reserv.porrock.value*100:10.2f} ' + model.reserv.porrock.CurrentUnits.value + NL)
-                    if model.reserv.resoption.value == ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model:
+                    if model.reserv.resoption.value is ReservoirModel.TOUGH2_SIMULATOR and model.reserv.usebuiltintough2model:
                         f.write(f'      Reservoir permeability:                           {model.reserv.permrock.value:10.2E} ' + model.reserv.permrock.CurrentUnits.value + NL)
                         f.write(f'      Reservoir thickness:                              {model.reserv.resthickness.value:10.2f} ' + model.reserv.resthickness.CurrentUnits.value + NL)
                         f.write(f'      Reservoir width:                                  {model.reserv.reswidth.value:10.2f} ' + model.reserv.reswidth.CurrentUnits.value + NL)

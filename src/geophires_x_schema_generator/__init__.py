@@ -105,6 +105,9 @@ class GeophiresXSchemaGenerator:
             if param['Required']:
                 required.append(param_name)
 
+            if param['ValuesEnum']:
+                properties[param_name]['enum_values'] = param['ValuesEnum']
+
         schema = {
             'definitions': {},
             '$schema': 'http://json-schema.org/draft-04/schema#',

@@ -27,7 +27,7 @@ Reservoir Depth, 4.0,      ----km
 Cylindrical Reservoir Input Depth, 4.0, -----km
 Cylindrical Reservoir Output Depth, 4.0, ------km
 Cylindrical Reservoir Length, 5.0,     ----km
-Reservoir Model,0,                        			---simople cylinder reservoir model
+Reservoir Model,0,                        			---simple cylinder reservoir model
 Number of Production Wells,1,            			---[-]
 Number of Injection Wells,1,            			---[-]
 

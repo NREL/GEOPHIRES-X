@@ -5,7 +5,8 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType
-from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter
+from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
+    coerce_int_params_to_enum_values
 from geophires_x.Units import *
 
 
@@ -608,12 +609,13 @@ class Economics:
         # This is the default.
         self.econmodel = self.ParameterDict[self.econmodel.Name] = intParameter(
             "Economic Model",
-            DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
+            DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=EconomicModel,
             Required=True,
             ErrMessage="assume default economic model (2)",
             ToolTipText="Specify the economic model to calculate the levelized cost of energy." +
-                        " 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS"
+                        '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
         )
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost",
@@ -989,12 +991,13 @@ class Economics:
         )
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
-            DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1,
+            DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1.int_value,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            ValuesEnum=WellDrillingCostCorrelation,
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in WellDrillingCostCorrelation])
+                        '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
         )
 
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
@@ -1851,53 +1854,11 @@ class Economics:
 
                     # handle special cases
                     if ParameterToModify.Name == "Economic Model":
-                        if ParameterReadIn.sValue == '1':
-                            self.econmodel.value = EconomicModel.FCR
-                        elif ParameterReadIn.sValue == '2':
-                            # use standard LCOE/LCOH calculation as found on wikipedia (requires an interest rate).
-                            self.econmodel.value = EconomicModel.STANDARDIZED_LEVELIZED_COST
-                        elif ParameterReadIn.sValue == '3':
-                            # use Bicycle LCOE/LCOH model (requires several financial input parameters)
-                            self.econmodel.value = EconomicModel.BICYCLE
-                        else:
-                            self.econmodel.value = EconomicModel.CLGS  # CLGS
+                        self.econmodel.value = EconomicModel.from_input_string(ParameterReadIn.sValue)
+
                     elif ParameterToModify.Name == "Well Drilling Cost Correlation":
-                        if ParameterReadIn.sValue == '1':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL
-                        elif ParameterReadIn.sValue == '2':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL
-                        elif ParameterReadIn.sValue == '3':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE
-                        elif ParameterReadIn.sValue == '4':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE
-                        elif ParameterReadIn.sValue == '5':
-                            ParameterToModify.value = WellDrillingCostCorrelation.SIMPLE
-                        elif ParameterReadIn.sValue == '6':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_INT1
-                        elif ParameterReadIn.sValue == '7':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_INT2
-                        elif ParameterReadIn.sValue == '8':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_INT1
-                        elif ParameterReadIn.sValue == '9':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_INT2
-                        elif ParameterReadIn.sValue == '10':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_INT1
-                        elif ParameterReadIn.sValue == '11':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_INT2
-                        elif ParameterReadIn.sValue == '12':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_INT1
-                        elif ParameterReadIn.sValue == '13':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_INT2
-                        elif ParameterReadIn.sValue == '14':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL
-                        elif ParameterReadIn.sValue == '15':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL
-                        elif ParameterReadIn.sValue == '16':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL
-                        elif ParameterReadIn.sValue == '17':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL
-                        else:
-                            ParameterToModify.value = WellDrillingCostCorrelation.SIMPLE  # Assuming 'SIMPLE' is still a valid option
+                        ParameterToModify.value = WellDrillingCostCorrelation.from_input_string(ParameterReadIn.sValue)
+
                     elif ParameterToModify.Name == "Reservoir Stimulation Capital Cost Adjustment Factor":
                         if self.ccstimfixed.Valid and ParameterToModify.Valid:
                             print("Warning: Provided reservoir stimulation cost adjustment factor not considered" +
@@ -2221,6 +2182,8 @@ class Economics:
             if key.startswith("S-DAC-GT"):
                 self.DoSDACGTCalculations.value = True
                 break
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

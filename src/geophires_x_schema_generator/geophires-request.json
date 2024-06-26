@@ -42,13 +42,55 @@
   ],
   "properties": {
     "Reservoir Model": {
-      "description": "0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,              3: m/a single fracture drawdown model, 4: Linear thermal drawdown model,             5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA",
+      "description": "0: Simple cylindrical; 1: Multiple Parallel Fractures; 2: 1-D Linear Heat Sweep; 3: Single Fracture m/A Thermal Drawdown; 4: Annual Percentage Thermal Drawdown; 5: User-Provided Temperature Profile; 6: TOUGH2 Simulator; 7: SUTRA",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Annual Percentage Thermal Drawdown",
+      "default": 4,
       "minimum": 0,
-      "maximum": 7
+      "maximum": 7,
+      "enum_values": [
+        {
+          "name": "CYLINDRICAL",
+          "value": "Simple cylindrical",
+          "int_value": 0
+        },
+        {
+          "name": "MULTIPLE_PARALLEL_FRACTURES",
+          "value": "Multiple Parallel Fractures",
+          "int_value": 1
+        },
+        {
+          "name": "LINEAR_HEAT_SWEEP",
+          "value": "1-D Linear Heat Sweep",
+          "int_value": 2
+        },
+        {
+          "name": "SINGLE_FRACTURE",
+          "value": "Single Fracture m/A Thermal Drawdown",
+          "int_value": 3
+        },
+        {
+          "name": "ANNUAL_PERCENTAGE",
+          "value": "Annual Percentage Thermal Drawdown",
+          "int_value": 4
+        },
+        {
+          "name": "USER_PROVIDED_PROFILE",
+          "value": "User-Provided Temperature Profile",
+          "int_value": 5
+        },
+        {
+          "name": "TOUGH2_SIMULATOR",
+          "value": "TOUGH2 Simulator",
+          "int_value": 6
+        },
+        {
+          "name": "SUTRA",
+          "value": "SUTRA",
+          "int_value": 7
+        }
+      ]
     },
     "Reservoir Depth": {
       "description": "Depth of the reservoir",
@@ -183,18 +225,62 @@
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Specify reservoir volume and number of fractures",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "FRAC_NUM_SEP",
+          "value": "Specify number of fractures and fracture separation",
+          "int_value": 1
+        },
+        {
+          "name": "RES_VOL_FRAC_SEP",
+          "value": "Specify reservoir volume and fracture separation",
+          "int_value": 2
+        },
+        {
+          "name": "RES_VOL_FRAC_NUM",
+          "value": "Specify reservoir volume and number of fractures",
+          "int_value": 3
+        },
+        {
+          "name": "RES_VOL_ONLY",
+          "value": "Specify reservoir volume only",
+          "int_value": 4
+        }
+      ]
     },
     "Fracture Shape": {
-      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir:             1: Circular fracture with known area, 2: Circular fracture with known diameter,             3: Square fracture, 4: Rectangular fracture",
+      "description": "Specifies the shape of the (identical) fractures in a fracture-based reservoir: 1: Circular fracture with known area; 2: Circular fracture with known diameter; 3: Square; 4: Rectangular",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
-      "default": "Circular fracture with known area",
+      "default": 1,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "CIRCULAR_AREA",
+          "value": "Circular fracture with known area",
+          "int_value": 1
+        },
+        {
+          "name": "CIRCULAR_DIAMETER",
+          "value": "Circular fracture with known diameter",
+          "int_value": 2
+        },
+        {
+          "name": "SQUARE",
+          "value": "Square",
+          "int_value": 3
+        },
+        {
+          "name": "RECTANGULAR",
+          "value": "Rectangular",
+          "int_value": 4
+        }
+      ]
     },
     "Fracture Area": {
       "description": "Effective heat transfer area per fracture",
@@ -611,22 +697,66 @@
       "maximum": 1.8e+30
     },
     "Closed-loop Configuration": {
-      "description": "",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "vertical",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "ULOOP",
+          "value": "utube",
+          "int_value": 1
+        },
+        {
+          "name": "COAXIAL",
+          "value": "coaxial",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL",
+          "value": "vertical",
+          "int_value": 3
+        },
+        {
+          "name": "L",
+          "value": "L",
+          "int_value": 4
+        }
+      ]
     },
     "Well Geometry Configuration": {
-      "description": "",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "vertical",
+      "default": 3,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "ULOOP",
+          "value": "utube",
+          "int_value": 1
+        },
+        {
+          "name": "COAXIAL",
+          "value": "coaxial",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL",
+          "value": "vertical",
+          "int_value": 3
+        },
+        {
+          "name": "L",
+          "value": "L",
+          "int_value": 4
+        }
+      ]
     },
     "Water Thermal Conductivity": {
       "description": "Water Thermal Conductivity",
@@ -638,13 +768,25 @@
       "maximum": 100.0
     },
     "Heat Transfer Fluid": {
-      "description": "",
+      "description": "1: water; 2: sCO2",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "water",
+      "default": 1,
       "minimum": 1,
-      "maximum": 2
+      "maximum": 2,
+      "enum_values": [
+        {
+          "name": "WATER",
+          "value": "water",
+          "int_value": 1
+        },
+        {
+          "name": "SCO2",
+          "value": "sCO2",
+          "int_value": 2
+        }
+      ]
     },
     "Total Nonvertical Length": {
       "description": "",
@@ -696,18 +838,107 @@
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
-      "default": null,
+      "default": 1,
       "minimum": 1,
-      "maximum": 52
+      "maximum": 52,
+      "enum_values": [
+        {
+          "name": "ELECTRICITY",
+          "value": "Electricity",
+          "int_value": 1
+        },
+        {
+          "name": "HEAT",
+          "value": "Direct-Use Heat",
+          "int_value": 2
+        },
+        {
+          "name": "COGENERATION_TOPPING_EXTRA_HEAT",
+          "value": "Cogeneration Topping Cycle, Heat sales considered as extra income",
+          "int_value": 31
+        },
+        {
+          "name": "COGENERATION_TOPPING_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Topping Cycle, Electricity sales considered as extra income",
+          "int_value": 32
+        },
+        {
+          "name": "COGENERATION_BOTTOMING_EXTRA_HEAT",
+          "value": "Cogeneration Bottoming Cycle, Heat sales considered as extra income",
+          "int_value": 41
+        },
+        {
+          "name": "COGENERATION_BOTTOMING_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Bottoming Cycle, Electricity sales considered as extra income",
+          "int_value": 42
+        },
+        {
+          "name": "COGENERATION_PARALLEL_EXTRA_HEAT",
+          "value": "Cogeneration Parallel Cycle, Heat sales considered as extra income",
+          "int_value": 51
+        },
+        {
+          "name": "COGENERATION_PARALLEL_EXTRA_ELECTRICITY",
+          "value": "Cogeneration Parallel Cycle, Electricity sales considered as extra income",
+          "int_value": 52
+        }
+      ]
     },
     "Power Plant Type": {
-      "description": "Specify the type of physical plant. 1: Subcritical ORC, 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump 7: District Heating, 8: Reservoir Thermal Energy Storage",
+      "description": "Specify the type of physical plant. 1: Subcritical ORC; 2: Supercritical ORC; 3: Single-Flash; 4: Double-Flash; 5: Absorption Chiller; 6: Heat Pump; 7: District Heating; 8: Reservoir Thermal Energy Storage; 9: Industrial",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
-      "default": "Subcritical ORC",
+      "default": 1,
       "minimum": 1,
-      "maximum": 9
+      "maximum": 9,
+      "enum_values": [
+        {
+          "name": "SUB_CRITICAL_ORC",
+          "value": "Subcritical ORC",
+          "int_value": 1
+        },
+        {
+          "name": "SUPER_CRITICAL_ORC",
+          "value": "Supercritical ORC",
+          "int_value": 2
+        },
+        {
+          "name": "SINGLE_FLASH",
+          "value": "Single-Flash",
+          "int_value": 3
+        },
+        {
+          "name": "DOUBLE_FLASH",
+          "value": "Double-Flash",
+          "int_value": 4
+        },
+        {
+          "name": "ABSORPTION_CHILLER",
+          "value": "Absorption Chiller",
+          "int_value": 5
+        },
+        {
+          "name": "HEAT_PUMP",
+          "value": "Heat Pump",
+          "int_value": 6
+        },
+        {
+          "name": "DISTRICT_HEATING",
+          "value": "District Heating",
+          "int_value": 7
+        },
+        {
+          "name": "RTES",
+          "value": "Reservoir Thermal Energy Storage",
+          "int_value": 8
+        },
+        {
+          "name": "INDUSTRIAL",
+          "value": "Industrial",
+          "int_value": 9
+        }
+      ]
     },
     "Circulation Pump Efficiency": {
       "description": "Specify the overall efficiency of the injection and production well pumps",
@@ -872,13 +1103,35 @@
       "maximum": 200.0
     },
     "Economic Model": {
-      "description": "Specify the economic model to calculate the levelized cost of energy. 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS",
+      "description": "Specify the economic model to calculate the levelized cost of energy.1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
       "type": "integer",
       "units": null,
       "category": "Economics",
-      "default": "Standard Levelized Cost",
+      "default": 2,
       "minimum": 1,
-      "maximum": 4
+      "maximum": 4,
+      "enum_values": [
+        {
+          "name": "FCR",
+          "value": "Fixed Charge Rate (FCR)",
+          "int_value": 1
+        },
+        {
+          "name": "STANDARDIZED_LEVELIZED_COST",
+          "value": "Standard Levelized Cost",
+          "int_value": 2
+        },
+        {
+          "name": "BICYCLE",
+          "value": "BICYCLE",
+          "int_value": 3
+        },
+        {
+          "name": "CLGS",
+          "value": "Simple (CLGS)",
+          "int_value": 4
+        }
+      ]
     },
     "Reservoir Stimulation Capital Cost": {
       "description": "Total reservoir stimulation capital cost",
@@ -1173,9 +1426,96 @@
       "type": "integer",
       "units": null,
       "category": "Economics",
-      "default": "",
+      "default": 10,
       "minimum": 1,
-      "maximum": 17
+      "maximum": 17,
+      "enum_values": [
+        {
+          "name": "VERTICAL_SMALL",
+          "value": "vertical small diameter, baseline",
+          "int_value": 1
+        },
+        {
+          "name": "DEVIATED_SMALL",
+          "value": "deviated small diameter, baseline",
+          "int_value": 2
+        },
+        {
+          "name": "VERTICAL_LARGE",
+          "value": "vertical large diameter, baseline",
+          "int_value": 3
+        },
+        {
+          "name": "DEVIATED_LARGE",
+          "value": "deviated large diameter, baseline",
+          "int_value": 4
+        },
+        {
+          "name": "SIMPLE",
+          "value": "Simple",
+          "int_value": 5
+        },
+        {
+          "name": "VERTICAL_SMALL_INT1",
+          "value": "vertical small diameter, intermediate1",
+          "int_value": 6
+        },
+        {
+          "name": "VERTICAL_SMALL_INT2",
+          "value": "vertical small diameter, intermediate2",
+          "int_value": 7
+        },
+        {
+          "name": "DEVIATED_SMALL_INT1",
+          "value": "deviated small diameter, intermediate1",
+          "int_value": 8
+        },
+        {
+          "name": "DEVIATED_SMALL_INT2",
+          "value": "deviated small diameter, intermediate2",
+          "int_value": 9
+        },
+        {
+          "name": "VERTICAL_LARGE_INT1",
+          "value": "vertical large diameter, intermediate1",
+          "int_value": 10
+        },
+        {
+          "name": "VERTICAL_LARGE_INT2",
+          "value": "vertical large diameter, intermediate2",
+          "int_value": 11
+        },
+        {
+          "name": "DEVIATED_LARGE_INT1",
+          "value": "deviated large diameter, intermediate1",
+          "int_value": 12
+        },
+        {
+          "name": "DEVIATED_LARGE_INT2",
+          "value": "deviated large diameter, intermediate2",
+          "int_value": 13
+        },
+        {
+          "name": "VERTICAL_SMALL_IDEAL",
+          "value": "vertical open-hole, small diameter, ideal",
+          "int_value": 14
+        },
+        {
+          "name": "DEVIATED_SMALL_IDEAL",
+          "value": "deviated liner, small diameter, ideal",
+          "int_value": 15
+        },
+        {
+          "name": "VERTICAL_LARGE_IDEAL",
+          "value": "vertical open-hole, large diameter, ideal",
+          "int_value": 16
+        },
+        {
+          "name": "DEVIATED_LARGE_IDEAL",
+          "value": "deviated liner, large diameter, ideal",
+          "int_value": 17
+        }
+      ]
     },
     "Do AddOn Calculations": {
       "description": "Set to true if you want the add-on economics calculations to be made",

@@ -185,6 +185,15 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Well Drilling Cost Correlation input value: {input_string}')
+
+
 
 class FractureShape(GeophiresInputEnum):
     CIRCULAR_AREA = 1, "Circular fracture with known area"

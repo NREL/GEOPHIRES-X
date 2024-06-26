@@ -2,7 +2,8 @@ import math
 import numpy as np
 from pint.facets.plain import PlainQuantity
 
-from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
+from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
@@ -917,11 +918,13 @@ class WellBores:
 
         self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
             "Heat Transfer Fluid",
-            DefaultValue=WorkingFluid.WATER,
+            DefaultValue=WorkingFluid.WATER.int_value,
             AllowableRange=[1, 2],
+            ValuesEnum=WorkingFluid,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume default Heat transfer fluid is water (1)"
+            ErrMessage="assume default Heat transfer fluid is water (1)",
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in WorkingFluid])
         )
 
         # Input data for subsurface condition
@@ -1136,15 +1139,13 @@ class WellBores:
 
                     # handle special cases
                     if ParameterToModify.Name == "Heat Transfer Fluid":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Fluid.value = WorkingFluid.WATER
-                        else:
-                            self.Fluid.value = WorkingFluid.SCO2
-                    # IsAGS is false by default - if it equal 1, then it is true
+                        self.Fluid.value = WorkingFluid.from_input_string(ParameterReadIn.sValue)
+
+                    # IsAGS is false by default - if it equals 1, then it is true
                     if ParameterToModify.Name == "Ramey Production Wellbore Model":
                         if ParameterReadIn.sValue == '0':
                             ParameterToModify.value = False
-                    # Ramey Production Wellbore Model is true by default - if it equal 0, then it is false
+                    # Ramey Production Wellbore Model is true by default - if it equals 0, then it is false
                     elif ParameterToModify.Name == "Is AGS":
                         if ParameterReadIn.sValue == '1':
                             ParameterToModify.value = True
@@ -1180,6 +1181,9 @@ class WellBores:
                             raise ValueError(f'Invalid Configuration: {self.Configuration.value}')
         else:
             model.logger.info("No parameters read because no content provided")
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
+
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
 
     def Calculate(self, model: Model) -> None:

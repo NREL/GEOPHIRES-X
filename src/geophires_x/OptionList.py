@@ -194,7 +194,6 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
         raise ValueError(f'Unknown Well Drilling Cost Correlation input value: {input_string}')
 
 
-
 class FractureShape(GeophiresInputEnum):
     CIRCULAR_AREA = 1, "Circular fracture with known area"
     CIRCULAR_DIAMETER = 2, "Circular fracture with known diameter"
@@ -215,9 +214,26 @@ class FractureShape(GeophiresInputEnum):
 
         raise ValueError(f'Unknown Fracture Shape input value: {input_string}')
 
-class WorkingFluid(str, Enum):
-    WATER = "water"
-    SCO2 = "sCO2"
+
+class WorkingFluid(GeophiresInputEnum):
+    WATER = 1, "water"
+    SCO2 = 2, "sCO2"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Working Fluid input value: {input_string}')
+
+
 
 
 class Configuration(str, Enum):

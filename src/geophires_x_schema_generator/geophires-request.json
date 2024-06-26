@@ -724,13 +724,25 @@
       "maximum": 100.0
     },
     "Heat Transfer Fluid": {
-      "description": "",
+      "description": "1: water; 2: sCO2",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": "water",
+      "default": 1,
       "minimum": 1,
-      "maximum": 2
+      "maximum": 2,
+      "enum_values": [
+        {
+          "name": "WATER",
+          "value": "water",
+          "int_value": 1
+        },
+        {
+          "name": "SCO2",
+          "value": "sCO2",
+          "int_value": 2
+        }
+      ]
     },
     "Total Nonvertical Length": {
       "description": "",

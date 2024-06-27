@@ -1605,7 +1605,7 @@ class Outputs:
                         f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]:10.0f} ' + model.reserv.layerthickness.CurrentUnits.value + NL)
                     f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 if model.economics.DoCarbonCalculations.value:
-                    f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} tonnes' + NL)
+                    f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value*0.000453592:10.2f} tonne' + NL)
 
                 f.write(NL)
                 f.write(NL)

@@ -823,8 +823,6 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     ConvertOutputUnits Given an output parameter, convert the value(s) from what they contain
     (as calculated by GEOPHIRES) to what the user specified as what they want for outputs.  Conversion happens inline.
 
-    TODO switch to pint-based conversion like in ConvertUnitsBack
-
     :param oparam: The parameter you want to be converted (value or list of values).  Because Parameters know the
         PreferredUnits and CurrentUnits, this routine knows what to do. It will convert the value(s) in the parameter
         to the new units, and then reset the CurrentUnits to the new units. This is done so that the user can see the units

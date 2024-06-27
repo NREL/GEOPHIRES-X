@@ -88,3 +88,4 @@ Inflation Rate During Construction,0,   			---[-]
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]
+Units:Total Saved Carbon Production, tonne,

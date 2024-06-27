@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.4.41
  Simulation Date: 2024-06-27
- Simulation Time:  12:21
- Calculation Time:      0.602 sec
+ Simulation Time:  12:28
+ Calculation Time:      0.605 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -19,7 +19,7 @@ Simulation Metadata
       Flowrate per production well:                          55.0 kg/sec
       Well depth (or total length, if not vertical):          7.5 kilometer
       Geothermal gradient:                                     50 degC/km
-      Total Avoided Carbon Emissions:                          3403.38 kiloton
+      Total Avoided Carbon Emissions:                          3087.50 kilotonne
 
 
                            ***ECONOMIC PARAMETERS***

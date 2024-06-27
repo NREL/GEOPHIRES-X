@@ -46,4 +46,4 @@ Annual License Etc, 0
 Flat License Etc, 0
 Tax Relief Per Year, 2.212
 Do Carbon Price Calculations, true
-Units:Total Saved Carbon Production, kiloton,
+Units:Total Saved Carbon Production, kilotonne,

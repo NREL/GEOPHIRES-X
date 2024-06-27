@@ -45,5 +45,7 @@ Electricity Escalation Rate Per Year, 0.012
 Annual License Etc, 0
 Flat License Etc, 0
 Tax Relief Per Year, 2.212
+Do Carbon Price Calculations, true
+Units:Total Saved Carbon Production, kilotonne,
 
 # See relevant discussion regarding thermosiphoning: https://github.com/NREL/GEOPHIRES-X/issues/188?#issuecomment-2102937796

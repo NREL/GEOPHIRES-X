@@ -434,9 +434,21 @@ class GeophiresXResult:
             return None
 
         if len(matching_lines) > 1:
-            self._logger.warning(
-                f'Found multiple ({len(matching_lines)}) entries for field: {field_name}\n\t{matching_lines}'
-            )
+
+            def normalize_spaces(matched_line):
+                return re.sub(r'\s+', r' ', matched_line)
+
+            if len({normalize_spaces(_) for _ in matching_lines}) > 1:
+                # TODO maybe this should throw a RuntimeError...
+                self._logger.error(
+                    f'Found multiple ({len(matching_lines)}) entries for field with different values: '
+                    f'{field_name}\n\t{matching_lines}'
+                )
+            else:
+                self._logger.debug(
+                    f'Found multiple ({len(matching_lines)}) entries for field with same value: '
+                    f'{field_name}\n\t{set(matching_lines)}'
+                )
 
         matching_line = matching_lines.pop()
         val_and_unit_str = re.sub(r'\s\s+', '', matching_line.replace(f'{field_name}:', '').replace('\n', ''))

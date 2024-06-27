@@ -864,7 +864,7 @@ class Outputs:
 
         if model.economics.DoCarbonCalculations.value:
             summary.append(OutputTableItem('Total Avoided Carbon Emissions', '{0:10.2f}'.format(
-                model.economics.CarbonThatWouldHaveBeenProducedTotal.value * 0.000453592), 'tonnes'))
+                model.economics.CarbonThatWouldHaveBeenProducedTotal.value * 0.000453592), 'tonne'))
 
         if model.economics.econmodel.value == EconomicModel.FCR:
             economic_parameters.append(OutputTableItem('Economic Model', model.economics.econmodel.value.value))

@@ -313,6 +313,7 @@ class MassUnit(str, Enum):
     KILOGRAM = "kilogram"
     TONNE = "tonne"
     TON = "ton"
+    KILOTON = "kiloton"
     LB = "pound"
     OZ = "ounce"
 

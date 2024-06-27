@@ -840,6 +840,16 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     :type model: :class:`~geophires_x.Model.Model`
     :return: None
     """
+
+    try:
+        oparam.value = _ureg.Quantity(oparam.value, oparam.CurrentUnits.value).to(newUnit.value).magnitude
+        oparam.CurrentUnits = newUnit
+        return
+    except AttributeError as ae:
+        # TODO refactor to check for/convert currency instead of relying on try/except once currency conversion is
+        #  re-enabled - https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled
+        model.logger.warning(f'Failed to convert units with pint, falling back to legacy conversion code ({ae})')
+
     if isinstance(oparam.value, str):
         return  # strings have no units
     elif isinstance(oparam.value, bool):

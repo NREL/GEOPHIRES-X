@@ -6,7 +6,8 @@ import numpy as np
 from pint.facets.plain import PlainQuantity
 
 from .OptionList import ReservoirModel, FractureShape, ReservoirVolume
-from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter
+from .Parameter import intParameter, floatParameter, listParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from .Units import *
 import geophires_x.Model as Model
 
@@ -48,13 +49,12 @@ class Reservoir:
 
         self.resoption = self.ParameterDict[self.resoption.Name] = intParameter(
             "Reservoir Model",
-            DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE,
+            DefaultValue=ReservoirModel.ANNUAL_PERCENTAGE.int_value,
             AllowableRange=[0, 1, 2, 3, 4, 5, 6, 7],
+            ValuesEnum=ReservoirModel,
             Required=True,
             ErrMessage="run default reservoir model (Thermal Drawdown Percentage Model)",
-            ToolTipText="0: Cylindrical model, 1: Multiple parallel fractures model, 2: 1D linear heat sweep model,  \
-            3: m/a single fracture drawdown model, 4: Linear thermal drawdown model, \
-            5: Generic user-provided temperature profile, 6: TOUGH2, 7: SUTRA"
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in ReservoirModel])
         )
 
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
@@ -223,8 +223,9 @@ class Reservoir:
 
         self.resvoloption = self.ParameterDict[self.resvoloption.Name] = intParameter(
             "Reservoir Volume Option",
-            DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM,
+            DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=ReservoirVolume,
             Required=True,
             UnitType=Units.NONE,
             ErrMessage="assume default reservoir volume option",
@@ -240,13 +241,13 @@ class Reservoir:
 
         self.fracshape = self.ParameterDict[self.fracshape.Name] = intParameter(
             "Fracture Shape",
-            DefaultValue=FractureShape.CIRCULAR_AREA,
+            DefaultValue=FractureShape.CIRCULAR_AREA.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=FractureShape,
             UnitType=Units.NONE,
             ErrMessage="assume default fracture shape (1)",
-            ToolTipText="Specifies the shape of the (identical) fractures in a fracture-based reservoir: \
-            1: Circular fracture with known area, 2: Circular fracture with known diameter, \
-            3: Square fracture, 4: Rectangular fracture"
+            ToolTipText="Specifies the shape of the (identical) fractures in a fracture-based reservoir: " +
+                        '; '.join([f'{it.int_value}: {it.value}' for it in FractureShape])
         )
 
         self.fracarea = self.ParameterDict[self.fracarea.Name] = floatParameter(
@@ -558,30 +559,8 @@ class Reservoir:
 
                     # handle special cases
                     if ParameterToModify.Name == "Reservoir Model":
-                        if ParameterReadIn.sValue == '0':
-                            # Simply Cylindrical Model
-                            ParameterToModify.value = ReservoirModel.CYLINDRICAL
-                        elif ParameterReadIn.sValue == '1':
-                            # Multiple parallel fractures model (LANL)
-                            ParameterToModify.value = ReservoirModel.MULTIPLE_PARALLEL_FRACTURES
-                        elif ParameterReadIn.sValue == '2':
-                            # Volumetric block model (1D linear heat sweep model (Stanford))
-                            ParameterToModify.value = ReservoirModel.LINEAR_HEAT_SWEEP
-                        elif ParameterReadIn.sValue == '3':
-                            # Drawdown parameter model (Tester)
-                            ParameterToModify.value = ReservoirModel.SINGLE_FRACTURE
-                        elif ParameterReadIn.sValue == '4':
-                            # Thermal drawdown percentage model (GETEM)
-                            ParameterToModify.value = ReservoirModel.ANNUAL_PERCENTAGE
-                        elif ParameterReadIn.sValue == '5':
-                            # Generic user-provided temperature profile
-                            ParameterToModify.value = ReservoirModel.USER_PROVIDED_PROFILE
-                        elif ParameterReadIn.sValue == '6':
-                            # TOUGH2 is called
-                            ParameterToModify.value = ReservoirModel.TOUGH2_SIMULATOR
-                        elif ParameterReadIn.sValue == '7':
-                            # SUTRA Simulator
-                            ParameterToModify.value = ReservoirModel.SUTRA
+                        ParameterToModify.value = ReservoirModel.get_reservoir_model_from_input_string(
+                            ParameterReadIn.sValue)
 
                     elif ParameterToModify.Name == 'Reservoir Depth':
                         # FIXME TODO only convert if current units are km
@@ -589,14 +568,7 @@ class Reservoir:
                         ParameterToModify.CurrentUnits = LengthUnit.METERS
 
                     elif ParameterToModify.Name == "Reservoir Volume Option":
-                        if ParameterReadIn.sValue == '1':
-                            ParameterToModify.value = ReservoirVolume.FRAC_NUM_SEP
-                        elif ParameterReadIn.sValue == '2':
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_SEP
-                        elif ParameterReadIn.sValue == '3':
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_FRAC_NUM
-                        else:
-                            ParameterToModify.value = ReservoirVolume.RES_VOL_ONLY
+                        ParameterToModify.value = ReservoirVolume.from_input_string(ParameterReadIn.sValue)
 
                         if ParameterToModify.value == ReservoirVolume.RES_VOL_ONLY and ParameterToModify.value in [
                             ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:
@@ -660,6 +632,8 @@ class Reservoir:
                         self.resvolcalc.value = self.resvol.value
         else:
             model.logger.info("No parameters read because no content provided")
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
@@ -746,7 +720,7 @@ class Reservoir:
                                             model.economics.timestepsperyear.value * model.surfaceplant.plant_lifetime.value)
         self.Tresoutput.value = np.zeros(len(self.timevector.value))
 
-        if self.resoption.value != ReservoirModel.SUTRA:
+        if self.resoption.value is not ReservoirModel.SUTRA:
             # calculate reservoir water properties
             self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
                 model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,

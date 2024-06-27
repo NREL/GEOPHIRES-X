@@ -1,8 +1,28 @@
 # copyright, 2023, Malcolm I Ross
+
 from enum import Enum
 
 
-class EndUseOptions(str, Enum):
+class GeophiresInputEnum(str, Enum):
+    """
+    Input enums have a name, integer input value, and string value
+
+    TODO implement from_int/from_input_string here instead of child classes
+    """
+
+    def __new__(cls, *args, **kwds):
+        obj = str.__new__(cls)
+        obj._value_ = args[1]
+        return obj
+
+    def __init__(self, int_value: int, _: str):
+        self.int_value = int_value
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+
+class EndUseOptions(GeophiresInputEnum):
     ELECTRICITY = 1, "Electricity"
     HEAT = 2, "Direct-Use Heat"
     COGENERATION_TOPPING_EXTRA_HEAT = 31, "Cogeneration Topping Cycle, Heat sales considered as extra income"
@@ -12,68 +32,127 @@ class EndUseOptions(str, Enum):
     COGENERATION_PARALLEL_EXTRA_HEAT = 51, "Cogeneration Parallel Cycle, Heat sales considered as extra income"
     COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
 
-    def __new__(cls, *args, **kwds):
-        obj = str.__new__(cls)
-        obj._value_ = args[1]
-        return obj
-
-    def __init__(self, numerical_input_value: int, _: str):
-        self.numerical_input_value = numerical_input_value
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
     @staticmethod
-    def get_end_use_option_from_input_string(input_string:str):
+    def from_input_string(input_string:str):
         """
         :rtype: EndUseOptions
         """
 
-        for option in EndUseOptions:
-            if input_string == str(option.numerical_input_value):
-                return option
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
 
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
-
-class PlantType(str, Enum):
-    SUB_CRITICAL_ORC = "Subcritical ORC" # 1
-    SUPER_CRITICAL_ORC = "Supercritical ORC" # 2
-    SINGLE_FLASH = "Single-Flash" # 3
-    DOUBLE_FLASH = "Double-Flash" # 4
-    ABSORPTION_CHILLER = "Absorption Chiller"  # 5
-    HEAT_PUMP = "Heat Pump"  # 6
-    DISTRICT_HEATING = "District Heating"  # 7
-    RTES = "Reservoir Thermal Energy Storage"  # 8
-    INDUSTRIAL = "Industrial"  # 9
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
-class EconomicModel(str, Enum):
-    CLGS = "Simple (CLGS)"
-    FCR = "Fixed Charge Rate (FCR)"
-    STANDARDIZED_LEVELIZED_COST = "Standard Levelized Cost"
-    BICYCLE = "BICYCLE"
+class PlantType(GeophiresInputEnum):
+    SUB_CRITICAL_ORC = 1, "Subcritical ORC"
+    SUPER_CRITICAL_ORC = 2, "Supercritical ORC"
+    SINGLE_FLASH = 3, "Single-Flash"
+    DOUBLE_FLASH = 4, "Double-Flash"
+    ABSORPTION_CHILLER = 5, "Absorption Chiller"
+    HEAT_PUMP = 6, "Heat Pump"
+    DISTRICT_HEATING = 7, "District Heating"
+    RTES = 8, "Reservoir Thermal Energy Storage"
+    INDUSTRIAL = 9, "Industrial"
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        """
+        :rtype: PlantType
+        """
+
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Power Plant Type input value: {input_string}')
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
-class ReservoirModel(str, Enum):
-    CYLINDRICAL = "Simple cylindrical"
-    MULTIPLE_PARALLEL_FRACTURES = "Multiple Parallel Fractures"
-    LINEAR_HEAT_SWEEP = "1-D Linear Heat Sweep"
-    SINGLE_FRACTURE = "Single Fracture m/A Thermal Drawdown"
-    ANNUAL_PERCENTAGE = "Annual Percentage Thermal Drawdown"
-    USER_PROVIDED_PROFILE = "User-Provided Temperature Profile"
-    TOUGH2_SIMULATOR = "TOUGH2 Simulator"
-    SUTRA = "SUTRA"
+class EconomicModel(GeophiresInputEnum):
+    FCR = 1, "Fixed Charge Rate (FCR)"
+    STANDARDIZED_LEVELIZED_COST = 2, "Standard Levelized Cost"
+    BICYCLE = 3, "BICYCLE"
+    CLGS = 4, "Simple (CLGS)"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Economic Model input value: {input_string}')
 
 
-class ReservoirVolume(str, Enum):
-    FRAC_NUM_SEP = "Specify number of fractures and fracture separation"
-    RES_VOL_FRAC_SEP = "Specify reservoir volume and fracture separation"
-    RES_VOL_FRAC_NUM = "Specify reservoir volume and number of fractures"
-    RES_VOL_ONLY = "Specify reservoir volume only"
+class ReservoirModel(GeophiresInputEnum):
+    CYLINDRICAL = 0, "Simple cylindrical"
+    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures"
+    LINEAR_HEAT_SWEEP = 2, "1-D Linear Heat Sweep"
+    SINGLE_FRACTURE = 3, "Single Fracture m/A Thermal Drawdown"
+    ANNUAL_PERCENTAGE = 4, "Annual Percentage Thermal Drawdown"
+    USER_PROVIDED_PROFILE = 5, "User-Provided Temperature Profile"
+    TOUGH2_SIMULATOR = 6, "TOUGH2 Simulator"
+    SUTRA = 7, "SUTRA"
+
+    @staticmethod
+    def get_reservoir_model_from_input_string(input_string:str):
+        """
+        :rtype: ReservoirModel
+        """
+
+        for model in ReservoirModel:
+            if input_string == str(model.int_value):
+                return model
+
+        raise ValueError(f'Unknown Reservoir Model input value: {input_string}')
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
-class WellDrillingCostCorrelation(str, Enum):
+class ReservoirVolume(GeophiresInputEnum):
+    FRAC_NUM_SEP = 1, "Specify number of fractures and fracture separation"
+    RES_VOL_FRAC_SEP = 2, "Specify reservoir volume and fracture separation"
+    RES_VOL_FRAC_NUM = 3, "Specify reservoir volume and number of fractures"
+    RES_VOL_ONLY = 4, "Specify reservoir volume only"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Reservoir Volume input value: {input_string}')
+
+
+class WellDrillingCostCorrelation(GeophiresInputEnum):
     """Note: order must be retained since input is read as an int; first int arg is duplicative of order"""
 
     VERTICAL_SMALL = 1, "vertical small diameter, baseline", 0.30212, 584.91124, 751368.47270
@@ -99,38 +178,88 @@ class WellDrillingCostCorrelation(str, Enum):
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
-    def __new__(cls, *args, **kwds):
-        obj = str.__new__(cls)
-        obj._value_ = args[1]
-        return obj
-
-    def __init__(self, numerical_input_value: int, _: str, c2: float, c1: float, c0: float):
-        self.numerical_input_value = numerical_input_value
+    def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float):
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0
-
-    def __eq__(self, other):
-        return str(self) == str(other)
+        super().__init__(int_value, _)
 
     def calculate_cost_MUSD(self, meters) -> float:
         return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
 
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
 
-class FractureShape(str, Enum):
-    CIRCULAR_AREA = "Circular fracture with known area"
-    CIRCULAR_DIAMETER = "Circular fracture with known diameter"
-    SQUARE = "Square"
-    RECTANGULAR = "Rectangular"
+        raise ValueError(f'Unknown Well Drilling Cost Correlation input value: {input_string}')
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
 
 
-class WorkingFluid(str, Enum):
-    WATER = "water"
-    SCO2 = "sCO2"
+class FractureShape(GeophiresInputEnum):
+    CIRCULAR_AREA = 1, "Circular fracture with known area"
+    CIRCULAR_DIAMETER = 2, "Circular fracture with known diameter"
+    SQUARE = 3, "Square"
+    RECTANGULAR = 4, "Rectangular"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string:str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Fracture Shape input value: {input_string}')
 
 
-class Configuration(str, Enum):
-    ULOOP = "utube"
-    COAXIAL = "coaxial"
-    VERTICAL = "vertical"
-    L = "L"
+class WorkingFluid(GeophiresInputEnum):
+    WATER = 1, "water"
+    SCO2 = 2, "sCO2"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Working Fluid input value: {input_string}')
+
+
+
+
+class Configuration(GeophiresInputEnum):
+    ULOOP = 1, "utube"
+    COAXIAL = 2, "coaxial"
+    VERTICAL = 3, "vertical"
+    L = 4, "L"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Configuration input value: {input_string}')

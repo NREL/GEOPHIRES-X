@@ -2,7 +2,8 @@ import math
 import numpy as np
 from pint.facets.plain import PlainQuantity
 
-from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
+from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
@@ -887,20 +888,24 @@ class WellBores:
         # This is a alias for "Well Geometry Configuration" - putting it here for backwards compatibility
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Closed-loop Configuration",
-            DefaultValue=Configuration.VERTICAL,
+            DefaultValue=Configuration.VERTICAL.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume simple vertical well (3)"
+            ErrMessage="assume simple vertical well (3)",
+            ToolTipText = '; '.join([f'{it.int_value}: {it.value}' for it in Configuration])
         )
         # This is a alias for "Closed-loop Configuration" - putting it here for backwards compatibility
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Well Geometry Configuration",
-            DefaultValue=Configuration.VERTICAL,
+            DefaultValue=Configuration.VERTICAL.int_value,
             AllowableRange=[1, 2, 3, 4],
+            ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume simple vertical well (3)"
+            ErrMessage="assume simple vertical well (3)",
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in Configuration])
         )
 
         self.WaterThermalConductivity = self.ParameterDict[self.WaterThermalConductivity.Name] = floatParameter(
@@ -917,11 +922,13 @@ class WellBores:
 
         self.Fluid = self.ParameterDict[self.Fluid.Name] = intParameter(
             "Heat Transfer Fluid",
-            DefaultValue=WorkingFluid.WATER,
+            DefaultValue=WorkingFluid.WATER.int_value,
             AllowableRange=[1, 2],
+            ValuesEnum=WorkingFluid,
             UnitType=Units.NONE,
             Required=True,
-            ErrMessage="assume default Heat transfer fluid is water (1)"
+            ErrMessage="assume default Heat transfer fluid is water (1)",
+            ToolTipText='; '.join([f'{it.int_value}: {it.value}' for it in WorkingFluid])
         )
 
         # Input data for subsurface condition
@@ -1136,15 +1143,13 @@ class WellBores:
 
                     # handle special cases
                     if ParameterToModify.Name == "Heat Transfer Fluid":
-                        if ParameterReadIn.sValue == str(1):
-                            self.Fluid.value = WorkingFluid.WATER
-                        else:
-                            self.Fluid.value = WorkingFluid.SCO2
-                    # IsAGS is false by default - if it equal 1, then it is true
+                        self.Fluid.value = WorkingFluid.from_input_string(ParameterReadIn.sValue)
+
+                    # IsAGS is false by default - if it equals 1, then it is true
                     if ParameterToModify.Name == "Ramey Production Wellbore Model":
                         if ParameterReadIn.sValue == '0':
                             ParameterToModify.value = False
-                    # Ramey Production Wellbore Model is true by default - if it equal 0, then it is false
+                    # Ramey Production Wellbore Model is true by default - if it equals 0, then it is false
                     elif ParameterToModify.Name == "Is AGS":
                         if ParameterReadIn.sValue == '1':
                             ParameterToModify.value = True
@@ -1168,18 +1173,12 @@ class WellBores:
                             self.usebuiltinppwellheadcorrelation = False
                     elif (ParameterToModify.Name == "Closed-loop Configuration" or
                           ParameterToModify.Name == "Well Geometry Configuration"):  # These two are alias of each other
-                        if ParameterReadIn.sValue == str(1):
-                            self.Configuration.value = Configuration.ULOOP
-                        elif ParameterReadIn.sValue == str(2):
-                            self.Configuration.value = Configuration.COAXIAL
-                        elif ParameterReadIn.sValue == str(3):
-                            self.Configuration.value = Configuration.VERTICAL
-                        elif ParameterReadIn.sValue == str(4):
-                            self.Configuration.value = Configuration.L
-                        else:
-                            raise ValueError(f'Invalid Configuration: {self.Configuration.value}')
+                        self.Configuration.value = Configuration.from_input_string(ParameterReadIn.sValue)
         else:
             model.logger.info("No parameters read because no content provided")
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
+
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
 
     def Calculate(self, model: Model) -> None:

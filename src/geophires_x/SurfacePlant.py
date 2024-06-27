@@ -1,8 +1,10 @@
 import sys
 import os
 import numpy as np
+
 from .OptionList import EndUseOptions, PlantType
-from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter
+from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter, \
+    coerce_int_params_to_enum_values
 from .Units import *
 import geophires_x.Model as Model
 import pandas as pd
@@ -232,22 +234,23 @@ class SurfacePlant:
 
         self.enduse_option = self.ParameterDict[self.enduse_option.Name] = intParameter(
             "End-Use Option",
-            value=EndUseOptions.ELECTRICITY,
+            DefaultValue=EndUseOptions.ELECTRICITY.int_value,
             AllowableRange=[1, 2, 31, 32, 41, 42, 51, 52],
+            ValuesEnum=EndUseOptions,
             UnitType=Units.NONE,
             ErrMessage="assume default end-use option (1: electricity only)",
             ToolTipText="Select the end-use application of the geofluid heat: " +
-                        '; '.join([f'{it.numerical_input_value}: {it.value}' for it in EndUseOptions])
+                        '; '.join([f'{it.int_value}: {it.value}' for it in EndUseOptions])
         )
         self.plant_type = self.ParameterDict[self.plant_type.Name] = intParameter(
             "Power Plant Type",
-            DefaultValue=PlantType.SUB_CRITICAL_ORC,
+            DefaultValue=PlantType.SUB_CRITICAL_ORC.int_value,
             AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ValuesEnum=PlantType,
             UnitType=Units.NONE,
             ErrMessage="assume default power plant type (1: subcritical ORC)",
-            ToolTipText="Specify the type of physical plant. 1: Subcritical ORC," +
-            " 2: Supercritical ORC, 3: Single-flash, 4: Double-flash, 5: Absorption Chiller, 6: Heat Pump" +  # 6
-            " 7: District Heating, 8: Reservoir Thermal Energy Storage"
+            ToolTipText="Specify the type of physical plant. " +
+                        '; '.join([f'{it.int_value}: {it.value}' for it in PlantType])
         )
         self.pump_efficiency = self.ParameterDict[self.pump_efficiency.Name] = floatParameter(
             "Circulation Pump Efficiency",
@@ -512,30 +515,13 @@ class SurfacePlant:
 
                     # handle special cases
                     if ParameterToModify.Name == 'End-Use Option':
-                        end_use_option = EndUseOptions.get_end_use_option_from_input_string(ParameterReadIn.sValue)
+                        end_use_option = EndUseOptions.from_input_string(ParameterReadIn.sValue)
                         ParameterToModify.value = end_use_option
                         if end_use_option == EndUseOptions.HEAT:
                             self.plant_type.value = PlantType.INDUSTRIAL
 
                     elif ParameterToModify.Name == 'Power Plant Type':
-                        if ParameterReadIn.sValue == str(1):
-                            ParameterToModify.value = PlantType.SUB_CRITICAL_ORC
-                        elif ParameterReadIn.sValue == str(2):
-                            ParameterToModify.value = PlantType.SUPER_CRITICAL_ORC
-                        elif ParameterReadIn.sValue == str(3):
-                            ParameterToModify.value = PlantType.SINGLE_FLASH
-                        elif ParameterReadIn.sValue == str(4):
-                            ParameterToModify.value = PlantType.DOUBLE_FLASH
-                        elif ParameterReadIn.sValue == str(5):
-                            ParameterToModify.value = PlantType.ABSORPTION_CHILLER
-                        elif ParameterReadIn.sValue == str(6):
-                            ParameterToModify.value = PlantType.HEAT_PUMP
-                        elif ParameterReadIn.sValue == str(7):
-                            ParameterToModify.value = PlantType.DISTRICT_HEATING
-                        elif ParameterReadIn.sValue == str(8):
-                            ParameterToModify.value = PlantType.RTES
-                        else:
-                            ParameterToModify.value = PlantType.INDUSTRIAL
+                        ParameterToModify.value = PlantType.from_input_string(ParameterReadIn.sValue)
                         if self.enduse_option.value == EndUseOptions.ELECTRICITY:
                             # simple single- or double-flash power plant assumes no production well pumping
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:
@@ -592,6 +578,8 @@ class SurfacePlant:
                     model.logger.warning(msg)
         else:
             model.logger.info('No parameters read because no content provided')
+
+        coerce_int_params_to_enum_values(self.ParameterDict)
 
         model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
 

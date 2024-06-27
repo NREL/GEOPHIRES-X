@@ -448,6 +448,15 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertDictEqual(result_default_units, result_non_default_units)
 
     def test_csv(self):
+        """
+        TODO make this less tedious to update when expected result values change
+
+        Current easiest method to update:
+         1. set breakpoint on line after `as_csv = result.as_csv()`
+         2. debug test, hit break point
+         3. copy-paste value of `as_csv` to example1_addons.csv
+        """
+
         def assertFileContentsEqual(expected_file_path, actual_file_path, tol=0.01):
             with open(expected_file_path, encoding='utf-8') as ef:
                 expected_lines = ef.readlines()

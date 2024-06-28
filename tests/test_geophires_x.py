@@ -417,3 +417,42 @@ Print Output to Console, 1"""
 
         self.assertEqual(cashflow_escalating[2][4], 1.5)
         self.assertEqual(cashflow_escalating[-1][4], 3.0)
+
+    def test_disabled_currency_conversion_exceptions(self):
+        """
+        TODO: this test can be removed once https://github.com/NREL/GEOPHIRES-X/issues/236 is addressed. (Its purpose
+            is to ensure currency conversion failure behavior is as expected in the interim.)
+        """
+
+        with self.assertRaises(RuntimeError) as re_ec:
+            GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('examples/example1_outputunits.txt')),
+                    params={'Units:Exploration cost,MEUR': 'MEUR'},
+                )
+            )
+
+        e_msg = str(re_ec.exception)
+
+        self.assertIn(
+            'Error: GEOPHIRES failed to convert your currency for Exploration cost to something it understands.', e_msg
+        )
+        self.assertIn('You gave MEUR', e_msg)
+        self.assertIn('https://github.com/NREL/GEOPHIRES-X/issues/236', e_msg)
+
+        with self.assertRaises(RuntimeError) as re_omwc:
+            GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('examples/example1_outputunits.txt')),
+                    params={'Units:O&M Make-up Water costs': 'MEUR/yr'},
+                )
+            )
+
+        e_msg = str(re_omwc.exception)
+
+        self.assertIn(
+            'Error: GEOPHIRES failed to convert your currency for O&M Make-up Water costs to something it understands.',
+            e_msg,
+        )
+        self.assertIn('You gave MEUR', e_msg)
+        self.assertIn('https://github.com/NREL/GEOPHIRES-X/issues/236', e_msg)

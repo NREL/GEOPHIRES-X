@@ -964,10 +964,10 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
             print(str(ex))
 
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands.'
-                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236.  '
+                f'Error: GEOPHIRES failed to convert your currency for {oparam.Name} to something it understands. '
+                f'You gave {currType} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236. '
                 f'Please change your units to {oparam.PreferredUnits.value} '
-                f'to continue. Cannot continue unless you do.  Exiting.'
+                f'to continue. Cannot continue unless you do. Exiting.'
             )
 
             print(msg)

@@ -6,7 +6,7 @@ from functools import lru_cache
 import numpy as np
 from pint.facets.plain import PlainQuantity
 
-from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3, static_pressure_MPa, quantity
+from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3, lithostatic_pressure_MPa, quantity
 
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
 import geophires_x.Model as Model
@@ -43,6 +43,7 @@ class CylindricalReservoir(Reservoir):
 
         self.InputDepth = self.ParameterDict[self.InputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Input Depth",
+            value=3.0,
             DefaultValue=3.0,
             Min=0.1,
             Max=15,
@@ -56,6 +57,7 @@ class CylindricalReservoir(Reservoir):
 
         self.OutputDepth = self.ParameterDict[self.OutputDepth.Name] = floatParameter(
             "Cylindrical Reservoir Output Depth",
+            value=self.InputDepth.value,
             DefaultValue=self.InputDepth.value,
             Min=0.1,
             Max=15,
@@ -68,6 +70,7 @@ class CylindricalReservoir(Reservoir):
         )
         self.Length = self.ParameterDict[self.Length.Name] = floatParameter(
             "Cylindrical Reservoir Length",
+            value=4.0,
             DefaultValue=4.0,
             Min=0.1,
             Max=10.0,
@@ -80,6 +83,7 @@ class CylindricalReservoir(Reservoir):
         )
         self.RadiusOfEffect = self.ParameterDict[self.RadiusOfEffect.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect",
+            value=30.0,
             DefaultValue=30.0,
             Min=0,
             Max=1000.0,
@@ -92,13 +96,14 @@ class CylindricalReservoir(Reservoir):
         )
         self.RadiusOfEffectFactor = self.ParameterDict[self.RadiusOfEffectFactor.Name] = floatParameter(
             "Cylindrical Reservoir Radius of Effect Factor",
+            value=1.0,
             DefaultValue=1.0,
             Min=0.0,
             Max=10.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default cylindrical reservoir radius of effect reduction factor (0.1)",
+            ErrMessage="assume default cyclindrical reservoir radius of effect reduction factor (0.1)",
             ToolTipText="The radius of effect reduction factor - to account for the fact that we cannot extract 100%"
                         + " of the heat in the cylinder.",
         )
@@ -109,6 +114,7 @@ class CylindricalReservoir(Reservoir):
         # internal values required for calculations
         self.depth = self.ParameterDict[self.depth.Name] = floatParameter(
             "Drilled length",
+            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=150,
@@ -121,6 +127,7 @@ class CylindricalReservoir(Reservoir):
         )
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
+            value=0.0,
             DefaultValue=0.0,
             Min=0.0,
             Max=0.99,
@@ -222,8 +229,8 @@ class CylindricalReservoir(Reservoir):
         # initialize with the Initial reservoir temperature
         self.Tresoutput.value = np.array(len(self.timevector.value) * [self.Trock.value])
         # depth in this case is actually the total length of the drilled assembly
-        # as the average of the InputDepth and the OutputDepth
-        self.depth.value = (self.InputDepth.value + self.OutputDepth.value) / 2.0
+        self.depth.value = ((self.InputDepth.quantity() + self.OutputDepth.quantity() + self.Length.quantity()
+             ).to(self.depth.CurrentUnits).magnitude)
 
         # Total volume of all laterals but hollow cylinder - doesn't include drilled-out area, units = m3
         self.resvolcalc.value = (
@@ -244,11 +251,11 @@ class CylindricalReservoir(Reservoir):
                                                  ) / 1e15  # 10^15 J
         self.cpwater.value = heat_capacity_water_J_per_kg_per_K(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=self.hydrostatic_pressure()
+            pressure=model.reserv.lithostatic_pressure()
         )
         self.rhowater.value = density_water_kg_per_m3(
             model.wellbores.Tinj.value * 0.5 + (self.Trock.value * 0.9 + model.wellbores.Tinj.value * 0.1) * 0.5,
-            pressure=self.hydrostatic_pressure()
+            pressure=model.reserv.lithostatic_pressure()
         )
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
@@ -256,5 +263,7 @@ class CylindricalReservoir(Reservoir):
     def lithostatic_pressure(self) -> PlainQuantity:
         """@override"""
 
+        Standard reservoir implementation uses depth but CylindricalReservoir sets depth to total drilled length
+        """
         return quantity(static_pressure_MPa(self.rhorock.quantity().to('kg/m**3').magnitude,
                                             self.InputDepth.quantity().to('m').magnitude), 'MPa')

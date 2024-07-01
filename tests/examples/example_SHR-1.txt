@@ -8,7 +8,7 @@ Number of Production Wells, 2
 Number of Injection Wells, 2
 Production Well Diameter, 7
 Injection Well Diameter, 7
-Ramey Production Wellbore Model, true
+Ramey Production Wellbore Model, True
 Production Wellbore Temperature Drop, .5
 Injection Wellbore Temperature Gain, 0
 Production Flow Rate per Well, 55

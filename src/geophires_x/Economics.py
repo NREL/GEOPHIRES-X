@@ -1373,8 +1373,9 @@ class Economics:
             UnitType=Units.CO2PRODUCTION,
             PreferredUnits=CO2ProductionUnit.LBSPERKWH,
             CurrentUnits=CO2ProductionUnit.LBSPERKWH,
-            ErrMessage="assume the default value CO2 production for burning natural gas (0.407855 lbs/kWh)",  #LBSPERKWH https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
-            ToolTipText="CO2 intensity of buring natural gas (how much CO2 is produced per kWh of heat produced (0.407855 lbs/kWh))"
+            ErrMessage="assume the default value CO2 production for burning natural gas (0.070324961 lbs/kWh)",
+            ToolTipText="CO2 intensity of burning natural gas (how much CO2 is produced per kWh of heat produced "
+                        "(0.070324961 lbs/kWh; https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references))"
         )
 
         self.AnnualLicenseEtc = self.ParameterDict[self.AnnualLicenseEtc.Name] = floatParameter(

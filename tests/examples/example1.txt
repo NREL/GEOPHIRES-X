@@ -49,7 +49,7 @@ Economic Model,1,			  			---[-] Fixed Charge Rate Model
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 
-#***CAPITAL AND O&M COST PARAMETERS***
+# ***CAPITAL AND O&M COST PARAMETERS***
 # *************************************
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	---[-] Use built-in correlations
 Well Drilling Cost Correlation,1,				---[-] Use built-in correlations
@@ -63,7 +63,7 @@ Water Cost Adjustment Factor,1,					---[-] Use built-in correlations
 
 
 # ***Simulation Parameters***
-#***************************
+# ***************************
 
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]

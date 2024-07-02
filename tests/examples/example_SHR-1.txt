@@ -4,11 +4,12 @@ Reservoir Model, 1
 Reservoir Depth, 7.5
 Number of Segments, 1
 Gradient 1, 50
+Maximum Temperature, 500
 Number of Production Wells, 2
 Number of Injection Wells, 2
 Production Well Diameter, 7
 Injection Well Diameter, 7
-Ramey Production Wellbore Model, 1
+Ramey Production Wellbore Model, True
 Production Wellbore Temperature Drop, .5
 Injection Wellbore Temperature Gain, 0
 Production Flow Rate per Well, 55
@@ -25,6 +26,7 @@ Maximum Drawdown, 1
 Reservoir Heat Capacity, 1000
 Reservoir Density, 2700
 Reservoir Thermal Conductivity, 2.7
+
 End-Use Option, 1
 Economic Model, 1
 Power Plant Type, 3
@@ -32,12 +34,13 @@ Circulation Pump Efficiency, .8
 Utilization Factor, .9
 Surface Temperature, 20
 Ambient Temperature, 20
+
 Plant Lifetime, 30
 Fixed Charge Rate, .05
 Inflation Rate During Construction, 0
-Time steps per year, 6
-Maximum Temperature, 500
-Well Drilling and Completion Capital Cost, 40
+
+Well Drilling and Completion Capital Cost, 40, -- Uses a high, fixed drilling completion cost to account for potentially elevated equipment failure rate associated with producing supercritical geothermal fluid.
+
 Starting Electricity Sale Price, 0.06
 Ending Electricity Sale Price, 0.10
 Electricity Escalation Start Year, 1
@@ -45,5 +48,9 @@ Electricity Escalation Rate Per Year, 0.012
 Annual License Etc, 0
 Flat License Etc, 0
 Tax Relief Per Year, 2.212
+Do Carbon Price Calculations, True
+
+Time steps per year, 6
+Units:Total Saved Carbon Production, kilotonne,
 
 # See relevant discussion regarding thermosiphoning: https://github.com/NREL/GEOPHIRES-X/issues/188?#issuecomment-2102937796

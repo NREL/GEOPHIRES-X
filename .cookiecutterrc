@@ -58,4 +58,4 @@ default_context:
     version_manager: "bump2version"
     website: "https://github.com/NREL"
     year_from: "2023"
-    year_to: "2023"
+    year_to: "2024"

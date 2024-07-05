@@ -123,7 +123,9 @@ jobs:
         tox -e ${{ matrix.tox_env }} -v
 
   coveralls:
-    name: coveralls coverage
+    name: Upload coverage to Coveralls
+    if: github.ref == 'refs/heads/main' # Prevent from running on PRs, tags
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

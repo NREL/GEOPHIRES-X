@@ -20,6 +20,7 @@ Free software: `MIT license <LICENSE>`__
 
     * - tests
       - | |github-actions|
+      - | |coverage|
     * - package
       - | |commits-since|
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
@@ -55,7 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :target: https://nrel.github.io/GEOPHIRES-X
     :alt: Documentation Status
 
-.. TODO coverage badge https://github.com/NREL/GEOPHIRES-Xx/issues/22
+.. |coverage| image:: https://coveralls.io/repos/github/softwareengineerprogrammer/GEOPHIRES-X/badge.svg
+    :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X
+
 
 .. end-badges
 

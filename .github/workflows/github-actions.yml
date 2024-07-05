@@ -122,6 +122,37 @@ jobs:
       run: >
         tox -e ${{ matrix.tox_env }} -v
 
+  coveralls:
+    name: Upload coverage to Coveralls
+    if: github.ref == 'refs/heads/main' # Prevent from running on PRs, tags
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: 'x64'
+      - name: install dependencies
+        run: |
+          python -mpip install --upgrade pip
+          python -mpip install --progress-bar=off -r ci/requirements.txt
+          virtualenv --version
+          pip --version
+          tox --version
+          pip list --format=freeze
+      - name: generate coverage report
+        env:
+          TOXPYTHON: '3.11'
+        run: |
+          tox -e py311
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2.3.0
+
+
   deploy_docs:
     name: Deploy docs to GitHub Pages
     if: github.ref == 'refs/heads/main' # Prevent from running on PRs, tags

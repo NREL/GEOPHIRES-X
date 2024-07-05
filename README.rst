@@ -19,8 +19,7 @@ Free software: `MIT license <LICENSE>`__
     :stub-columns: 1
 
     * - tests
-      - | |github-actions|
-      - | |coverage|
+      - | |github-actions| |coverage|
     * - package
       - | |commits-since|
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
@@ -58,6 +57,7 @@ Free software: `MIT license <LICENSE>`__
 
 .. |coverage| image:: https://coveralls.io/repos/github/softwareengineerprogrammer/GEOPHIRES-X/badge.svg
     :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X
+    :alt: Coverage Status
 
 
 .. end-badges

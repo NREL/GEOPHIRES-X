@@ -49,11 +49,12 @@ class SUTRAEconomics(Economics.Economics):
             "Economic Model",
             value=EconomicModel.STANDARDIZED_LEVELIZED_COST,
             DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
+            ValuesEnum=EconomicModel,
             AllowableRange=[1, 2, 3],
             Required=True,
             ErrMessage="assume default economic model (2)",
-            ToolTipText="Specify the economic model to calculate the levelized cost of energy."
-            + " 1: Fixed Charge Rate Model, 2: Standard Levelized Cost Model, 3: BICYCLE Levelized Cost Model, 4: CLGS",
+            ToolTipText="Specify the economic model to calculate the levelized cost of energy. " +
+                        '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
         )
 
         self.ccwellfixed = self.ParameterDict[self.ccwellfixed.Name] = floatParameter(
@@ -297,7 +298,7 @@ class SUTRAEconomics(Economics.Economics):
             CurrentUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR,
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def read_parameters(self, model: Model) -> None:
         """
@@ -309,7 +310,7 @@ class SUTRAEconomics(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # Deal with all the parameter values that the user has provided.  They should really only provide values
         # that they want to change from the default values, but they can provide a value that is already set
@@ -335,58 +336,14 @@ class SUTRAEconomics(Economics.Economics):
                     ReadParameter(ParameterReadIn, ParameterToModify, model)
 
                     # handle special cases
-                    if ParameterToModify.Name == "Economic Model":
-                        if ParameterReadIn.sValue == '1':
-                            self.econmodel.value = EconomicModel.FCR
-                        elif ParameterReadIn.sValue == '2':
-                            # use standard LCOE/LCOH calculation as found on wikipedia (requires an interest rate).
-                            self.econmodel.value = EconomicModel.STANDARDIZED_LEVELIZED_COST
-                        elif ParameterReadIn.sValue == '3':
-                            # use Bicycle LCOE/LCOH model (requires several financial input parameters)
-                            self.econmodel.value = EconomicModel.BICYCLE
-                        else:
-                            self.econmodel.value = EconomicModel.CLGS  # CLGS
-                    elif ParameterToModify.Name == "Well Drilling Cost Correlation":
-                        if ParameterReadIn.sValue == '1':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL
-                        elif ParameterReadIn.sValue == '2':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL
-                        elif ParameterReadIn.sValue == '3':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE
-                        elif ParameterReadIn.sValue == '4':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE
-                        elif ParameterReadIn.sValue == '5':
-                            ParameterToModify.value = WellDrillingCostCorrelation.SIMPLE
-                        elif ParameterReadIn.sValue == '6':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_INT1
-                        elif ParameterReadIn.sValue == '7':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_INT2
-                        elif ParameterReadIn.sValue == '8':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_INT1
-                        elif ParameterReadIn.sValue == '9':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_INT2
-                        elif ParameterReadIn.sValue == '10':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_INT1
-                        elif ParameterReadIn.sValue == '11':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_INT2
-                        elif ParameterReadIn.sValue == '12':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_INT1
-                        elif ParameterReadIn.sValue == '13':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_INT2
-                        elif ParameterReadIn.sValue == '14':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL
-                        elif ParameterReadIn.sValue == '15':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL
-                        elif ParameterReadIn.sValue == '16':
-                            ParameterToModify.value = WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL
-                        elif ParameterReadIn.sValue == '17':
-                            ParameterToModify.value = WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL
-                        else:
-                            ParameterToModify.value = WellDrillingCostCorrelation.SIMPLE  # Assuming 'SIMPLE' is still a valid option
+                    if ParameterToModify.Name == 'Economic Model':
+                       self.econmodel.value = EconomicModel.from_input_string(ParameterReadIn.sValue)
+                    elif ParameterToModify.Name == 'Well Drilling Cost Correlation':
+                        ParameterToModify.value = WellDrillingCostCorrelation.from_input_string(ParameterReadIn.sValue)
         else:
-            model.logger.info("No parameters read because no content provided")
+            model.logger.info('No parameters read because no content provided')
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def Calculate(self, model: Model) -> None:
         """
@@ -396,7 +353,7 @@ class SUTRAEconomics(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,

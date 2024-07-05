@@ -19,7 +19,8 @@ Free software: `MIT license <LICENSE>`__
     :stub-columns: 1
 
     * - tests
-      - | |github-actions| |coverage|
+      - | |github-actions|
+        | |coverage|
     * - package
       - | |commits-since|
 

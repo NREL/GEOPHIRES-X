@@ -145,7 +145,7 @@ jobs:
         env:
           TOXPYTHON: '3.11'
         run: |
-          tox -e report
+          tox -e py311
 
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.3.0

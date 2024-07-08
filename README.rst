@@ -90,7 +90,7 @@ Editable Installation (Recommended)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An editable installation is recommended for most users. It will allow you to run GEOPHIRES-X locally,
-view its python files in an IDE or text editor,
+view its Python files in an IDE or text editor,
 and create your own extensions as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__.
 
 Prerequisites:
@@ -169,52 +169,10 @@ Example usage in Python:
     client = GeophiresXClient()
     result = client.get_geophires_result(
                 GeophiresInputParameters({
-                    "Reservoir Model": 1,
-                    "Reservoir Depth": 3,
-                    "Number of Segments": 1,
-                    "Gradient 1": 50,
-                    "Number of Production Wells": 2,
-                    "Number of Injection Wells": 2,
-                    "Production Well Diameter": 7,
-                    "Injection Well Diameter": 7,
-                    "Ramey Production Wellbore Model": 1,
-                    "Production Wellbore Temperature Drop": .5,
-                    "Injection Wellbore Temperature Gain": 0,
-                    "Production Flow Rate per Well": 55,
-                    "Fracture Shape": 3,
-                    "Fracture Height": 900,
-                    "Reservoir Volume Option": 3,
-                    "Number of Fractures": 20,
-                    "Reservoir Volume": 1000000000,
-                    "Water Loss Fraction": .02,
-                    "Productivity Index": 5,
-                    "Injectivity Index": 5,
-                    "Injection Temperature": 50,
-                    "Maximum Drawdown": 1,
-                    "Reservoir Heat Capacity": 1000,
-                    "Reservoir Density": 2700,
-                    "Reservoir Thermal Conductivity": 2.7,
-                    "End-Use Option": 1,
-                    "Power Plant Type": 2,
-                    "Circulation Pump Efficiency": .8,
-                    "Utilization Factor": .9,
-                    "Surface Temperature": 20,
-                    "Ambient Temperature": 20,
-                    "Plant Lifetime": 30,
-                    "Economic Model": 1,
-                    "Fixed Charge Rate": .05,
-                    "Inflation Rate During Construction": 0,
-                    "Well Drilling and Completion Capital Cost Adjustment Factor": 1,
-                    "Well Drilling Cost Correlation": 1,
-                    "Reservoir Stimulation Capital Cost Adjustment Factor": 1,
-                    "Surface Plant Capital Cost Adjustment Factor": 1,
-                    "Field Gathering System Capital Cost Adjustment Factor": 1,
-                    "Exploration Capital Cost Adjustment Factor": 1,
-                    "Wellfield O&M Cost Adjustment Factor": 1,
-                    "Surface Plant O&M Cost Adjustment Factor": 1,
-                    "Water Cost Adjustment Factor": 1,
-                    "Print Output to Console": 1,
-                    "Time steps per year": 6
+                    "Gradient 1": "69",
+                    "Reservoir Depth": "5",
+                    "End-Use Option": "1",
+                    "Power Plant Type": "4"
                 })
             )
 
@@ -224,6 +182,32 @@ Example usage in Python:
 If you followed the editable installation example above, put this code in ``my-geophires-project/main.py``, then run::
 
    python main.py
+
+You will then see output including a case report::
+
+    (venv) ➜  my-geophires-project python main.py
+    No valid plant outlet pressure provided. GEOPHIRES will assume default plant outlet pressure (100 kPa)
+    No valid plant outlet pressure provided. GEOPHIRES will assume default plant outlet pressure (100 kPa)
+
+                                   *****************
+                                   ***CASE REPORT***
+                                   *****************
+
+    Simulation Metadata
+    ----------------------
+     GEOPHIRES Version: 3.4.42
+     Simulation Date: 2024-07-08
+     Simulation Time:  10:07
+     Calculation Time:      0.047 sec
+
+                               ***SUMMARY OF RESULTS***
+
+          End-Use Option: Electricity
+          Average Net Electricity Production:                    23.94 MW
+          Electricity breakeven price:                            5.04 cents/kWh
+
+    [...]
+
 
 You may also pass parameters as a text file:
 

@@ -254,7 +254,7 @@ Documentation
 Examples
 --------
 
-A variety of example input ``.txt`` and corresponding ```.out``` files are available in the `tests/examples directory of the repository <tests/examples>`__:
+A variety of example input ``.txt`` and corresponding ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
 
 - `example1.txt <tests/examples/example1.txt>`__ / `example1.out <tests/examples/example1.out>`__
 - `example1_addons.txt <tests/examples/example1_addons.txt>`__ / `example1_addons.out <tests/examples/example1_addons.out>`__

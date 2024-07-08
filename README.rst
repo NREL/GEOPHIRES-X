@@ -23,6 +23,8 @@ Free software: `MIT license <LICENSE>`__
         | |coverage|
     * - package
       - | |commits-since|
+        | |code-style|
+        | |license|
 
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
 ..    * - docs
@@ -61,7 +63,13 @@ Free software: `MIT license <LICENSE>`__
     :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X?branch=main
     :alt: Coverage Status
 
+.. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/NREL/GEOPHIRES-X/blob/main/.pre-commit-config.yaml
+    :alt: Code Style: black
 
+.. |license| image:: https://img.shields.io/badge/license-MIT-green.svg
+    :target: https://github.com/NREL/GEOPHIRES-X/blob/main/LICENSE
+    :alt: MIT license
 
 .. end-badges
 

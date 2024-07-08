@@ -15,7 +15,7 @@ Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]
 Production Well Diameter,7,		     			---[inch]
 Injection Well Diameter,7,					---[inch]
-Ramey Production Wellbore Model,1,       			---0 if disabled  1 if enabled
+Ramey Production Wellbore Model,True,
 Production Wellbore Temperature Drop,.5,			---[deg.C]
 Injection Wellbore Temperature Gain,0,   			---[deg.C]
 Production Flow Rate per Well,55,       			---[kg/s]

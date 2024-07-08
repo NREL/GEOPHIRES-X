@@ -13,7 +13,11 @@ class TestBaseTestCase(BaseTestCase):
 
         with self.assertRaises(AssertionError):
             self.assertAlmostEqualWithinPercentage(100, 0, percent=5)
+
+        with self.assertRaises(AssertionError):
             self.assertAlmostEqualWithinPercentage(100, 94.5, percent=5)
+
+        with self.assertRaises(AssertionError):
             self.assertAlmostEqualWithinPercentage(100, 105.5, percent=5)
 
         self.assertListAlmostEqual([1, 2, 3], [1.1, 2.2, 3.3], percent=10.5)

@@ -20,8 +20,12 @@ Free software: `MIT license <LICENSE>`__
 
     * - tests
       - | |github-actions|
+        | |coverage|
     * - package
       - | |commits-since|
+        | |code-style|
+        | |license|
+
 .. TODO add the following to package badge list once PyPy distribution enabled: |version| |wheel| |supported-versions| |supported-implementations|
 ..    * - docs
 ..      - | |docs|
@@ -55,7 +59,17 @@ Free software: `MIT license <LICENSE>`__
     :target: https://nrel.github.io/GEOPHIRES-X
     :alt: Documentation Status
 
-.. TODO coverage badge https://github.com/NREL/GEOPHIRES-Xx/issues/22
+.. |coverage| image:: https://coveralls.io/repos/github/softwareengineerprogrammer/GEOPHIRES-X/badge.svg?branch=main
+    :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X?branch=main
+    :alt: Coverage Status
+
+.. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/NREL/GEOPHIRES-X/blob/main/.pre-commit-config.yaml
+    :alt: Code Style: black
+
+.. |license| image:: https://img.shields.io/badge/license-MIT-green.svg
+    :target: https://github.com/NREL/GEOPHIRES-X/blob/main/LICENSE
+    :alt: MIT license
 
 .. end-badges
 
@@ -72,11 +86,22 @@ The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the s
 Installation
 ------------
 
+Pip Package
+^^^^^^^^^^^
+
+If you do not need to view or edit GEOPHIRES-X source code, you can consume GEOPHIRES-X as a regular, non-editable python package::
+
+    pip3 install https://github.com/NREL/GEOPHIRES-X/archive/main.zip
+
+
+.. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
+
+
 Editable Installation (Recommended)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An editable installation is recommended for most users. It will allow you to run GEOPHIRES-X locally,
-view its python files in an IDE or text editor,
+view its Python files in an IDE or text editor,
 and create your own extensions as described in `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__.
 
 Prerequisites:
@@ -128,15 +153,6 @@ To update the editable installation with the latest GEOPHIRES version::
     # resolve merge conflicts, if any
     pip install -e .
 
-Pip Package
-^^^^^^^^^^^
-
-If you do not need to view or edit GEOPHIRES-X source code, you can consume GEOPHIRES-X as a regular, non-editable python package::
-
-    pip3 install https://github.com/NREL/GEOPHIRES-X/archive/main.zip
-
-
-.. (Eventually package will be published to PyPi, enabling ``pip install geophires-x``)
 
 
 Usage
@@ -155,52 +171,10 @@ Example usage in Python:
     client = GeophiresXClient()
     result = client.get_geophires_result(
                 GeophiresInputParameters({
-                    "Reservoir Model": 1,
-                    "Reservoir Depth": 3,
-                    "Number of Segments": 1,
-                    "Gradient 1": 50,
-                    "Number of Production Wells": 2,
-                    "Number of Injection Wells": 2,
-                    "Production Well Diameter": 7,
-                    "Injection Well Diameter": 7,
-                    "Ramey Production Wellbore Model": 1,
-                    "Production Wellbore Temperature Drop": .5,
-                    "Injection Wellbore Temperature Gain": 0,
-                    "Production Flow Rate per Well": 55,
-                    "Fracture Shape": 3,
-                    "Fracture Height": 900,
-                    "Reservoir Volume Option": 3,
-                    "Number of Fractures": 20,
-                    "Reservoir Volume": 1000000000,
-                    "Water Loss Fraction": .02,
-                    "Productivity Index": 5,
-                    "Injectivity Index": 5,
-                    "Injection Temperature": 50,
-                    "Maximum Drawdown": 1,
-                    "Reservoir Heat Capacity": 1000,
-                    "Reservoir Density": 2700,
-                    "Reservoir Thermal Conductivity": 2.7,
-                    "End-Use Option": 1,
-                    "Power Plant Type": 2,
-                    "Circulation Pump Efficiency": .8,
-                    "Utilization Factor": .9,
-                    "Surface Temperature": 20,
-                    "Ambient Temperature": 20,
-                    "Plant Lifetime": 30,
-                    "Economic Model": 1,
-                    "Fixed Charge Rate": .05,
-                    "Inflation Rate During Construction": 0,
-                    "Well Drilling and Completion Capital Cost Adjustment Factor": 1,
-                    "Well Drilling Cost Correlation": 1,
-                    "Reservoir Stimulation Capital Cost Adjustment Factor": 1,
-                    "Surface Plant Capital Cost Adjustment Factor": 1,
-                    "Field Gathering System Capital Cost Adjustment Factor": 1,
-                    "Exploration Capital Cost Adjustment Factor": 1,
-                    "Wellfield O&M Cost Adjustment Factor": 1,
-                    "Surface Plant O&M Cost Adjustment Factor": 1,
-                    "Water Cost Adjustment Factor": 1,
-                    "Print Output to Console": 1,
-                    "Time steps per year": 6
+                    "Gradient 1": "69",
+                    "Reservoir Depth": "5",
+                    "End-Use Option": "1",
+                    "Power Plant Type": "4"
                 })
             )
 
@@ -210,6 +184,32 @@ Example usage in Python:
 If you followed the editable installation example above, put this code in ``my-geophires-project/main.py``, then run::
 
    python main.py
+
+You will then see output including a case report::
+
+    (venv) ➜  my-geophires-project python main.py
+    No valid plant outlet pressure provided. GEOPHIRES will assume default plant outlet pressure (100 kPa)
+    No valid plant outlet pressure provided. GEOPHIRES will assume default plant outlet pressure (100 kPa)
+
+                                   *****************
+                                   ***CASE REPORT***
+                                   *****************
+
+    Simulation Metadata
+    ----------------------
+     GEOPHIRES Version: 3.4.42
+     Simulation Date: 2024-07-08
+     Simulation Time:  10:07
+     Calculation Time:      0.047 sec
+
+                               ***SUMMARY OF RESULTS***
+
+          End-Use Option: Electricity
+          Average Net Electricity Production:                    23.94 MW
+          Electricity breakeven price:                            5.04 cents/kWh
+
+    [...]
+
 
 You may also pass parameters as a text file:
 
@@ -254,28 +254,33 @@ Documentation
 Examples
 --------
 
-A variety of example input ``.txt`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
+A variety of example input ``.txt`` and corresponding ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
 
-- `example1.txt <tests/examples/example1.txt>`__
-- `example1_addons.txt <tests/examples/example1_addons.txt>`__
-- `example2.txt <tests/examples/example2.txt>`__
-- `example3.txt <tests/examples/example3.txt>`__
-- `example4.txt <tests/examples/example4.txt>`__
-- `example5.txt <tests/examples/example5.txt>`__
-- `example8.txt <tests/examples/example8.txt>`__
-- `example9.txt <tests/examples/example9.txt>`__
-- `example10_HP.txt <tests/examples/example10_HP.txt>`__
-- `example11_AC.txt <tests/examples/example11_AC.txt>`__
-- `example12_DH.txt <tests/examples/example12_DH.txt>`__
-- `example13.txt <tests/examples/example13.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
-- `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__
-- `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
+- `example1.txt <tests/examples/example1.txt>`__ / `example1.out <tests/examples/example1.out>`__
+- `example1_addons.txt <tests/examples/example1_addons.txt>`__ / `example1_addons.out <tests/examples/example1_addons.out>`__
+- `example2.txt <tests/examples/example2.txt>`__ / `example2.out <tests/examples/example2.out>`__
+- `example3.txt <tests/examples/example3.txt>`__ / `example3.out <tests/examples/example3.out>`__
+- `example4.txt <tests/examples/example4.txt>`__ / `example4.out <tests/examples/example4.out>`__
+- `example5.txt <tests/examples/example5.txt>`__ / `example5.out <tests/examples/example5.out>`__
+- `example8.txt <tests/examples/example8.txt>`__ / `example8.out <tests/examples/example8.out>`__
+- `example9.txt <tests/examples/example9.txt>`__ / `example9.out <tests/examples/example9.out>`__
+- `example10_HP.txt <tests/examples/example10_HP.txt>`__ / `example10_HP.out <tests/examples/example10_HP.out>`__
+- `example11_AC.txt <tests/examples/example11_AC.txt>`__ / `example11_AC.out <tests/examples/example11_AC.out>`__
+- `example12_DH.txt <tests/examples/example12_DH.txt>`__ / `example12_DH.out <tests/examples/example12_DH.out>`__
+- `example13.txt <tests/examples/example13.txt>`__ / `example13.out <tests/examples/example13.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
+- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
+- `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__ / `SUTRAExample1.out <tests/examples/SUTRAExample1.out>`__
+- `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__ / `example_multiple_gradients.out <tests/examples/example_multiple_gradients.out>`__
+- `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__ / `Fervo_Norbeck_Latimer_2023.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
+- `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__ / `example_SHR-1.out <tests/examples/example_SHR-1.out>`__
+- `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__ / `example_SHR-2.out <tests/examples/example_SHR-2.out>`__
+
+An interactive table of examples is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__, under the Examples tab.
 
 Parameters
 ----------
@@ -294,8 +299,8 @@ Monte Carlo
 
 `Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
-Other Documentation:
---------------------
+Additional Documentation
+------------------------
 The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.
 
 Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__

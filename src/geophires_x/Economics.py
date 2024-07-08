@@ -614,7 +614,7 @@ class Economics:
             ValuesEnum=EconomicModel,
             Required=True,
             ErrMessage="assume default economic model (2)",
-            ToolTipText="Specify the economic model to calculate the levelized cost of energy." +
+            ToolTipText="Specify the economic model to calculate the levelized cost of energy. " +
                         '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
         )
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(

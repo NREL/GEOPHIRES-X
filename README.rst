@@ -59,8 +59,8 @@ Free software: `MIT license <LICENSE>`__
     :target: https://nrel.github.io/GEOPHIRES-X
     :alt: Documentation Status
 
-.. |coverage| image:: https://coveralls.io/repos/github/softwareengineerprogrammer/GEOPHIRES-X/badge.svg?branch=main
-    :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X?branch=main
+.. |coverage| image:: https://coveralls.io/repos/github/NREL/GEOPHIRES-X/badge.svg?branch=main
+    :target: https://coveralls.io/github/NREL/GEOPHIRES-X?branch=main
     :alt: Coverage Status
 
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg

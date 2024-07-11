@@ -257,7 +257,7 @@ Examples
 A variety of example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
 
 
-.. list-table:: Examples
+.. list-table::
    :widths: 50 40 10
    :header-rows: 1
 

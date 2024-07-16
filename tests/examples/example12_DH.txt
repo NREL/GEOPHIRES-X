@@ -42,7 +42,7 @@ Discount Rate, 0.07
 Inflation Rate During Construction, 0, -- - [-]
 Well Drilling and Completion Capital Cost Adjustment Factor, 1, -- - [-] Use built-in well cost correlation as is
 Well Drilling Cost Correlation, 1, -- - [-] Use built-in well drilling cost correlation #1
-Reservoir Stimulation Capital Cost, 1, -- - [M$/injection well] Reservoir stimulation capital cost per injection well
+Reservoir Stimulation Capital Cost, 3, -- - [M$/injection well] Reservoir stimulation capital cost per injection well
 Surface Plant Capital Cost Adjustment Factor, 1, -- - [-] Use built-in surface plant cost correlation as is
 Field Gathering System Capital Cost Adjustment Factor, 1, -- - [-] Use built-in pipeline distribution cost correlation as is
 Exploration Capital Cost Adjustment Factor, 0, -- - [-] Use built-in exploration cost correlation as is

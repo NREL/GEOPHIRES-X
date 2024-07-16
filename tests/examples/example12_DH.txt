@@ -59,3 +59,4 @@ Number of Fractures, 64
 Fracture Height, 300
 Fracture Width, 200
 Fracture Shape, 4
+Well Drilling and Completion Capital Cost, 12

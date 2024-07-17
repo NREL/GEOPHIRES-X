@@ -59,6 +59,8 @@ class GeophiresMonteCarloTestCase(unittest.TestCase):
 
             self.assertDictEqual(result_json_obj, result.result['output'])
 
+        print(f'Monte Carlo Result: {json.dumps(result.result["output"], indent=2)}')
+
     def test_monte_carlo_result_ordering(self):
         client = GeophiresMonteCarloClient()
 

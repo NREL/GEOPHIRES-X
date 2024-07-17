@@ -79,9 +79,9 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `scientificwebservices.com/tools/geophires <https://scientificwebservices.com/tools/geophires>`__.
+A web interface is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__.
 
-The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the same location.
+The short URL `bit.ly/geophires <https://bit.ly/geophires>`__ redirects to the same location.
 
 Installation
 ------------

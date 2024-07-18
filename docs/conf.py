@@ -18,7 +18,7 @@ project = 'geophires-x'
 year = '2024'
 author = 'NREL'
 copyright = f'{year}, {author}'
-version = release = '3.4.42'
+version = release = '3.5.0'
 
 pygments_style = 'trac'
 templates_path = ['./templates']

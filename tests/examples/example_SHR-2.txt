@@ -1,18 +1,19 @@
 # Example: Superhot Rock (SHR) 2
+# See https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2018/Cladouhos.pdf
 
 Reservoir Model, 1
-Reservoir Depth, 7.5
+Reservoir Depth, 5
 Number of Segments, 1
-Gradient 1, 50
-Maximum Temperature, 500
+Gradient 1, 112
+Maximum Temperature, 600
 Number of Production Wells, 2
-Number of Injection Wells, 2
-Production Well Diameter, 7
-Injection Well Diameter, 7
+Number of Injection Wells, 1
+Production Well Diameter, 10.625
+Injection Well Diameter, 10.625
 Ramey Production Wellbore Model, True
 Production Wellbore Temperature Drop, .5
 Injection Wellbore Temperature Gain, 0
-Production Flow Rate per Well, 55
+Production Flow Rate per Well, 60
 Fracture Shape, 3
 Fracture Height, 900
 Reservoir Volume Option, 3
@@ -26,20 +27,16 @@ Maximum Drawdown, 1
 Reservoir Heat Capacity, 1000
 Reservoir Density, 2700
 Reservoir Thermal Conductivity, 2.7
-
 End-Use Option, 1
 Economic Model, 1
 Power Plant Type, 3
 Circulation Pump Efficiency, .8
-Utilization Factor, .9
+Utilization Factor, .95
 Surface Temperature, 20
 Ambient Temperature, 20
-
-Plant Lifetime, 30
+Plant Lifetime, 20
 Fixed Charge Rate, .05
 Inflation Rate During Construction, 0
-Well Drilling Cost Correlation, 1
-
 Starting Electricity Sale Price, 0.06
 Ending Electricity Sale Price, 0.10
 Electricity Escalation Start Year, 1
@@ -48,6 +45,11 @@ Annual License Etc, 0
 Flat License Etc, 0
 Tax Relief Per Year, 2.212
 Do Carbon Price Calculations, True
-
 Time steps per year, 6
-Units:Total Saved Carbon Production, kilotonne,
+Discount Rate, 0.06
+Reservoir Stimulation Capital Cost, 18
+Well Drilling and Completion Capital Cost Adjustment Factor, 2
+Injection Well Drilling and Completion Capital Cost Adjustment Factor, 2
+Well Drilling and Completion Capital Cost, 23
+Operation & Maintenance Cost of Surface Plant, 6.5
+Units:Total Saved Carbon Production, kilotonne

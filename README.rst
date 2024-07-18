@@ -51,16 +51,16 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.4.42.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.5.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.4.42...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.5.0...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
     :alt: Documentation Status
 
-.. |coverage| image:: https://coveralls.io/repos/github/softwareengineerprogrammer/GEOPHIRES-X/badge.svg?branch=main
-    :target: https://coveralls.io/github/softwareengineerprogrammer/GEOPHIRES-X?branch=main
+.. |coverage| image:: https://coveralls.io/repos/github/NREL/GEOPHIRES-X/badge.svg?branch=main
+    :target: https://coveralls.io/github/NREL/GEOPHIRES-X?branch=main
     :alt: Coverage Status
 
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -79,9 +79,9 @@ Getting Started
 Web Interface
 -------------
 
-A web interface is available at `scientificwebservices.com/tools/geophires <https://scientificwebservices.com/tools/geophires>`__.
+A web interface is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__.
 
-The short URL `bit.ly/GEOPHIRES <https://bit.ly/GEOPHIRES>`__ redirects to the same location.
+The short URL `bit.ly/geophires <https://bit.ly/geophires>`__ redirects to the same location.
 
 Installation
 ------------
@@ -254,31 +254,86 @@ Documentation
 Examples
 --------
 
-A variety of example input ``.txt`` and corresponding ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
+A variety of example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
 
-- `example1.txt <tests/examples/example1.txt>`__ / `example1.out <tests/examples/example1.out>`__
-- `example1_addons.txt <tests/examples/example1_addons.txt>`__ / `example1_addons.out <tests/examples/example1_addons.out>`__
-- `example2.txt <tests/examples/example2.txt>`__ / `example2.out <tests/examples/example2.out>`__
-- `example3.txt <tests/examples/example3.txt>`__ / `example3.out <tests/examples/example3.out>`__
-- `example4.txt <tests/examples/example4.txt>`__ / `example4.out <tests/examples/example4.out>`__
-- `example5.txt <tests/examples/example5.txt>`__ / `example5.out <tests/examples/example5.out>`__
-- `example8.txt <tests/examples/example8.txt>`__ / `example8.out <tests/examples/example8.out>`__
-- `example9.txt <tests/examples/example9.txt>`__ / `example9.out <tests/examples/example9.out>`__
-- `example10_HP.txt <tests/examples/example10_HP.txt>`__ / `example10_HP.out <tests/examples/example10_HP.out>`__
-- `example11_AC.txt <tests/examples/example11_AC.txt>`__ / `example11_AC.out <tests/examples/example11_AC.out>`__
-- `example12_DH.txt <tests/examples/example12_DH.txt>`__ / `example12_DH.out <tests/examples/example12_DH.out>`__
-- `example13.txt <tests/examples/example13.txt>`__ / `example13.out <tests/examples/example13.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
-- `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__ / `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
-- `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__ / `SUTRAExample1.out <tests/examples/SUTRAExample1.out>`__
-- `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__ / `example_multiple_gradients.out <tests/examples/example_multiple_gradients.out>`__
-- `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__ / `Fervo_Norbeck_Latimer_2023.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
-- `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__ / `example_SHR-1.out <tests/examples/example_SHR-1.out>`__
-- `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__ / `example_SHR-2.out <tests/examples/example_SHR-2.out>`__
+
+.. list-table::
+   :widths: 50 40 10
+   :header-rows: 1
+
+   * - Example
+     - Input file
+     - Case report file
+   * - Example 1
+     - `example1.txt <tests/examples/example1.txt>`__
+     - `example1.out <tests/examples/example1.out>`__
+   * - Example 1 with Addons
+     - `example1_addons.txt <tests/examples/example1_addons.txt>`__
+     - `example1_addons.out <tests/examples/example1_addons.out>`__
+   * - Example 2
+     - `example2.txt <tests/examples/example2.txt>`__
+     - `example2.out <tests/examples/example2.out>`__
+   * - Example 3
+     - `example3.txt <tests/examples/example3.txt>`__
+     - `example3.out <tests/examples/example3.out>`__
+   * - Example 4
+     - `example4.txt <tests/examples/example4.txt>`__
+     - `example4.out <tests/examples/example4.out>`__
+   * - Example 5
+     - `example5.txt <tests/examples/example5.txt>`__
+     - `example5.out <tests/examples/example5.out>`__
+   * - Example 8
+     - `example8.txt <tests/examples/example8.txt>`__
+     - `example8.out <tests/examples/example8.out>`__
+   * - Example 9
+     - `example9.txt <tests/examples/example9.txt>`__
+     - `example9.out <tests/examples/example9.out>`__
+   * - Example 10: Heat Pump
+     - `example10_HP.txt <tests/examples/example10_HP.txt>`__
+     - `example10_HP.out <tests/examples/example10_HP.out>`__
+   * - Example 11: Absorption Chiller
+     - `example11_AC.txt <tests/examples/example11_AC.txt>`__
+     - `example11_AC.out <tests/examples/example11_AC.out>`__
+   * - Example 12: District Heating
+     - `example12_DH.txt <tests/examples/example12_DH.txt>`__
+     - `example12_DH.out <tests/examples/example12_DH.out>`__
+   * - Example 13
+     - `example13.txt <tests/examples/example13.txt>`__
+     - `example13.out <tests/examples/example13.out>`__
+   * - AGS: Coaxial sCO2: Heat (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
+   * - AGS: Coaxial Water: Heat (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
+   * - AGS: Uloop sCO2: Electricity (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
+   * - AGS: Uloop sCO2: Heat (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
+   * - AGS: Uloop Water: Electricity (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
+   * - CLGS: Uloop Water: Heat (Beckers et. al 2023)
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
+     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
+   * - SUTRA Example 1
+     - `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__
+     - `SUTRAExample1.out <tests/examples/SUTRAExample1.out>`__
+   * - Multiple Gradients
+     - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
+     - `example_multiple_gradients.out <tests/examples/example_multiple_gradients.out>`__
+   * - Fervo Energy Whitepaper (Norbeck J.H. and Latimer T.M. 2023.)
+     - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
+     - `Fervo_Norbeck_Latimer_2023.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
+   * - Superhot Rock (SHR) Example 1
+     - `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__
+     - `example_SHR-1.out <tests/examples/example_SHR-1.out>`__
+   * - Superhot Rock (SHR) Example 2
+     - `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__
+     - `example_SHR-2.out <tests/examples/example_SHR-2.out>`__
+
 
 An interactive table of examples is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__, under the Examples tab.
 

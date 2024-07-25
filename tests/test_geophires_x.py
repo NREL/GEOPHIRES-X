@@ -456,3 +456,20 @@ Print Output to Console, 1"""
         )
         self.assertIn('You gave MEUR', e_msg)
         self.assertIn('https://github.com/NREL/GEOPHIRES-X/issues/236', e_msg)
+
+    def test_project_red_larger_fractures(self):
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('examples/Fervo_Norbeck_Latimer_2023.txt')),
+                params={
+                    'Fracture Height': 320,
+                    'Fracture Width': 320,
+                },
+            )
+        )
+
+        self.assertEqual(result.result['RESERVOIR PARAMETERS']['Well separation: fracture height']['value'], 320.0)
+        self.assertEqual(result.result['RESERVOIR PARAMETERS']['Well separation: fracture height']['unit'], 'meter')
+
+        self.assertEqual(result.result['RESERVOIR PARAMETERS']['Fracture width']['value'], 320.0)
+        self.assertEqual(result.result['RESERVOIR PARAMETERS']['Fracture width']['unit'], 'meter')

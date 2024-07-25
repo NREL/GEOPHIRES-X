@@ -88,7 +88,7 @@ class MPFReservoir(Reservoir):
         Twnd = []
         try:
             for t in range(1, len(model.reserv.timevector.value)):
-                Twnd = Twnd + [float(invertlaplace(fp, td[t], method='talbot'))]
+                Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
         except:
             print(
                 "Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1. Simulation will abort.")

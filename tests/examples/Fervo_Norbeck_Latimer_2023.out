@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.42
- Simulation Date: 2024-07-17
- Simulation Time:  11:19
- Calculation Time:      0.353 sec
+ GEOPHIRES Version: 3.5.0
+ Simulation Date: 2024-07-24
+ Simulation Time:  18:06
+ Calculation Time:      1.152 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -144,7 +144,7 @@ Simulation Metadata
    6           1.0129                184.12               0.6919            2.1612                8.8239
    7           1.0129                184.13               0.6920            2.1612                8.8237
    8           1.0108                183.75               0.6925            2.1430                8.7720
-   9           1.0019                182.13               0.6948            2.0640                8.5463
+   9           1.0019                182.13               0.6948            2.0640                8.5464
   10           0.9771                177.63               0.7009            1.8532                7.9258
 
 

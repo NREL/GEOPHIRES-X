@@ -23,6 +23,10 @@ class EndUseOptionsTestCase(BaseTestCase):
         self.assertTrue(EndUseOptions.HEAT == EndUseOptions.HEAT)
         self.assertFalse(EndUseOptions.HEAT is None)
         self.assertTrue(EndUseOptions.HEAT is EndUseOptions.HEAT)
+        self.assertTrue(EndUseOptions.HEAT != EndUseOptions.ELECTRICITY)
+        self.assertFalse(EndUseOptions.HEAT is EndUseOptions.ELECTRICITY)
+        self.assertTrue(EndUseOptions.HEAT is not EndUseOptions.ELECTRICITY)
+        self.assertTrue(EndUseOptions.HEAT != EndUseOptions.ELECTRICITY)
         # self.assertTrue(EndUseOptions.HEAT == 'HEAT')
         # self.assertFalse(EndUseOptions.HEAT == 'Electricity')
 

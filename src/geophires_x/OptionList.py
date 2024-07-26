@@ -21,6 +21,9 @@ class GeophiresInputEnum(str, Enum):
     def __eq__(self, other):
         return str(self) == str(other)
 
+    def __ne__(self, other):
+        return str(self) != str(other)
+
 
 class EndUseOptions(GeophiresInputEnum):
     ELECTRICITY = 1, "Electricity"

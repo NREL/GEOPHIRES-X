@@ -21,14 +21,15 @@ class EndUseOptionsTestCase(BaseTestCase):
     def test_equality(self):
         self.assertFalse(EndUseOptions.HEAT == EndUseOptions.ELECTRICITY)
         self.assertTrue(EndUseOptions.HEAT == EndUseOptions.HEAT)
+        self.assertTrue(EndUseOptions.HEAT != EndUseOptions.ELECTRICITY)
+        self.assertTrue(EndUseOptions.ELECTRICITY != EndUseOptions.HEAT)
         self.assertFalse(EndUseOptions.HEAT is None)
         self.assertTrue(EndUseOptions.HEAT is EndUseOptions.HEAT)
-        self.assertTrue(EndUseOptions.HEAT != EndUseOptions.ELECTRICITY)
         self.assertFalse(EndUseOptions.HEAT is EndUseOptions.ELECTRICITY)
         self.assertTrue(EndUseOptions.HEAT is not EndUseOptions.ELECTRICITY)
-        self.assertTrue(EndUseOptions.HEAT != EndUseOptions.ELECTRICITY)
-        # self.assertTrue(EndUseOptions.HEAT == 'HEAT')
-        # self.assertFalse(EndUseOptions.HEAT == 'Electricity')
+
+        self.assertEqual(str(EndUseOptions.HEAT), 'EndUseOptions.HEAT')
+        self.assertEqual(str(EndUseOptions.ELECTRICITY), 'EndUseOptions.ELECTRICITY')
 
 
 class WellDrillingCostCorrelationTestCase(BaseTestCase):

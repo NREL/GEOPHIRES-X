@@ -258,7 +258,7 @@ class SurfacePlant:
             Min=0.1,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             Required=True,
             ErrMessage="assume default circulation pump efficiency (0.75)",

@@ -156,7 +156,7 @@ class SUTRAOutputs:
                 f.write(f"      Well Depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
 
                 pump_efficiency_display_unit = model.surfaceplant.pump_efficiency.CurrentUnits.value
-                pump_efficiency_display = f'{model.surfaceplant.pump_efficiency.value:10.1f} {pump_efficiency_display_unit}'
+                pump_efficiency_display = f'{model.surfaceplant.pump_efficiency.value * 100:10.1f} {pump_efficiency_display_unit}'
                 f.write(f'      Pump efficiency:                               {pump_efficiency_display}{NL}')
 
                 f.write(f"      Lifetime Average Well Flow Rate:               {np.average(abs(model.wellbores.ProductionWellFlowRates.value)):10.1f} "  + model.wellbores.ProductionWellFlowRates.CurrentUnits.value + NL)

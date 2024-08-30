@@ -248,18 +248,20 @@ class SBTReservoir(CylindricalReservoir):
             ErrMessage='assume default for Initial Timestep Count (5)',
             ToolTipText='The number of timesteps in the first ~3 hours of model'
         )
-        self.final_timestep_count = self.ParameterDict[self.final_timestep_count.Name] = intParameter(
+        self.final_timestep_count = self.ParameterDict[self.final_timestep_count.Name] = floatParameter(
             'SBT Final Timestep Count',
             DefaultValue=70,
-            AllowableRange = [5, 1000],
+            Min=5,
+            Max=1000,
             UnitType=Units.NONE,
             ErrMessage='assume default for Final Timestep Count 70)',
             ToolTipText='The number of timesteps after the first ~3 hours of model'
         )
-        self.initial_final_timestep_transition = self.ParameterDict[self.initial_final_timestep_transition.Name] = intParameter(
+        self.initial_final_timestep_transition = self.ParameterDict[self.initial_final_timestep_transition.Name] = floatParameter(
             'SBT Initial to Final Timestep Transition',
             DefaultValue=9900,
-            AllowableRange = [1, 40_000_000],
+            Min=1,
+            Max=40_000_000,
             UnitType=Units.TIME,
             PreferredUnits=TimeUnit.SECOND,
             CurrentUnits=TimeUnit.SECOND,
@@ -1098,7 +1100,7 @@ class SBTReservoir(CylindricalReservoir):
         initial_times = np.linspace(0, self.initial_final_timestep_transition.value, self.initial_timestep_count.value)
         initial_time_interval = initial_times[1] - initial_times[0]
         final_start = self.initial_final_timestep_transition.value + initial_time_interval
-        final_times = np.logspace(np.log10(final_start), np.log10(model.surfaceplant.plant_lifetime.value * 365 * 24 * 3600), self.final_timestep_count.value)
+        final_times = np.logspace(np.log10(final_start), np.log10(model.surfaceplant.plant_lifetime.value * 365 * 24 * 3600), int(self.final_timestep_count.value))
         times = np.concatenate([initial_times, final_times])
         # Note 1: When providing a variable injection temperature or flow rate, a finer time grid should be considered.
         # Below is one with long term time steps of about 36 days.

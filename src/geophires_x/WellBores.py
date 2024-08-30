@@ -889,7 +889,7 @@ class WellBores:
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Closed-loop Configuration",
             DefaultValue=Configuration.VERTICAL.int_value,
-            AllowableRange=[1, 2, 3, 4],
+            AllowableRange=[1, 2, 3, 4, 5],
             ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,
@@ -900,7 +900,7 @@ class WellBores:
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(
             "Well Geometry Configuration",
             DefaultValue=Configuration.VERTICAL.int_value,
-            AllowableRange=[1, 2, 3, 4],
+            AllowableRange=[1, 2, 3, 4, 5],
             ValuesEnum=Configuration,
             UnitType=Units.NONE,
             Required=True,

@@ -114,6 +114,7 @@ class ReservoirModel(GeophiresInputEnum):
     USER_PROVIDED_PROFILE = 5, "User-Provided Temperature Profile"
     TOUGH2_SIMULATOR = 6, "TOUGH2 Simulator"
     SUTRA = 7, "SUTRA"
+    SBT = 8, "SBT"
 
     @staticmethod
     def get_reservoir_model_from_input_string(input_string:str):
@@ -252,6 +253,7 @@ class Configuration(GeophiresInputEnum):
     COAXIAL = 2, "coaxial"
     VERTICAL = 3, "vertical"
     L = 4, "L"
+    EAVORLOOP = 5, "EavorLoop"
 
     @staticmethod
     def from_int(int_val):
@@ -266,3 +268,40 @@ class Configuration(GeophiresInputEnum):
                 return member
 
         raise ValueError(f'Unknown Configuration input value: {input_string}')
+
+
+class FlowrateModel(GeophiresInputEnum):
+    USER_SUPPLIED = 1, "user supplied"
+    FILE_SUPPLIED = 2, "file supplied"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Flow Rate Model input value: {input_string}')
+
+class InjectionTemperatureModel(GeophiresInputEnum):
+    USER_SUPPLIED = 1, "user supplied"
+    FILE_SUPPLIED = 2, "file supplied"
+
+    @staticmethod
+    def from_int(int_val):
+        for member in __class__:
+            if member.int_value == int_val:
+                return member
+
+    @staticmethod
+    def from_input_string(input_string: str):
+        for member in __class__:
+            if input_string == str(member.int_value):
+                return member
+
+        raise ValueError(f'Unknown Injection Temperature Model input value: {input_string}')

@@ -11,8 +11,8 @@ from geophires_x.OutputsS_DAC_GT import OutputsS_DAC_GT
 from geophires_x.TDPReservoir import TDPReservoir
 from geophires_x.WellBores import WellBores
 from geophires_x.SurfacePlant import SurfacePlant
-#from geophires_x.SBTEconomics import SBTEconomics
-#from geophires_x.SBTWellbores import SBTWellbores
+from geophires_x.SBTEconomics import SBTEconomics
+from geophires_x.SBTWellbores import SBTWellbores
 from geophires_x.SBTReservoir import SBTReservoir
 from geophires_x.SurfacePlantIndustrialHeat import SurfacePlantIndustrialHeat
 from geophires_x.SurfacePlantSubcriticalORC import SurfacePlantSubcriticalOrc
@@ -104,11 +104,9 @@ class Model(object):
                 self.reserv: TOUGH2Reservoir = TOUGH2Reservoir(self)  # Tough2 is called
             elif self.InputParameters['Reservoir Model'].sValue == '7':
                 self.reserv: SUTRAReservoir = SUTRAReservoir(self)  # SUTRA output is created
-            elif self.InputParameters['Reservoir Model'].sValue in ['8', 'SBT']:
+            elif self.InputParameters['Reservoir Model'].sValue == '8':
                 self.logger.info('Setup the SBT elements of the Model and instantiate new attributes as needed')
                 self.reserv: SBTReservoir = SBTReservoir(self)
-                # self.wellbores: SBTWellBores = SBTWellbores(self)
-                # self.economics: SBTEconomics = SBTEconomics(self)
 
         # initialize the default objects
         self.wellbores: WellBores = WellBores(self)
@@ -128,6 +126,9 @@ class Model(object):
                 self.surfaceplant: SurfacePlantSUTRA = SurfacePlantSUTRA(self)
                 self.economics: SUTRAEconomics = SUTRAEconomics(self)
                 self.outputs: SUTRAOutputs = SUTRAOutputs(self, output_file=output_file)
+            if self.InputParameters['Reservoir Model'].sValue == '8':
+                self.wellbores: SBTWellbores = SBTWellbores(self)
+                self.economics: SBTEconomics = SBTEconomics(self)
 
         if 'Is AGS' in self.InputParameters:
             if self.InputParameters['Is AGS'].sValue in ['True', 'true', 'TRUE', 'T', '1']:

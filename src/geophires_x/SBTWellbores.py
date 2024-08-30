@@ -3,9 +3,9 @@ import sys
 import numpy as np
 from pint.facets.plain import PlainQuantity
 
-from geophires_x.WellBores import WellBores, RameyCalc, WellPressureDrop, \
-    ProdPressureDropsAndPumpingPowerUsingImpedenceModel, ProdPressureDropAndPumpingPowerUsingIndexes, \
-    calculate_total_drilling_lengths_m
+from geophires_x.WellBores import (WellBores, RameyCalc, WellPressureDrop, \
+    ProdPressureDropsAndPumpingPowerUsingImpedenceModel, ProdPressureDropAndPumpingPowerUsingIndexes)
+from geophires_x.Economics import calculate_total_drilling_lengths_m
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, static_pressure_MPa, \
     heat_capacity_water_J_per_kg_per_K

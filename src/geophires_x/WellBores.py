@@ -15,6 +15,71 @@ from .OptionList import ReservoirModel, Configuration, WorkingFluid
 # code from Koenraad
 
 
+def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: int, nonvertical_length_km: float,
+                                       InputDepth_km: float, OutputDepth_km: float, nprod:int, ninj:int,
+                                       junction_depth_km: float = 0.0, angle_rad: float = 0.0) -> tuple:
+    """
+    returns the total length, vertical length, and non-vertical lengths, depending on the configuration
+    :param Configuration:  configuration of the well
+    :type Configuration: :class:`~geophires
+    :param numnonverticalsections: number of non-vertical sections
+    :type numnonverticalsections: int
+    :param nonvertical_length_km: length of non-vertical sections in km
+    :type nonvertical_length_km: float
+    :param InputDepth_km: depth of the well in km
+    :type InputDepth_km: float
+    :param OutputDepth_km: depth of the output end of the well in km, if U shaped, and not horizontal
+    :type OutputDepth_km: float
+    :param nprod: number of production wells
+    :type nprod: int
+    :param ninj: number of injection wells
+    :param junction_depth_km: depth of the junction in km
+    :type junction_depth_km: float
+    :param angle_rad: angle of the well in radians, from horizontal
+    :type angle_rad: float
+    :return: total length, vertical length, lateral, and junction lengths in meters
+    :rtype: tuple
+    """
+    tot_pipe_length_m = vertical_pipe_length_m = lateral_pipe_length_m = tot_to_junction_m = 0.0
+    if Configuration is Configuration.ULOOP:
+        # Total drilling depth of both wells and laterals in U-loop [m]
+        vertical_pipe_length_m = (nprod * InputDepth_km * 1000.0) + (ninj * OutputDepth_km * 1000.0)
+        lateral_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+
+    elif Configuration is Configuration.COAXIAL:
+        # Total drilling depth of well and lateral in co-axial case [m] - is not necessarily only vertical
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        lateral_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+
+    elif Configuration is Configuration.VERTICAL:
+        # Total drilling depth of well in vertical case [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        lateral_pipe_length_m = 0.0
+
+    elif Configuration is Configuration.L:
+        # Total drilling depth of well in L case [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+        lateral_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
+
+    elif Configuration is Configuration.EAVORLOOP:
+        # Total drilling length of well in EavorLoop [m]
+        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
+
+        # now calculate the distance from the bottom of the vertical to the junction of the laterals [m]
+        O1 = (junction_depth_km - InputDepth_km) * 1000.0  # in meters
+        tot_to_junction_m = (O1 / math.sin(angle_rad)) * 2  # there are two of these of each EavorLoop
+
+        # now calculate the distance from the junction of the laterals to the end of the laterals [m]
+        O2 = (OutputDepth_km - junction_depth_km) * 1000.0   # in meters
+        lateral_pipe_length_m = (O2 / math.sin(angle_rad)) * 2  # there are two of these of each lateral of an EavorLoop
+        lateral_pipe_length_m = lateral_pipe_length_m * numnonverticalsections  # there are numnonverticalsections of these
+    else:
+        raise ValueError(f'Invalid Configuration: {Configuration}')
+
+    tot_pipe_length_m = vertical_pipe_length_m + lateral_pipe_length_m + tot_to_junction_m
+    return tot_pipe_length_m, vertical_pipe_length_m, lateral_pipe_length_m, tot_to_junction_m
+
+
 def InjectionReservoirPressurePredictor(project_lifetime_yr: int, timesteps_per_year: int, initial_pressure_kPa: float,
                                         inflation_rate: float) -> list:
     """
@@ -1363,46 +1428,3 @@ class WellBores:
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
         model.logger.info(f'complete {self.__class__.__name__}: {__name__}')
-
-
-def calculate_total_drilling_lengths_m(Configuration, numnonverticalsections: int, nonvertical_length_km: float,
-                                       InputDepth_km: float, OutputDepth_km: float, nprod:int, ninj:int) -> tuple:
-    """
-    returns the total length, vertical length, and non-vertical lengths, depending on the configuration
-    :param Configuration: Configuration of the well
-    :type Configuration: :class:`~geophires
-    :param numnonverticalsections: number of non-vertical sections
-    :type numnonverticalsections: int
-    :param nonvertical_length_km: length of non-vertical sections in km
-    :type nonvertical_length_km: float
-    :param InputDepth_km: depth of the well in km
-    :type InputDepth_km: float
-    :param OutputDepth_km: depth of the output end of the well in km, if U shaped, and not horizontal
-    :type OutputDepth_km: float
-    :param nprod: number of production wells
-    :type nprod: int
-    :param ninj: number of injection wells
-    :return: total length, vertical length, and horizontal lengths in meters
-    :rtype: tuple
-    """
-    if Configuration == Configuration.ULOOP:
-        # Total drilling depth of both wells and laterals in U-loop [m]
-        vertical_pipe_length_m = (nprod * InputDepth_km * 1000.0) + (ninj * OutputDepth_km * 1000.0)
-        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
-    elif Configuration == Configuration.COAXIAL:
-        # Total drilling depth of well and lateral in co-axial case [m]
-        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
-        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
-    elif Configuration == Configuration.VERTICAL:
-        # Total drilling depth of well in vertical case [m]
-        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
-        nonvertical_pipe_length_m = 0.0
-    elif Configuration == Configuration.L:
-        # Total drilling depth of well in L case [m]
-        vertical_pipe_length_m = (nprod + ninj) * InputDepth_km * 1000.0
-        nonvertical_pipe_length_m = numnonverticalsections * nonvertical_length_km * 1000.0
-    else:
-        raise ValueError(f'Invalid Configuration: {Configuration}')
-
-    tot_pipe_length_m = vertical_pipe_length_m + nonvertical_pipe_length_m
-    return tot_pipe_length_m, vertical_pipe_length_m, nonvertical_pipe_length_m

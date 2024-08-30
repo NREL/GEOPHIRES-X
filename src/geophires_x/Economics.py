@@ -2186,7 +2186,7 @@ class Economics:
                     output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
                 model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
 
-                tot_m, tot_vert_m, tot_horiz_m = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
+                tot_m, tot_vert_m, tot_horiz_m, _ = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
                                                                                     model.wellbores.numnonverticalsections.value,
                                                                                     model.wellbores.Nonvertical_length.value / 1000.0,
                                                                                     input_vert_depth_km,

@@ -349,6 +349,12 @@ class SBTReservoir(CylindricalReservoir):
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
+        # calculate the reservoir depth because there is no one single depth as there are for other reservoirs.
+        # Make the depth at which this pressure is calculates to be the average of the junction box depth and
+        # the lateral endpoint depths
+        self.depth.value = (model.wellbores.junction_depth.quantity().to('km').magnitude +
+                 model.wellbores.lateral_endpoint_depth.quantity().to('km').magnitude) / 2.0
+
         if model.wellbores.Configuration.value in [Configuration.ULOOP, Configuration.EAVORLOOP]:
             self.Calculate_Uloop(model)
         elif model.wellbores.Configuration.value == Configuration.COAXIAL:

@@ -65,7 +65,7 @@ class Units(IntEnum):
 
 
 class AngleUnit(str, Enum):
-    """Temperature Units"""
+    """Angle Units"""
     DEGREES = "degrees"
     RADIANS = "radians"
 
@@ -362,5 +362,5 @@ class Inflation_RateUnit(str,Enum):
 
 
 class Dynamic_ViscosityUnit(str,Enum):
-    """Decay rate Units"""
+    """Dynamic Viscosity Units"""
     PASCALSEC = "PaSec"

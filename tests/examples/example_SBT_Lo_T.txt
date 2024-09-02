@@ -47,4 +47,4 @@ Exploration Capital Cost, 0
 Starting Electricity Sale Price, 0.19
 Ending Electricity Sale Price, 0.19
 
-xSBT Generate Wireframe Graphics, True
+SBT Generate Wireframe Graphics, False

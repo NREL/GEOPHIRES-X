@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import geophires_x.Model as Model
 from .CylindricalReservoir import CylindricalReservoir
 from .OptionList import FlowrateModel, InjectionTemperatureModel, Configuration
-from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, strParameter
+from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, strParameter, boolParameter
 from .Reservoir import Reservoir
 from .Units import *
 import sys
@@ -267,7 +267,14 @@ class SBTReservoir(CylindricalReservoir):
             PreferredUnits=TimeUnit.SECOND,
             CurrentUnits=TimeUnit.SECOND,
             ErrMessage='assume default for Initial to Final Timestep Transition (9900 seconds)',
-            ToolTipText='The time in secs at which the time arrays switches from closely spaced linear to logrithmatic'
+            ToolTipText='The time in secs at which the time arrays switches from closely spaced linear to logarithmic'
+        )
+        self.generate_wireframe_graphics = self.ParameterDict[self.generate_wireframe_graphics.Name] = boolParameter(
+            'SBT Generate Wireframe Graphics',
+            DefaultValue=False,
+            UnitType=Units.NONE,
+            ErrMessage='assume default for SBT Generate Wireframe Graphics (False)',
+            ToolTipText='Switch to control the generation of a wireframe drawing of a SBT wells configuration'
         )
 
         sclass = str(__class__).replace("<class \'", "")
@@ -1130,7 +1137,7 @@ class SBTReservoir(CylindricalReservoir):
                                                                                            model.wellbores.vertical_section_length.value,
                                                                                            model.wellbores.lateral_inclination_angle.value * np.pi / 180.0,
                                                                                            model.wellbores.vertical_wellbore_spacing.value,
-                                                                                           False)
+                                                                                           self.generate_wireframe_graphics.value)
 
         # Merge x-, y-, and z-coordinates
         x = np.concatenate((xinj, xprod))

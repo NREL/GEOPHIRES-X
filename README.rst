@@ -355,6 +355,7 @@ HIP-RA: Heat in Place - Resource Assessment
 
 * `HIP-RA-X README <src/hip_ra_x/README.md>`__
 * `HIP-RA-X Parameters Reference <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+
 .. TODO switch over to https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html once merged
 
 Monte Carlo

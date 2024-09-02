@@ -326,12 +326,12 @@ def InjectionWellPressureDrop(model: Model, Taverage: float, wellflowrate: float
 
     return DPWell, f1, v, rhowater
 
-
 def ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3: float, vprod: float, rhowaterinj: float,
                                                         rhowaterprod: float, rhowaterreservoir: float, depth: float,
                                                         wellflowrate: float, prodwelldiam: float,
                                                         impedance: float, nprod: int, waterloss: float,
-                                                        pumpeff: float) -> tuple:
+                                                        pumpeff: float, tilt: float = 90.0,
+                                                        trim_neg_to_zero: bool = True) -> tuple:
     """
     Calculate Pressure Drops and Pumping Power needed for the production well using the Impedance Model
         :param f3: friction factor [-]
@@ -358,6 +358,10 @@ def ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3: float, vprod: float,
         :type waterloss: float
         :param pumpeff: pump efficiency [-]
         :type pumpeff: float
+        :param tilt: tilt of the well from the junction box to the bottom of the laterals [degrees]
+        :type tilt: float
+        :param trim_neg_to_zero: whether to trim negative values of pumping power to zero
+        :type trim_neg_to_zero: bool
         :return: tuple of DPOverall, PumpingPower, DPProdWell, DPReserv, DPBouyancy
         :rtype: tuple
     """
@@ -368,7 +372,8 @@ def ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3: float, vprod: float,
     DPReserv = impedance * nprod * wellflowrate * 1000. / rhowaterreservoir
 
     # buoyancy pressure drop [kPa]
-    DPBouyancy = (rhowaterprod - rhowaterinj) * depth * 9.81 / 1E3  # /1E3 to convert from Pa to kPa
+    gravity_tilt = 9.81 * np.sin(np.radians(tilt))
+    DPBouyancy = (rhowaterprod - rhowaterinj) * depth * gravity_tilt / 1E3  # /1E3 to convert from Pa to kPa
 
     # overall pressure drop
     DPOverall = DPReserv + DPProdWell + DPBouyancy
@@ -378,7 +383,8 @@ def ProdPressureDropsAndPumpingPowerUsingImpedenceModel(f3: float, vprod: float,
     PumpingPower = DPOverall * nprod * wellflowrate * (1 + waterloss) / rhowaterinj / pumpeff / 1E3
 
     # in GEOPHIRES v1.2, negative pumping power values become zero (b/c we are not generating electricity)
-    PumpingPower = [0. if x < 0. else x for x in PumpingPower]
+    if trim_neg_to_zero:
+        PumpingPower = [0. if x < 0. else x for x in PumpingPower]
 
     return DPOverall, PumpingPower, DPProdWell, DPReserv, DPBouyancy
 
@@ -1169,6 +1175,34 @@ class WellBores:
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL
+        )
+        self.total_drilled_length = self.OutputParameterDict[self.total_drilled_length.Name] = OutputParameter(
+            Name="Total length of all drilling",
+            value=-1.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.KILOMETERS,
+            CurrentUnits=LengthUnit.KILOMETERS
+        )
+        self.tot_vert_m = self.OutputParameterDict[self.tot_vert_m.Name] = OutputParameter(
+            Name="Total length of vertical drilling",
+            value=-1.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS
+        )
+        self.tot_to_junction_m = self.OutputParameterDict[self.tot_to_junction_m.Name] = OutputParameter(
+            Name="Total length from lateral junction to base of vertical drilling",
+            value=-1.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS
+        )
+        self.tot_lateral_m = self.OutputParameterDict[self.tot_lateral_m.Name] = OutputParameter(
+            Name="Total length of lateral drilling",
+            value=-1.0,
+            UnitType=Units.LENGTH,
+            PreferredUnits=LengthUnit.METERS,
+            CurrentUnits=LengthUnit.METERS
         )
 
     def __str__(self):

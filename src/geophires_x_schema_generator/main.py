@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from geophires_x_schema_generator import GeophiresXSchemaGenerator
+from geophires_x_schema_generator import HipRaXSchemaGenerator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -20,18 +21,20 @@ if __name__ == '__main__':
 
     build_dir.mkdir(exist_ok=True)
 
-    build_path = Path(build_dir, 'geophires-request.json')
+    def build(json_file_name: str, generator: GeophiresXSchemaGenerator, rst_file_name: str):
+        build_path = Path(build_dir, json_file_name)
+        schema_json = generator.generate_json_schema()
 
-    generator = GeophiresXSchemaGenerator()
+        with open(build_path, 'w') as f:
+            f.write(json.dumps(schema_json, indent=2))
+            print(f'Wrote JSON schema file to {build_path}.')
 
-    schema_json = generator.generate_json_schema()
+        rst = generator.generate_parameters_reference_rst()
 
-    with open(build_path, 'w') as f:
-        f.write(json.dumps(schema_json, indent=2))
-        print(f'Wrote schema file to {build_path}.')
+        build_path_rst = Path(build_dir, rst_file_name)
+        with open(build_path_rst, 'w') as f:
+            f.write(rst)
+            print(f'Wrote RST file to {build_path_rst}.')
 
-    rst = generator.generate_parameters_reference_rst()
-
-    build_path_rst = Path(build_dir, 'parameters.rst')
-    with open(build_path_rst, 'w') as f:
-        f.write(rst)
+    build('geophires-request.json', GeophiresXSchemaGenerator(), 'parameters.rst')
+    build('hip-ra-x-request.json', HipRaXSchemaGenerator(), 'hip_ra_x_parameters.rst')

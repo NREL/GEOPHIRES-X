@@ -71,53 +71,8 @@ def calculate_cost_of_lateral_section(model: Model, length_m: float, well_correl
         casing_factor = 0.5
     if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_lateral_section = casing_factor * ((num_lateral_sections * lateral_drilling_cost_per_m * length_per_section_m)) * 1E-6
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL:
-        cost_per_section = (0.30212 * length_per_section_m ** 2 + 584.91124 * length_per_section_m + 751368.47270) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE:
-        cost_per_section = (0.28180 * length_per_section_m ** 2 + 1275.52130 * length_per_section_m + 632315.12640) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL:
-        cost_per_section = (0.28977 * length_per_section_m ** 2 + 882.15067 * length_per_section_m + 680562.50150) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE:
-        cost_per_section = (0.25528 * length_per_section_m ** 2 + 1716.71568 * length_per_section_m + 500866.89110) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT1:
-        cost_per_section = (0.13710 * length_per_section_m ** 2 + 129.61033 * length_per_section_m + 1205587.57100) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT1:
-        cost_per_section = (0.18927 * length_per_section_m ** 2 + 293.45174 * length_per_section_m + 1326526.31300) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT1:
-        cost_per_section = (0.15340 * length_per_section_m ** 2 + 120.31700 * length_per_section_m + 1431801.54400) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT1:
-        cost_per_section = (0.19950 * length_per_section_m ** 2 + 296.13011 * length_per_section_m + 1697867.70900) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_INT2:
-        cost_per_section = (0.00804 * length_per_section_m ** 2 + 455.60507 * length_per_section_m + 921007.68680) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_INT2:
-        cost_per_section = (0.00315 * length_per_section_m ** 2 + 782.69676 * length_per_section_m + 983620.25270) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_INT2:
-        cost_per_section = (0.00854 * length_per_section_m ** 2 + 506.08357 * length_per_section_m + 1057330.39000) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_INT2:
-        cost_per_section = (0.00380 * length_per_section_m ** 2 + 838.90249 * length_per_section_m + 1181947.04400) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_SMALL_IDEAL:
-        cost_per_section = (0.00252 * length_per_section_m ** 2 + 439.44503 * length_per_section_m + 590611.90110) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.VERTICAL_LARGE_IDEAL:
-        cost_per_section = (-0.00240 * length_per_section_m ** 2 + 752.93946 * length_per_section_m + 524337.65380) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_SMALL_IDEAL:
-        cost_per_section = (0.00719 * length_per_section_m ** 2 + 455.85233 * length_per_section_m + 753377.73080) * 1E-6
-        cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
-    elif well_correlation is WellDrillingCostCorrelation.DEVIATED_LARGE_IDEAL:
-        cost_per_section = (0.00376 * length_per_section_m ** 2 + 762.52696 * length_per_section_m + 765103.07690) * 1E-6
+    else:
+        cost_per_section = well_correlation.calculate_cost_MUSD(length_per_section_m)
         cost_of_lateral_section = casing_factor * num_lateral_sections * cost_per_section
 
     # account for adjustment factor

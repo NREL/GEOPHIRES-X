@@ -233,6 +233,7 @@ class SBTReservoir(CylindricalReservoir):
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default percent implicit (1.0)",
             ToolTipText="Should be between 0 and 1. Most stable is setting it to 1 which results in \
             a fully implicit Euler scheme when calculating the fluid temperature at each time step. \

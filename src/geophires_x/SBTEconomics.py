@@ -1,7 +1,8 @@
 import sys, math
 import numpy as np
 import geophires_x.Model as Model
-import geophires_x.Economics as Economics
+from .Economics import Economics, calculate_cost_of_one_vertical_well, BuildPTCModel, BuildPricingModel, \
+    CalculateRevenue, CalculateFinancialPerformance, CalculateLCOELCOHLCOC
 from .OptionList import Configuration, WellDrillingCostCorrelation, PlantType
 from geophires_x.Parameter import floatParameter
 from geophires_x.Units import *
@@ -124,7 +125,7 @@ def calculate_cost_of_lateral_section(model: Model, length_m: float, well_correl
     return cost_of_lateral_section
 
 
-class SBTEconomics(Economics.Economics):
+class SBTEconomics(Economics):
     """
     SBTEconomics Child class of Economics; it is the same, but has advanced SBT closed-loop functionality
     """
@@ -269,7 +270,7 @@ class SBTEconomics(Economics.Economics):
         else:
             # calculate the cost of one vertical production well
             # 1.05 for 5% indirect costs
-            self.cost_one_production_well.value = 1.05 * Economics.calculate_cost_of_one_vertical_well(model, model.wellbores.vertical_section_length.value,
+            self.cost_one_production_well.value = 1.05 * calculate_cost_of_one_vertical_well(model, model.wellbores.vertical_section_length.value,
                                                                                       self.wellcorrelation.value,
                                                                                       self.Vertical_drilling_cost_per_m.value,
                                                                                       self.per_production_well_cost.Name,
@@ -299,7 +300,7 @@ class SBTEconomics(Economics.Economics):
                 # This section is not vertical, but it is cased, so we will estimate the cost
                 # of this section as if it were a vertical section.
                 if model.wellbores.Configuration.value == Configuration.EAVORLOOP:
-                    self.cost_to_junction_section.value = 1.05 * Economics.calculate_cost_of_one_vertical_well(model,
+                    self.cost_to_junction_section.value = 1.05 * calculate_cost_of_one_vertical_well(model,
                                                                                          model.wellbores.tot_to_junction_m.value,
                                                                                          self.wellcorrelation.value,
                                                                                          self.Vertical_drilling_cost_per_m.value,
@@ -744,32 +745,32 @@ class SBTEconomics(Economics.Economics):
         self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
         self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
         if self.PTCElec.Provided:
-            self.PTCElecPrice = Economics.BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+            self.PTCElecPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
                                               self.PTCDuration.value, self.PTCElec.value, self.PTCInflationAdjusted.value,
                                               self.RINFL.value)
         if self.PTCHeat.Provided:
-            self.PTCHeatPrice = Economics.BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+            self.PTCHeatPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
                                               self.PTCDuration.value, self.PTCHeat.value, self.PTCInflationAdjusted.value,
                                               self.RINFL.value)
         if self.PTCCooling.Provided:
-            self.PTCCoolingPrice = Economics.BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+            self.PTCCoolingPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
                                                            self.PTCDuration.value, self.PTCCooling.value, self.PTCInflationAdjusted.value,
                                                            self.RINFL.value)
 
         # build the price models
-        self.ElecPrice.value = Economics.BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+        self.ElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                            self.ElecStartPrice.value, self.ElecEndPrice.value,
                                                            self.ElecEscalationStart.value, self.ElecEscalationRate.value,
                                                            self.PTCElecPrice)
-        self.HeatPrice.value = Economics.BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+        self.HeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                            self.HeatStartPrice.value, self.HeatEndPrice.value,
                                                            self.HeatEscalationStart.value, self.HeatEscalationRate.value,
                                                            self.PTCHeatPrice)
-        self.CoolingPrice.value = Economics.BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+        self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                               self.CoolingStartPrice.value, self.CoolingEndPrice.value,
                                                               self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
                                                               self.PTCCoolingPrice)
-        self.CarbonPrice.value = Economics.BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+        self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
                                                              self.CarbonStartPrice.value, self.CarbonEndPrice.value,
                                                              self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
                                                              self.PTCCarbonPrice)
@@ -796,19 +797,19 @@ class SBTEconomics(Economics.Economics):
 
         # Based on the style of the project, calculate the revenue & cumulative revenue
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
-            self.ElecRevenue.value, self.ElecCummRevenue.value = Economics.CalculateRevenue(
+            self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
             self.TotalRevenue.value = self.ElecRevenue.value
             #self.TotalCummRevenue.value = self.ElecCummRevenue.value
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
-            self.HeatRevenue.value, self.HeatCummRevenue.value = Economics.CalculateRevenue(
+            self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
             self.TotalRevenue.value = self.HeatRevenue.value
             #self.TotalCummRevenue.value = self.HeatCummRevenue.value
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]:
-            self.CoolingRevenue.value, self.CoolingCummRevenue.value = Economics.CalculateRevenue(
+            self.CoolingRevenue.value, self.CoolingCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.cooling_kWh_Produced.value, self.CoolingPrice.value)
             self.TotalRevenue.value = self.CoolingRevenue.value
@@ -820,10 +821,10 @@ class SBTEconomics(Economics.Economics):
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:  # co-gen
             # else:
-            self.ElecRevenue.value, self.ElecCummRevenue.value = Economics.CalculateRevenue(
+            self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
-            self.HeatRevenue.value, self.HeatCummRevenue.value = Economics.CalculateRevenue(
+            self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
 
@@ -834,7 +835,7 @@ class SBTEconomics(Economics.Economics):
 
         if self.DoCarbonCalculations.value:
             self.CarbonRevenue.value, self.CarbonCummCashFlow.value, self.CarbonThatWouldHaveBeenProducedAnnually.value, \
-             self.CarbonThatWouldHaveBeenProducedTotal.value = Economics.CalculateCarbonRevenue(model,
+             self.CarbonThatWouldHaveBeenProducedTotal.value = CalculateCarbonRevenue(model,
                                                                                                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                                                                                                 self.CarbonPrice.value, self.GridCO2Intensity.value, self.NaturalGasCO2Intensity.value,
                                                                                                 model.surfaceplant.NetkWhProduced.value, model.surfaceplant.HeatkWhProduced.value)
@@ -871,7 +872,7 @@ class SBTEconomics(Economics.Economics):
 
         # Calculate more financial values using numpy financials
         self.ProjectNPV.value, self.ProjectIRR.value, self.ProjectVIR.value, self.ProjectMOIC.value = \
-            Economics.CalculateFinancialPerformance(model.surfaceplant.plant_lifetime.value, self.FixedInternalRate.value,
+            CalculateFinancialPerformance(model.surfaceplant.plant_lifetime.value, self.FixedInternalRate.value,
                                                     self.TotalRevenue.value, self.TotalCummRevenue.value, self.CCap.value,
                                                     self.Coam.value)
 
@@ -887,7 +888,7 @@ class SBTEconomics(Economics.Economics):
 
 
         # Calculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value, self.LCOC.value = Economics.CalculateLCOELCOHLCOC(self, model)
+        self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

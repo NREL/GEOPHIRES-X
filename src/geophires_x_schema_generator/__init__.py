@@ -42,7 +42,10 @@ class GeophiresXSchemaGenerator:
             sys.argv = stash_sys_argv
             os.chdir(stash_cwd)
 
-    def get_parameter_sources(self) -> list[Tuple[Any, str]]:
+    def get_parameter_sources(self) -> list:
+        """
+        :rtype: list[Tuple[Any, str]]
+        """
         dummy_model = self._get_dummy_model()
         return [
             (dummy_model.reserv, 'Reservoir'),
@@ -240,7 +243,10 @@ def _get_min_and_max(param: dict, default_val='') -> Tuple:
 
 
 class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
-    def get_parameter_sources(self) -> list[Tuple[Any, str]]:
+    def get_parameter_sources(self) -> list:
+        """
+        :rtype: list[Tuple[Any, str]]
+        """
         dummy_model = HIP_RA_X()
         return [(dummy_model, None)]
 

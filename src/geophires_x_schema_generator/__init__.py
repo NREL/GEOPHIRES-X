@@ -66,7 +66,7 @@ class GeophiresXSchemaGenerator:
         ]
 
     def get_schema_title(self) -> str:
-        return 'GEOPHIRES'
+        return 'GEOPHIRES-X'
 
     def get_parameters_json(self) -> Tuple[str, str]:
 
@@ -138,10 +138,11 @@ class GeophiresXSchemaGenerator:
             input_params_by_category[category][input_param_name] = input_param
 
         def get_input_params_table(category_params, category_name) -> str:
+            category_display = category_name if category_name is not None else ''
             input_rst = f"""
-{category_name}
-{'-' * len(category_name)}
-    .. list-table:: {category_name} Parameters
+{category_display}
+{'-' * len(category_display)}
+    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Parameters
        :header-rows: 1
 
        * - Name
@@ -176,7 +177,7 @@ class GeophiresXSchemaGenerator:
 
         output_rst = self.get_output_params_table_rst(output_params_json)
 
-        rst = f"""Parameters
+        rst = f"""{self.get_schema_title()} Parameters
 ==========
 
 .. contents::
@@ -241,7 +242,7 @@ def _get_min_and_max(param: dict, default_val='') -> Tuple:
 class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
     def get_parameter_sources(self) -> list[Tuple[Any, str]]:
         dummy_model = HIP_RA_X()
-        return [(dummy_model, 'Default')]
+        return [(dummy_model, None)]
 
     def get_schema_title(self) -> str:
         return 'HIP-RA-X'

@@ -13,6 +13,7 @@ requirements.txt
 .DS_Store
 *.lock
 *.json
+all_messages_conf.log
 
 # C extensions
 *.so
@@ -81,6 +82,8 @@ docs/reference/geophires-request.json
 docs/reference/parameters.rst
 docs/geophires-request.json
 docs/parameters.rst
+docs/hip-ra-x-request.json
+docs/hip_ra_x_parameters.rst
 _site/
 /docs/geophires_x.rstx
 /docs/temperature.txt

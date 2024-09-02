@@ -20,7 +20,7 @@
       "description": "Reservoir Temperature [150 dec-C]",
       "type": "number",
       "units": "degC",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 50,
       "maximum": 1000
@@ -29,7 +29,7 @@
       "description": "Rejection Temperature [25 dec-C]",
       "type": "number",
       "units": "degC",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.1,
       "maximum": 200
@@ -38,7 +38,7 @@
       "description": "Reservoir Porosity [18%]",
       "type": "number",
       "units": "%",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 100.0
@@ -47,7 +47,7 @@
       "description": "Reservoir Area [81 km2]",
       "type": "number",
       "units": "km**2",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 10000.0
@@ -56,7 +56,7 @@
       "description": "Reservoir Thickness [0.286 km]",
       "type": "number",
       "units": "kilometer",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 10000.0
@@ -65,7 +65,7 @@
       "description": "Reservoir Life Cycle [30 years]",
       "type": "integer",
       "units": "yr",
-      "category": "Default",
+      "category": null,
       "default": null,
       "minimum": 1,
       "maximum": 100
@@ -74,7 +74,7 @@
       "description": "Rock Heat Capacity [2.84E+12 kJ/km3C]",
       "type": "number",
       "units": "kJ/km**3C",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 100000000000000.0
@@ -83,7 +83,7 @@
       "description": "Specific Heat Capacity Of Water [4.18 kJ/kgC]",
       "type": "number",
       "units": "kJ/kgC",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 3.0,
       "maximum": 10.0
@@ -92,7 +92,7 @@
       "description": "Density Of Water [1.0E+12 kg/km3]",
       "type": "number",
       "units": "kg/km**3",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 100000000000.0,
       "maximum": 10000000000000.0
@@ -101,7 +101,7 @@
       "description": "Density Of Rock [2.55E+12 kg/km3]",
       "type": "number",
       "units": "kg/km**3",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 100000000000.0,
       "maximum": 10000000000000.0
@@ -110,7 +110,7 @@
       "description": "percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs,             0.43 for low-T reservoirs (Garg and Combs (2011)",
       "type": "number",
       "units": "",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 1.0
@@ -119,7 +119,7 @@
       "description": "percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs,             0.43 for low-T reservoirs (Garg and Combs (2011)",
       "type": "number",
       "units": "",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 1.0
@@ -128,7 +128,7 @@
       "description": "percent of fluid that is recoverable from the reservoir (0.5 = 50%)",
       "type": "number",
       "units": "",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 1.0
@@ -137,7 +137,7 @@
       "description": "depth to top of reservoir (km). Calculated based on an assumed gradient                  and the reservoir temperature if no value given",
       "type": "number",
       "units": "kilometer",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.001,
       "maximum": 15.0
@@ -146,7 +146,7 @@
       "description": "pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and                  reservoir depth & water density if no value given",
       "type": "number",
       "units": "mPa",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 10000.0
@@ -155,7 +155,7 @@
       "description": "percent of fluid that is recoverable from the reservoir (0.75 = 75%)",
       "type": "number",
       "units": "",
-      "category": "Default",
+      "category": null,
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 1.0
@@ -164,7 +164,7 @@
       "description": "Provide a HTML output name if you want to have HTML output (no output if not provided)",
       "type": "string",
       "units": null,
-      "category": "Default",
+      "category": null,
       "default": null,
       "minimum": null,
       "maximum": null

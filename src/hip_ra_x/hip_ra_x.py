@@ -260,10 +260,10 @@ class HIP_RA_X:
                 PreferredUnits=PercentUnit.TENTH,
                 CurrentUnits=PercentUnit.TENTH,
                 Required=False,
-                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
-            (>90, Garg and Combs (2011)',
-                ToolTipText='percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs,\
-             0.43 for low-T reservoirs (Garg and Combs (2011)',
+                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs '
+                '(>90, Garg and Combs (2011)',
+                ToolTipText='percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs, '
+                '0.43 for low-T reservoirs (Garg and Combs (2011)',
             )
         )
         self.fluid_recoverable_heat: Parameter = parameter_dict_entry(
@@ -276,10 +276,10 @@ class HIP_RA_X:
                 PreferredUnits=PercentUnit.TENTH,
                 CurrentUnits=PercentUnit.TENTH,
                 Required=False,
-                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs \
-            (>90, Garg and Combs (2011)',
-                ToolTipText='percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs,\
-             0.43 for low-T reservoirs (Garg and Combs (2011)',
+                ErrMessage='assume 0.66 for high-T reservoirs (>150C), 0.43 for low-T reservoirs '
+                '(>90, Garg and Combs (2011)',
+                ToolTipText='percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs, '
+                '0.43 for low-T reservoirs (Garg and Combs (2011)',
             )
         )
         self.recoverable_fluid_factor: Parameter = parameter_dict_entry(
@@ -308,8 +308,8 @@ class HIP_RA_X:
                 Required=False,
                 Provided=False,
                 ErrMessage='calculate based on an assumed gradient of 30 C/km and the reservoir temperature',
-                ToolTipText='depth to top of reservoir (km). Calculated based on an assumed gradient \
-                 and the reservoir temperature if no value given',
+                ToolTipText='depth to top of reservoir (km). Calculated based on an assumed gradient '
+                'and the reservoir temperature if no value given',
             )
         )
         self.reservoir_pressure: Parameter = parameter_dict_entry(
@@ -324,8 +324,8 @@ class HIP_RA_X:
                 Required=False,
                 Provided=False,
                 ErrMessage='calculate assuming hydrostatic pressure and the reservoir depth & water density',
-                ToolTipText='pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and \
-                 reservoir depth & water density if no value given',
+                ToolTipText='pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and '
+                'reservoir depth & water density if no value given',
             )
         )
         self.recoverable_rock_heat: Parameter = parameter_dict_entry(

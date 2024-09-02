@@ -107,7 +107,7 @@
       "maximum": 10000000000000.0
     },
     "Rock Recoverable Heat": {
-      "description": "percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs,             0.43 for low-T reservoirs (Garg and Combs (2011)",
+      "description": "percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs, 0.43 for low-T reservoirs (Garg and Combs (2011)",
       "type": "number",
       "units": "",
       "category": null,
@@ -116,7 +116,7 @@
       "maximum": 1.0
     },
     "Fluid Recoverable Heat": {
-      "description": "percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs,             0.43 for low-T reservoirs (Garg and Combs (2011)",
+      "description": "percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs, 0.43 for low-T reservoirs (Garg and Combs (2011)",
       "type": "number",
       "units": "",
       "category": null,
@@ -134,7 +134,7 @@
       "maximum": 1.0
     },
     "Reservoir Depth": {
-      "description": "depth to top of reservoir (km). Calculated based on an assumed gradient                  and the reservoir temperature if no value given",
+      "description": "depth to top of reservoir (km). Calculated based on an assumed gradient and the reservoir temperature if no value given",
       "type": "number",
       "units": "kilometer",
       "category": null,
@@ -143,7 +143,7 @@
       "maximum": 15.0
     },
     "Reservoir Pressure": {
-      "description": "pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and                  reservoir depth & water density if no value given",
+      "description": "pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and reservoir depth & water density if no value given",
       "type": "number",
       "units": "mPa",
       "category": null,

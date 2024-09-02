@@ -17,7 +17,7 @@
   ],
   "properties": {
     "Reservoir Temperature": {
-      "description": "Reservoir Temperature [150 dec-C]",
+      "description": "Reservoir Temperature [150 degC]",
       "type": "number",
       "units": "degC",
       "category": null,
@@ -26,7 +26,7 @@
       "maximum": 1000
     },
     "Rejection Temperature": {
-      "description": "Rejection Temperature [25 dec-C]",
+      "description": "Rejection Temperature [25 degC]",
       "type": "number",
       "units": "degC",
       "category": null,

@@ -119,8 +119,8 @@ class HIP_RA_X:
                 PreferredUnits=TemperatureUnit.CELSIUS,
                 CurrentUnits=TemperatureUnit.CELSIUS,
                 Required=True,
-                ErrMessage='assume default reservoir temperature (150 deg-C)',
-                ToolTipText='Reservoir Temperature [150 dec-C]',
+                ErrMessage='assume default reservoir temperature (150 degC)',
+                ToolTipText='Reservoir Temperature [150 degC]',
             )
         )
         self.rejection_temperature: Parameter = parameter_dict_entry(
@@ -133,8 +133,8 @@ class HIP_RA_X:
                 PreferredUnits=TemperatureUnit.CELSIUS,
                 CurrentUnits=TemperatureUnit.CELSIUS,
                 Required=True,
-                ErrMessage='assume default rejection temperature (25 deg-C)',
-                ToolTipText='Rejection Temperature [25 dec-C]',
+                ErrMessage='assume default rejection temperature (25 degC)',
+                ToolTipText='Rejection Temperature [25 degC]',
             )
         )
         self.reservoir_porosity: Parameter = parameter_dict_entry(

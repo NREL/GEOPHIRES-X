@@ -1103,7 +1103,7 @@
       "maximum": 200.0
     },
     "Economic Model": {
-      "description": "Specify the economic model to calculate the levelized cost of energy.1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
+      "description": "Specify the economic model to calculate the levelized cost of energy. 1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
       "type": "integer",
       "units": null,
       "category": "Economics",
@@ -1824,7 +1824,7 @@
       "maximum": 50000
     },
     "CO2 produced by Natural Gas": {
-      "description": "CO2 intensity of buring natural gas (how much CO2 is produced per kWh of heat produced (0.407855 lbs/kWh))",
+      "description": "CO2 intensity of burning natural gas (how much CO2 is produced per kWh of heat produced (0.070324961 lbs/kWh; https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references))",
       "type": "number",
       "units": "lbs/kWh",
       "category": "Economics",

@@ -1,1 +1,4 @@
-parameters.rst
+*parameters.rst
+all_messages_conf.log
+!geophires-request.json
+!hip-ra-x-request.json

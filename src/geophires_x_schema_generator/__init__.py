@@ -24,6 +24,7 @@ from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
+from hip_ra_x.hip_ra_x import HIP_RA_X
 
 
 class GeophiresXSchemaGenerator:
@@ -41,17 +42,9 @@ class GeophiresXSchemaGenerator:
             sys.argv = stash_sys_argv
             os.chdir(stash_cwd)
 
-    def get_parameters_json(self) -> Tuple[str, str]:
+    def get_parameter_sources(self) -> list[Tuple[Any, str]]:
         dummy_model = self._get_dummy_model()
-
-        def with_category(param_dict: dict, category: str):
-            def _with_cat(p: Parameter, cat: str):
-                p.parameter_category = cat
-                return p
-
-            return {k: _with_cat(v, category) for k, v in param_dict.items()}
-
-        parameter_sources = [
+        return [
             (dummy_model.reserv, 'Reservoir'),
             (TDPReservoir(dummy_model), 'Reservoir'),
             (LHSReservoir(dummy_model), 'Reservoir'),
@@ -72,6 +65,19 @@ class GeophiresXSchemaGenerator:
             (EconomicsAddOns(dummy_model), 'Economics'),
         ]
 
+    def get_schema_title(self) -> str:
+        return 'GEOPHIRES'
+
+    def get_parameters_json(self) -> Tuple[str, str]:
+
+        def with_category(param_dict: dict, category: str):
+            def _with_cat(p: Parameter, cat: str):
+                p.parameter_category = cat
+                return p
+
+            return {k: _with_cat(v, category) for k, v in param_dict.items()}
+
+        parameter_sources = self.get_parameter_sources()
         output_params = {}
         input_params = {}
         for param_source in parameter_sources:
@@ -112,7 +118,7 @@ class GeophiresXSchemaGenerator:
             'definitions': {},
             '$schema': 'http://json-schema.org/draft-04/schema#',
             'type': 'object',
-            'title': 'GEOPHIRES Schema',
+            'title': f'{self.get_schema_title()} Schema',
             'required': required,
             'properties': properties,
         }
@@ -230,3 +236,12 @@ def _get_min_and_max(param: dict, default_val='') -> Tuple:
         max_val = max(param['AllowableRange'])
 
     return (min_val, max_val)
+
+
+class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
+    def get_parameter_sources(self) -> list[Tuple[Any, str]]:
+        dummy_model = HIP_RA_X()
+        return [(dummy_model, 'Default')]
+
+    def get_schema_title(self) -> str:
+        return 'HIP-RA-X'

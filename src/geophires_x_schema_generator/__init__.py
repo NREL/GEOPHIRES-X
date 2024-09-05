@@ -7,6 +7,9 @@ from typing import Tuple, Any
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001
 from geophires_x.Model import Model
+from geophires_x.SBTEconomics import SBTEconomics
+from geophires_x.SBTReservoir import SBTReservoir
+from geophires_x.SBTWellbores import SBTWellbores
 
 from geophires_x.SFReservoir import SFReservoir
 from geophires_x.LHSReservoir import LHSReservoir
@@ -54,15 +57,18 @@ class GeophiresXSchemaGenerator:
             (MPFReservoir(dummy_model), 'Reservoir'),
             (SFReservoir(dummy_model), 'Reservoir'),
             (CylindricalReservoir(dummy_model), 'Reservoir'),
+            (SBTReservoir(dummy_model), 'Reservoir'),
             (SUTRAReservoir(dummy_model), 'Reservoir'),
             (dummy_model.wellbores, 'Well Bores'),
             (AGSWellBores(dummy_model), 'Well Bores'),
+            (SBTWellbores(dummy_model), 'Well Bores'),
             (SUTRAWellBores(dummy_model), 'Well Bores'),
             (dummy_model.surfaceplant, 'Surface Plant'),
             (SurfacePlantAGS(dummy_model), 'Surface Plant'),
             (SurfacePlantSUTRA(dummy_model), 'Surface Plant'),
             (dummy_model.economics, 'Economics'),
             (AGSEconomics(dummy_model), 'Economics'),
+            (SBTEconomics(dummy_model), 'Economics'),
             (SUTRAEconomics(dummy_model), 'Economics'),
             (EconomicsCCUS(dummy_model), 'Economics'),
             (EconomicsAddOns(dummy_model), 'Economics'),

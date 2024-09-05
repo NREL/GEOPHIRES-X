@@ -384,6 +384,50 @@ class SurfacePlant:
             ErrMessage="assume default number of years in construction (1)",
             ToolTipText="Number of years spent in construction (assumes whole years, no fractions)"
         )
+        self.cp_fluid = self.ParameterDict[self.cp_fluid.Name] = floatParameter(
+            "Working Fluid Heat Capacity",
+            UnitType=Units.HEAT_CAPACITY,
+            PreferredUnits=HeatCapacityUnit.JPERKGPERK,
+            CurrentUnits=HeatCapacityUnit.JPERKGPERK,
+            DefaultValue=4200.0,
+            Min=0.0,
+            Max=10_000.0,
+            ErrMessage="assume default working fluid heat capacity (4200)",
+            ToolTipText="Heat capacity of the working fluid"
+        )
+        self.rho_fluid = self.ParameterDict[self.rho_fluid.Name] = floatParameter(
+            "Working Fluid Density",
+            UnitType=Units.DENSITY,
+            PreferredUnits=DensityUnit.KGPERMETERS3,
+            CurrentUnits=DensityUnit.KGPERMETERS3,
+            DefaultValue=1000.0,
+            Min=0.0,
+            Max=10_000.0,
+            ErrMessage="assume default working fluid density (1000)",
+            ToolTipText="Density of the working fluid"
+        )
+        self.k_fluid = self.ParameterDict[self.k_fluid.Name] = floatParameter(
+            "Working Fluid Thermal Conductivity",
+            UnitType=Units.THERMAL_CONDUCTIVITY,
+            PreferredUnits=ThermalConductivityUnit.WPERMPERK,
+            CurrentUnits=ThermalConductivityUnit.WPERMPERK,
+            DefaultValue=0.68,
+            Min=0.0,
+            Max=10.0,
+            ErrMessage="assume default working fluid thermal conductivity (0.68)",
+            ToolTipText="Thermal conductivity of the working fluid"
+        )
+        self.mu_fluid = self.ParameterDict[self.mu_fluid.Name] = floatParameter(
+            "Working Fluid Dynamic Viscosity",
+            UnitType=Units.DYNAMIC_VISCOSITY,
+            PreferredUnits=Dynamic_ViscosityUnit.PASCALSEC,
+            CurrentUnits=Dynamic_ViscosityUnit.PASCALSEC,
+            DefaultValue=600*10**-6,
+            Min=0.0,
+            Max=1,
+            ErrMessage="assume default fluid dynamic density (600*10**-6)",
+            ToolTipText="Dynamic viscosity of the working fluid"
+        )
 
         # local variable initialization
         self.setinjectionpressurefixed = False

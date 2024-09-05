@@ -1,0 +1,48 @@
+************reservoir*************
+Reservoir Model, 8
+Reservoir Depth, 7.5 kilometer
+Gradient 1, 60
+Reservoir Volume Option, 4
+Reservoir Volume, 8136407202.64, pi * 1 mi * 1 mi * 1000
+Reservoir Heat Capacity, 1112
+Reservoir Density, 2663
+Reservoir Thermal Conductivity, 2.5
+
+Lateral Endpoint Depth, 7.5 kilometer
+Lateral Inclination Angle, 30.5
+Junction Depth, 4.2 kilometer
+Vertical Section Length, 4.2 kilometer
+Number of Multilateral Sections, 12
+SBT Accuracy Desired, 5
+Lateral Spacing, 75
+Discretization Length, 250
+SBT Initial Timestep Count, 5
+SBT Initial to Final Timestep Transition, 10000, seconds = one year
+SBT Final Timestep Count, 120, ~4 per year
+
+****************Wellbore***********
+Is AGS, True
+Well Geometry Configuration, 5
+Number of Production Wells, 1
+Number of Injection Wells, 1
+Production Well Diameter, 8.5
+Injection Well Diameter, 8.5
+Nonvertical Wellbore Diameter, 0.216
+Production Flow Rate per Well, 80
+Reservoir Impedance, 1E-4, there is very little impedance in an AGS system
+Multilaterals Cased, False
+
+****************Surface plant************
+End-Use Option, 1
+Power Plant Type, 2
+Plant Lifetime, 30
+Ambient Temperature, 10
+Surface Temperature, 10
+Injection Temperature, 60
+
+***************Economics****************
+Economic Model, 3
+Reservoir Stimulation Capital Cost, 0
+Exploration Capital Cost, 0
+Starting Electricity Sale Price, 0.19
+Ending Electricity Sale Price, 0.19

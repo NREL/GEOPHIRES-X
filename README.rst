@@ -349,6 +349,15 @@ Extending GEOPHIRES-X
 
   - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
+
+HIP-RA: Heat in Place - Resource Assessment
+-------------------------------------------
+
+* `HIP-RA-X README <src/hip_ra_x/README.md>`__
+* `HIP-RA-X Parameters Reference <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+
+.. TODO switch over to https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html once merged
+
 Monte Carlo
 -----------
 

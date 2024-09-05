@@ -190,8 +190,8 @@ class SBTReservoir(CylindricalReservoir):
             AllowableRange=[1, 2],
             UnitType=Units.NONE,
             ErrMessage="assume constant user-provided flowrate (1)",
-            ToolTipText="Must be 1 or 2. '1' means the user provides a constant mass flow rate. \
-                        '1' means the user provides an excel file with a mass flow rate profile."
+            ToolTipText="Must be 1 or 2. '1' means the user provides a constant mass flow rate. "
+                        "'1' means the user provides an excel file with a mass flow rate profile."
         )
         self.flow_rate_file = self.ParameterDict[self.flow_rate_file.Name] = strParameter(
             "Flowrate File",
@@ -206,8 +206,8 @@ class SBTReservoir(CylindricalReservoir):
             AllowableRange=[1, 2],
             UnitType=Units.NONE,
             ErrMessage="assume constant user-provided injection temperature (1)",
-            ToolTipText="Must be 1 or 2. '1' means the user provides a constant injection temperature. \
-                        '1' means the user provides an excel file with an injection temperature profile."
+            ToolTipText="Must be 1 or 2. '1' means the user provides a constant injection temperature. "
+                        "'1' means the user provides an excel file with an injection temperature profile."
         )
         self.injection_temperature_file = self.ParameterDict[self.injection_temperature_file.Name] = strParameter(
             "Injection Temperature File",
@@ -222,9 +222,9 @@ class SBTReservoir(CylindricalReservoir):
             AllowableRange=[1, 5],
             UnitType=Units.NONE,
             ErrMessage="assume default SBT accuracy desired (1)",
-            ToolTipText="Must be 1, 2, 3, 4 or 5 with 1 lowest accuracy and 5 highest accuracy. \
-            Lowest accuracy runs fastest. Accuracy level impacts number of discretizations for \
-                        numerical integration and decision tree thresholds in SBT algorithm."
+            ToolTipText="Must be 1, 2, 3, 4 or 5 with 1 lowest accuracy and 5 highest accuracy. "
+                        "Lowest accuracy runs fastest. Accuracy level impacts number of discretizations for "
+                        "numerical integration and decision tree thresholds in SBT algorithm."
         )
         self.percent_implicit = self.ParameterDict[self.percent_implicit.Name] = floatParameter(
             "SBT Percent Implicit Euler Scheme",
@@ -235,11 +235,11 @@ class SBTReservoir(CylindricalReservoir):
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default percent implicit (1.0)",
-            ToolTipText="Should be between 0 and 1. Most stable is setting it to 1 which results in \
-            a fully implicit Euler scheme when calculating the fluid temperature at each time step. \
-            With a value of 0, the convective term is modelled using explicit Euler. \
-            A value of 0.5 would model the convective term 50% explicit and 50% implicit, \
-            which may be slightly more accurate than fully implicit."
+            ToolTipText="Should be between 0 and 1. Most stable is setting it to 1 which results in "
+                        "a fully implicit Euler scheme when calculating the fluid temperature at each time step. "
+                        "With a value of 0, the convective term is modelled using explicit Euler. "
+                        "A value of 0.5 would model the convective term 50% explicit and 50% implicit, "
+                        "which may be slightly more accurate than fully implicit."
         )
         self.initial_timestep_count = self.ParameterDict[self.initial_timestep_count.Name] = intParameter(
             'SBT Initial Timestep Count',

@@ -179,9 +179,6 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
     VERTICAL_LARGE_IDEAL = 16, "vertical open-hole, large diameter, ideal", -0.00240, 752.93946, 524337.65380
     DEVIATED_LARGE_IDEAL = 17, "deviated liner, large diameter, ideal", 0.00376, 762.52696, 765103.07690
 
-    def calculate_cost_MUSD(self, meters) -> float:
-        return (self._c2 * meters ** 2 + self._c1 * meters + self._c0) * 1E-6
-
     def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float):
         self._c2 = c2
         self._c1 = c1

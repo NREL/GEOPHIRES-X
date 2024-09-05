@@ -1,0 +1,173 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "HIP-RA-X Schema",
+  "required": [
+    "Reservoir Temperature",
+    "Rejection Temperature",
+    "Reservoir Porosity",
+    "Reservoir Area",
+    "Reservoir Thickness",
+    "Reservoir Life Cycle",
+    "Rock Heat Capacity",
+    "Fluid Specific Heat Capacity",
+    "Density Of Reservoir Fluid",
+    "Density Of Reservoir Rock"
+  ],
+  "properties": {
+    "Reservoir Temperature": {
+      "description": "Reservoir Temperature [150 degC]",
+      "type": "number",
+      "units": "degC",
+      "category": null,
+      "default": 0.0,
+      "minimum": 50,
+      "maximum": 1000
+    },
+    "Rejection Temperature": {
+      "description": "Rejection Temperature [25 degC]",
+      "type": "number",
+      "units": "degC",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.1,
+      "maximum": 200
+    },
+    "Reservoir Porosity": {
+      "description": "Reservoir Porosity [18%]",
+      "type": "number",
+      "units": "%",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "Reservoir Area": {
+      "description": "Reservoir Area [81 km2]",
+      "type": "number",
+      "units": "km**2",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
+    "Reservoir Thickness": {
+      "description": "Reservoir Thickness [0.286 km]",
+      "type": "number",
+      "units": "kilometer",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
+    "Reservoir Life Cycle": {
+      "description": "Reservoir Life Cycle [30 years]",
+      "type": "integer",
+      "units": "yr",
+      "category": null,
+      "default": null,
+      "minimum": 1,
+      "maximum": 100
+    },
+    "Rock Heat Capacity": {
+      "description": "Rock Heat Capacity [2.84E+12 kJ/km3C]",
+      "type": "number",
+      "units": "kJ/km**3C",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 100000000000000.0
+    },
+    "Fluid Specific Heat Capacity": {
+      "description": "Specific Heat Capacity Of Water [4.18 kJ/kgC]",
+      "type": "number",
+      "units": "kJ/kgC",
+      "category": null,
+      "default": 0.0,
+      "minimum": 3.0,
+      "maximum": 10.0
+    },
+    "Density Of Reservoir Fluid": {
+      "description": "Density Of Water [1.0E+12 kg/km3]",
+      "type": "number",
+      "units": "kg/km**3",
+      "category": null,
+      "default": 0.0,
+      "minimum": 100000000000.0,
+      "maximum": 10000000000000.0
+    },
+    "Density Of Reservoir Rock": {
+      "description": "Density Of Rock [2.55E+12 kg/km3]",
+      "type": "number",
+      "units": "kg/km**3",
+      "category": null,
+      "default": 0.0,
+      "minimum": 100000000000.0,
+      "maximum": 10000000000000.0
+    },
+    "Rock Recoverable Heat": {
+      "description": "percent of heat that is recoverable from the rock in the reservoir 0.66 for high-T reservoirs, 0.43 for low-T reservoirs (Garg and Combs (2011)",
+      "type": "number",
+      "units": "",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Fluid Recoverable Heat": {
+      "description": "percent of heat that is recoverable from the fluid in the reservoir 0.66 for high-T reservoirs, 0.43 for low-T reservoirs (Garg and Combs (2011)",
+      "type": "number",
+      "units": "",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Recoverable Fluid Factor": {
+      "description": "percent of fluid that is recoverable from the reservoir (0.5 = 50%)",
+      "type": "number",
+      "units": "",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Reservoir Depth": {
+      "description": "depth to top of reservoir (km). Calculated based on an assumed gradient and the reservoir temperature if no value given",
+      "type": "number",
+      "units": "kilometer",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.001,
+      "maximum": 15.0
+    },
+    "Reservoir Pressure": {
+      "description": "pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and reservoir depth & water density if no value given",
+      "type": "number",
+      "units": "mPa",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
+    "Recoverable Heat from Rock": {
+      "description": "percent of fluid that is recoverable from the reservoir (0.75 = 75%)",
+      "type": "number",
+      "units": "",
+      "category": null,
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "HTML Output File": {
+      "description": "Provide a HTML output name if you want to have HTML output (no output if not provided)",
+      "type": "string",
+      "units": null,
+      "category": null,
+      "default": null,
+      "minimum": null,
+      "maximum": null
+    }
+  }
+}

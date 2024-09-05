@@ -7,6 +7,9 @@ from typing import Tuple, Any
 # Ruff disabled because imports are order-dependent
 # ruff: noqa: I001
 from geophires_x.Model import Model
+from geophires_x.SBTEconomics import SBTEconomics
+from geophires_x.SBTReservoir import SBTReservoir
+from geophires_x.SBTWellbores import SBTWellbores
 
 from geophires_x.SFReservoir import SFReservoir
 from geophires_x.LHSReservoir import LHSReservoir
@@ -24,6 +27,7 @@ from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
+from hip_ra_x.hip_ra_x import HIP_RA_X
 
 
 class GeophiresXSchemaGenerator:
@@ -41,8 +45,39 @@ class GeophiresXSchemaGenerator:
             sys.argv = stash_sys_argv
             os.chdir(stash_cwd)
 
-    def get_parameters_json(self) -> Tuple[str, str]:
+    def get_parameter_sources(self) -> list:
+        """
+        :rtype: list[Tuple[Any, str]]
+        """
         dummy_model = self._get_dummy_model()
+        return [
+            (dummy_model.reserv, 'Reservoir'),
+            (TDPReservoir(dummy_model), 'Reservoir'),
+            (LHSReservoir(dummy_model), 'Reservoir'),
+            (MPFReservoir(dummy_model), 'Reservoir'),
+            (SFReservoir(dummy_model), 'Reservoir'),
+            (CylindricalReservoir(dummy_model), 'Reservoir'),
+            (SBTReservoir(dummy_model), 'Reservoir'),
+            (SUTRAReservoir(dummy_model), 'Reservoir'),
+            (dummy_model.wellbores, 'Well Bores'),
+            (AGSWellBores(dummy_model), 'Well Bores'),
+            (SBTWellbores(dummy_model), 'Well Bores'),
+            (SUTRAWellBores(dummy_model), 'Well Bores'),
+            (dummy_model.surfaceplant, 'Surface Plant'),
+            (SurfacePlantAGS(dummy_model), 'Surface Plant'),
+            (SurfacePlantSUTRA(dummy_model), 'Surface Plant'),
+            (dummy_model.economics, 'Economics'),
+            (AGSEconomics(dummy_model), 'Economics'),
+            (SBTEconomics(dummy_model), 'Economics'),
+            (SUTRAEconomics(dummy_model), 'Economics'),
+            (EconomicsCCUS(dummy_model), 'Economics'),
+            (EconomicsAddOns(dummy_model), 'Economics'),
+        ]
+
+    def get_schema_title(self) -> str:
+        return 'GEOPHIRES-X'
+
+    def get_parameters_json(self) -> Tuple[str, str]:
 
         def with_category(param_dict: dict, category: str):
             def _with_cat(p: Parameter, cat: str):
@@ -51,27 +86,7 @@ class GeophiresXSchemaGenerator:
 
             return {k: _with_cat(v, category) for k, v in param_dict.items()}
 
-        parameter_sources = [
-            (dummy_model.reserv, 'Reservoir'),
-            (TDPReservoir(dummy_model), 'Reservoir'),
-            (LHSReservoir(dummy_model), 'Reservoir'),
-            (MPFReservoir(dummy_model), 'Reservoir'),
-            (SFReservoir(dummy_model), 'Reservoir'),
-            (CylindricalReservoir(dummy_model), 'Reservoir'),
-            (SUTRAReservoir(dummy_model), 'Reservoir'),
-            (dummy_model.wellbores, 'Well Bores'),
-            (AGSWellBores(dummy_model), 'Well Bores'),
-            (SUTRAWellBores(dummy_model), 'Well Bores'),
-            (dummy_model.surfaceplant, 'Surface Plant'),
-            (SurfacePlantAGS(dummy_model), 'Surface Plant'),
-            (SurfacePlantSUTRA(dummy_model), 'Surface Plant'),
-            (dummy_model.economics, 'Economics'),
-            (AGSEconomics(dummy_model), 'Economics'),
-            (SUTRAEconomics(dummy_model), 'Economics'),
-            (EconomicsCCUS(dummy_model), 'Economics'),
-            (EconomicsAddOns(dummy_model), 'Economics'),
-        ]
-
+        parameter_sources = self.get_parameter_sources()
         output_params = {}
         input_params = {}
         for param_source in parameter_sources:
@@ -112,7 +127,7 @@ class GeophiresXSchemaGenerator:
             'definitions': {},
             '$schema': 'http://json-schema.org/draft-04/schema#',
             'type': 'object',
-            'title': 'GEOPHIRES Schema',
+            'title': f'{self.get_schema_title()} Schema',
             'required': required,
             'properties': properties,
         }
@@ -132,10 +147,11 @@ class GeophiresXSchemaGenerator:
             input_params_by_category[category][input_param_name] = input_param
 
         def get_input_params_table(category_params, category_name) -> str:
+            category_display = category_name if category_name is not None else ''
             input_rst = f"""
-{category_name}
-{'-' * len(category_name)}
-    .. list-table:: {category_name} Parameters
+{category_display}
+{'-' * len(category_display)}
+    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Parameters
        :header-rows: 1
 
        * - Name
@@ -170,7 +186,7 @@ class GeophiresXSchemaGenerator:
 
         output_rst = self.get_output_params_table_rst(output_params_json)
 
-        rst = f"""Parameters
+        rst = f"""{self.get_schema_title()} Parameters
 ==========
 
 .. contents::
@@ -230,3 +246,15 @@ def _get_min_and_max(param: dict, default_val='') -> Tuple:
         max_val = max(param['AllowableRange'])
 
     return (min_val, max_val)
+
+
+class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
+    def get_parameter_sources(self) -> list:
+        """
+        :rtype: list[Tuple[Any, str]]
+        """
+        dummy_model = HIP_RA_X()
+        return [(dummy_model, None)]
+
+    def get_schema_title(self) -> str:
+        return 'HIP-RA-X'

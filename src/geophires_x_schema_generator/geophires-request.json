@@ -2,7 +2,7 @@
   "definitions": {},
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "GEOPHIRES Schema",
+  "title": "GEOPHIRES-X Schema",
   "required": [
     "Reservoir Model",
     "Reservoir Depth",
@@ -42,13 +42,13 @@
   ],
   "properties": {
     "Reservoir Model": {
-      "description": "0: Simple cylindrical; 1: Multiple Parallel Fractures; 2: 1-D Linear Heat Sweep; 3: Single Fracture m/A Thermal Drawdown; 4: Annual Percentage Thermal Drawdown; 5: User-Provided Temperature Profile; 6: TOUGH2 Simulator; 7: SUTRA",
+      "description": "0: Simple cylindrical; 1: Multiple Parallel Fractures; 2: 1-D Linear Heat Sweep; 3: Single Fracture m/A Thermal Drawdown; 4: Annual Percentage Thermal Drawdown; 5: User-Provided Temperature Profile; 6: TOUGH2 Simulator; 7: SUTRA; 8: SBT",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
       "default": 4,
       "minimum": 0,
-      "maximum": 7,
+      "maximum": 8,
       "enum_values": [
         {
           "name": "CYLINDRICAL",
@@ -89,6 +89,11 @@
           "name": "SUTRA",
           "value": "SUTRA",
           "int_value": 7
+        },
+        {
+          "name": "SBT",
+          "value": "SBT",
+          "int_value": 8
         }
       ]
     },
@@ -462,6 +467,96 @@
       "minimum": 0.0,
       "maximum": 150
     },
+    "Flowrate Model": {
+      "description": "Must be 1 or 2. '1' means the user provides a constant mass flow rate. '1' means the user provides an excel file with a mass flow rate profile.",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": "",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "Flowrate File": {
+      "description": "Excel file with a mass flow rate profile",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir",
+      "default": "",
+      "minimum": null,
+      "maximum": null
+    },
+    "Injection Temperature Model": {
+      "description": "Must be 1 or 2. '1' means the user provides a constant injection temperature. '1' means the user provides an excel file with an injection temperature profile.",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": "",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "Injection Temperature File": {
+      "description": "Excel file with an injection temperature profile",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir",
+      "default": "",
+      "minimum": null,
+      "maximum": null
+    },
+    "SBT Accuracy Desired": {
+      "description": "Must be 1, 2, 3, 4 or 5 with 1 lowest accuracy and 5 highest accuracy. Lowest accuracy runs fastest. Accuracy level impacts number of discretizations for numerical integration and decision tree thresholds in SBT algorithm.",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 5
+    },
+    "SBT Percent Implicit Euler Scheme": {
+      "description": "Should be between 0 and 1. Most stable is setting it to 1 which results in a fully implicit Euler scheme when calculating the fluid temperature at each time step. With a value of 0, the convective term is modelled using explicit Euler. A value of 0.5 would model the convective term 50% explicit and 50% implicit, which may be slightly more accurate than fully implicit.",
+      "type": "number",
+      "units": "",
+      "category": "Reservoir",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "SBT Initial Timestep Count": {
+      "description": "The number of timesteps in the first ~3 hours of model",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 150
+    },
+    "SBT Final Timestep Count": {
+      "description": "The number of timesteps after the first ~3 hours of model",
+      "type": "number",
+      "units": null,
+      "category": "Reservoir",
+      "default": 70,
+      "minimum": 5,
+      "maximum": 1000
+    },
+    "SBT Initial to Final Timestep Transition": {
+      "description": "The time in secs at which the time arrays switches from closely spaced linear to logarithmic",
+      "type": "number",
+      "units": "sec",
+      "category": "Reservoir",
+      "default": 9900,
+      "minimum": 1,
+      "maximum": 40000000
+    },
+    "SBT Generate Wireframe Graphics": {
+      "description": "Switch to control the generation of a wireframe drawing of a SBT wells configuration",
+      "type": "boolean",
+      "units": null,
+      "category": "Reservoir",
+      "default": false,
+      "minimum": null,
+      "maximum": null
+    },
     "SUTRA Annual Heat File Name": {
       "description": "SUTRA file with heat stored, heat supplied and efficiency for each year",
       "type": "string",
@@ -697,13 +792,13 @@
       "maximum": 1.8e+30
     },
     "Closed-loop Configuration": {
-      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L; 5: EavorLoop",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
       "default": 3,
       "minimum": 1,
-      "maximum": 4,
+      "maximum": 5,
       "enum_values": [
         {
           "name": "ULOOP",
@@ -724,17 +819,22 @@
           "name": "L",
           "value": "L",
           "int_value": 4
+        },
+        {
+          "name": "EAVORLOOP",
+          "value": "EavorLoop",
+          "int_value": 5
         }
       ]
     },
     "Well Geometry Configuration": {
-      "description": "1: utube; 2: coaxial; 3: vertical; 4: L",
+      "description": "1: utube; 2: coaxial; 3: vertical; 4: L; 5: EavorLoop",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
       "default": 3,
       "minimum": 1,
-      "maximum": 4,
+      "maximum": 5,
       "enum_values": [
         {
           "name": "ULOOP",
@@ -755,6 +855,11 @@
           "name": "L",
           "value": "L",
           "int_value": 4
+        },
+        {
+          "name": "EAVORLOOP",
+          "value": "EavorLoop",
+          "int_value": 5
         }
       ]
     },
@@ -832,6 +937,69 @@
       "default": 0.01,
       "minimum": 0.01,
       "maximum": 100.0
+    },
+    "Vertical Section Length": {
+      "description": "length/depth to the bottom of the vertical wellbores",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 2000.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
+    },
+    "Vertical Wellbore Spacing": {
+      "description": "Horizontal distance between vertical wellbores",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 100.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
+    },
+    "Lateral Spacing": {
+      "description": "Horizontal distance between laterals",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 100.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
+    },
+    "Lateral Inclination Angle": {
+      "description": "Inclination of the lateral section, where 0 degrees would mean vertical while 90 degrees is pure horizontal",
+      "type": "number",
+      "units": "degrees",
+      "category": "Well Bores",
+      "default": 20.0,
+      "minimum": 0.0,
+      "maximum": 89.999999
+    },
+    "Discretization Length": {
+      "description": "distance between sample point along length of model",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 250.0,
+      "minimum": 0.01,
+      "maximum": 10000.0
+    },
+    "Junction Depth": {
+      "description": "vertical depth where the different laterals branch out (where the multilateral section starts, second deepest depth of model)",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 4000.0,
+      "minimum": 1000,
+      "maximum": 15000.0
+    },
+    "Lateral Endpoint Depth": {
+      "description": "vertical depth where the lateral section ends (tip of the multilateral section, deepest depth of model)",
+      "type": "number",
+      "units": "meter",
+      "category": "Well Bores",
+      "default": 7000.0,
+      "minimum": 1000,
+      "maximum": 15000.0
     },
     "End-Use Option": {
       "description": "Select the end-use application of the geofluid heat: 1: Electricity; 2: Direct-Use Heat; 31: Cogeneration Topping Cycle, Heat sales considered as extra income; 32: Cogeneration Topping Cycle, Electricity sales considered as extra income; 41: Cogeneration Bottoming Cycle, Heat sales considered as extra income; 42: Cogeneration Bottoming Cycle, Electricity sales considered as extra income; 51: Cogeneration Parallel Cycle, Heat sales considered as extra income; 52: Cogeneration Parallel Cycle, Electricity sales considered as extra income",
@@ -1048,6 +1216,42 @@
       "minimum": 1,
       "maximum": 14
     },
+    "Working Fluid Heat Capacity": {
+      "description": "Heat capacity of the working fluid",
+      "type": "number",
+      "units": "J/kg/K",
+      "category": "Surface Plant",
+      "default": 4200.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
+    "Working Fluid Density": {
+      "description": "Density of the working fluid",
+      "type": "number",
+      "units": "kg/m**3",
+      "category": "Surface Plant",
+      "default": 1000.0,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
+    "Working Fluid Thermal Conductivity": {
+      "description": "Thermal conductivity of the working fluid",
+      "type": "number",
+      "units": "W/m/K",
+      "category": "Surface Plant",
+      "default": 0.68,
+      "minimum": 0.0,
+      "maximum": 10.0
+    },
+    "Working Fluid Dynamic Viscosity": {
+      "description": "Dynamic viscosity of the working fluid",
+      "type": "number",
+      "units": "PaSec",
+      "category": "Surface Plant",
+      "default": 0.0006,
+      "minimum": 0.0,
+      "maximum": 1
+    },
     "Dead-state Pressure": {
       "description": "",
       "type": "number",
@@ -1103,7 +1307,7 @@
       "maximum": 200.0
     },
     "Economic Model": {
-      "description": "Specify the economic model to calculate the levelized cost of energy.1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
+      "description": "Specify the economic model to calculate the levelized cost of energy. 1: Fixed Charge Rate (FCR); 2: Standard Levelized Cost; 3: BICYCLE; 4: Simple (CLGS)",
       "type": "integer",
       "units": null,
       "category": "Economics",
@@ -1824,7 +2028,7 @@
       "maximum": 50000
     },
     "CO2 produced by Natural Gas": {
-      "description": "CO2 intensity of buring natural gas (how much CO2 is produced per kWh of heat produced (0.407855 lbs/kWh))",
+      "description": "CO2 intensity of burning natural gas (how much CO2 is produced per kWh of heat produced (0.070324961 lbs/kWh; https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references))",
       "type": "number",
       "units": "lbs/kWh",
       "category": "Economics",

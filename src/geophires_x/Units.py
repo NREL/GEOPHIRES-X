@@ -220,6 +220,7 @@ class PressureUnit(str, Enum):
     PASCAL = "Pa"
     BAR = "bar"
     KBAR = "kbar"
+    PSI = "psi"
 
 
 class AvailabilityUnit(str, Enum):

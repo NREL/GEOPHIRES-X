@@ -473,3 +473,15 @@ Print Output to Console, 1"""
 
         self.assertEqual(result.result['RESERVOIR PARAMETERS']['Fracture width']['value'], 320.0)
         self.assertEqual(result.result['RESERVOIR PARAMETERS']['Fracture width']['unit'], 'meter')
+
+    def test_convert_output_psi_to_kpa(self):
+        GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('examples/example_SHR-2.txt')),
+                params={
+                    'Production Wellhead Pressure': '64.69 psi',
+                },
+            )
+        )
+
+        # TODO validate output values (for now we are just testing an exception isn't thrown)

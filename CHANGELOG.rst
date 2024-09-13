@@ -12,6 +12,8 @@ GEOPHIRES-X (2023-2024)
 
 Milestone version for case studies, SHR temperatures, and other changes since 3.0.
 
+3.5.3: SBT Reservoir Model (Slender Body Theory)
+
 3.4
 ^^^
 

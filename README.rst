@@ -51,9 +51,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.5.2.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.5.3.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.5.2...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.5.3...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -333,6 +333,12 @@ A variety of example input ``.txt`` files and corresponding case report ``.out``
    * - Superhot Rock (SHR) Example 2
      - `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__
      - `example_SHR-2.out <tests/examples/example_SHR-2.out>`__
+   * - SBT High Temperature
+     - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
+     - `example_SBT_Hi_T.out <tests/examples/example_SBT_Hi_T.out>`__
+   * - SBT Low Temperature
+     - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
+     - `example_SBT_Lo_T.out <tests/examples/example_SBT_Lo_T.out>`__
 
 
 An interactive table of examples is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__, under the Examples tab.

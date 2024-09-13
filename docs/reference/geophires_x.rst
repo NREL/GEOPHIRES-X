@@ -23,6 +23,9 @@ geophires_x
 .. automodule:: geophires_x.CylindricalReservoir
     :members:
 
+.. automodule:: geophires_x.SBTReservoir
+    :members:
+
 .. automodule:: geophires_x.SUTRAReservoir
     :members:
 
@@ -31,6 +34,9 @@ geophires_x
     :members:
 
 .. automodule:: geophires_x.AGSWellBores
+    :members:
+
+.. automodule:: geophires_x.SBTWellBores
     :members:
 
 .. automodule:: geophires_x.SUTRAWellBores
@@ -50,6 +56,9 @@ geophires_x
     :members:
 
 .. automodule:: geophires_x.AGSEconomics
+    :members:
+
+.. automodule:: geophires_x.SBTEconomics
     :members:
 
 .. automodule:: geophires_x.SUTRAEconomics

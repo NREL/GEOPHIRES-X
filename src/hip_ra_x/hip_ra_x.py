@@ -112,7 +112,7 @@ class HIP_RA_X:
         self.reservoir_temperature: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Temperature',
-                value=150.0,
+                DefaultValue=150.0,
                 Min=50,
                 Max=1000,
                 UnitType=Units.TEMPERATURE,
@@ -126,7 +126,7 @@ class HIP_RA_X:
         self.rejection_temperature: Parameter = parameter_dict_entry(
             floatParameter(
                 'Rejection Temperature',
-                value=25.0,
+                DefaultValue=25.0,
                 Min=0.1,
                 Max=200,
                 UnitType=Units.TEMPERATURE,
@@ -140,7 +140,7 @@ class HIP_RA_X:
         self.reservoir_porosity: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Porosity',
-                value=18.0,
+                DefaultValue=18.0,
                 Min=0.0,
                 Max=100.0,
                 UnitType=Units.PERCENT,
@@ -154,7 +154,7 @@ class HIP_RA_X:
         self.reservoir_area: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Area',
-                value=81.0,
+                DefaultValue=81.0,
                 Min=0.0,
                 Max=10000.0,
                 UnitType=Units.AREA,
@@ -168,7 +168,7 @@ class HIP_RA_X:
         self.reservoir_thickness: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Thickness',
-                value=0.286,
+                DefaultValue=0.286,
                 Min=0.0,
                 Max=10000.0,
                 UnitType=Units.LENGTH,
@@ -182,7 +182,7 @@ class HIP_RA_X:
         self.reservoir_life_cycle: Parameter = parameter_dict_entry(
             intParameter(
                 'Reservoir Life Cycle',
-                value=30,
+                DefaultValue=30,
                 UnitType=Units.TIME,
                 PreferredUnits=TimeUnit.YEAR,
                 CurrentUnits=TimeUnit.YEAR,
@@ -197,7 +197,7 @@ class HIP_RA_X:
         self.rock_heat_capacity: Parameter = parameter_dict_entry(
             floatParameter(
                 'Rock Heat Capacity',
-                value=2.84e12,
+                DefaultValue=2.84e12,
                 Min=0.0,
                 Max=1e14,
                 UnitType=Units.HEAT_CAPACITY,
@@ -211,7 +211,7 @@ class HIP_RA_X:
         self.fluid_heat_capacity: Parameter = parameter_dict_entry(
             floatParameter(
                 'Fluid Specific Heat Capacity',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=3.0,
                 Max=10.0,
                 UnitType=Units.HEAT_CAPACITY,
@@ -225,7 +225,7 @@ class HIP_RA_X:
         self.fluid_density: Parameter = parameter_dict_entry(
             floatParameter(
                 'Density Of Reservoir Fluid',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=1.000e11,
                 Max=1.000e13,
                 UnitType=Units.DENSITY,
@@ -239,7 +239,7 @@ class HIP_RA_X:
         self.rock_density: Parameter = parameter_dict_entry(
             floatParameter(
                 'Density Of Reservoir Rock',
-                value=2.55e12,
+                DefaultValue=2.55e12,
                 Min=1.000e11,
                 Max=1.000e13,
                 UnitType=Units.DENSITY,
@@ -253,7 +253,7 @@ class HIP_RA_X:
         self.rock_recoverable_heat: Parameter = parameter_dict_entry(
             floatParameter(
                 'Rock Recoverable Heat',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=0.0,
                 Max=1.000,
                 UnitType=Units.PERCENT,
@@ -269,7 +269,7 @@ class HIP_RA_X:
         self.fluid_recoverable_heat: Parameter = parameter_dict_entry(
             floatParameter(
                 'Fluid Recoverable Heat',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=0.00,
                 Max=1.000,
                 UnitType=Units.PERCENT,
@@ -285,7 +285,7 @@ class HIP_RA_X:
         self.recoverable_fluid_factor: Parameter = parameter_dict_entry(
             floatParameter(
                 'Recoverable Fluid Factor',
-                value=0.5,
+                DefaultValue=0.5,
                 Min=0.00,
                 Max=1.000,
                 UnitType=Units.PERCENT,
@@ -299,7 +299,7 @@ class HIP_RA_X:
         self.reservoir_depth: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Depth',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=0.001,
                 Max=15.0,
                 UnitType=Units.LENGTH,
@@ -315,7 +315,7 @@ class HIP_RA_X:
         self.reservoir_pressure: Parameter = parameter_dict_entry(
             floatParameter(
                 'Reservoir Pressure',
-                value=-1.0,
+                DefaultValue=-1.0,
                 Min=0.00,
                 Max=10000.000,
                 UnitType=Units.PRESSURE,
@@ -331,7 +331,7 @@ class HIP_RA_X:
         self.recoverable_rock_heat: Parameter = parameter_dict_entry(
             floatParameter(
                 'Recoverable Heat from Rock',
-                value=0.75,
+                DefaultValue=0.75,
                 Min=0.00,
                 Max=1.000,
                 UnitType=Units.PERCENT,
@@ -345,7 +345,7 @@ class HIP_RA_X:
         self.html_output_file: Parameter = parameter_dict_entry(
             strParameter(
                 'HTML Output File',
-                value='HIP.html',
+                DefaultValue='HIP.html',
                 Required=False,
                 Provided=False,
                 ErrMessage='assume no HTML output',

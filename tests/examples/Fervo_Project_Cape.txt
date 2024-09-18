@@ -1,0 +1,60 @@
+# Fervo Project Cape
+# Presented at NREL GEOPHIRES workshop 2024-07-18
+# https://gtp.scientificwebservices.com/geophires/?shared-geophires-result-id=2bfa1f9f-d50b-476e-a05f-90e7f6a84ac1
+
+Reservoir Model, 1
+Reservoir Volume Option, 1
+Reservoir Density, 2800
+Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
+Reservoir Heat Capacity, 1000
+Reservoir Thermal Conductivity, 2.7
+Number of Fractures, 100
+Fracture Shape, 4
+Fracture Height, 300
+Fracture Width, 2400
+Fracture Separation, 15
+Number of Segments, 1
+Gradient 1, 73, -- temperature at 8500 ft: 200 deg C (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf)
+Plant Outlet Pressure, 1000 psi
+Number of Injection Wells, 12, -- Reservoir artificially increased by a factor of 12 (12 doublets)
+Number of Production Wells, 12
+Well Geometry Configuration, 4
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Number of Multilateral Sections, 2
+Total Nonvertical Length, 5000 feet
+Production Flow Rate per Well, 98
+Production Well Diameter, 8
+Injection Well Diameter, 8
+Well Separation, 365 feet
+Injection Temperature, 60 degC
+Injection Wellbore Temperature Gain, 3
+Reservoir Impedance, 0.01
+Ramey Production Wellbore Model, 1
+Utilization Factor, .9
+Water Loss Fraction, 0.02
+Maximum Drawdown, 1
+Ambient Temperature, 10 degC
+Surface Temperature, 10 degC
+End-Use Option, 1
+Plant Lifetime, 15
+Power Plant Type, 2
+Circulation Pump Efficiency, 0.80
+Exploration Capital Cost, 0
+Well Drilling and Completion Capital Cost, 4.8, -- https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html
+Reservoir Stimulation Capital Cost, 10
+Economic Model, 3
+Starting Electricity Sale Price, 0.15
+Ending Electricity Sale Price, 1.00
+Electricity Escalation Rate Per Year, 0.004053223
+Electricity Escalation Start Year, 1
+Fraction of Investment in Bonds, .5
+Combined Income Tax Rate, .3
+Gross Revenue Tax Rate, 0
+Inflated Bond Interest Rate, .05
+Inflated Equity Interest Rate, .08
+Inflation Rate, .02
+Investment Tax Credit Rate, 0
+Inflation Rate During Construction, 0.05
+Property Tax Rate, 0
+Time steps per year, 10

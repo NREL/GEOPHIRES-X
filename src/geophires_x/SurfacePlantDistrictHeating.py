@@ -365,12 +365,12 @@ class SurfacePlantDistrictHeating(SurfacePlant):
             heat_intensity = 1.845
             water_intensity = 12.41
 
-            demand = np.empty(0) # create an empty np array for daily demand
-            for day in daily_HDD:
-                # MWh/day
-                demand = np.append(demand, households * (heat_intensity * day + water_intensity) / 1000 + constant_demand * 24)
+        demand = np.empty(0) # create an empty np array for daily demand
+        for day in daily_HDD:
+            # MWh/day
+            demand = np.append(demand, households * (heat_intensity * day + water_intensity) / 1000 + constant_demand * 24)
 
-            return demand
+        return demand
 
     def calc_HDD(self, hourly_temp) -> np.array:
         """

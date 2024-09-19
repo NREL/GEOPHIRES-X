@@ -1,17 +1,16 @@
 import sys
-import os
 import numpy as np
 from .Parameter import floatParameter, strParameter
 from .Units import *
 import geophires_x.Model as Model
-from .Reservoir import Reservoir
+from geophires_x.Reservoir import Reservoir
 
 
 class TOUGH2Reservoir(Reservoir):
     """
     This class models the TOUGH2 Reservoir.
     """
-    def __init__(self, model:Model):
+    def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
@@ -33,6 +32,11 @@ class TOUGH2Reservoir(Reservoir):
         # or used for Output
         # This also includes all Parameters that are calculated and then published using the Printouts function.
         # specific to this stype of reservoir
+        self.tough2_executable_path = self.ParameterDict[self.tough2_executable_path.Name] = strParameter(
+            "TOUGH2 Executable Path",
+            DefaultValue='xt2_eos1.exe',
+            UnitType=Units.NONE,
+        )
         self.tough2modelfilename = self.ParameterDict[self.tough2modelfilename.Name] = strParameter(
             "TOUGH2 Model/File Name",
             value='Doublet',
@@ -126,7 +130,7 @@ class TOUGH2Reservoir(Reservoir):
 
         # GEOPHIRES assumes TOUGH2 executable and input file are in same directory as GEOPHIRESv3.py
         # create tough2 input file
-        path_to_exe = str('xt2_eos1.exe')
+        path_to_exe = str(self.tough2_executable_path.value)
         if not os.path.exists(os.path.join(os.getcwd(), path_to_exe)):
             model.logger.critical('TOUGH2 executable file does not exist in current working directory. \
             GEOPHIRES will abort simulation.')

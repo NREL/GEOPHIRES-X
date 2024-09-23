@@ -593,7 +593,7 @@ class Reservoir:
                             # fracshape = 4  Rectangular fracture
                             ParameterToModify.value = FractureShape.RECTANGULAR
 
-                    elif ParameterToModify.Name.startswith('Gradient'):
+                    elif ParameterToModify.Name.startswith('Gradient '):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
@@ -607,7 +607,7 @@ class Reservoir:
                             # convert 0 C/m gradients to very small number, avoids divide by zero errors later
                             model.reserv.gradient.value[position] = 1e-6
 
-                    elif ParameterToModify.Name.startswith('Thickness'):
+                    elif ParameterToModify.Name.startswith('Thickness '):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.layerthickness.value[position] = ParameterToModify.value

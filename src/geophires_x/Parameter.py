@@ -43,6 +43,7 @@ class ParameterEntry:
     Name: str
     sValue: str
     Comment: Optional[str] = None
+    raw_entry: Optional[str] = None
 
 
 @dataclass
@@ -373,13 +374,17 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         # All is good.  With a list, we have to use the last character of the Description to get the position.
         # I.e., "Gradient 1" should yield a position = 0 ("1" - 1)
         else:
-            parts = ParameterReadIn.Name.split(' ')
-            position = int(parts[1]) - 1
-            if position >= len(ParamToModify.value):
-                ParamToModify.value.append(New_val)  # we are adding to the list, so use append
-            else:  # we are replacing a value, so pop the value we want to replace, then insert a new one
-                ParamToModify.value.pop(position)
-                ParamToModify.value.insert(position, New_val)
+            if ' ' in ParamToModify.Name:
+                parts = ParameterReadIn.Name.split(' ')
+                position = int(parts[1]) - 1
+                if position >= len(ParamToModify.value):
+                    ParamToModify.value.append(New_val)  # we are adding to the list, so use append
+                else:  # we are replacing a value, so pop the value we want to replace, then insert a new one
+                    ParamToModify.value.pop(position)
+                    ParamToModify.value.insert(position, New_val)
+            else:
+                ParamToModify.value = [float(x.strip()) for x in ParameterReadIn.raw_entry.split('--')[0].split(',')[1:]
+                                       if x.strip() != '']
     elif isinstance(ParamToModify, boolParameter):
         if ParameterReadIn.sValue == "0":
             New_val = False

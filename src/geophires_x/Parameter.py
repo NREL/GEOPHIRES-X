@@ -253,10 +253,10 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
     """
     ReadParameter: A method to take a single ParameterEntry object and use it to update the associated Parameter.
     Does validation as well as Unit and Currency conversion
-    :param ParameterEntry: The value the user wants to change and the value they want to change it to (as a string)
+    :param ParameterReadIn: The value the user wants to change and the value they want to change it to (as a string)
      and  any comment they provided with it (as a string) - all in one object (ParameterEntry) that is passed in
       to this method as a parameter itself (ParameterReadIn) - see ParameterEntry class for details on the fields in it
-    :type ParameterEntry: :class:`~geophires_x.Parameter.ParameterEntry`
+    :type ParameterReadIn: :class:`~geophires_x.Parameter.ParameterEntry`
     :param ParamToModify: The Parameter that will be modified (assuming it passes validation and conversion) - this is
       the object that will be modified by this method - see Parameter class for details on the fields in it
     :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
@@ -293,9 +293,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
 
     def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
         return (
-            f'Parameter given ({str(New_val)}) for {ParamToModify.Name} is the same as the default value. '
-            f'Consider removing {ParamToModify.Name} from the input file unless you wish '
-            f'to change it from the default value of ({str(ParamToModify.DefaultValue)})'
+            f'Parameter given ({str(new_val)}) for {param_to_modify_name} is the same as the default value. '
+            f'Consider removing {param_to_modify_name} from the input file unless you wish '
+            f'to change it from the default value of ({str(default_value)})'
         )
 
     if isinstance(ParamToModify, intParameter):

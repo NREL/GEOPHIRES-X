@@ -371,10 +371,10 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
                 model.logger.warning(msg)
             model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
             return
-        # All is good.  With a list, we have to use the last character of the Description to get the position.
-        # I.e., "Gradient 1" should yield a position = 0 ("1" - 1)
         else:
             if ' ' in ParamToModify.Name:
+                # Some list parameters are read in with enumerated parameter names;  in these cases we use the last
+                # character of the description to get the position i.e., "Gradient 1" is position 0.
                 parts = ParameterReadIn.Name.split(' ')
                 position = int(parts[1]) - 1
                 if position >= len(ParamToModify.value):

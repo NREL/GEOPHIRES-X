@@ -7,14 +7,7 @@ Reservoir Model,1,                        			---Multiple Fractures reservoir mod
 Reservoir Depth,4,                     				---[km]
 Number of Segments,4,                  				---[-]
 Gradients, 50, 40, 30, 50
-Thicknesses, 1, 1, 1
-#Gradient 1,50,                          			---[deg.C/km]
-#Thickness 1,1,                          			---[km]
-#Gradient 2,40,                          			---[deg.C/km]
-#Thickness 2,1,                          			---[km]
-#Gradient 3,30,                          			---[deg.C/km]
-#Thickness 3,1,                          			---[km]
-#Gradient 4,50,                          			---[deg.C/km]
+Thicknesses, 1, 1, 1, -- equal thicknesses
 Maximum Temperature,400,                  			---[deg.C]
 Number of Production Wells,2,            			---[-]
 Number of Injection Wells,2,            			---[-]

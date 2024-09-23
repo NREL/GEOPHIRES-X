@@ -254,94 +254,126 @@ Documentation
 Examples
 --------
 
-A variety of example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory of the repository <tests/examples>`__:
+GEOPHIRES includes a variety of examples demonstrating its features and case studies for different types of geothermal systems.
+Starting with an existing GEOPHIRES example that is similar to your intended use/application can be an easier approach to using GEOPHIRES than constructing your own inputs from scratch.
+
+Example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory <tests/examples>`__ of the repository.
+Example-specific web interface deeplinks are listed in the Link column.
 
 
 .. list-table::
-   :widths: 50 40 10
+   :widths: 50 40 5 5
    :header-rows: 1
 
    * - Example
      - Input file
      - Case report file
+     - Link
    * - Example 1
      - `example1.txt <tests/examples/example1.txt>`__
-     - `example1.out <tests/examples/example1.out>`__
+     - `.out <tests/examples/example1.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1>`__
    * - Example 1 with Addons
      - `example1_addons.txt <tests/examples/example1_addons.txt>`__
-     - `example1_addons.out <tests/examples/example1_addons.out>`__
+     - `.out <tests/examples/example1_addons.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1_addons>`__
    * - Example 2
      - `example2.txt <tests/examples/example2.txt>`__
-     - `example2.out <tests/examples/example2.out>`__
+     - `.out <tests/examples/example2.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example2>`__
    * - Example 3
      - `example3.txt <tests/examples/example3.txt>`__
-     - `example3.out <tests/examples/example3.out>`__
+     - `.out <tests/examples/example3.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example3>`__
    * - Example 4
      - `example4.txt <tests/examples/example4.txt>`__
-     - `example4.out <tests/examples/example4.out>`__
+     - `.out <tests/examples/example4.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example4>`__
    * - Example 5
      - `example5.txt <tests/examples/example5.txt>`__
-     - `example5.out <tests/examples/example5.out>`__
+     - `.out <tests/examples/example5.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example5>`__
    * - Example 8
      - `example8.txt <tests/examples/example8.txt>`__
-     - `example8.out <tests/examples/example8.out>`__
+     - `.out <tests/examples/example8.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example8>`__
    * - Example 9
      - `example9.txt <tests/examples/example9.txt>`__
-     - `example9.out <tests/examples/example9.out>`__
+     - `.out <tests/examples/example9.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example9>`__
    * - Example 10: Heat Pump
      - `example10_HP.txt <tests/examples/example10_HP.txt>`__
-     - `example10_HP.out <tests/examples/example10_HP.out>`__
+     - `.out <tests/examples/example10_HP.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example10_HP>`__
    * - Example 11: Absorption Chiller
      - `example11_AC.txt <tests/examples/example11_AC.txt>`__
-     - `example11_AC.out <tests/examples/example11_AC.out>`__
+     - `.out <tests/examples/example11_AC.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example11_AC>`__
    * - Example 12: District Heating
      - `example12_DH.txt <tests/examples/example12_DH.txt>`__
-     - `example12_DH.out <tests/examples/example12_DH.out>`__
+     - `.out <tests/examples/example12_DH.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example12_DH>`__
    * - Example 13
      - `example13.txt <tests/examples/example13.txt>`__
-     - `example13.out <tests/examples/example13.out>`__
+     - `.out <tests/examples/example13.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
    * - AGS: Coaxial sCO2: Heat (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat>`__
    * - AGS: Coaxial Water: Heat (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat>`__
    * - AGS: Uloop sCO2: Electricity (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec>`__
    * - AGS: Uloop sCO2: Heat (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat>`__
    * - AGS: Uloop Water: Electricity (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec>`__
    * - CLGS: Uloop Water: Heat (Beckers et. al 2023)
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
-     - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
+     - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat>`__
    * - SUTRA Example 1
      - `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__
-     - `SUTRAExample1.out <tests/examples/SUTRAExample1.out>`__
+     - `.out <tests/examples/SUTRAExample1.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=SUTRAExample1>`__
    * - Multiple Gradients
      - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
-     - `example_multiple_gradients.out <tests/examples/example_multiple_gradients.out>`__
-   * - Fervo Energy Whitepaper (Norbeck J.H. and Latimer T.M. 2023.)
+     - `.out <tests/examples/example_multiple_gradients.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_multiple_gradients>`__
+   * - Fervo Project Red (Norbeck J.H. and Latimer T.M. 2023.)
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
-     - `Fervo_Norbeck_Latimer_2023.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
+     - `.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Norbeck_Latimer_2023>`__
+   * - Fervo Project Cape
+     - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
+     - `.out <tests/examples/Fervo_Project_Cape.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape>`__
    * - Superhot Rock (SHR) Example 1
      - `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__
-     - `example_SHR-1.out <tests/examples/example_SHR-1.out>`__
+     - `.out <tests/examples/example_SHR-1.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SHR-1>`__
    * - Superhot Rock (SHR) Example 2
      - `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__
-     - `example_SHR-2.out <tests/examples/example_SHR-2.out>`__
+     - `.out <tests/examples/example_SHR-2.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SHR-2>`__
    * - SBT High Temperature
      - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
-     - `example_SBT_Hi_T.out <tests/examples/example_SBT_Hi_T.out>`__
+     - `.out <tests/examples/example_SBT_Hi_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Hi_T>`__
    * - SBT Low Temperature
      - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
-     - `example_SBT_Lo_T.out <tests/examples/example_SBT_Lo_T.out>`__
+     - `.out <tests/examples/example_SBT_Lo_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
-
-An interactive table of examples is available at `gtp.scientificwebservices.com/geophires <https://gtp.scientificwebservices.com/geophires>`__, under the Examples tab.
 
 Parameters
 ----------

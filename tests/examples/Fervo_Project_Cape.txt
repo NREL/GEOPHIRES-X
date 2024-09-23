@@ -1,6 +1,5 @@
 # Fervo Project Cape
 # Presented at NREL GEOPHIRES workshop 2024-07-18
-# https://gtp.scientificwebservices.com/geophires/?shared-geophires-result-id=2bfa1f9f-d50b-476e-a05f-90e7f6a84ac1
 
 Reservoir Model, 1
 Reservoir Volume Option, 1

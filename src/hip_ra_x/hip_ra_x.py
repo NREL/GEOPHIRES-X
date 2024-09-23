@@ -324,7 +324,7 @@ class HIP_RA_X:
                 Required=False,
                 Provided=False,
                 ErrMessage='calculate assuming hydrostatic pressure and the reservoir depth & water density',
-                ToolTipText='pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and '
+                ToolTipText='pressure of the of reservoir (in MPa). Calculated assuming hydrostatic pressure and '
                 'reservoir depth & water density if no value given',
             )
         )
@@ -339,7 +339,7 @@ class HIP_RA_X:
                 CurrentUnits=PercentUnit.TENTH,
                 Required=False,
                 ErrMessage='assume 0.75 (75%) of fluid from the reservoir is recoverable',
-                ToolTipText='percent of fluid that is recoverable from the reservoir (0.75 = 75%)',
+                ToolTipText='percent of heat that is recoverable from the rock (0.75 = 75%)',
             )
         )
         self.html_output_file: Parameter = parameter_dict_entry(

@@ -324,9 +324,12 @@ A variety of example input ``.txt`` files and corresponding case report ``.out``
    * - Multiple Gradients
      - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
      - `example_multiple_gradients.out <tests/examples/example_multiple_gradients.out>`__
-   * - Fervo Energy Whitepaper (Norbeck J.H. and Latimer T.M. 2023.)
+   * - Fervo Project Red (Norbeck J.H. and Latimer T.M. 2023.)
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
      - `Fervo_Norbeck_Latimer_2023.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
+   * - Fervo Project Cape
+     - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
+     - `Fervo_Project_Cape.out <tests/examples/Fervo_Project_Cape.out>`__
    * - Superhot Rock (SHR) Example 1
      - `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__
      - `example_SHR-1.out <tests/examples/example_SHR-1.out>`__

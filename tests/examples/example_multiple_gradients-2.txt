@@ -1,4 +1,4 @@
-# Example: Multiple Gradients: This problem considers an EGS reservoir at 4km depth with multiple geothermal gradients.
+# Example: Multiple Gradients 2: Equivalent to Multiple Gradients example except with list-style Gradients & Thicknesses parameters.
 
 
 ***Subsurface technical parameters***

@@ -5,7 +5,7 @@ import sys
 import geophires_x
 import numpy as np
 import geophires_x.Model as Model
-from .Parameter import LookupUnits
+from .Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits
 from .OptionList import EconomicModel
 
 NL="\n"
@@ -89,10 +89,10 @@ class SUTRAOutputs:
         # to the units that the user entered the data in
         # We do this because the value may be displayed in the output, and we want the user to recognize their value,
         # not some converted value
-        # for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.ParameterDict:
-        #        param = obj.ParameterDict[key]
-        #        if not param.UnitsMatch: ConvertUnitsBack(param, model)
+        for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
+            for key in obj.ParameterDict:
+                param = obj.ParameterDict[key]
+                if not param.UnitsMatch: ConvertUnitsBack(param, model)
 
         # now we need to loop through all thw output parameters to update their units to
         # whatever units the user has specified.
@@ -100,11 +100,14 @@ class SUTRAOutputs:
         # from whatever LENGTH unit they are to feet.
         # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
 
-        #for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.OutputParameterDict:
-        #        if key in self.ParameterDict:
-        #            if self.ParameterDict[key] != obj.OutputParameterDict[key].CurrentUnits:
-        #                ConvertOutputUnits(obj.OutputParameterDict[key], self.ParameterDict[key], model)
+        for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
+            for key in obj.OutputParameterDict:
+                output_param:OutputParameter = obj.OutputParameterDict[key]
+                if key in self.ParameterDict:
+                    if self.ParameterDict[key] != output_param.CurrentUnits:
+                        ConvertOutputUnits(output_param, self.ParameterDict[key], model)
+                elif not output_param.UnitsMatch:
+                    obj.OutputParameterDict[key] = output_param.with_preferred_units()
 
         # write results to output file and screen
 
@@ -142,7 +145,7 @@ class SUTRAOutputs:
                     f.write(f"      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} " + model.economics.FCR.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write("      Economic Model = " + model.economics.econmodel.value.value + NL)
-                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} " + model.economics.discountrate.PreferredUnits.value + NL)
+                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value:10.2f} " + model.economics.discountrate.PreferredUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write("      Economic Model  = " + model.economics.econmodel.value.value + NL)
                 f.write(f"      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} " + model.economics.inflrateconstruction.PreferredUnits.value + NL)

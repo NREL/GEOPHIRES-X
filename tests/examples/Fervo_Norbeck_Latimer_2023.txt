@@ -37,7 +37,7 @@ Horizontal Well Drilling Cost Correlation, 10,	per the drill cost paper - works 
 Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
 Production Well Diameter, 7, per the paper
 Injection Well Diameter, 7, per the paper
-Well Separation, 365 feet, per the paper
+Well Separation, 365 ft, per the paper
 Injection Temperature, 38 degC, per the paper 75 to 125 degF
 Injection Wellbore Temperature Gain, 3
 Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW

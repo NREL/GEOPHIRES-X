@@ -288,8 +288,9 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         if len(new_str) > 0:
             ParameterReadIn.sValue = new_str
     else:
-        # The value came in without any units, so it must be using the default PreferredUnits
-        ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+        # TODO: determine proper action in this case (previously assumed value
+        # must be using default PreferredUnits, but this led to problems)
+        model.logger.info('value came in without any units')
 
     def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
         return (

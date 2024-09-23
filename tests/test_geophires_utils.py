@@ -538,10 +538,36 @@ class GeophiresUtilsTestCase(BaseTestCase):
         self.assertDictEqual(
             d,
             {
-                'Gradient 1': ParameterEntry(Name='Gradient 1', sValue='69', Comment=''),
-                'Reservoir Depth': ParameterEntry(Name='Reservoir Depth', sValue='5', Comment='-- comment here'),
-                'End-Use Option': ParameterEntry(Name='End-Use Option', sValue='1', Comment='# another comment'),
-                'Power Plant Type': ParameterEntry(Name='Power Plant Type', sValue='4', Comment='comments galore'),
+                'Gradient 1': ParameterEntry(Name='Gradient 1', sValue='69', Comment='', raw_entry='Gradient 1, 69'),
+                'Reservoir Depth': ParameterEntry(
+                    Name='Reservoir Depth',
+                    sValue='5',
+                    Comment='-- comment here',
+                    raw_entry='Reservoir Depth, 5, -- comment here',
+                ),
+                'End-Use Option': ParameterEntry(
+                    Name='End-Use Option',
+                    sValue='1',
+                    Comment='# another comment',
+                    raw_entry='End-Use Option, 1, # another comment',
+                ),
+                'Power Plant Type': ParameterEntry(
+                    Name='Power Plant Type',
+                    sValue='4',
+                    Comment='comments galore',
+                    raw_entry='Power Plant Type, 4, comments galore',
+                ),
+                # Note sValue and Comment are, obviously, inaccurate for list-type parameters - this is handled in
+                # geophires_x.Parameter.ReadParameter where raw_entry value is parsed instead.
+                'Gradients': ParameterEntry(
+                    Name='Gradients',
+                    sValue='10',
+                    Comment=' 20 30 40 -- gradiance',
+                    raw_entry='Gradients, 10, 20, 30, 40, -- gradiance',
+                ),
+                'Thicknesses': ParameterEntry(
+                    Name='Thicknesses', sValue='3', Comment='2 1', raw_entry='Thicknesses, 3,2, 1'
+                ),
             },
         )
 

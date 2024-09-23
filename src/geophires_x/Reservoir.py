@@ -597,26 +597,11 @@ class Reservoir:
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.gradient.value[position] = ParameterToModify.value
-                        if model.reserv.gradient.value[position] > 1.0:
-                            # TODO refactor to avoid heuristic-based unit conversions
-                            model.reserv.gradient.value[position] = model.reserv.gradient.value[
-                                                                        position] / 1000.0  # convert C/m
-                            model.reserv.gradient.CurrentUnits = TemperatureGradientUnit.DEGREESCPERM
-
-                        if model.reserv.gradient.value[position] < 1e-6:
-                            # convert 0 C/m gradients to very small number, avoids divide by zero errors later
-                            model.reserv.gradient.value[position] = 1e-6
 
                     elif ParameterToModify.Name.startswith('Thickness '):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
                         model.reserv.layerthickness.value[position] = ParameterToModify.value
-                        if model.reserv.layerthickness.value[position] < 100.0:
-                            model.reserv.layerthickness.value[position] = model.reserv.layerthickness.value[
-                                                                              position] * 1000.0  # convert m
-                            model.reserv.layerthickness.CurrentUnits = LengthUnit.METERS
-                        # set thickness of bottom segment to large number to override lower, unused segments
-                        model.reserv.layerthickness.value[position + 1] = 100_000.0
 
                     elif ParameterToModify.Name.startswith("Fracture Separation"):
                         self.fracsepcalc.value = self.fracsep.value
@@ -634,6 +619,31 @@ class Reservoir:
             model.logger.info("No parameters read because no content provided")
 
         coerce_int_params_to_enum_values(self.ParameterDict)
+
+        for position in range(len(model.reserv.gradient.value)):
+            if model.reserv.gradient.value[position] > 1.0:
+                # TODO refactor to avoid heuristic-based unit conversions
+                model.reserv.gradient.value[position] = model.reserv.gradient.value[
+                                                            position] / 1000.0  # convert to C/m
+                model.reserv.gradient.CurrentUnits = TemperatureGradientUnit.DEGREESCPERM
+
+            if model.reserv.gradient.value[position] < 1e-6:
+                # convert 0 C/m gradients to very small number, avoids divide by zero errors later
+                model.reserv.gradient.value[position] = 1e-6
+
+        for position in range(len(model.reserv.layerthickness.value)):
+            if model.reserv.layerthickness.value[position] < 100.0:
+                # TODO refactor to avoid heuristic-based unit conversions
+                model.reserv.layerthickness.value[position] = model.reserv.layerthickness.value[
+                                                                  position] * 1000.0  # convert to m
+                model.reserv.layerthickness.CurrentUnits = LengthUnit.METERS
+
+        # set thickness of bottom segment to large number to override lower, unused segments
+        while len(model.reserv.layerthickness.value) < model.reserv.numseg.value:
+            model.reserv.layerthickness.value.append(100_000.0)
+
+        model.reserv.layerthickness.value[model.reserv.numseg.value-1] = 100_000.0
+
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

@@ -143,16 +143,16 @@
       "maximum": 15.0
     },
     "Reservoir Pressure": {
-      "description": "pressure of the of reservoir (in mPa). Calculated assuming hydrostatic pressure and reservoir depth & water density if no value given",
+      "description": "pressure of the of reservoir (in MPa). Calculated assuming hydrostatic pressure and reservoir depth & water density if no value given",
       "type": "number",
-      "units": "mPa",
+      "units": "MPa",
       "category": null,
       "default": -1.0,
       "minimum": 0.0,
       "maximum": 10000.0
     },
     "Recoverable Heat from Rock": {
-      "description": "percent of fluid that is recoverable from the reservoir (0.75 = 75%)",
+      "description": "percent of heat that is recoverable from the rock (0.75 = 75%)",
       "type": "number",
       "units": "",
       "category": null,

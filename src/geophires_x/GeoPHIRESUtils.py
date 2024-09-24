@@ -554,7 +554,7 @@ def read_input_file(return_dict_1, logger=None, input_file_name=None):
                     comment = comment + elements[i]
 
             # done with parsing, now create the object and add to the dictionary
-            p_entry = ParameterEntry(description, s_val, comment)
+            p_entry = ParameterEntry(description, s_val, comment, line)
             return_dict_1[description] = p_entry  # make the dictionary element
 
     else:

@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.special import erf, erfc, jv, yv, exp1
 from scipy.interpolate import interp1d
+import scipy.io as sio
 import matplotlib.pyplot as plt
 
 import geophires_x.Model as Model
@@ -451,7 +452,7 @@ class SBTReservoir(CylindricalReservoir):
         g = 9.81  # Gravitational acceleration [m/s²]
         gamma = 0.577215665  # Euler's constant
         alpha_m = self.krock.value / (self.rhorock.value * self.cprock.value)  # Rock thermal diffusivity [m²/s]
-        alpha_m_boiler = self.krock.value_boiler / (self.rhorock.value * self.cprock.value)  # Boiler rock thermal diffusivity [m²/s]
+        alpha_m_boiler = self.krock.value / (self.rhorock.value * self.cprock.value)  # Boiler rock thermal diffusivity [m²/s]
 
         outerradiuscenterpipe = radiuscenterpipe + thicknesscenterpipe  # Outer radius of inner pipe [m]
         A_flow_annulus = np.pi * (radius ** 2 - outerradiuscenterpipe ** 2)  # Flow area of annulus pipe [m²]

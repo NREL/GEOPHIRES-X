@@ -7,6 +7,8 @@ Gradient 1, 69
 Reservoir Depth, 5, -- comment here
 End-Use Option, 1, # another comment
 Power Plant Type, 4, comments galore
+Gradients, 10, 20, 30, 40, -- gradiance
+Thicknesses, 3,2, 1
 
 # another, comment, with, commas, down here
  # comment with space

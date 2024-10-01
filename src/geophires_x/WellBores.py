@@ -1004,7 +1004,7 @@ class WellBores:
 
         # Input data for subsurface condition
         self.Nonvertical_length = self.ParameterDict[self.Nonvertical_length.Name] = floatParameter(
-            "Total Nonvertical Length",
+            "Nonvertical Length per Multilateral Section",
             DefaultValue=1000.0,
             Min=50.0,
             Max=20000.0,
@@ -1012,7 +1012,7 @@ class WellBores:
             PreferredUnits=LengthUnit.METERS,
             CurrentUnits=LengthUnit.METERS,
             Required=True,
-            ErrMessage="assume default Total nonvertical length (1000 m)"
+            ErrMessage="assume default Nonvertical Length per Multilateral Section (1000 m)"
         )
 
         self.nonverticalwellborediameter = self.ParameterDict[self.nonverticalwellborediameter.Name] = floatParameter(
@@ -1228,7 +1228,26 @@ class WellBores:
         # and if you do, do it before or after you call you own version of this method. If you do, you can also choose
         # to call this method from you class, which can modify all these superclass parameters in your class.
 
+
         if len(model.InputParameters) > 0:
+
+            # See https://github.com/NREL/GEOPHIRES-X/issues/278?title=Total+Nonvertical+Length+is+actually+per+section
+            deprecated_nonvertical_length_param_name = 'Total Nonvertical Length'
+            if deprecated_nonvertical_length_param_name in model.InputParameters:
+                model.logger.warning(
+                    f'"{deprecated_nonvertical_length_param_name}" parameter name is deprecated, '
+                    f'use "{self.Nonvertical_length.Name}" instead')
+
+                if self.Nonvertical_length.Name not in model.InputParameters:
+                    model.InputParameters[self.Nonvertical_length.Name] = model.InputParameters[
+                        deprecated_nonvertical_length_param_name]
+                else:
+                    model.logger.warning(
+                        f'Ignoring value of "{deprecated_nonvertical_length_param_name}" '
+                        f'because it is set by "{self.Nonvertical_length.Name}" instead')
+
+                del model.InputParameters[deprecated_nonvertical_length_param_name]
+
             # loop through all the parameters that the user wishes to set, looking for parameters that match this object
             for item in self.ParameterDict.items():
                 ParameterToModify = item[1]

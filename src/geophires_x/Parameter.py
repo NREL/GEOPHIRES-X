@@ -731,7 +731,7 @@ def _parameter_with_currency_units_converted_back_to_preferred_units(param: Para
 
     else:
         raise AttributeError(
-            f'Unit/unit type ({param.CurrentUnits}/{param.UnitType} for {param.Name} '
+            f'Unit/unit type ({param.CurrentUnits}/{param.UnitType}) for {param.Name} '
             f'is not a recognized currency unit'
         )
 

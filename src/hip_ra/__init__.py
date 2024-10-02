@@ -44,14 +44,12 @@ class HipRaResult:
     def _parse_fields(self):
         with open(self.output_file_path) as f:
             text = f.read()
-            pattern = re.compile(r'(.+?):\s+([0-9eE.+-]+)\s*(.+)+?')
+            pattern = re.compile(r'(.+?):\s+([0-9eE.+-]+)\s*(\S+)*?\n')
 
             matches = re.findall(pattern, text)
 
             result = {
-                key.strip(): (
-                    {'value': float(value), 'unit': unit.strip()} if unit else {'value': float(value), 'unit': None}
-                )
+                key.strip(): {'value': float(value), 'unit': unit.strip() if unit else None}
                 for key, value, unit in matches
             }
 

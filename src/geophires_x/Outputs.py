@@ -713,7 +713,7 @@ class Outputs:
                     ParameterReadIn = model.InputParameters[key]
 
                     if key in self.filepath_parameter_names:
-                        if not Path(ParameterReadIn.sValue).is_absolute():
+                        if not Path(ParameterReadIn.sValue).is_absolute() and default_output_path is not None:
                             original_val = ParameterReadIn.sValue
                             ParameterReadIn.sValue = str(
                                 default_output_path.joinpath(ParameterReadIn.sValue).absolute())
@@ -741,8 +741,6 @@ class Outputs:
             for key in model.InputParameters.keys():
                 if key.startswith('Units:'):
                     self.ParameterDict[key.replace('Units:', '')] = LookupUnits(model.InputParameters[key].sValue)[0]
-
-                    # handle special cases
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 

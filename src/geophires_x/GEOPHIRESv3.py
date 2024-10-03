@@ -63,7 +63,7 @@ def main(enable_geophires_logging_config=True):
                                   supress_warnings=True)
         json_merged = {**json_merged, **json.loads(json_sdacgt)}
 
-    json_outputfile = 'HDR.json'
+    json_outputfile = Path(original_cwd, 'HDR.json')
     if len(sys.argv) > 2:
         output_arg = str(sys.argv[2])
         output_arg_path = Path(output_arg)
@@ -73,7 +73,7 @@ def main(enable_geophires_logging_config=True):
 
     # if the user has asked for it, copy the output file to the screen
     if model.outputs.printoutput:
-        outputfile = 'HDR.out'
+        outputfile = Path(original_cwd, 'HDR.out')
         if len(sys.argv) > 2:
             outputfile = sys.argv[2]
 

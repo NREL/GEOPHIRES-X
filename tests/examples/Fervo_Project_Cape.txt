@@ -21,7 +21,7 @@ Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 2
-Total Nonvertical Length, 5000 feet
+Nonvertical Length per Multilateral Section, 5000 feet
 Production Flow Rate per Well, 98
 Production Well Diameter, 8
 Injection Well Diameter, 8

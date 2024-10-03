@@ -6,7 +6,7 @@ tests/__pycache__
 # requirements defined in setup.py
 requirements.txt
 
-# Temp files
+# Temp/output files
 .*.sw[po]
 *~
 *.bak
@@ -17,6 +17,11 @@ all_messages_conf.log
 HDR.out
 src/geophires_x/*.png
 src/geophires_x/*.html
+*HEATING_COOLING*.png
+*CASHFLOW_PROFILE*.png
+Geothermal_district_heating_system_with_peaking_boilers.png
+*.html
+!docs/*.html
 
 # C extensions
 *.so

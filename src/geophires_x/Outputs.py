@@ -636,17 +636,18 @@ class Outputs:
     """
     This class handles all the outputs for the GEOPHIRESv3 model.
     """
+
     def __init__(self, model:Model, output_file:str ='HDR.out'):
         model.logger.info(f'Init {__class__!s}: {__name__}')
         self.ParameterDict = {}
         self.OutputParameterDict = {}
         self.filepath_parameter_names = []
 
-        def file_path_parameter(p: Parameter) -> Parameter:
+        def filepath_parameter(p: Parameter) -> Parameter:
             self.filepath_parameter_names.append(p.Name)
             return p
 
-        self.text_output_file = self.ParameterDict[self.text_output_file.Name] = file_path_parameter(strParameter(
+        self.text_output_file = self.ParameterDict[self.text_output_file.Name] = filepath_parameter(strParameter(
                 'Improved Text Output File',
                 DefaultValue='GEOPHIRES_Text.html',
                 Required=False,
@@ -655,7 +656,7 @@ class Outputs:
                 ToolTipText='Provide a improved text output name if you want to have improved text output (no output if not provided)',
         ))
 
-        self.html_output_file = self.ParameterDict[self.html_output_file.Name] = file_path_parameter(strParameter(
+        self.html_output_file = self.ParameterDict[self.html_output_file.Name] = filepath_parameter(strParameter(
                 'HTML Output File',
                 DefaultValue='GEOPHIRES.html',
                 Required=False,
@@ -699,6 +700,7 @@ class Outputs:
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
         :param default_output_path: Relative path for non-absolute output path parameters
+        :type default_output_path: pathlib.Path
         :return: None
         """
         model.logger.info(f'Init {__class__!s}: {__name__}')

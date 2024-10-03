@@ -47,30 +47,8 @@ class SUTRAOutputs(Outputs):
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-        # Deal with converting Units back to PreferredUnits, if required.
-        # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
-        # to the units that the user entered the data in
-        # We do this because the value may be displayed in the output, and we want the user to recognize their value,
-        # not some converted value
-        # for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.ParameterDict:
-        #        param = obj.ParameterDict[key]
-        #        if not param.UnitsMatch: ConvertUnitsBack(param, model)
-
-        # now we need to loop through all thw output parameters to update their units to
-        # whatever units the user has specified.
-        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those
-        # from whatever LENGTH unit they are to feet.
-        # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
-
-        #for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.OutputParameterDict:
-        #        if key in self.ParameterDict:
-        #            if self.ParameterDict[key] != obj.OutputParameterDict[key].CurrentUnits:
-        #                ConvertOutputUnits(obj.OutputParameterDict[key], self.ParameterDict[key], model)
 
         # write results to output file and screen
-
         try:
             with open(self.output_file,'w', encoding='UTF-8') as f:
                 f.write('                               *****************\n')
@@ -181,10 +159,10 @@ class SUTRAOutputs(Outputs):
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print(str(ex))
-            print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            msg = "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            # FIXME raise exception instead of sys.exit()
-            sys.exit()
+            model.logger.critical(msg)
+            raise RuntimeError(msg)
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

@@ -22,6 +22,7 @@ from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUn
 from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel, FractureShape, ReservoirVolume, \
     PlantType
 from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, InsertImagesIntoHTML
+from geophires_x.Parameter import Parameter
 
 NL = '\n'
 validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -635,28 +636,34 @@ class Outputs:
     """
     This class handles all the outputs for the GEOPHIRESv3 model.
     """
+
     def __init__(self, model:Model, output_file:str ='HDR.out'):
         model.logger.info(f'Init {__class__!s}: {__name__}')
         self.ParameterDict = {}
         self.OutputParameterDict = {}
+        self.filepath_parameter_names = []
 
-        self.text_output_file = self.ParameterDict[self.text_output_file.Name] = strParameter(
+        def filepath_parameter(p: Parameter) -> Parameter:
+            self.filepath_parameter_names.append(p.Name)
+            return p
+
+        self.text_output_file = self.ParameterDict[self.text_output_file.Name] = filepath_parameter(strParameter(
                 'Improved Text Output File',
                 DefaultValue='GEOPHIRES_Text.html',
                 Required=False,
                 Provided=False,
                 ErrMessage='assume no improved text output',
                 ToolTipText='Provide a improved text output name if you want to have improved text output (no output if not provided)',
-            )
+        ))
 
-        self.html_output_file = self.ParameterDict[self.html_output_file.Name] = strParameter(
+        self.html_output_file = self.ParameterDict[self.html_output_file.Name] = filepath_parameter(strParameter(
                 'HTML Output File',
                 DefaultValue='GEOPHIRES.html',
                 Required=False,
                 Provided=False,
                 ErrMessage='assume no HTML output',
                 ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
-            )
+        ))
 
         self.printoutput = self.ParameterDict[self.printoutput.Name] = boolParameter(
                 'Print Output to Console',
@@ -677,7 +684,7 @@ class Outputs:
     def __str__(self):
         return 'Outputs'
 
-    def read_parameters(self, model:Model) -> None:
+    def read_parameters(self, model: Model, default_output_path: Path = None) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
         It also handles special cases that need to be handled after a value has been read in and checked.
@@ -692,6 +699,8 @@ class Outputs:
         to call this method from you class, which can effectively modify all these superclass parameters in your class.
         :param model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
+        :param default_output_path: Relative path for non-absolute output path parameters
+        :type default_output_path: pathlib.Path
         :return: None
         """
         model.logger.info(f'Init {__class__!s}: {__name__}')
@@ -702,6 +711,15 @@ class Outputs:
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
+
+                    if key in self.filepath_parameter_names:
+                        if not Path(ParameterReadIn.sValue).is_absolute() and default_output_path is not None:
+                            original_val = ParameterReadIn.sValue
+                            ParameterReadIn.sValue = str(
+                                default_output_path.joinpath(Path(ParameterReadIn.sValue)).absolute())
+                            model.logger.info(f'Adjusted {key} path to {ParameterReadIn.sValue} because original value '
+                                              f'({original_val}) was not an absolute path.')
+
                     # Before we change the parameter, let's assume that the unit preferences will match
                     # - if they don't, the later code will fix this.
                     ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
@@ -723,8 +741,6 @@ class Outputs:
             for key in model.InputParameters.keys():
                 if key.startswith('Units:'):
                     self.ParameterDict[key.replace('Units:', '')] = LookupUnits(model.InputParameters[key].sValue)[0]
-
-                    # handle special cases
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 

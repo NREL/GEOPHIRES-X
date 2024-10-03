@@ -31,7 +31,7 @@ Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 2, Two parallel horizontal sections
-Total Nonvertical Length, 3250 feet, per the paper
+Nonvertical Length per Multilateral Section, 3250 feet, per the paper
 Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
 Horizontal Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
 Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm

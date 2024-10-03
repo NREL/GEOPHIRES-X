@@ -5,6 +5,22 @@ Changelog
 GEOPHIRES-X (2023-2024)
 ------------------------
 
+3.6
+^^^
+
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.0...v3.6.0>`__
+
+Changes default output file path to the original working directory instead of the the GEOPHIRES module source directory (usually ``geophires-x`` or ``src/geophires_x``, depending on package installation type).
+This affects:
+
+1. Users who call GEOPHIRES as a script from a working directory outside of the module source directory and pass no output file argument or a non-absolute output file argument e.g. ``python ./geophires-x/GEOPHIRESv3.py my-input.txt``. In prior versions, the output file would have been generated at ``./geophires_x/HDR.out``; in v.3.6 it is generated at ``./HDR.out`` instead. (Users who call GEOPHIRES as a module – ``python -m geophires_x my-input.txt`` – will see no change since the module has always output relative to the working directory.)
+
+2. Inputs with ``HTML Output File`` and/or ``Improved Text Output File`` parameters specified as non-absolute paths. The associated output files will now be generated relative to the working directory instead of the GEOPHIRES module source directory.
+
+
+Affected users who do not want the new behavior can specify absolute output paths instead of relative ones e.g. ``python ./geophires-x/GEOPHIRESv3.py my-input.txt /home/user/my-geophires-project/geophires-x/HDR.out``
+(Most users are expected to be unaffected.)
+
 3.5
 ^^^
 

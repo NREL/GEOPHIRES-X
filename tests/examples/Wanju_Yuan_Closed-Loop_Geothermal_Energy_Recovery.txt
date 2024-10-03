@@ -12,7 +12,7 @@ Multilaterals Cased, True
 Well Geometry Configuration, 1,       ----U-loop (could be Eavor style)
 Plant Lifetime, 40, ---Years
 Water Thermal Conductivity, 0.65
-Total Nonvertical Length, 5001.0
+Nonvertical Length per Multilateral Section, 5001.0
 Nonvertical Wellbore Diameter, 0.23495, -----m
 Cylindrical Reservoir Radius of Effect Factor, 5.0
 Closed Loop Calculation Start Year, 0.1

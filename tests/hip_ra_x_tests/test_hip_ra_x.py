@@ -115,6 +115,13 @@ class HipRaXTestCase(BaseTestCase):
             },
         )
 
+    def test_result_parsing_3(self):
+        result = HipRaResult(self._get_test_file_path('hip-result_test-result-parsing-3.out'))
+        self.assertIsNone(result.result['Recoverable Fluid Factor']['unit'])
+        self.assertEqual(result.result['Recoverable Fluid Factor']['value'], 0.50)
+        self.assertEqual(result.result['Producible Heat/Unit Area (reservoir)']['value'], 1.37e13)
+        self.assertEqual(result.result['Producible Heat/Unit Area (reservoir)']['unit'], 'kJ/km**2')
+
     def test_calculate_reservoir_volume(self):
         """Calculates the volume of the reservoir"""
 

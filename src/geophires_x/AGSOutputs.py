@@ -222,12 +222,12 @@ class AGSOutputs(Outputs.Outputs):
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
+            msg = "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno
             print(str(ex))
-            print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical(
-                "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            model.logger.critical(msg)
             traceback.print_exc()
-            sys.exit()
+            raise RuntimeError(msg)
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

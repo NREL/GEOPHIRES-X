@@ -485,3 +485,41 @@ Print Output to Console, 1"""
         )
 
         # TODO validate output values (for now we are just testing an exception isn't thrown)
+
+    def test_multilateral_section_nonvertical_length(self):
+        def s(r):
+            del r.result['metadata']
+            del r.result['Simulation Metadata']
+            return r
+
+        deprecated_param = s(
+            GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('multilateral-section-nonvertical-length.txt')),
+                    params={'Total Nonvertical Length': 6000.0},
+                )
+            )
+        )
+
+        non_deprecated_param = s(
+            GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('multilateral-section-nonvertical-length.txt')),
+                    params={'Nonvertical Length per Multilateral Section': 6000.0},
+                )
+            )
+        )
+
+        self.assertDictEqual(deprecated_param.result, non_deprecated_param.result)
+
+        both_params = s(
+            GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(Path('multilateral-section-nonvertical-length.txt')),
+                    params={'Nonvertical Length per Multilateral Section': 6000.0, 'Total Nonvertical Length': 4000.0},
+                )
+            )
+        )
+
+        # deprecated is ignored if both are present.
+        self.assertDictEqual(both_params.result, non_deprecated_param.result)

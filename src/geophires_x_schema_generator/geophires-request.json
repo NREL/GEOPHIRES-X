@@ -30,7 +30,7 @@
     "Closed-loop Configuration",
     "Well Geometry Configuration",
     "Heat Transfer Fluid",
-    "Total Nonvertical Length",
+    "Nonvertical Length per Multilateral Section",
     "Circulation Pump Efficiency",
     "Utilization Factor",
     "Plant Lifetime",
@@ -893,7 +893,7 @@
         }
       ]
     },
-    "Total Nonvertical Length": {
+    "Nonvertical Length per Multilateral Section": {
       "description": "",
       "type": "number",
       "units": "meter",

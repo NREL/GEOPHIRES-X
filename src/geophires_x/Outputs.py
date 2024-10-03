@@ -716,7 +716,7 @@ class Outputs:
                         if not Path(ParameterReadIn.sValue).is_absolute() and default_output_path is not None:
                             original_val = ParameterReadIn.sValue
                             ParameterReadIn.sValue = str(
-                                default_output_path.joinpath(ParameterReadIn.sValue).absolute())
+                                default_output_path.joinpath(Path(ParameterReadIn.sValue)).absolute())
                             model.logger.info(f'Adjusted {key} path to {ParameterReadIn.sValue} because original value '
                                               f'({original_val}) was not an absolute path.')
 

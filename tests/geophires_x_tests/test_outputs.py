@@ -14,7 +14,7 @@ class OutputsTestCase(BaseTestCase):
         m = self._new_model(input_file=input_file, original_cwd=Path('/tmp/'))  # noqa: S108
         html_filepath = Path(m.outputs.html_output_file.value)
         self.assertTrue(html_filepath.is_absolute())
-        self.assertEqual(str(html_filepath), '/tmp/foo.html')  # noqa: S108
+        self.assertEqual(str(html_filepath), str(Path('/tmp/foo.html')))  # noqa: S108
 
     def test_absolute_output_file_path(self):
         input_file = GeophiresInputParameters(
@@ -23,7 +23,7 @@ class OutputsTestCase(BaseTestCase):
         m = self._new_model(input_file=input_file, original_cwd=Path('/tmp/'))  # noqa: S108
         html_filepath = Path(m.outputs.html_output_file.value)
         self.assertTrue(html_filepath.is_absolute())
-        self.assertEqual(str(html_filepath), '/home/user/my-geophires-project/foo.html')
+        self.assertEqual(str(html_filepath), str(Path('/home/user/my-geophires-project/foo.html')))
 
     def _new_model(self, input_file=None, original_cwd=None) -> Model:
         stash_cwd = Path.cwd()

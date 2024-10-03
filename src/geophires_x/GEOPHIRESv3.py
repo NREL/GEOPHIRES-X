@@ -19,6 +19,8 @@ def main(enable_geophires_logging_config=True):
     logging will be configured in the Model class.
     :return: None
     """
+    original_cwd:Path = Path.cwd().absolute()
+
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -33,7 +35,7 @@ def main(enable_geophires_logging_config=True):
     model = Model.Model(enable_geophires_logging_config=enable_geophires_logging_config)
 
     # read the parameters that apply to the model
-    model.read_parameters()
+    model.read_parameters(default_output_path=original_cwd)
 
     # Calculate the entire model
     model.Calculate()

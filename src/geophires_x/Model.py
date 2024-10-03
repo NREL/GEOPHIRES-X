@@ -1,4 +1,5 @@
 import sys
+from email.policy import default
 from pathlib import Path
 import logging
 import time
@@ -196,9 +197,10 @@ class Model(object):
     def __str__(self):
         return "Model"
 
-    def read_parameters(self) -> None:
+    def read_parameters(self, default_output_path: Path = None) -> None:
         """
         The read_parameters function reads the parameters from the input file and stores them in a dictionary.
+        :param default_output_path: Relative path for non-absolute output path parameters
         :return: None
         """
         self.logger.info(f'Init {__class__}: {__name__}')
@@ -209,17 +211,17 @@ class Model(object):
         self.wellbores.read_parameters(self)
         self.surfaceplant.read_parameters(self)
         self.economics.read_parameters(self)
-        self.outputs.read_parameters(self)
+        self.outputs.read_parameters(self, default_output_path=default_output_path)
 
         # having read in the parameters, we now need to set up the objects that are specific to the user's choices
         # if we find out we have an add-ons, read the parameters
         if self.economics.DoAddOnCalculations.value:
             self.addeconomics.read_parameters(self)
-            self.addoutputs.read_parameters(self)
+            self.addoutputs.read_parameters(self, default_output_path=default_output_path)
         # if we find out we have an S-DAC-GT calculation, read for the parameters
         if self.economics.DoSDACGTCalculations.value:
             self.sdacgteconomics.read_parameters(self)
-            self.sdacgtoutputs.read_parameters(self)
+            self.sdacgtoutputs.read_parameters(self, default_output_path=default_output_path)
 
         # Once we are done reading and processing parameters,
         # we reset the objects to more specific objects based on user choices

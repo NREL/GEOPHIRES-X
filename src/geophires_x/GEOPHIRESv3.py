@@ -19,6 +19,8 @@ def main(enable_geophires_logging_config=True):
     logging will be configured in the Model class.
     :return: None
     """
+    original_cwd:Path = Path.cwd().absolute()
+
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -33,7 +35,7 @@ def main(enable_geophires_logging_config=True):
     model = Model.Model(enable_geophires_logging_config=enable_geophires_logging_config)
 
     # read the parameters that apply to the model
-    model.read_parameters()
+    model.read_parameters(default_output_path=original_cwd)
 
     # Calculate the entire model
     model.Calculate()
@@ -61,7 +63,7 @@ def main(enable_geophires_logging_config=True):
                                   supress_warnings=True)
         json_merged = {**json_merged, **json.loads(json_sdacgt)}
 
-    json_outputfile = 'HDR.json'
+    json_outputfile = Path(original_cwd, 'HDR.json')
     if len(sys.argv) > 2:
         output_arg = str(sys.argv[2])
         output_arg_path = Path(output_arg)
@@ -71,7 +73,7 @@ def main(enable_geophires_logging_config=True):
 
     # if the user has asked for it, copy the output file to the screen
     if model.outputs.printoutput:
-        outputfile = 'HDR.out'
+        outputfile = Path(original_cwd, 'HDR.out')
         if len(sys.argv) > 2:
             outputfile = sys.argv[2]
 

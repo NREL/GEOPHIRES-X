@@ -5,13 +5,13 @@ import sys
 import geophires_x
 import numpy as np
 import geophires_x.Model as Model
-from .Parameter import LookupUnits
+from geophires_x.Outputs import Outputs
 from .OptionList import EconomicModel
 
 NL="\n"
 
-class SUTRAOutputs:
-    """TODO should inherit from Outputs"""
+
+class SUTRAOutputs(Outputs):
 
     def __init__(self, model:Model, output_file:str ='HDR.out'):
         """
@@ -35,45 +35,8 @@ class SUTRAOutputs:
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
-        return 'Outputs'
+        return 'SUTRAOutputs'
 
-    def read_parameters(self, model:Model) -> None:
-        """
-        The read_parameters function reads in the parameters from a dictionary and stores them in the parameters.
-        It also handles special cases that need to be handled after a value has been read in and checked.
-        If you choose to subclass this master class, you can also choose to override this method (or not), and if you do
-        Deals with all the parameter values that the user has provided.  They should really only provide values that
-        they want to change from the default values, but they can provide a value that is already set because it is a
-        default value set in __init__.  It will ignore those.
-        This also deals with all the special cases that need to be taken care of after a value has been read in
-        and checked.
-        If you choose to subclass this master class, you can also choose to override this method (or not),
-        and if you do, do it before or after you call you own version of this method.  If you do, you can also choose
-        to call this method from you class, which can effectively modify all these superclass parameters in your class.
-        :param model: The container class of the application, giving access to everything else, including the logger
-        :type model: :class:`~geophires_x.Model.Model`
-        :return: None
-        """
-        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
-
-        if len(model.InputParameters) > 0:
-            # if the user wants it, we need to know if the user wants to copy the contents of the
-            # output file to the screen - this serves as the screen report
-            if "Print Output to Console" in model.InputParameters:
-                ParameterReadIn = model.InputParameters["Print Output to Console"]
-                if ParameterReadIn.sValue == "0":
-                    self.printoutput = False
-
-            # loop through all the parameters that the user wishes to set, looking for parameters that contain the
-            # prefix "Units:" - that means we want to set a special case for converting this
-            # output parameter to new units
-            for key in model.InputParameters.keys():
-                if key.startswith("Units:"):
-                    self.ParameterDict[key.replace("Units:", "")] = LookupUnits(model.InputParameters[key].sValue)[0]
-
-                    # handle special cases
-
-        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def PrintOutputs(self, model: Model):
         """
@@ -84,30 +47,8 @@ class SUTRAOutputs:
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-        # Deal with converting Units back to PreferredUnits, if required.
-        # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
-        # to the units that the user entered the data in
-        # We do this because the value may be displayed in the output, and we want the user to recognize their value,
-        # not some converted value
-        # for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.ParameterDict:
-        #        param = obj.ParameterDict[key]
-        #        if not param.UnitsMatch: ConvertUnitsBack(param, model)
-
-        # now we need to loop through all thw output parameters to update their units to
-        # whatever units the user has specified.
-        # i.e., they may have specified that all LENGTH results must be in feet, so we need to convert those
-        # from whatever LENGTH unit they are to feet.
-        # same for all the other classes of units (TEMPERATURE, DENSITY, etc).
-
-        #for obj in [model.reserv, model.wellbores, model.surfaceplant, model.economics]:
-        #    for key in obj.OutputParameterDict:
-        #        if key in self.ParameterDict:
-        #            if self.ParameterDict[key] != obj.OutputParameterDict[key].CurrentUnits:
-        #                ConvertOutputUnits(obj.OutputParameterDict[key], self.ParameterDict[key], model)
 
         # write results to output file and screen
-
         try:
             with open(self.output_file,'w', encoding='UTF-8') as f:
                 f.write('                               *****************\n')
@@ -218,10 +159,10 @@ class SUTRAOutputs:
         except BaseException as ex:
             tb = sys.exc_info()[2]
             print(str(ex))
-            print("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            msg = "Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical("Error: GEOPHIRES Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            # FIXME raise exception instead of sys.exit()
-            sys.exit()
+            model.logger.critical(msg)
+            raise RuntimeError(msg)
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

@@ -15,7 +15,7 @@ Production Flow Rate per Well, 20, ---- kg/s for water / 40 kg/s for sCO2
 Cylindrical Reservoir Input Depth, 3000.0 meter,
 Reservoir Depth, 3.0, -----kilometers
 Gradient 1, 60.0, ----deg.c/km
-Total Nonvertical Length, 9000, ----- m
+Nonvertical Length per Multilateral Section, 9000, ----- m
 Production Well Diameter,8.5,		--- [inch]
 Injection Temperature, 60.0, -----deg.C
 Plant Lifetime, 40, --- years

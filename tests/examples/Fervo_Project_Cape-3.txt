@@ -1,4 +1,10 @@
-# Fervo Project Cape - extrapolate to 400MWe from https://eartharxiv.org/repository/view/7665/
+# Case Study: Fervo Project Cape 3: Extrapolation from Fervo results pre-published 2024-09-10 at
+# https://eartharxiv.org/repository/view/7665/ to 400MWe capacity.
+# Norbeck J., Gradl C., and Latimer T. 2024.
+#    Deployment of Enhanced Geothermal System technology leads to rapid cost reductions and performance improvements."
+#    https://doi.org/10.31223/X5VH8C
+
+
 Reservoir Model, 1
 Reservoir Volume Option, 1
 Reservoir Density, 2800
@@ -13,7 +19,7 @@ Fracture Separation, 30
 Number of Segments, 1
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
 Plant Outlet Pressure, 1000 psi
-Number of Injection Wells, 39, --
+Number of Injection Wells, 39
 Number of Production Wells, 39
 Well Geometry Configuration, 4
 Has Nonvertical Section, True

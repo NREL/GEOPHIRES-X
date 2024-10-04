@@ -11,28 +11,28 @@ Reservoir Density, 2800
 Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
+Reservoir Porosity, 0.0118
+Reservoir Impedance, 0.001
+
 Number of Fractures, 149
 Fracture Shape, 4
 Fracture Height, 2000
 Fracture Width, 10000
 Fracture Separation, 30
+
 Number of Segments, 1
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
-Plant Outlet Pressure, 1000 psi
+
 Number of Injection Wells, 39
 Number of Production Wells, 39
-Well Geometry Configuration, 4
-Has Nonvertical Section, True
-Multilaterals Cased, True
-Number of Multilateral Sections, 3
-Total Nonvertical Length, 4700 feet
-Production Flow Rate per Well, 120
+Production Flow Rate per Well, 120, -- peak flow reported in paper
 Production Well Diameter, 7
 Injection Well Diameter, 7
 Well Separation, 365 feet
 Injection Temperature, 60 degC
 Injection Wellbore Temperature Gain, 3
-Reservoir Impedance, 0.001
+Plant Outlet Pressure, 1000 psi
+Production Wellhead Pressure, 325 psi
 Ramey Production Wellbore Model, 1
 Utilization Factor, .9
 Water Loss Fraction, 0.02
@@ -43,8 +43,9 @@ End-Use Option, 1
 Plant Lifetime, 15
 Power Plant Type, 2
 Circulation Pump Efficiency, 0.80
+
 Exploration Capital Cost, 0
-Well Drilling and Completion Capital Cost, 4, -- https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html
+Well Drilling and Completion Capital Cost, 4, -- Assume cost continues to decrease from 4.8 (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
 Reservoir Stimulation Capital Cost, 20
 Economic Model, 3
 Starting Electricity Sale Price, 0.15
@@ -63,5 +64,9 @@ Property Tax Rate, 0
 Time steps per year, 10
 Maximum Temperature, 500
 Surface Plant Capital Cost Adjustment Factor, 0.78, -- pad drilling reduces surface CAPEX by 22% https://www.resfrac.com/blog/digesting-the-bonkers-incredible-off-the-charts-spectacular-results-from-the-fervo-and-forge-enhanced-geothermal-projects
-Production Wellhead Pressure, 325 psi
-Reservoir Porosity, 0.0118
+
+Well Geometry Configuration, 4
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Number of Multilateral Sections, 3
+Nonvertical Length per Multilateral Section, 4700 feet

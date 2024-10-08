@@ -1,4 +1,4 @@
-# Fervo Project Cape
+# Case Study: Fervo Project Cape
 # Presented at NREL GEOPHIRES workshop 2024-07-18
 
 Reservoir Model, 1

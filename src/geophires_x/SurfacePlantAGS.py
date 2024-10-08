@@ -708,13 +708,13 @@ class SurfacePlantAGS(SurfacePlant):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         err = self.verify(model)
         if err > 0:
-            model.logger.fatal("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-            print("Error: GEOPHIRES failed to Failed to validate CLGS input value.  Exiting....")
-            sys.exit()
+            msg = 'Error: GEOPHIRES failed to validate CLGS input value. Exiting...'
+            model.logger.fatal(msg)
+            raise RuntimeError(msg)
         self.initialize(model)
 
         self.Linear_production_temperature = model.wellbores.InterpolatedTemperatureArray

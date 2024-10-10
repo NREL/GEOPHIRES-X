@@ -744,15 +744,7 @@ class Outputs:
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 
-    def PrintOutputs(self, model: Model):
-        """
-        PrintOutputs writes the standard outputs to the output file.
-        :param model: The container class of the application, giving access to everything else, including the logger
-        :type model: :class:`~geophires_x.Model.Model`
-        :return: None
-        """
-        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
-
+    def _convert_units(self, model: Model):
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
         # to the units that the user entered the data in
@@ -778,6 +770,17 @@ class Outputs:
                         ConvertOutputUnits(output_param, self.ParameterDict[key], model)
                 elif not output_param.UnitsMatch:
                     obj.OutputParameterDict[key] = output_param.with_preferred_units()
+
+    def PrintOutputs(self, model: Model):
+        """
+        PrintOutputs writes the standard outputs to the output file.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+        self._convert_units(model)
 
         #data structures and assignments for HTML and Improved Text Output formats
         simulation_metadata = []

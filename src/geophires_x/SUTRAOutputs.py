@@ -83,7 +83,7 @@ class SUTRAOutputs(Outputs):
                     f.write(f"      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} " + model.economics.FCR.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write("      Economic Model = " + model.economics.econmodel.value.value + NL)
-                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} " + model.economics.discountrate.PreferredUnits.value + NL)
+                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} " + model.economics.discountrate.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write("      Economic Model  = " + model.economics.econmodel.value.value + NL)
                 f.write(f"      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} " + model.economics.inflrateconstruction.PreferredUnits.value + NL)

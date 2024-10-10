@@ -111,19 +111,6 @@ class SUTRAEconomics(Economics.Economics):
             ToolTipText="Multiplier for built-in surface plant capital cost correlation",
         )
 
-        self.discountrate = self.ParameterDict[self.discountrate.Name] = floatParameter(
-            "Discount Rate",
-            value=0.07,
-            DefaultValue=0.07,
-            Min=0.0,
-            Max=1.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default discount rate (0.07)",
-            ToolTipText="Discount rate used in the Standard Levelized Cost Model",
-        )
-
         self.inflrateconstruction = self.ParameterDict[self.inflrateconstruction.Name] = floatParameter(
             "Inflation Rate During Construction",
             value=0.0,

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.34
- Simulation Date: 2024-06-19
- Simulation Time:  07:42
- Calculation Time:      0.106 sec
+ GEOPHIRES Version: 3.6.0
+ Simulation Date: 2024-10-10
+ Simulation Time:  11:54
+ Calculation Time:      0.100 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -26,7 +26,7 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          5.00
+      Interest Rate:                                          5.00 %
       Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %

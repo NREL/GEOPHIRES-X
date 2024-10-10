@@ -837,15 +837,17 @@ class Economics:
             ErrMessage="assume default fixed charge rate (0.1)",
             ToolTipText="Fixed charge rate (FCR) used in the Fixed Charge Rate Model"
         )
+
+        discount_rate_default_val = 0.0625
         self.discountrate = self.ParameterDict[self.discountrate.Name] = floatParameter(
             "Discount Rate",
-            DefaultValue=0.07,
+            DefaultValue=discount_rate_default_val,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default discount rate (0.07)",
+            ErrMessage=f'assume default discount rate ({discount_rate_default_val})',
             ToolTipText="Discount rate used in the Standard Levelized Cost Model"
         )
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
@@ -1379,15 +1381,18 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
+        fir_default_unit = PercentUnit.PERCENT
+        fir_default_val = self.discountrate.quantity().to(fir_default_unit.value).magnitude
         self.FixedInternalRate = self.ParameterDict[self.FixedInternalRate.Name] = floatParameter(
             "Fixed Internal Rate",
-            DefaultValue=6.25,
+            DefaultValue=fir_default_val,
             Min=0.0,
             Max=100.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            ErrMessage="assume default for fixed internal rate (6.25%)",
+            CurrentUnits=fir_default_unit,
+            ErrMessage=f'assume default for fixed internal rate ({fir_default_val}%)',
             ToolTipText="Fixed Internal Rate (used in NPV calculation)"
         )
         self.CAPEX_heat_electricity_plant_ratio = self.ParameterDict[self.CAPEX_heat_electricity_plant_ratio.Name] = floatParameter(

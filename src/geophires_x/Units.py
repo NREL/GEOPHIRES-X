@@ -17,7 +17,7 @@ def get_unit_registry():
 
 
 def convertible_unit(u:str) -> str:
-    if u == Units.PERCENT or u == Units.PERCENT.value:
+    if u == Units.PERCENT or u == PercentUnit.PERCENT or u == Units.PERCENT.value:
         return 'percent'
 
     return u

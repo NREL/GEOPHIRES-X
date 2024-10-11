@@ -13,8 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
-      #fail-fast: true
-      fail-fast: false # FIXME TEMP - debugging Actions failures https://github.com/softwareengineerprogrammer/GEOPHIRES-X/actions/runs/11280772426
+      fail-fast: true
       matrix:
         include:
           - name: 'check'

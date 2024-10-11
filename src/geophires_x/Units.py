@@ -15,6 +15,13 @@ def get_unit_registry():
 
     return _UREG
 
+
+def convertible_unit(u:str) -> str:
+    if u == Units.PERCENT or u == Units.PERCENT.value:
+        return 'percent'
+
+    return u
+
 class Units(IntEnum):
     """All possible systems of measure"""
     NONE = auto()

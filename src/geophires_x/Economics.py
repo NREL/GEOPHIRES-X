@@ -1383,7 +1383,7 @@ class Economics:
         )
 
         fir_default_unit = PercentUnit.PERCENT
-        fir_default_val = self.discountrate.quantity().to('percent').magnitude  # pint can't handle '%' in python 3.8
+        fir_default_val = self.discountrate.quantity().to(convertible_unit(fir_default_unit)).magnitude  # pint can't handle '%' in python 3.8
         self.FixedInternalRate = self.ParameterDict[self.FixedInternalRate.Name] = floatParameter(
             "Fixed Internal Rate",
             DefaultValue=fir_default_val,

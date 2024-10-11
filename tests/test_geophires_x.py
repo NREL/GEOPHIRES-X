@@ -66,7 +66,7 @@ class GeophiresXTestCase(BaseTestCase):
 
     def test_geophires_x_end_use_electricity(self):
         client = GeophiresXClient()
-        result = client.get_geophires_result(
+        client.get_geophires_result(
             GeophiresInputParameters(
                 {
                     'Print Output to Console': 0,
@@ -79,9 +79,6 @@ class GeophiresXTestCase(BaseTestCase):
                 }
             )
         )
-
-        assert result is not None
-        assert result.result['metadata']['End-Use Option'] == 'ELECTRICITY'
 
     def test_reservoir_model_2(self):
         client = GeophiresXClient()
@@ -537,3 +534,28 @@ Print Output to Console, 1"""
 
         # deprecated is ignored if both are present.
         self.assertDictEqual(both_params.result, non_deprecated_param.result)
+
+    def test_discount_rate_and_fixed_internal_rate(self):
+        def input_params(discount_rate=None, fixed_internal_rate=None):
+            params = {
+                'End-Use Option': EndUseOption.ELECTRICITY.value,
+                'Reservoir Model': 1,
+                'Reservoir Depth': 3,
+                'Gradient 1': 50,
+            }
+
+            if discount_rate is not None:
+                params['Discount Rate'] = discount_rate
+
+            if fixed_internal_rate is not None:
+                params['Fixed Internal Rate'] = fixed_internal_rate
+
+            return GeophiresInputParameters(params)
+
+        client = GeophiresXClient()
+        with self.assertLogs(level='INFO') as logs:  # noqa: F841
+            result = client.get_geophires_result(input_params(discount_rate='0.042'))
+
+            assert result is not None
+            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
+            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'

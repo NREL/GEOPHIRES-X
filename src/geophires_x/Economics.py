@@ -1,4 +1,5 @@
 import math
+import os
 import sys
 import numpy as np
 import numpy_financial as npf
@@ -2147,14 +2148,37 @@ class Economics:
             if key.startswith("AddOn"):
                 self.DoAddOnCalculations.value = True
                 break
+
         for key in model.InputParameters.keys():
             if key.startswith("S-DAC-GT"):
                 self.DoSDACGTCalculations.value = True
                 break
 
         coerce_int_params_to_enum_values(self.ParameterDict)
+        self.sync_discount_rate_and_fixed_internal_rate(model)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    def sync_discount_rate_and_fixed_internal_rate(self, model):
+        if self.discountrate.Provided ^ self.FixedInternalRate.Provided:
+            if self.discountrate.Provided:
+                self.FixedInternalRate.value = self.discountrate.quantity().to(
+                    convertible_unit(self.FixedInternalRate.CurrentUnits)).magnitude
+                model.logger.info(f'Set {self.FixedInternalRate.Name} to {self.FixedInternalRate.quantity()} '
+                                  f'because {self.discountrate.Name} was provided ({self.discountrate.value})')
+            else:
+                self.discountrate.value = self.FixedInternalRate.quantity().to(
+                    convertible_unit(self.discountrate.CurrentUnits)).magnitude
+                model.logger.info(
+                    f'Set {self.discountrate.Name} to {self.discountrate.value} because '
+                    f'{self.FixedInternalRate.Name} was provided ({self.FixedInternalRate.quantity()})')
+
+        if self.discountrate.Provided and self.FixedInternalRate.Provided \
+            and self.discountrate.quantity().to(convertible_unit(self.FixedInternalRate.CurrentUnits)).magnitude \
+                != self.FixedInternalRate.value:
+            model.logger.warning(f'{self.discountrate.Name} and {self.FixedInternalRate.Name} provided with different '
+                                 f'values ({self.discountrate.value}; {self.FixedInternalRate.quantity()}). '
+                                 f'It is recommended to only provide one of these values.')
 
     def Calculate(self, model: Model) -> None:
         """

@@ -3,10 +3,11 @@ import time
 import sys
 
 import geophires_x
-import numpy as np
 import geophires_x.Model as Model
 from geophires_x.Outputs import Outputs
-from .OptionList import EconomicModel
+from geophires_x.OptionList import EconomicModel
+
+import numpy as np
 
 NL="\n"
 
@@ -47,6 +48,7 @@ class SUTRAOutputs(Outputs):
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
+        self._convert_units(model)
 
         # write results to output file and screen
         try:
@@ -83,7 +85,11 @@ class SUTRAOutputs(Outputs):
                     f.write(f"      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} " + model.economics.FCR.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write("      Economic Model = " + model.economics.econmodel.value.value + NL)
-                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} " + model.economics.discountrate.PreferredUnits.value + NL)
+
+                    # FIXME discountrate should not be multiplied by 100 here -
+                    #  it appears to be incorrectly claiming its units are percent when the actual value is in tenths.
+                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} {model.economics.discountrate.CurrentUnits.value}\n")
+
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write("      Economic Model  = " + model.economics.econmodel.value.value + NL)
                 f.write(f"      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} " + model.economics.inflrateconstruction.PreferredUnits.value + NL)

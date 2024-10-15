@@ -110,8 +110,8 @@ class AGSEconomics(Economics.Economics):
         # including the ones that are specific to this class
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
-        self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
-        self.Electricity_rate = model.surfaceplant.electricity_cost_to_buy.value  # same units are GEOPHIRES
+        self.Discount_rate = model.economics.discountrate.value  # same units as GEOPHIRES
+        self.Electricity_rate = model.surfaceplant.electricity_cost_to_buy.value  # same units as GEOPHIRES
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

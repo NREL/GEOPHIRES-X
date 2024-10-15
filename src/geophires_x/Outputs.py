@@ -744,15 +744,7 @@ class Outputs:
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 
-    def PrintOutputs(self, model: Model):
-        """
-        PrintOutputs writes the standard outputs to the output file.
-        :param model: The container class of the application, giving access to everything else, including the logger
-        :type model: :class:`~geophires_x.Model.Model`
-        :return: None
-        """
-        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
-
+    def _convert_units(self, model: Model):
         # Deal with converting Units back to PreferredUnits, if required.
         # before we write the outputs, we go thru all the parameters for all of the objects and set the values back
         # to the units that the user entered the data in
@@ -778,6 +770,17 @@ class Outputs:
                         ConvertOutputUnits(output_param, self.ParameterDict[key], model)
                 elif not output_param.UnitsMatch:
                     obj.OutputParameterDict[key] = output_param.with_preferred_units()
+
+    def PrintOutputs(self, model: Model):
+        """
+        PrintOutputs writes the standard outputs to the output file.
+        :param model: The container class of the application, giving access to everything else, including the logger
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: None
+        """
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+        self._convert_units(model)
 
         #data structures and assignments for HTML and Improved Text Output formats
         simulation_metadata = []
@@ -1634,7 +1637,11 @@ class Outputs:
                     f.write(f'      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} ' + model.economics.FCR.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write('      Economic Model = ' + model.economics.econmodel.value.value + NL)
-                    f.write(f'      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} ' + model.economics.discountrate.CurrentUnits.value + NL)
+
+                    # FIXME discountrate should not be multiplied by 100 here -
+                    #  it appears to be incorrectly claiming its units are percent when the actual value is in tenths.
+                    f.write(f'      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} {model.economics.discountrate.CurrentUnits.value}\n')
+
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write('      Economic Model  = ' + model.economics.econmodel.value.value + NL)
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} ' + model.economics.inflrateconstruction.CurrentUnits.value + NL)

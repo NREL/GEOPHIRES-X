@@ -1,3 +1,4 @@
+import os
 import tempfile
 import uuid
 from pathlib import Path
@@ -166,6 +167,7 @@ class GeophiresXTestCase(BaseTestCase):
         )
 
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
+        regenerate_cmds = []
         for example_file_path in example_files:
             with self.subTest(msg=example_file_path):
                 print(f'Running example test {example_file_path}')
@@ -193,6 +195,15 @@ class GeophiresXTestCase(BaseTestCase):
                         'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
                     ]
                     allow_almost_equal = example_file_path in cases_to_allow_almost_equal
+
+                    cmd_script = (
+                        './tests/regenerate-example-result.sh'
+                        if os.name != 'nt'
+                        else './tests/regenerate-example-result.ps1'
+                    )
+                    regenerate_cmd = f'{cmd_script} {example_file_path.split(".")[0]}'
+                    regenerate_cmds.append(regenerate_cmd)
+
                     if allow_almost_equal:
                         log.warning(
                             f"Results aren't exactly equal in {example_file_path}, falling back to almostEqual..."
@@ -203,20 +214,23 @@ class GeophiresXTestCase(BaseTestCase):
                             places=1,
                             msg=f'Example test: {example_file_path}',
                         )
+                        regenerate_cmds.pop()
                     else:
-                        msg = 'Results are not approximately equal within any percentage <100'
+
+                        msg = 'Results are not approximately equal within any percentage <100.'
                         percent_diff = self._get_unequal_dicts_approximate_percent_difference(
                             expected_result.result, geophires_result.result
                         )
 
                         if percent_diff is not None:
-                            msg = (
-                                f'Results are approximately equal within {percent_diff}%. '
-                                f'(Run `./tests/regenerate-example-result.sh {example_file_path.split(".")[0]}` '
-                                f'if this difference is expected due to calculation updates)'
-                            )
+                            msg = f'Results are approximately equal within {percent_diff}%.'
+
+                        msg += f' (Run `{regenerate_cmd}` if this is expected due to calculation updates)'
 
                         raise AssertionError(msg) from ae
+
+        if len(regenerate_cmds) > 0:
+            print(f'Command to regenerate {len(regenerate_cmds)} failed examples:\n{" && ".join(regenerate_cmds)}')
 
     def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
         for i in range(99):

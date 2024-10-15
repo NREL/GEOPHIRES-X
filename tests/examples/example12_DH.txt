@@ -60,4 +60,3 @@ Fracture Height, 300
 Fracture Width, 200
 Fracture Shape, 4
 Well Drilling and Completion Capital Cost, 12
-HTML Output File, example12_DH.html

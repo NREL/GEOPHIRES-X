@@ -167,20 +167,6 @@ class HipRaXTestCase(BaseTestCase):
             param: OutputParameter = hip_ra.OutputParameterDict[key]
             assert param.CurrentUnits == param.PreferredUnits
 
-    @unittest.skip('FIXME WIP')
-    def test_aligns_space_between_value_and_units(self):
-        """
-        Assert that the space between value and units is aligned to the same column for each line in the output file
-        """
-
-        hip_ra = self._new_hip_ra_test_instance()
-        hip_ra.PrintOutputs()
-
-        with open('HIP.out') as f:
-            content = f.readlines()
-            for line in content:
-                assert line.count(' ') == 3
-
     @unittest.skip(reason='FIXME: Race condition if tests are run in parallel')
     def test_raises_permission_error(self):
         """Raises a PermissionError if there is no permission to write to the output file"""

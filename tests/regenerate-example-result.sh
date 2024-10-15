@@ -6,7 +6,7 @@
 # ./tests/regenerate-example-result.sh SUTRAExample1
 # See https://github.com/NREL/GEOPHIRES-X/issues/107
 
-# Note: make sure your virtualenv is activated before runnning or this script will fail
+# Note: make sure your virtualenv is activated before running or this script will fail
 # or generate incorrect results.
 
 cd "$(dirname "$0")"

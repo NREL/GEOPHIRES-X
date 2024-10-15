@@ -12,9 +12,9 @@ ECONOMIC PARAMETERS,Economic Model,,Fixed Charge Rate (FCR),
 ECONOMIC PARAMETERS,Accrued financing during construction,,0.0,
 ECONOMIC PARAMETERS,Project lifetime,,30,yr
 ECONOMIC PARAMETERS,Capacity factor,,90.0,%
-ECONOMIC PARAMETERS,Project NPV,,75.32,MUSD
+ECONOMIC PARAMETERS,Project NPV,,65.9,MUSD
 ECONOMIC PARAMETERS,Project IRR,,20.11,%
-ECONOMIC PARAMETERS,Project VIR=PI=PIR,,3.42,
+ECONOMIC PARAMETERS,Project VIR=PI=PIR,,3.12,
 ECONOMIC PARAMETERS,Project MOIC,,36.27,
 ECONOMIC PARAMETERS,Fixed Charge Rate (FCR),,5.0,
 ECONOMIC PARAMETERS,Project Payback Period,,7.05,yr
@@ -23,9 +23,9 @@ EXTENDED ECONOMICS,"Adjusted Project LCOE (after incentives\, grants\, AddOns\,e
 EXTENDED ECONOMICS,"Adjusted Project LCOH (after incentives\, grants\, AddOns\,etc)",,0.0,USD/MMBTU
 EXTENDED ECONOMICS,"Adjusted Project CAPEX (after incentives\, grants\, AddOns\, etc)",,101.07,MUSD
 EXTENDED ECONOMICS,"Adjusted Project OPEX (after incentives\, grants\, AddOns\, etc)",,0.88,MUSD
-EXTENDED ECONOMICS,Project NPV   (including AddOns),,-5.2,MUSD
+EXTENDED ECONOMICS,Project NPV   (including AddOns),,-13.02,MUSD
 EXTENDED ECONOMICS,Project IRR   (including AddOns),,0.06,%
-EXTENDED ECONOMICS,Project VIR=PI=PIR   (including AddOns),,0.95,
+EXTENDED ECONOMICS,Project VIR=PI=PIR   (including AddOns),,0.87,
 EXTENDED ECONOMICS,Project MOIC  (including AddOns),,1.0,
 EXTENDED ECONOMICS,Total Add-on CAPEX,,70.0,MUSD
 EXTENDED ECONOMICS,Total Add-on OPEX,,1.7,MUSD/yr
@@ -97,7 +97,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Total Electricity Generation
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,42.3,GWh
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
-Simulation Metadata,GEOPHIRES Version,,3.4.42,
+Simulation Metadata,GEOPHIRES Version,,3.6.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

@@ -53,6 +53,7 @@ District Heating Road Length,3, 				---[km] supersedes model option 2 if any val
 Plant Lifetime,30,						--- [years]
 Economic Model,2,						--- Should be 1 (FCR model), 2 (Standard LCOE/LCOH model), or 3 (Bicycle model).
 Discount Rate,0.05,
+Fixed Internal Rate,5, -- matches Discount Rate
 Inflation Rate During Construction,0,				--- [-]
 Well Drilling and Completion Capital Cost Adjustment Factor,1,	--- [-] Use built-in well cost correlation as is
 Well Drilling Cost Correlation,1,				--- [-] Use built-in well drilling cost correlation #1

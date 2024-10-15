@@ -19,6 +19,7 @@ from geophires_x.OptionList import GeophiresInputEnum
 from geophires_x.Units import *
 
 _ureg = get_unit_registry()
+_DISABLE_FOREX_API = True  # See https://github.com/NREL/GEOPHIRES-X/issues/236#issuecomment-2414681434
 
 class HasQuantity(ABC):
 
@@ -500,15 +501,19 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
         try:
             # if we come here, we have a currency conversion to do (USD->EUR, etc.).
+
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(currShort, prefShort)
         except BaseException as ex:
             print(str(ex))
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {ParamToModify.Name} to something it '
-                f'understands. You gave {strUnit} - Are these currency units defined for forex-python? or perhaps the '
-                f'currency server is down?  Please change your units to {ParamToModify.PreferredUnits.value} to '
-                f'continue. Cannot continue unless you do.  Exiting.'
+                f'Error: GEOPHIRES failed to convert your currency for {ParamToModify.Name} to something it understands. '
+                f'You gave {strUnit} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236. '
+                f'Please change your units to {ParamToModify.PreferredUnits.value} '
+                f'to continue. Cannot continue unless you do. Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))
@@ -710,6 +715,9 @@ def _parameter_with_currency_units_converted_back_to_preferred_units(param: Para
         # start the currency conversion process
         cc = CurrencyCodes()
         try:
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(currType, prefType)
         except BaseException as ex:
@@ -966,6 +974,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
 
             raise RuntimeError(msg)
         try:
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(prefShort, currShort)
         except BaseException as ex:

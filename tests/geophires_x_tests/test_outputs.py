@@ -20,7 +20,7 @@ class OutputsTestCase(BaseTestCase):
             )
         )
         self.assertTrue(html_path.exists())
-        with html_path.open() as f:
+        with open(html_path, encoding='UTF-8') as f:
             html_content = f.read()
             self.assertIn('***CASE REPORT***', html_content)
             # TODO expand test to assert more about output HTML

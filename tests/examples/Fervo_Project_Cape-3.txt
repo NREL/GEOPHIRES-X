@@ -1,7 +1,7 @@
 # Case Study: Fervo Project Cape 3: Extrapolation from Fervo results pre-published 2024-09-10 at
 # https://eartharxiv.org/repository/view/7665/ to 400MWe capacity.
 # Norbeck J., Gradl C., and Latimer T. 2024.
-#    Deployment of Enhanced Geothermal System technology leads to rapid cost reductions and performance improvements."
+#    "Deployment of Enhanced Geothermal System technology leads to rapid cost reductions and performance improvements."
 #    https://doi.org/10.31223/X5VH8C
 
 

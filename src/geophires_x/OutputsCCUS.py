@@ -16,7 +16,9 @@ class OutputsCCUS(Outputs):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {__class__!s}: sys._getframe().f_code.co_name')
+
+        self._convert_units(model)
 
         if np.sum(model.ccuseconomics.CCUSRevenue.value) == 0:
             return   # don't bother if we have nothing to report.

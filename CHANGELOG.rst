@@ -21,6 +21,8 @@ This affects:
 Affected users who do not want the new behavior can specify absolute output paths instead of relative ones e.g. ``python ./geophires-x/GEOPHIRESv3.py my-input.txt /home/user/my-geophires-project/geophires-x/HDR.out``
 (Most users are expected to be unaffected.)
 
+3.6.1: Fixed Internal Rate default value changed to 7% from 6.25% per https://github.com/NREL/GEOPHIRES-X/issues/301
+
 3.5
 ^^^
 

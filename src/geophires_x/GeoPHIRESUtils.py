@@ -18,7 +18,7 @@ import numpy as np
 import CoolProp.CoolProp as CP
 
 from geophires_x.Parameter import ParameterEntry, Parameter
-from geophires_x.Units import get_unit_registry
+from geophires_x.Units import get_unit_registry, convertible_unit
 
 _logger = logging.getLogger('root')  # TODO use __name__ instead of root
 
@@ -224,7 +224,7 @@ def quantity(value: float, unit: str) -> PlainQuantity:
     :rtype: pint.registry.Quantity - note type annotation uses PlainQuantity due to issues with python 3.8 failing
         to import the Quantity TypeAlias
     """
-    return _ureg.Quantity(value, unit)
+    return _ureg.Quantity(value, convertible_unit(unit))
 
 
 @lru_cache

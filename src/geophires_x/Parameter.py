@@ -76,7 +76,7 @@ class OutputParameter(HasQuantity):
 
     def with_preferred_units(self) -> Any:  # Any is a proxy for Self
         ret: OutputParameter = dataclasses.replace(self)
-        ret.value = ret.quantity().to(ret.PreferredUnits).magnitude
+        ret.value = ret.quantity().to(convertible_unit(ret.PreferredUnits)).magnitude
         ret.CurrentUnits = ret.PreferredUnits
         return ret
 
@@ -609,7 +609,7 @@ def ConvertUnitsBack(ParamToModify: Parameter, model):
     model.logger.info(f'Init {str(__name__)}: {sys._getframe().f_code.co_name} for {ParamToModify.Name}')
 
     try:
-        ParamToModify.value = _ureg.Quantity(ParamToModify.value, ParamToModify.CurrentUnits.value).to(ParamToModify.PreferredUnits.value).magnitude
+        ParamToModify.value = _ureg.Quantity(ParamToModify.value, convertible_unit(ParamToModify.CurrentUnits)).to(convertible_unit(ParamToModify.PreferredUnits)).magnitude
         ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
     except AttributeError as ae:
         # TODO refactor to check for/convert currency instead of relying on try/except once currency conversion is
@@ -848,7 +848,7 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
     """
 
     try:
-        oparam.value = _ureg.Quantity(oparam.value, oparam.CurrentUnits.value).to(newUnit.value).magnitude
+        oparam.value = _ureg.Quantity(oparam.value, oparam.CurrentUnits.value).to(convertible_unit(newUnit.value)).magnitude
         oparam.CurrentUnits = newUnit
         return
     except AttributeError as ae:

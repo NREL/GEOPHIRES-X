@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.34
- Simulation Date: 2024-06-19
- Simulation Time:  07:44
- Calculation Time:      0.592 sec
+ GEOPHIRES Version: 3.6.0
+ Simulation Date: 2024-10-15
+ Simulation Time:  13:08
+ Calculation Time:      0.797 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -28,9 +28,9 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                           2.89 MUSD
+      Project NPV:                                          -1.42 MUSD
       Project IRR:                                           6.74 %
-      Project VIR=PI=PIR:                                    1.06
+      Project VIR=PI=PIR:                                    0.97
       Project MOIC:                                          0.83
       Project Payback Period:                               14.38 yr
       Estimated Jobs Created:                                 13

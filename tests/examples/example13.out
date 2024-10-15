@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.4.37
- Simulation Date: 2024-06-24
- Simulation Time:  11:25
- Calculation Time:      0.037 sec
+ GEOPHIRES Version: 3.6.0
+ Simulation Date: 2024-10-15
+ Simulation Time:  13:07
+ Calculation Time:      0.035 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -26,13 +26,13 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          5.00
+      Interest Rate:                                          5.00 %
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       80.0 %
-      Project NPV:                                         -44.41 MUSD
+      Project NPV:                                         -45.14 MUSD
       Project IRR:                                          -5.99 %
-      Project VIR=PI=PIR:                                    0.21
+      Project VIR=PI=PIR:                                    0.20
       Project MOIC:                                         -0.22
       Project Payback Period:                          N/A
       CHP: Percent cost allocation for electrical plant:      60.28 %

@@ -20,6 +20,8 @@ class OutputsAddOns(Outputs):
         """
         model.logger.info(f'Init {str(__class__)}: {__name__}')
 
+        self._convert_units(model)
+
         # now do AddOn output, which will append to the original output
         # write results to output file and screen
         try:

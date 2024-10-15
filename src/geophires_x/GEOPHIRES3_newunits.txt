@@ -1,2 +1,4 @@
 USD = [currency]
 cents = USD / 100
+KUSD = USD * 1000
+MMBTU = BTU * 1_000_000

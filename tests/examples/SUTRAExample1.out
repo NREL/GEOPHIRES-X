@@ -5,15 +5,15 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.6.0
- Simulation Date: 2024-10-10
- Simulation Time:  12:23
- Calculation Time:      0.515 sec
+ Simulation Date: 2024-10-15
+ Simulation Time:  13:07
+ Calculation Time:      0.507 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Reservoir Model = SUTRA Model
-      Direct-Use heat breakeven price:                     1703.38 cents/kWh
+      Direct-Use heat breakeven price:                     1730.66 cents/kWh
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
       Lifetime Average Well Flow Rate:                     16.2 kg/sec
@@ -23,7 +23,7 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = Standard Levelized Cost
-      Interest Rate:                                          6.25
+      Interest Rate:                                          7.00
       Accrued financing during construction:                  0.00 %
       Project lifetime:                                      30 yr
 

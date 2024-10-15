@@ -838,7 +838,7 @@ class Economics:
             ToolTipText="Fixed charge rate (FCR) used in the Fixed Charge Rate Model"
         )
 
-        discount_rate_default_val = 0.0625
+        discount_rate_default_val = 0.07
         self.discountrate = self.ParameterDict[self.discountrate.Name] = floatParameter(
             "Discount Rate",
             DefaultValue=discount_rate_default_val,

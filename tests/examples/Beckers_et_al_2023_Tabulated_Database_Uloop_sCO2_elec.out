@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.6.0
- Simulation Date: 2024-10-10
- Simulation Time:  11:55
- Calculation Time:      0.790 sec
+ Simulation Date: 2024-10-15
+ Simulation Time:  13:08
+ Calculation Time:      0.800 sec
 
 
                            ***AGS/CLGS STYLE OUTPUT***
@@ -35,7 +35,7 @@ Simulation Metadata
       Drilling Cost:                                         15.0 MUSD
       Surface Plant Cost:                                     0.9 MUSD
       OPEX:                                                  13.2 KUSD/yr
-      LCOE:                                                 557.6 USD/MWh
+      LCOE:                                                 601.4 USD/MWh
 
                                         ******************************
                                         *  POWER GENERATION PROFILE  *

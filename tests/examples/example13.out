@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.6.0
- Simulation Date: 2024-10-10
- Simulation Time:  11:54
- Calculation Time:      0.034 sec
+ Simulation Date: 2024-10-15
+ Simulation Time:  13:07
+ Calculation Time:      0.035 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -30,9 +30,9 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       80.0 %
-      Project NPV:                                         -44.41 MUSD
+      Project NPV:                                         -45.14 MUSD
       Project IRR:                                          -5.99 %
-      Project VIR=PI=PIR:                                    0.21
+      Project VIR=PI=PIR:                                    0.20
       Project MOIC:                                         -0.22
       Project Payback Period:                          N/A
       CHP: Percent cost allocation for electrical plant:      60.28 %

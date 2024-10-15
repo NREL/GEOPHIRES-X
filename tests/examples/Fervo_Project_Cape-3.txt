@@ -46,7 +46,7 @@ Circulation Pump Efficiency, 0.80
 
 Exploration Capital Cost, 0
 Well Drilling and Completion Capital Cost, 4, -- Assume cost continues to decrease from 4.8 (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
-Reservoir Stimulation Capital Cost, 20
+Reservoir Stimulation Capital Cost, 78, -- $1M/well estimated
 Economic Model, 3
 Starting Electricity Sale Price, 0.15
 Ending Electricity Sale Price, 1.00

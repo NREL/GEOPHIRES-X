@@ -19,6 +19,7 @@ from geophires_x.OptionList import GeophiresInputEnum
 from geophires_x.Units import *
 
 _ureg = get_unit_registry()
+_DISABLE_FOREX_API = True  # See https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled#issuecomment-2414681434
 
 class HasQuantity(ABC):
 
@@ -500,6 +501,10 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
 
         try:
             # if we come here, we have a currency conversion to do (USD->EUR, etc.).
+
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(currShort, prefShort)
         except BaseException as ex:
@@ -710,6 +715,9 @@ def _parameter_with_currency_units_converted_back_to_preferred_units(param: Para
         # start the currency conversion process
         cc = CurrencyCodes()
         try:
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(currType, prefType)
         except BaseException as ex:
@@ -966,6 +974,9 @@ def ConvertOutputUnits(oparam: OutputParameter, newUnit: Units, model):
 
             raise RuntimeError(msg)
         try:
+            if _DISABLE_FOREX_API:
+                raise RuntimeError('Forex API disabled')
+
             cr = CurrencyRates()
             conv_rate = cr.get_rate(prefShort, currShort)
         except BaseException as ex:

@@ -19,7 +19,7 @@ from geophires_x.OptionList import GeophiresInputEnum
 from geophires_x.Units import *
 
 _ureg = get_unit_registry()
-_DISABLE_FOREX_API = True  # See https://github.com/NREL/GEOPHIRES-X/issues/236?title=Currency+conversions+disabled#issuecomment-2414681434
+_DISABLE_FOREX_API = True  # See https://github.com/NREL/GEOPHIRES-X/issues/236#issuecomment-2414681434
 
 class HasQuantity(ABC):
 

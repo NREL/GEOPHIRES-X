@@ -505,10 +505,10 @@ def ConvertUnits(ParamToModify, strUnit: str, model) -> str:
         except BaseException as ex:
             print(str(ex))
             msg = (
-                f'Error: GEOPHIRES failed to convert your currency for {ParamToModify.Name} to something it '
-                f'understands. You gave {strUnit} - Are these currency units defined for forex-python? or perhaps the '
-                f'currency server is down?  Please change your units to {ParamToModify.PreferredUnits.value} to '
-                f'continue. Cannot continue unless you do.  Exiting.'
+                f'Error: GEOPHIRES failed to convert your currency for {ParamToModify.Name} to something it understands. '
+                f'You gave {strUnit} - conversion may be affected by https://github.com/NREL/GEOPHIRES-X/issues/236. '
+                f'Please change your units to {ParamToModify.PreferredUnits.value} '
+                f'to continue. Cannot continue unless you do. Exiting.'
             )
             print(msg)
             model.logger.critical(str(ex))

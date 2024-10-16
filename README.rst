@@ -357,6 +357,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape>`__
+   * - Fervo Project Cape 2
+     - `Fervo_Project_Cape-2.txt <tests/examples/Fervo_Project_Cape-2.txt>`__
+     - `.out <tests/examples/Fervo_Project_Cape-2.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-2>`__
+   * - Fervo Project Cape 3
+     - `Fervo_Project_Cape-3.txt <tests/examples/Fervo_Project_Cape-3.txt>`__
+     - `.out <tests/examples/Fervo_Project_Cape-3.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-3>`__
    * - Superhot Rock (SHR) Example 1
      - `example_SHR-1.txt <tests/examples/example_SHR-1.txt>`__
      - `.out <tests/examples/example_SHR-1.out>`__

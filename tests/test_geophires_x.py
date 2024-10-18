@@ -66,7 +66,7 @@ class GeophiresXTestCase(BaseTestCase):
 
     def test_geophires_x_end_use_electricity(self):
         client = GeophiresXClient()
-        client.get_geophires_result(
+        result = client.get_geophires_result(
             GeophiresInputParameters(
                 {
                     'Print Output to Console': 0,
@@ -79,6 +79,9 @@ class GeophiresXTestCase(BaseTestCase):
                 }
             )
         )
+
+        assert result is not None
+        assert result.result['metadata']['End-Use Option'] == 'ELECTRICITY'
 
     def test_reservoir_model_2(self):
         client = GeophiresXClient()

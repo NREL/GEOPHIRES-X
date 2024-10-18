@@ -2166,24 +2166,27 @@ class Economics:
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def sync_interest_rate(self, model):
+        def discount_rate_display() -> str:
+            return str(self.discountrate.quantity()).replace(' dimensionless', '')
+
         if self.discountrate.Provided ^ self.FixedInternalRate.Provided:
             if self.discountrate.Provided:
                 self.FixedInternalRate.value = self.discountrate.quantity().to(
                     convertible_unit(self.FixedInternalRate.CurrentUnits)).magnitude
                 model.logger.info(f'Set {self.FixedInternalRate.Name} to {self.FixedInternalRate.quantity()} '
-                                  f'because {self.discountrate.Name} was provided ({self.discountrate.value})')
+                                  f'because {self.discountrate.Name} was provided ({discount_rate_display()})')
             else:
                 self.discountrate.value = self.FixedInternalRate.quantity().to(
                     convertible_unit(self.discountrate.CurrentUnits)).magnitude
                 model.logger.info(
-                    f'Set {self.discountrate.Name} to {self.discountrate.value} because '
+                    f'Set {self.discountrate.Name} to {discount_rate_display()} because '
                     f'{self.FixedInternalRate.Name} was provided ({self.FixedInternalRate.quantity()})')
 
         if self.discountrate.Provided and self.FixedInternalRate.Provided \
             and self.discountrate.quantity().to(convertible_unit(self.FixedInternalRate.CurrentUnits)).magnitude \
                 != self.FixedInternalRate.value:
             model.logger.warning(f'{self.discountrate.Name} and {self.FixedInternalRate.Name} provided with different '
-                                 f'values ({self.discountrate.value}; {self.FixedInternalRate.quantity()}). '
+                                 f'values ({discount_rate_display()}; {self.FixedInternalRate.quantity()}). '
                                  f'It is recommended to only provide one of these values.')
 
         self.interest_rate.value = self.discountrate.quantity().to(convertible_unit(self.interest_rate.CurrentUnits)).magnitude

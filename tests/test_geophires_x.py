@@ -553,9 +553,28 @@ Print Output to Console, 1"""
             return GeophiresInputParameters(params)
 
         client = GeophiresXClient()
-        with self.assertLogs(level='INFO') as logs:  # noqa: F841
+
+        # noinspection PyPep8Naming
+        def assertHasLogRecordWithMessage(logs_, message):
+            assert message in [record.message for record in logs_.records]
+
+        with self.assertLogs(level='INFO') as logs:
             result = client.get_geophires_result(input_params(discount_rate='0.042'))
 
             assert result is not None
             assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
             assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+            assertHasLogRecordWithMessage(
+                logs, 'Set Fixed Internal Rate to 4.2 percent because Discount Rate was provided (0.042)'
+            )
+
+        with self.assertLogs(level='INFO') as logs2:
+            result2 = client.get_geophires_result(input_params(fixed_internal_rate='4.2'))
+
+            assert result2 is not None
+            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
+            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+
+            assertHasLogRecordWithMessage(
+                logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
+            )

@@ -51,7 +51,6 @@ Heat Pump COP, 2.8,            --- [-]
 Plant Lifetime,30,						---[years]
 Economic Model,2,						---BICYCLE Levelized Cost Model
 Discount Rate, 0.05,			--- [-] Required if Standard LCOE/LCOH model is selected. See manual for details.
-Fixed Internal Rate, 5, -- matches Discount Rate
 Inflation Rate During Construction,0.05,				---[-]
 
 # ***Capital and O&M Cost Parameters***

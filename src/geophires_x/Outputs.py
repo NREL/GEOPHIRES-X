@@ -23,6 +23,7 @@ from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel,
     PlantType
 from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, InsertImagesIntoHTML
 from geophires_x.Parameter import Parameter
+from geophires_x.Units import convertible_unit, Units, PercentUnit
 
 NL = '\n'
 validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -1637,10 +1638,7 @@ class Outputs:
                     f.write(f'      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} ' + model.economics.FCR.CurrentUnits.value + NL)
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write('      Economic Model = ' + model.economics.econmodel.value.value + NL)
-
-                    # FIXME discountrate should not be multiplied by 100 here -
-                    #  it appears to be incorrectly claiming its units are percent when the actual value is in tenths.
-                    f.write(f'      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} {model.economics.discountrate.CurrentUnits.value}\n')
+                    f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write('      Economic Model  = ' + model.economics.econmodel.value.value + NL)

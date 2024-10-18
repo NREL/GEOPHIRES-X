@@ -43,7 +43,6 @@ Surface Temperature,15,						---[deg.C]
 Plant Lifetime,25,						---[years]
 Economic Model,2,						---Standard Levelized Cost Model
 Discount Rate,.05,						---[-]
-Fixed Internal Rate,5,                  -- matches Discount Rate
 Inflation Rate During Construction,0,				---[-]
 
 # ***Capital and O&M Cost Parameters***

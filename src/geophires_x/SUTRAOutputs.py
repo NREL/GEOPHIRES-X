@@ -88,7 +88,7 @@ class SUTRAOutputs(Outputs):
 
                     # FIXME discountrate should not be multiplied by 100 here -
                     #  it appears to be incorrectly claiming its units are percent when the actual value is in tenths.
-                    f.write(f"      Interest Rate:                                    {model.economics.discountrate.value*100.0:10.2f} {model.economics.discountrate.CurrentUnits.value}\n")
+                    f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
                 elif model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write("      Economic Model  = " + model.economics.econmodel.value.value + NL)

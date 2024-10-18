@@ -330,6 +330,8 @@ class SUTRAEconomics(Economics.Economics):
         else:
             model.logger.info('No parameters read because no content provided')
 
+        self.sync_interest_rate(model)
+
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def Calculate(self, model: Model) -> None:

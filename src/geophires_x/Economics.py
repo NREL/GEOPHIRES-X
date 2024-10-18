@@ -846,7 +846,7 @@ class Economics:
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage=f'assume default discount rate ({discount_rate_default_val})',
             ToolTipText="Discount rate used in the Standard Levelized Cost Model"
@@ -1712,6 +1712,12 @@ class Economics:
             PreferredUnits=MassUnit.LB,
             CurrentUnits=MassUnit.LB
         )
+        self.interest_rate = self.OutputParameterDict[self.interest_rate.Name] = OutputParameter(
+            Name='Interest Rate',
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT
+        )
         self.TotalRevenue = self.OutputParameterDict[self.TotalRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Project",
             UnitType=Units.CURRENCYFREQUENCY,
@@ -2155,11 +2161,11 @@ class Economics:
                 break
 
         coerce_int_params_to_enum_values(self.ParameterDict)
-        self.sync_discount_rate_and_fixed_internal_rate(model)
+        self.sync_interest_rate(model)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
-    def sync_discount_rate_and_fixed_internal_rate(self, model):
+    def sync_interest_rate(self, model):
         if self.discountrate.Provided ^ self.FixedInternalRate.Provided:
             if self.discountrate.Provided:
                 self.FixedInternalRate.value = self.discountrate.quantity().to(
@@ -2179,6 +2185,8 @@ class Economics:
             model.logger.warning(f'{self.discountrate.Name} and {self.FixedInternalRate.Name} provided with different '
                                  f'values ({self.discountrate.value}; {self.FixedInternalRate.quantity()}). '
                                  f'It is recommended to only provide one of these values.')
+
+        self.interest_rate.value = self.discountrate.quantity().to(convertible_unit(self.interest_rate.CurrentUnits)).magnitude
 
     def Calculate(self, model: Model) -> None:
         """

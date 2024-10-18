@@ -47,7 +47,6 @@ Tax Relief Per Year, 2.212
 Do Carbon Price Calculations, True
 Time steps per year, 6
 Discount Rate, 0.06
-Fixed Internal Rate, 6, -- matches Discount Rate
 Reservoir Stimulation Capital Cost, 18
 Well Drilling and Completion Capital Cost Adjustment Factor, 2
 Injection Well Drilling and Completion Capital Cost Adjustment Factor, 2

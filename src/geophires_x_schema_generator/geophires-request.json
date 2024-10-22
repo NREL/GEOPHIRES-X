@@ -1536,7 +1536,7 @@
       "maximum": 1.0
     },
     "Discount Rate": {
-      "description": "Discount rate used in the Standard Levelized Cost Model",
+      "description": "Discount rate used in the Standard Levelized Cost Model. Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value will be automatically set to the same value.",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -2082,7 +2082,7 @@
       "maximum": 1000.0
     },
     "Fixed Internal Rate": {
-      "description": "Fixed Internal Rate (used in NPV calculation)",
+      "description": "Fixed Internal Rate (used in NPV calculation). Fixed Internal Rate is synonymous with Discount Rate. If one is provided, the other's value will be automatically set to the same value.",
       "type": "number",
       "units": "%",
       "category": "Economics",

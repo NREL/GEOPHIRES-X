@@ -849,7 +849,9 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage=f'assume default discount rate ({discount_rate_default_val})',
-            ToolTipText="Discount rate used in the Standard Levelized Cost Model"
+            ToolTipText="Discount rate used in the Standard Levelized Cost Model. "
+                        "Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value "
+                        "will be automatically set to the same value."
         )
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
@@ -1394,7 +1396,9 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=fir_default_unit,
             ErrMessage=f'assume default for fixed internal rate ({fir_default_val}%)',
-            ToolTipText="Fixed Internal Rate (used in NPV calculation)"
+            ToolTipText="Fixed Internal Rate (used in NPV calculation). "
+                        "Fixed Internal Rate is synonymous with Discount Rate. If one is provided, the other's value "
+                        "will be automatically set to the same value."
         )
         self.CAPEX_heat_electricity_plant_ratio = self.ParameterDict[self.CAPEX_heat_electricity_plant_ratio.Name] = floatParameter(
             "CHP Electrical Plant Cost Allocation Ratio",

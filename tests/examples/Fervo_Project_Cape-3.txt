@@ -8,7 +8,7 @@
 Reservoir Model, 1
 Reservoir Volume Option, 1
 Reservoir Density, 2800
-Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
+Reservoir Depth, 8500 ft, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
@@ -28,7 +28,7 @@ Number of Production Wells, 39
 Production Flow Rate per Well, 120, -- peak flow reported in paper
 Production Well Diameter, 7
 Injection Well Diameter, 7
-Well Separation, 365 feet
+Well Separation, 365 ft
 Injection Temperature, 60 degC
 Injection Wellbore Temperature Gain, 3
 Plant Outlet Pressure, 1000 psi
@@ -69,4 +69,4 @@ Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 3
-Nonvertical Length per Multilateral Section, 4700 feet
+Nonvertical Length per Multilateral Section, 4700 ft

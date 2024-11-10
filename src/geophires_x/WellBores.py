@@ -1254,9 +1254,6 @@ class WellBores:
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
                     ParameterReadIn = model.InputParameters[key]
-                    # Before we change the parameter, let's assume that the unit preferences will match
-                    # - if they don't, the later code will fix this.
-                    ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
                     ReadParameter(ParameterReadIn, ParameterToModify, model)  # this should handle all non-special cases
 
                     # handle special cases

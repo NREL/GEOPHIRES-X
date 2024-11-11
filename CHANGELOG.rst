@@ -23,6 +23,8 @@ Affected users who do not want the new behavior can specify absolute output path
 
 3.6.1: Fixed Internal Rate default value changed to 7% from 6.25% per https://github.com/NREL/GEOPHIRES-X/issues/301
 
+3.6.3: Discount Rate and Fixed Internal Rate are now synonymous. If one is provided, the other's value will be automatically set to the same value.
+
 3.5
 ^^^
 

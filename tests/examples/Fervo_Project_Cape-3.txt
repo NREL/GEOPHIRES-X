@@ -39,8 +39,8 @@ Plant Lifetime, 20
 Power Plant Type, 2
 Circulation Pump Efficiency, 0.80
 Exploration Capital Cost, 30
-Well Drilling and Completion Capital Cost, 5.84, -- $3.84M/well + $2M/well additional stimulation cost
-Reservoir Stimulation Capital Cost, 78, -- $3M/well - $1M as stimulation + $2M represented in well drilling cost
+Well Drilling and Completion Capital Cost, 3.84,
+Reservoir Stimulation Capital Cost, 234, -- 78 wells @ $3M/well
 Economic Model, 3
 Starting Electricity Sale Price, 0.15
 Ending Electricity Sale Price, 1.00

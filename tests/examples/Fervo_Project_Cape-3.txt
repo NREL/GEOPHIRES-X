@@ -30,7 +30,7 @@ Plant Outlet Pressure, 1000 psi
 Production Wellhead Pressure, 325 psi
 Ramey Production Wellbore Model, 1
 Utilization Factor, .9
-Water Loss Fraction, 0.02
+Water Loss Fraction, 0.05
 Maximum Drawdown, 1
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC

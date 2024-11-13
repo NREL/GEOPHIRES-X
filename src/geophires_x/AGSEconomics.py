@@ -189,7 +189,7 @@ class AGSEconomics(Economics.Economics):
             # use the CLGS-Style economic calculations
             err = self.verify(model)
             if err > 0:
-                msg = 'Error: GEOPHIRES failed to Failed to validate CLGS input value. Exiting....'
+                msg = 'Error: GEOPHIRES failed to validate CLGS input value. Exiting...'
                 print(msg)
                 raise RuntimeError(msg)
 

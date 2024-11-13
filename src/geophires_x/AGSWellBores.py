@@ -977,7 +977,7 @@ class AGSWellBores(WellBores):
             # do the CLGS-style calculation
             err = self.verify(model)
             if err > 0:
-                msg = 'Error: GEOPHIRES failed to Failed to validate CLGS input value. Exiting....'
+                msg = 'Error: GEOPHIRES failed to validate CLGS input value. Exiting...'
                 model.logger.fatal(msg)
                 print(msg)
 

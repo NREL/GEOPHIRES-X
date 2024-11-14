@@ -41,7 +41,7 @@ class SurfacePlantHeatPump(SurfacePlant):
 
         self.heat_pump_cop = self.ParameterDict[self.heat_pump_cop.Name] = floatParameter(
             "Heat Pump COP",
-            value=5,
+            DefaultValue=5,
             Min=1,
             Max=10,
             UnitType=Units.PERCENT,

@@ -612,9 +612,7 @@ class HIP_RA_X:
                 key = ParameterToModify.Name.strip()
                 if key in self.InputParameters:
                     ParameterReadIn = self.InputParameters[key]
-                    # Before we change the parameter, let's assume that the unit preferences will match -
-                    # if they don't, the later code will fix this.
-                    ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
+
                     # this should handle all the non-special cases
                     ReadParameter(ParameterReadIn, ParameterToModify, self)
         else:

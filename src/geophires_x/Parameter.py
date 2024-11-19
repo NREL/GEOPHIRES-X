@@ -289,9 +289,12 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):
         new_str = ConvertUnits(ParamToModify, ParameterReadIn.sValue, model)
         if len(new_str) > 0:
             ParameterReadIn.sValue = new_str
-    else:
-        # The value came in without any units, so it must be using the default PreferredUnits
-        ParamToModify.CurrentUnits = ParamToModify.PreferredUnits
+    #else:
+        # The value came in without any units
+        # TODO: determine the proper action in this case
+        # (previously, it was assumed that the value must be
+        # using the default PreferredUnits, which was not always
+        # valid and led to incorrect units in the output)
 
     def default_parameter_value_message(new_val: Any, param_to_modify_name: str, default_value: Any) -> str:
         return (
@@ -831,6 +834,10 @@ def LookupUnits(sUnitText: str):
             for item in MyEnum:
                 if item.value == sUnitText:
                     return item, uType
+
+    # No match was found with the unit text string, so try with the canonical symbol (if different).
+    symbol = _ureg.get_symbol(sUnitText)
+    if symbol != sUnitText: return LookupUnits(symbol)
     return None, None
 
 

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.0
- Simulation Date: 2024-10-15
- Simulation Time:  13:08
- Calculation Time:      1.590 sec
+ GEOPHIRES Version: 3.6.3
+ Simulation Date: 2024-11-11
+ Simulation Time:  15:24
+ Calculation Time:      6.425 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -40,7 +40,7 @@ Simulation Metadata
       Number of Injection Wells:                              1
       Well depth (or total length, if not vertical):          4.0 kilometer
       Water loss rate:                                        0.0
-      Pump efficiency:                                       80.0
+      Pump efficiency:                                       80.0 %
       Injection temperature:                                 60.0 degC
       User-provided production well temperature drop
       Constant production well temperature drop:              0.0 degC

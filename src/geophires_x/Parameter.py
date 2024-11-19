@@ -834,6 +834,10 @@ def LookupUnits(sUnitText: str):
             for item in MyEnum:
                 if item.value == sUnitText:
                     return item, uType
+
+    # No match was found with the unit text string, so try with the canonical symbol (if different).
+    symbol = _ureg.get_symbol(sUnitText)
+    if symbol != sUnitText: return LookupUnits(symbol)
     return None, None
 
 

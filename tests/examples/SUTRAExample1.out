@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.2
- Simulation Date: 2024-10-18
- Simulation Time:  10:43
- Calculation Time:      0.516 sec
+ GEOPHIRES Version: 3.6.3
+ Simulation Date: 2024-11-11
+ Simulation Time:  15:22
+ Calculation Time:      2.100 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -32,7 +32,7 @@ Simulation Metadata
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
       Well Depth:                                           0.6 kilometer
-      Pump efficiency:                                      0.8
+      Pump efficiency:                                     80.0 %
       Lifetime Average Well Flow Rate:                     16.2 kg/sec
       Injection well casing ID:                           7.800 in
       Production well casing ID:                          7.800 in

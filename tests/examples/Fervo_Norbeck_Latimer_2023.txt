@@ -14,7 +14,7 @@
 Reservoir Model, 1
 Reservoir Volume Option, 1,
 Reservoir Density, 2800, per the paper phyllite + quartzite + diorite + granodiorite,
-Reservoir Depth, 7700 ft, per the paper
+Reservoir Depth, 7700 feet, per the paper
 Reservoir Heat Capacity, 1000
 Reservoir Thermal Conductivity, 2.7
 Number of Fractures, 100, per the paper
@@ -31,13 +31,13 @@ Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 2, Two parallel horizontal sections
-Nonvertical Length per Multilateral Section, 3250 ft, per the paper
+Nonvertical Length per Multilateral Section, 3250 feet, per the paper
 Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
 Horizontal Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
 Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
 Production Well Diameter, 7, per the paper
 Injection Well Diameter, 7, per the paper
-Well Separation, 365 ft, per the paper
+Well Separation, 365 feet, per the paper
 Injection Temperature, 38 degC, per the paper 75 to 125 degF
 Injection Wellbore Temperature Gain, 3
 Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW

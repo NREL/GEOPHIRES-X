@@ -37,7 +37,7 @@ ENGINEERING PARAMETERS,Number of Production Wells,,2,count
 ENGINEERING PARAMETERS,Number of Injection Wells,,2,count
 ENGINEERING PARAMETERS,"Well depth (or total length\, if not vertical)",,3.0,kilometer
 ENGINEERING PARAMETERS,Water loss rate,,2.0,
-ENGINEERING PARAMETERS,Pump efficiency,,80.0,
+ENGINEERING PARAMETERS,Pump efficiency,,80.0,%
 ENGINEERING PARAMETERS,Injection temperature,,50.0,degC
 ENGINEERING PARAMETERS,Average production well temperature drop,,3.0,degC
 ENGINEERING PARAMETERS,Flowrate per production well,,55.0,kg/sec
@@ -97,7 +97,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Total Electricity Generation
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,42.3,GWh
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
-Simulation Metadata,GEOPHIRES Version,,3.6.0,
+Simulation Metadata,GEOPHIRES Version,,3.6.3,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

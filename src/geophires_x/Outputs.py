@@ -721,9 +721,6 @@ class Outputs:
                             model.logger.info(f'Adjusted {key} path to {ParameterReadIn.sValue} because original value '
                                               f'({original_val}) was not an absolute path.')
 
-                    # Before we change the parameter, let's assume that the unit preferences will match
-                    # - if they don't, the later code will fix this.
-                    ParameterToModify.CurrentUnits = ParameterToModify.PreferredUnits
                     # this should handle all the non-special cases
                     ReadParameter(ParameterReadIn, ParameterToModify, model)
 
@@ -1674,7 +1671,7 @@ class Outputs:
                 f.write(f'      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}' + NL)
                 f.write(f'      Well depth (or total length, if not vertical):   {model.reserv.depth.value:10.1f} ' + model.reserv.depth.CurrentUnits.value + NL)
                 f.write(f'      Water loss rate:                                 {model.reserv.waterloss.value*100:10.1f} ' + model.reserv.waterloss.CurrentUnits.value + NL)
-                f.write(f'      Pump efficiency:                                 {model.surfaceplant.pump_efficiency.value * 100:10.1f} ' + model.surfaceplant.pump_efficiency.CurrentUnits.value + NL)
+                f.write(f'      Pump efficiency:                                 {model.surfaceplant.pump_efficiency.value:10.1f} ' + model.surfaceplant.pump_efficiency.CurrentUnits.value + NL)
                 f.write(f'      Injection temperature:                           {model.wellbores.Tinj.value:10.1f} ' + model.wellbores.Tinj.CurrentUnits.value + NL)
                 if model.wellbores.rameyoptionprod.value:
                     f.write('      Production Wellbore heat transmission calculated with Ramey\'s model\n')

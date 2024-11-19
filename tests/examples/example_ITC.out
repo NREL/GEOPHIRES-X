@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.0
- Simulation Date: 2024-10-15
- Simulation Time:  13:08
- Calculation Time:      0.792 sec
+ GEOPHIRES Version: 3.6.3
+ Simulation Date: 2024-11-11
+ Simulation Time:  15:14
+ Calculation Time:      3.140 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -40,7 +40,7 @@ Simulation Metadata
       Number of Injection Wells:                              2
       Well depth (or total length, if not vertical):          5.0 kilometer
       Water loss rate:                                        2.0
-      Pump efficiency:                                       80.0
+      Pump efficiency:                                       80.0 %
       Injection temperature:                                 50.0 degC
       Production Wellbore heat transmission calculated with Ramey's model
       Average production well temperature drop:               8.9 degC

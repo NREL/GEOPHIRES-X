@@ -579,7 +579,7 @@ class Economics:
             "Reservoir Stimulation Capital Cost",
             DefaultValue=-1.0,
             Min=0,
-            Max=100,
+            Max=1000,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,

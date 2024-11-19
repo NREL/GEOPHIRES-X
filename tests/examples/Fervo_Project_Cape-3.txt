@@ -4,7 +4,6 @@
 #    "Deployment of Enhanced Geothermal System technology leads to rapid cost reductions and performance improvements."
 #    https://doi.org/10.31223/X5VH8C
 
-
 Reservoir Model, 1
 Reservoir Volume Option, 1
 Reservoir Density, 2800
@@ -35,18 +34,19 @@ Plant Outlet Pressure, 1000 psi
 Production Wellhead Pressure, 325 psi
 Ramey Production Wellbore Model, 1
 Utilization Factor, .9
-Water Loss Fraction, 0.02
+Water Loss Fraction, 0.05
 Maximum Drawdown, 1
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 End-Use Option, 1
-Plant Lifetime, 15
+Plant Lifetime, 20
 Power Plant Type, 2
 Circulation Pump Efficiency, 0.80
 
-Exploration Capital Cost, 0
-Well Drilling and Completion Capital Cost, 4, -- Assume cost continues to decrease from 4.8 (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
-Reservoir Stimulation Capital Cost, 78, -- $1M/well estimated
+Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production)
+Exploration Capital Cost, 30
+Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
+Reservoir Stimulation Capital Cost, 234, -- 78 wells @ $3M/well
 Economic Model, 3
 Starting Electricity Sale Price, 0.15
 Ending Electricity Sale Price, 1.00
@@ -58,12 +58,11 @@ Gross Revenue Tax Rate, 0
 Inflated Bond Interest Rate, .05
 Inflated Equity Interest Rate, .08
 Inflation Rate, .02
-Investment Tax Credit Rate, 0
+Investment Tax Credit Rate, .3
 Inflation Rate During Construction, 0.05
 Property Tax Rate, 0
 Time steps per year, 10
 Maximum Temperature, 500
-Surface Plant Capital Cost Adjustment Factor, 0.78, -- pad drilling reduces surface CAPEX by 22% https://www.resfrac.com/blog/digesting-the-bonkers-incredible-off-the-charts-spectacular-results-from-the-fervo-and-forge-enhanced-geothermal-projects
 
 Well Geometry Configuration, 4
 Has Nonvertical Section, True

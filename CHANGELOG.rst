@@ -31,6 +31,7 @@ Affected users who do not want the new behavior can specify absolute output path
 `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.5.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...v3.5.0>`__
 
 Milestone version for case studies, SHR temperatures, and other changes since 3.0.
+An overview is given in the July 2024 NREL GEOPHIRES Workshop `Version 3.5 Announcement session recording <https://youtu.be/Bi_l6y6_LQk>`__.
 
 3.5.3: SBT Reservoir Model (Slender Body Theory)
 

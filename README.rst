@@ -7,7 +7,12 @@ Overview
 .. |GEOPHIRES Logo| image:: geophires-logo.png
     :alt: GEOPHIRES Logo
 
-GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
+GEOPHIRES is a free and open-source geothermal techno-economic simulator.
+GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs,
+instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant.
+Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled.
+Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
+See the `Documentation`_ section below for more information.
 
 GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
 
@@ -479,7 +484,7 @@ Additional Documentation
 ------------------------
 
 Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__;
-`accompanying GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
+accompanying `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
 Additional materials can be found in `/References </References>`__.
 

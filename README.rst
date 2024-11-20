@@ -256,9 +256,6 @@ You may also optionally pass the output file as well::
 Documentation
 =============
 
-Overview
---------
-
 GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
 and correlations to estimate the capital and operation and maintenance costs,
 instantaneous and lifetime energy production, and overall levelized cost of energy of a

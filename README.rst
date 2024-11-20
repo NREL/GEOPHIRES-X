@@ -251,17 +251,66 @@ You may also optionally pass the output file as well::
 Documentation
 =============
 
+Overview
+--------
+
+GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
+and correlations to estimate the capital and operation and maintenance costs,
+instantaneous and lifetime energy production, and overall levelized cost of energy of a
+geothermal plant.
+
+The high-level software architecture is illustrated in the diagram below. Green, orange and blue rectangles
+refer to internal GEOPHIRES components, external user-interface components, and
+external reservoir simulators (TOUGH2), respectively. Rectangles with solid outline are
+always executed during a simulation run; rectangles with dashed outline refer to optional
+or user-provided components.
+
+|GEOPHIRES Architecture Diagram|
+
+.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2024-11-20.png
+    :alt: GEOPHIRES Architecture Diagram
+
+GEOPHIRES has a variety of different reservoir models including (1) Multiple parallel fractures model;
+(2) 1-Dimensional linear heat sweep model;
+(3) M/A thermal drawdown parameter model;
+(4) Percentage temperature drawdown model;
+(5) User-provided reservoir temperature production data;
+(6) Coupling to TOUGH2 external reservoir simulator;
+(7) SUTRA: Reservoir Thermal Energy Storage (RTES; also known as Underground Thermal Energy Storage - UTES);
+(8) Slender Body Theory (SBT);
+(9) Cylindrical.
+
+GEOPHIRES can simulate three different end-uses of the geothermal heat: (1)
+direct-use heat (e.g. for industrial processing heating or residential space heating);
+(2) electricity (with subcritical ORC, supercritical ORC, single-flash, or double-flash plant);
+(3) co-generation of heat and electricity. The co-generation option considers bottoming
+cycle, topping cycle, and parallel cycle.
+
+GEOPHIRES has 4 economic models to calculate the levelized cost of heat or
+electricity: (1) fixed charge rate (FCR) model;
+(2) standard discounting levelized cost model;
+(3) BICYCLE model;
+(4) CLGS.
+
+The capital and O&M costs for the different geothermal system components (exploration,
+well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
+correlations.
 
 Parameters
 ----------
 
 Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
 
+Note that many parameters are interrelated and/or conditionally dependent on one another;
+reviewing the GEOPHIRES example(s) relevant to your use case in the following section
+is strongly recommended to gain a working understanding of how to construct valid sets of input parameters.
+
 
 Examples
 --------
 
-GEOPHIRES includes a variety of examples demonstrating its features and case studies for different types of geothermal systems.
+GEOPHIRES includes a variety of examples input files demonstrating its features for different types of geothermal systems
+and case studies of real-world geothermal projects.
 Starting with an existing GEOPHIRES example that is similar to your intended use/application can be an easier approach to using GEOPHIRES than constructing your own inputs from scratch.
 
 Example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory <tests/examples>`__ of the repository.
@@ -356,11 +405,11 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
      - `.out <tests/examples/example_multiple_gradients.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_multiple_gradients>`__
-   * - Fervo Project Red (Norbeck J.H. and Latimer T.M. 2023.)
+   * - Fervo Project Red (2023)
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
      - `.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Norbeck_Latimer_2023>`__
-   * - Fervo Cape Station 1
+   * - Fervo Cape Station 1: 2023 Results
      - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape>`__

@@ -469,11 +469,11 @@ Extending GEOPHIRES-X
 
 Additional Documentation
 ------------------------
-The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.
 
-Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__
+Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__;
+`accompanying GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
-Additional materials in `/References </References>`__
+Additional materials can be found in `/References </References>`__.
 
 
 Development

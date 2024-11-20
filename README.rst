@@ -325,7 +325,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - Input file
      - Case report file
      - Link
-   * - Example 1
+   * - Example 1: EGS Electricity
      - `example1.txt <tests/examples/example1.txt>`__
      - `.out <tests/examples/example1.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1>`__
@@ -333,27 +333,31 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example1_addons.txt <tests/examples/example1_addons.txt>`__
      - `.out <tests/examples/example1_addons.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1_addons>`__
-   * - Example 2
+   * - Example 2: EGS Direct-Use Heat
      - `example2.txt <tests/examples/example2.txt>`__
      - `.out <tests/examples/example2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example2>`__
-   * - Example 3
+   * - Example 3: EGS Co-generation
      - `example3.txt <tests/examples/example3.txt>`__
      - `.out <tests/examples/example3.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example3>`__
-   * - Example 4
+   * - Example 4: Hydrothermal Electricity
      - `example4.txt <tests/examples/example4.txt>`__
      - `.out <tests/examples/example4.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example4>`__
-   * - Example 5
+   * - Example 5: User-Provided Reservoir Data
      - `example5.txt <tests/examples/example5.txt>`__
      - `.out <tests/examples/example5.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example5>`__
-   * - Example 8
+   * - Example 6: TOUGH2
+     - `example6.txt <https://github.com/NREL/GEOPHIRES-v2/blob/master/Examples/example6.txt>`__\*
+     -
+     -
+   * - Example 8: Cornell Direct-Use Heat
      - `example8.txt <tests/examples/example8.txt>`__
      - `.out <tests/examples/example8.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example8>`__
-   * - Example 9
+   * - Example 9: Cornell Electricity
      - `example9.txt <tests/examples/example9.txt>`__
      - `.out <tests/examples/example9.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example9>`__
@@ -369,7 +373,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example12_DH.txt <tests/examples/example12_DH.txt>`__
      - `.out <tests/examples/example12_DH.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example12_DH>`__
-   * - Example 13
+   * - Example 13: Redrilling due to Drawdown
      - `example13.txt <tests/examples/example13.txt>`__
      - `.out <tests/examples/example13.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
@@ -438,6 +442,8 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example_SBT_Lo_T.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
+*\*GEOPHIRES v2.0 input file*
+
 Videos
 ------
 
@@ -448,9 +454,11 @@ Videos
 HIP-RA: Heat in Place - Resource Assessment
 -------------------------------------------
 
-* `HIP-RA-X README <src/hip_ra_x/README.md>`__
-* `HIP-RA-X Parameters Reference <https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
-* A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <https://gtp.scientificwebservices.com/hip-ra>`__.
+`HIP-RA-X README <src/hip_ra_x/README.md>`__
+
+`HIP-RA-X Parameters Reference <https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+
+A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <https://gtp.scientificwebservices.com/hip-ra>`__.
 
 
 Monte Carlo
@@ -462,9 +470,9 @@ A Monte Carlo web interface is available at `gtp.scientificwebservices.com/monte
 
 Extending GEOPHIRES-X
 ---------------------
-* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
+`How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
 
-  - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
+`Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
 
 Additional Documentation

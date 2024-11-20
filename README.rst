@@ -251,6 +251,13 @@ You may also optionally pass the output file as well::
 Documentation
 =============
 
+
+Parameters
+----------
+
+Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
+
+
 Examples
 --------
 
@@ -317,27 +324,27 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example13.txt <tests/examples/example13.txt>`__
      - `.out <tests/examples/example13.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
-   * - AGS: Coaxial sCO2: Heat (Beckers et. al 2023)
+   * - AGS: Coaxial sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat>`__
-   * - AGS: Coaxial Water: Heat (Beckers et. al 2023)
+   * - AGS: Coaxial Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat>`__
-   * - AGS: Uloop sCO2: Electricity (Beckers et. al 2023)
+   * - AGS: Uloop sCO2: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec>`__
-   * - AGS: Uloop sCO2: Heat (Beckers et. al 2023)
+   * - AGS: Uloop sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat>`__
-   * - AGS: Uloop Water: Electricity (Beckers et. al 2023)
+   * - AGS: Uloop Water: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec>`__
-   * - CLGS: Uloop Water: Heat (Beckers et. al 2023)
+   * - CLGS: Uloop Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat>`__
@@ -353,15 +360,15 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
      - `.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Norbeck_Latimer_2023>`__
-   * - Fervo Project Cape
+   * - Fervo Cape Station 1
      - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape>`__
-   * - Fervo Project Cape 2
+   * - Fervo Cape Station 2: 2024 Results
      - `Fervo_Project_Cape-2.txt <tests/examples/Fervo_Project_Cape-2.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-2>`__
-   * - Fervo Project Cape 3
+   * - Fervo Cape Station 3: 400 MWe Production
      - `Fervo_Project_Cape-3.txt <tests/examples/Fervo_Project_Cape-3.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-3.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-3>`__
@@ -382,12 +389,27 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example_SBT_Lo_T.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
+Videos
+------
 
-Parameters
-----------
+`NREL GEOPHIRES Workshop: Features Overview & Examples <https://www.youtube.com/watch?v=KsFvpvXjOB4>`__
 
-Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
+`NREL GEOPHIRES Workshop: Case Studies <https://youtu.be/uMUDTUL6yWg>`__
 
+HIP-RA: Heat in Place - Resource Assessment
+-------------------------------------------
+
+* `HIP-RA-X README <src/hip_ra_x/README.md>`__
+* `HIP-RA-X Parameters Reference <https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+* A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <https://gtp.scientificwebservices.com/hip-ra>`__.
+
+
+Monte Carlo
+-----------
+
+`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
+
+A Monte Carlo web interface is available at `gtp.scientificwebservices.com/monte-carlo <https://gtp.scientificwebservices.com/monte-carlo>`__.
 
 Extending GEOPHIRES-X
 ---------------------
@@ -395,19 +417,6 @@ Extending GEOPHIRES-X
 
   - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
-
-HIP-RA: Heat in Place - Resource Assessment
--------------------------------------------
-
-* `HIP-RA-X README <src/hip_ra_x/README.md>`__
-* `HIP-RA-X Parameters Reference <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
-
-.. TODO switch over to https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html once merged
-
-Monte Carlo
------------
-
-`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
 Additional Documentation
 ------------------------

@@ -13,58 +13,58 @@
 
 Reservoir Model, 1
 Reservoir Volume Option, 1,
-Reservoir Density, 2800, per the paper phyllite + quartzite + diorite + granodiorite,
-Reservoir Depth, 7700 feet, per the paper
-Reservoir Heat Capacity, 1000
+Reservoir Density, 2800, -- per the paper phyllite + quartzite + diorite + granodiorite
+Reservoir Depth, 7600 feet, -- per the paper
+Reservoir Heat Capacity, 1000, -- [J/kg/K]
 Reservoir Thermal Conductivity, 2.7
-Number of Fractures, 100, per the paper
-Fracture Shape, 4, per the paper
-Fracture Height, 160, per the paper
-Fracture Width, 160, per the paper (distance between wellbores assumes a dipole flow field)
+Number of Fractures, 100, -- per the paper
+Fracture Shape, 4, -- per the paper
+Fracture Height, 160, -- per the paper
+Fracture Width, 160, -- per the paper (distance between wellbores assumes a dipole flow field)
 Fracture Separation, 10 meter
 Number of Segments, 1
-Gradient 1, 76.74, per the paper
-Plant Outlet Pressure, 1500 psi, per the paper
+Gradient 1, 74, -- per the paper
+Plant Outlet Pressure, 1500 psi, -- per the paper
 Number of Injection Wells, 1
 Number of Production Wells, 1
 Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
-Number of Multilateral Sections, 2, Two parallel horizontal sections
-Nonvertical Length per Multilateral Section, 3250 feet, per the paper
-Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
-Horizontal Well Drilling Cost Correlation, 10,	per the drill cost paper - works out to $400/ft
-Production Flow Rate per Well, 41.02, =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
-Production Well Diameter, 7, per the paper
-Injection Well Diameter, 7, per the paper
-Well Separation, 365 feet, per the paper
-Injection Temperature, 38 degC, per the paper 75 to 125 degF
-Injection Wellbore Temperature Gain, 3
-Reservoir Impedance, 0.33, per paper, matching pumping power report 500-1000 kW
-Ramey Production Wellbore Model, True
+Number of Multilateral Sections, 2, -- Two parallel horizontal sections
+Total Nonvertical Length, 3250 feet, -- per the paper
+Well Drilling Cost Correlation, 10, -- per the drill cost paper - works out to $400/ft
+Horizontal Well Drilling Cost Correlation, 10, -- per the drill cost paper - works out to $400/ft
+Production Flow Rate per Well, 41, -- =650 gpm per the paper - per the paper the maximum flow rate was 63 L/s but the range was 550-750 gpm
+Production Well Diameter, 7, -- per the paper
+Injection Well Diameter, 7, -- per the paper
+Well Separation, 365 feet, -- per the paper
+Injection Temperature, 38 degC, -- per the paper 75 to 125 degF
+Injection Wellbore Temperature Gain, 3, -- [degC]
+Reservoir Impedance, 0.30, -- per paper, matching pumping power report 500-1000 kW
+Ramey Production Wellbore Model, 1
 Utilization Factor, .9
 Water Loss Fraction, 0.1
-Maximum Drawdown, 1, no redrilling considered
-Ambient Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
-Surface Temperature, 8 degC, per the paper. Published ambient is 10.27 degC
-End-Use Option, 1, electricity as the main product
+Maximum Drawdown, 1, -- no redrilling considered
+Ambient Temperature, 8 degC, -- per the paper. Published ambient is 10.27 degC
+Surface Temperature, 8 degC, -- per the paper. Published ambient is 10.27 degC
+End-Use Option, 1, -- electricity as the main product
 Plant Lifetime, 10
-Power Plant Type, 1, subcritical binary cycle
+Power Plant Type, 2, -- supercritical binary cycle
 End-Use Efficiency Factor, .9
-Circulation Pump Efficiency, 0.80, per the paper
-Economic Model, 3, BICYCLE Levelized Cost Model
+Circulation Pump Efficiency, 0.80, -- per the paper
+Economic Model, 3, -- BICYCLE Levelized Cost Model
 Starting Electricity Sale Price, 0.15
-Ending Electricity Sale Price, 1.00, essentially no limit as the rate can rise continuously with inflation
-Electricity Escalation Rate Per Year, 0.004053223, End up being about 2% inflation
+Ending Electricity Sale Price, 1.00, -- essentially no limit as the rate can rise continuously with inflation
+Electricity Escalation Rate Per Year, 0.004053223, -- End up being about 2% inflation
 Electricity Escalation Start Year, 1
-Fraction of Investment in Bonds, .5, Required for BICYCLE model
-Combined Income Tax Rate, .3, Required for BICYCLE model
-Gross Revenue Tax Rate, 0, Required for BICYCLE model
-Inflated Bond Interest Rate, .05, Required for BICYCLE model
-Inflated Equity Interest Rate, .08, Required for BICYCLE model
-Inflation Rate, .02, Required for BICYCLE model
-Investment Tax Credit Rate, 0, Required for BICYCLE model
-Inflation Rate During Construction, 0.05,
-Property Tax Rate, 0, Required for BICYCLE model
+Fraction of Investment in Bonds, .5, -- Required for BICYCLE model
+Combined Income Tax Rate, .3, -- Required for BICYCLE model
+Gross Revenue Tax Rate, 0, -- Required for BICYCLE model
+Inflated Bond Interest Rate, .05, -- Required for BICYCLE model
+Inflated Equity Interest Rate, .08, -- Required for BICYCLE model
+Inflation Rate, .02, -- Required for BICYCLE model
+Investment Tax Credit Rate, 0, -- Required for BICYCLE model
+Inflation Rate During Construction, 0.05
+Property Tax Rate, 0, -- Required for BICYCLE model
 Print Output to Console, 1
 Time steps per year, 10

@@ -411,6 +411,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
      - `.out <tests/examples/example_multiple_gradients.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_multiple_gradients>`__
+   * - Investment Tax Credit
+     - `example_ITC.txt <tests/examples/example_ITC.txt>`__
+     - `.out <tests/examples/example_ITC.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_ITC>`__
+   * - Production Tax Credit
+     - `example_PTC.txt <tests/examples/example_PTC.txt>`__
+     - `.out <tests/examples/example_PTC.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_PTC>`__
    * - Fervo Project Red (2023)
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
      - `.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__

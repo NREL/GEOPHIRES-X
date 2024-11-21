@@ -1,4 +1,4 @@
-# Case Study: Fervo Energy Whitepaper
+# Case Study: Fervo Project Red (2023)
 #  Norbeck J.H. and Latimer T.M. 2023.
 #    "Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal System."
 #    https://doi.org/10.31223/X52X0B

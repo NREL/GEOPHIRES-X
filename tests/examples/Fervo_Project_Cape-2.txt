@@ -1,4 +1,5 @@
-# Case Study: Fervo Project Cape 2: Matches/approximates Fervo results pre-published 2024-09-10 at
+# Case Study: Fervo Cape Station 2: 2024 Results
+# Matches/approximates Fervo results pre-published 2024-09-10 at
 # https://eartharxiv.org/repository/view/7665/ (citation below) using available data from paper and other sources.
 # Norbeck J., Gradl C., and Latimer T. 2024.
 #    "Deployment of Enhanced Geothermal System technology leads to rapid cost reductions and performance improvements."

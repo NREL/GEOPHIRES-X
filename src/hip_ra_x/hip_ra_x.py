@@ -120,7 +120,7 @@ class HIP_RA_X:
                 CurrentUnits=TemperatureUnit.CELSIUS,
                 Required=True,
                 ErrMessage='assume default reservoir temperature (150 degC)',
-                ToolTipText='Reservoir Temperature [150 degC]',
+                ToolTipText='Reservoir Temperature',
             )
         )
         self.rejection_temperature: Parameter = parameter_dict_entry(
@@ -134,7 +134,7 @@ class HIP_RA_X:
                 CurrentUnits=TemperatureUnit.CELSIUS,
                 Required=True,
                 ErrMessage='assume default rejection temperature (25 degC)',
-                ToolTipText='Rejection Temperature [25 degC]',
+                ToolTipText='Rejection Temperature',
             )
         )
         self.reservoir_porosity: Parameter = parameter_dict_entry(
@@ -148,7 +148,7 @@ class HIP_RA_X:
                 CurrentUnits=PercentUnit.PERCENT,
                 Required=True,
                 ErrMessage='assume default reservoir porosity (18%)',
-                ToolTipText='Reservoir Porosity [18%]',
+                ToolTipText='Reservoir Porosity',
             )
         )
         self.reservoir_area: Parameter = parameter_dict_entry(
@@ -162,7 +162,7 @@ class HIP_RA_X:
                 CurrentUnits=AreaUnit.KILOMETERS2,
                 Required=True,
                 ErrMessage='assume default reservoir area (81 km2)',
-                ToolTipText='Reservoir Area [81 km2]',
+                ToolTipText='Reservoir Area',
             )
         )
         self.reservoir_thickness: Parameter = parameter_dict_entry(
@@ -176,7 +176,7 @@ class HIP_RA_X:
                 CurrentUnits=LengthUnit.KILOMETERS,
                 Required=True,
                 ErrMessage='assume default reservoir thickness (0.286 km2)',
-                ToolTipText='Reservoir Thickness [0.286 km]',
+                ToolTipText='Reservoir Thickness',
             )
         )
         self.reservoir_life_cycle: Parameter = parameter_dict_entry(
@@ -189,7 +189,7 @@ class HIP_RA_X:
                 AllowableRange=list(range(1, 101, 1)),
                 Required=True,
                 ErrMessage='assume default Reservoir Life Cycle (25 years)',
-                ToolTipText='Reservoir Life Cycle [30 years]',
+                ToolTipText='Reservoir Life Cycle',
             )
         )
 
@@ -205,7 +205,7 @@ class HIP_RA_X:
                 CurrentUnits=HeatCapacityUnit.KJPERKM3C,
                 Required=True,
                 ErrMessage='assume default Rock Heat Capacity (2.84E+12 kJ/km3C)',
-                ToolTipText='Rock Heat Capacity [2.84E+12 kJ/km3C]',
+                ToolTipText='Rock Heat Capacity',
             )
         )
         self.fluid_heat_capacity: Parameter = parameter_dict_entry(
@@ -219,7 +219,7 @@ class HIP_RA_X:
                 CurrentUnits=HeatCapacityUnit.kJPERKGC,
                 Required=True,
                 ErrMessage='calculate a value based on the water temperature',
-                ToolTipText='Specific Heat Capacity Of Water [4.18 kJ/kgC]',
+                ToolTipText='Specific Heat Capacity Of Water',
             )
         )
         self.fluid_density: Parameter = parameter_dict_entry(
@@ -233,7 +233,7 @@ class HIP_RA_X:
                 CurrentUnits=DensityUnit.KGPERKILOMETERS3,
                 Required=True,
                 ErrMessage='calculate a value based on the water temperature',
-                ToolTipText='Density Of Water [1.0E+12 kg/km3]',
+                ToolTipText='Density Of Water',
             )
         )
         self.rock_density: Parameter = parameter_dict_entry(
@@ -247,7 +247,7 @@ class HIP_RA_X:
                 CurrentUnits=DensityUnit.KGPERKILOMETERS3,
                 Required=True,
                 ErrMessage='assume default Density Of Rock (2.55E+12 kg/km3)',
-                ToolTipText='Density Of Rock [2.55E+12 kg/km3]',
+                ToolTipText='Density Of Rock',
             )
         )
         self.rock_recoverable_heat: Parameter = parameter_dict_entry(

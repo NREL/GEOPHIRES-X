@@ -374,7 +374,7 @@ class HipRaXTestCase(BaseTestCase):
         assert hip_ra.reservoir_temperature.CurrentUnits == TemperatureUnit.CELSIUS
         assert hip_ra.reservoir_temperature.Required is True
         assert hip_ra.reservoir_temperature.ErrMessage == 'assume default reservoir temperature (150 degC)'
-        assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature [150 degC]'
+        assert hip_ra.reservoir_temperature.ToolTipText == 'Reservoir Temperature'
 
         assert hip_ra.rejection_temperature.value == 25.0
         assert hip_ra.reservoir_porosity.value == 18.0

@@ -311,7 +311,7 @@ is strongly recommended to gain a working understanding of how to construct vali
 Examples
 --------
 
-GEOPHIRES includes a variety of examples input files demonstrating its features for different types of geothermal systems
+GEOPHIRES includes a variety of example input files demonstrating its features for different types of geothermal systems
 and case studies of real-world geothermal projects.
 Starting with an existing GEOPHIRES example that is similar to your intended use/application can be an easier approach to using GEOPHIRES than constructing your own inputs from scratch.
 

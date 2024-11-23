@@ -7,7 +7,12 @@ Overview
 .. |GEOPHIRES Logo| image:: geophires-logo.png
     :alt: GEOPHIRES Logo
 
-GEOPHIRES is a free and open-source geothermal techno-economic simulator. GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs, instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant. Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled. Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
+GEOPHIRES is a free and open-source geothermal techno-economic simulator.
+GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs,
+instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant.
+Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled.
+Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
+See the `Documentation`_ section below for more information.
 
 GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
 
@@ -51,9 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.6.4.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.6.6.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.6.4...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.6.6...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -251,10 +256,63 @@ You may also optionally pass the output file as well::
 Documentation
 =============
 
+GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
+and correlations to estimate the capital and operation and maintenance costs,
+instantaneous and lifetime energy production, and overall levelized cost of energy of a
+geothermal plant.
+
+The high-level software architecture is illustrated in the diagram below. Green, orange and blue rectangles
+refer to internal GEOPHIRES components, external user-interface components, and
+external reservoir simulators (TOUGH2), respectively. Rectangles with solid outline are
+always executed during a simulation run; rectangles with dashed outline refer to optional
+or user-provided components.
+
+|GEOPHIRES Architecture Diagram|
+
+.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2024-11-20.png
+    :alt: GEOPHIRES Architecture Diagram
+
+GEOPHIRES has a variety of different reservoir models including (1) Multiple parallel fractures model;
+(2) 1-Dimensional linear heat sweep model;
+(3) M/A thermal drawdown parameter model;
+(4) Percentage temperature drawdown model;
+(5) User-provided reservoir temperature production data;
+(6) Coupling to TOUGH2 external reservoir simulator;
+(7) SUTRA: Reservoir Thermal Energy Storage (RTES; also known as Underground Thermal Energy Storage - UTES);
+(8) Slender Body Theory (SBT);
+(9) Cylindrical.
+
+GEOPHIRES can simulate three different end-uses of the geothermal heat: (1)
+direct-use heat (e.g. for industrial processing heating or residential space heating);
+(2) electricity (with subcritical ORC, supercritical ORC, single-flash, or double-flash plant);
+(3) co-generation of heat and electricity. The co-generation option considers bottoming
+cycle, topping cycle, and parallel cycle.
+
+GEOPHIRES has 4 economic models to calculate the levelized cost of heat or
+electricity: (1) fixed charge rate (FCR) model;
+(2) standard discounting levelized cost model;
+(3) BICYCLE model;
+(4) CLGS.
+
+The capital and O&M costs for the different geothermal system components (exploration,
+well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
+correlations.
+
+Parameters
+----------
+
+Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
+
+Note that many parameters are interrelated and/or conditionally dependent on one another;
+reviewing the GEOPHIRES example(s) relevant to your use case in the following section
+is strongly recommended to gain a working understanding of how to construct valid sets of input parameters.
+
+
 Examples
 --------
 
-GEOPHIRES includes a variety of examples demonstrating its features and case studies for different types of geothermal systems.
+GEOPHIRES includes a variety of example input files demonstrating its features for different types of geothermal systems
+and case studies of real-world geothermal projects.
 Starting with an existing GEOPHIRES example that is similar to your intended use/application can be an easier approach to using GEOPHIRES than constructing your own inputs from scratch.
 
 Example input ``.txt`` files and corresponding case report ``.out`` files are available in the `tests/examples directory <tests/examples>`__ of the repository.
@@ -269,7 +327,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - Input file
      - Case report file
      - Link
-   * - Example 1
+   * - Example 1: EGS Electricity
      - `example1.txt <tests/examples/example1.txt>`__
      - `.out <tests/examples/example1.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1>`__
@@ -277,27 +335,31 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example1_addons.txt <tests/examples/example1_addons.txt>`__
      - `.out <tests/examples/example1_addons.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1_addons>`__
-   * - Example 2
+   * - Example 2: EGS Direct-Use Heat
      - `example2.txt <tests/examples/example2.txt>`__
      - `.out <tests/examples/example2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example2>`__
-   * - Example 3
+   * - Example 3: EGS Co-generation
      - `example3.txt <tests/examples/example3.txt>`__
      - `.out <tests/examples/example3.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example3>`__
-   * - Example 4
+   * - Example 4: Hydrothermal Electricity
      - `example4.txt <tests/examples/example4.txt>`__
      - `.out <tests/examples/example4.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example4>`__
-   * - Example 5
+   * - Example 5: User-Provided Reservoir Data
      - `example5.txt <tests/examples/example5.txt>`__
      - `.out <tests/examples/example5.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example5>`__
-   * - Example 8
+   * - Example 6: TOUGH2
+     - `example6.txt <https://github.com/NREL/GEOPHIRES-v2/blob/master/Examples/example6.txt>`__\*
+     -
+     -
+   * - Example 8: Cornell Direct-Use Heat
      - `example8.txt <tests/examples/example8.txt>`__
      - `.out <tests/examples/example8.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example8>`__
-   * - Example 9
+   * - Example 9: Cornell Electricity
      - `example9.txt <tests/examples/example9.txt>`__
      - `.out <tests/examples/example9.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example9>`__
@@ -313,31 +375,31 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example12_DH.txt <tests/examples/example12_DH.txt>`__
      - `.out <tests/examples/example12_DH.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example12_DH>`__
-   * - Example 13
+   * - Example 13: Redrilling due to Drawdown
      - `example13.txt <tests/examples/example13.txt>`__
      - `.out <tests/examples/example13.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
-   * - AGS: Coaxial sCO2: Heat (Beckers et. al 2023)
+   * - AGS: Coaxial sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat>`__
-   * - AGS: Coaxial Water: Heat (Beckers et. al 2023)
+   * - AGS: Coaxial Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat>`__
-   * - AGS: Uloop sCO2: Electricity (Beckers et. al 2023)
+   * - AGS: Uloop sCO2: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec>`__
-   * - AGS: Uloop sCO2: Heat (Beckers et. al 2023)
+   * - AGS: Uloop sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat>`__
-   * - AGS: Uloop Water: Electricity (Beckers et. al 2023)
+   * - AGS: Uloop Water: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec>`__
-   * - CLGS: Uloop Water: Heat (Beckers et. al 2023)
+   * - CLGS: Uloop Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat>`__
@@ -349,19 +411,27 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_multiple_gradients.txt <tests/examples/example_multiple_gradients.txt>`__
      - `.out <tests/examples/example_multiple_gradients.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_multiple_gradients>`__
-   * - Fervo Project Red (Norbeck J.H. and Latimer T.M. 2023.)
+   * - Investment Tax Credit
+     - `example_ITC.txt <tests/examples/example_ITC.txt>`__
+     - `.out <tests/examples/example_ITC.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_ITC>`__
+   * - Production Tax Credit
+     - `example_PTC.txt <tests/examples/example_PTC.txt>`__
+     - `.out <tests/examples/example_PTC.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_PTC>`__
+   * - Fervo Project Red (2023)
      - `Fervo_Norbeck_Latimer_2023.txt <tests/examples/Fervo_Norbeck_Latimer_2023.txt>`__
      - `.out <tests/examples/Fervo_Norbeck_Latimer_2023.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Norbeck_Latimer_2023>`__
-   * - Fervo Project Cape
+   * - Fervo Cape Station 1: 2023 Results
      - `Fervo_Project_Cape.txt <tests/examples/Fervo_Project_Cape.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape>`__
-   * - Fervo Project Cape 2
+   * - Fervo Cape Station 2: 2024 Results
      - `Fervo_Project_Cape-2.txt <tests/examples/Fervo_Project_Cape-2.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-2>`__
-   * - Fervo Project Cape 3
+   * - Fervo Cape Station 3: 400 MWe Production
      - `Fervo_Project_Cape-3.txt <tests/examples/Fervo_Project_Cape-3.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-3.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-3>`__
@@ -382,40 +452,46 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example_SBT_Lo_T.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
+*\*GEOPHIRES v2.0 input file*
 
-Parameters
-----------
+Videos
+------
 
-Available parameters are documented in the `Parameters Reference <https://nrel.github.io/GEOPHIRES-X/parameters.html>`__.
+`NREL GEOPHIRES Workshop: Features Overview & Examples <https://www.youtube.com/watch?v=KsFvpvXjOB4>`__
 
-
-Extending GEOPHIRES-X
----------------------
-* `How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
-
-  - `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
-
+`NREL GEOPHIRES Workshop: Case Studies <https://youtu.be/uMUDTUL6yWg>`__
 
 HIP-RA: Heat in Place - Resource Assessment
 -------------------------------------------
 
-* `HIP-RA-X README <src/hip_ra_x/README.md>`__
-* `HIP-RA-X Parameters Reference <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+`HIP-RA-X README <src/hip_ra_x/README.md>`__
 
-.. TODO switch over to https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html once merged
+`HIP-RA-X Parameters Reference <https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html>`__
+
+A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <https://gtp.scientificwebservices.com/hip-ra>`__.
+
 
 Monte Carlo
 -----------
 
 `Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
+A Monte Carlo web interface is available at `gtp.scientificwebservices.com/monte-carlo <https://gtp.scientificwebservices.com/monte-carlo>`__.
+
+Extending GEOPHIRES-X
+---------------------
+`How to extend GEOPHIRES-X <docs/How-to-extend-GEOPHIRES-X.md#how-to-extend-geophires-x>`__ user guide
+
+`Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
+
+
 Additional Documentation
 ------------------------
-The `GEOPHIRES v2.0 (previous version's) user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__ describes GEOPHIRES's high-level software architecture.
 
-Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__
+Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__;
+accompanying `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
-Additional materials in `/References </References>`__
+Additional materials can be found in `/References </References>`__.
 
 
 Development

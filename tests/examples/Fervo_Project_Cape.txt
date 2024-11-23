@@ -1,5 +1,8 @@
-# Case Study: Fervo Project Cape
+# Case Study: Fervo Cape Station 1: 2023 Results (from paper published in February 2024)
 # Presented at NREL GEOPHIRES workshop 2024-07-18
+# Fercho S., Matson G., McConville E., Rhodes G., Jordan R., and Norbeck J. 2024.
+#    "Geology, Temperature, Geophysics, Stress Orientations, and Natural Fracturing in the Milford Valley, UT Informed by the Drilling Results of the First Horizontal Wells at the Cape Modern Geothermal Project."
+#    https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
 
 Reservoir Model, 1
 Reservoir Volume Option, 1

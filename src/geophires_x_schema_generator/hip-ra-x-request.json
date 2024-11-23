@@ -17,7 +17,7 @@
   ],
   "properties": {
     "Reservoir Temperature": {
-      "description": "Reservoir Temperature [150 degC]",
+      "description": "Reservoir Temperature",
       "type": "number",
       "units": "degC",
       "category": null,
@@ -26,7 +26,7 @@
       "maximum": 1000
     },
     "Rejection Temperature": {
-      "description": "Rejection Temperature [25 degC]",
+      "description": "Rejection Temperature",
       "type": "number",
       "units": "degC",
       "category": null,
@@ -35,7 +35,7 @@
       "maximum": 200
     },
     "Reservoir Porosity": {
-      "description": "Reservoir Porosity [18%]",
+      "description": "Reservoir Porosity",
       "type": "number",
       "units": "%",
       "category": null,
@@ -44,7 +44,7 @@
       "maximum": 100.0
     },
     "Reservoir Area": {
-      "description": "Reservoir Area [81 km2]",
+      "description": "Reservoir Area",
       "type": "number",
       "units": "km**2",
       "category": null,
@@ -53,7 +53,7 @@
       "maximum": 10000.0
     },
     "Reservoir Thickness": {
-      "description": "Reservoir Thickness [0.286 km]",
+      "description": "Reservoir Thickness",
       "type": "number",
       "units": "kilometer",
       "category": null,
@@ -62,7 +62,7 @@
       "maximum": 10000.0
     },
     "Reservoir Life Cycle": {
-      "description": "Reservoir Life Cycle [30 years]",
+      "description": "Reservoir Life Cycle",
       "type": "integer",
       "units": "yr",
       "category": null,
@@ -71,7 +71,7 @@
       "maximum": 100
     },
     "Rock Heat Capacity": {
-      "description": "Rock Heat Capacity [2.84E+12 kJ/km3C]",
+      "description": "Rock Heat Capacity",
       "type": "number",
       "units": "kJ/km**3C",
       "category": null,
@@ -80,7 +80,7 @@
       "maximum": 100000000000000.0
     },
     "Fluid Specific Heat Capacity": {
-      "description": "Specific Heat Capacity Of Water [4.18 kJ/kgC]",
+      "description": "Specific Heat Capacity Of Water",
       "type": "number",
       "units": "kJ/kgC",
       "category": null,
@@ -89,7 +89,7 @@
       "maximum": 10.0
     },
     "Density Of Reservoir Fluid": {
-      "description": "Density Of Water [1.0E+12 kg/km3]",
+      "description": "Density Of Water",
       "type": "number",
       "units": "kg/km**3",
       "category": null,
@@ -98,7 +98,7 @@
       "maximum": 10000000000000.0
     },
     "Density Of Reservoir Rock": {
-      "description": "Density Of Rock [2.55E+12 kg/km3]",
+      "description": "Density Of Rock",
       "type": "number",
       "units": "kg/km**3",
       "category": null,

@@ -205,6 +205,7 @@ class GeophiresXResult:
                 'Field gathering system costs',
                 'Total surface equipment costs',
                 'Exploration costs',
+                'Investment Tax Credit',
                 'Total capital costs',
                 # AGS/CLGS
                 'Total CAPEX',

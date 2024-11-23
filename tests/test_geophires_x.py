@@ -159,7 +159,7 @@ class GeophiresXTestCase(BaseTestCase):
         example_files = list(
             filter(
                 lambda example_file_path: example_file_path.startswith(
-                    ('example', 'Beckers_et_al', 'SUTRA', 'Wanju', 'Fervo')
+                    ('example', 'Beckers_et_al', 'SUTRA', 'Wanju', 'Fervo', 'S-DAC-GT')
                 )
                 and '.out' not in example_file_path,
                 self._list_test_files_dir(test_files_dir='examples'),

@@ -456,7 +456,11 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example_SBT_Lo_T.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
-*\*TOUGH2 is not currently supported in the web interface. Comment on `this tracking issue <https://github.com/softwareengineerprogrammer/geothermal-ui/issues/15>`__ to request web interface support for TOUGH2.*
+.. raw:: html
+
+   <embed>
+      <i>* TOUGH2 is not currently supported in the web interface. Comment on <a href="https://github.com/softwareengineerprogrammer/geothermal-ui/issues/15">this tracking issue</a> to request web interface support for TOUGH2.</i>
+   </embed>
 
 Videos
 ------

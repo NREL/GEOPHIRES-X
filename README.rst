@@ -356,7 +356,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example6.out>`__
      - \*
    * - Example 7: TOUGH2 (Single Gradient)
-     - `example7.txt <https://github.com/NREL/GEOPHIRES-v2/blob/master/Examples/example7.txt>`__
+     - `example7.txt <tests/examples/example7.txt>`__
      - `.out <tests/examples/example7.out>`__
      - \*
    * - Example 8: Cornell Direct-Use Heat

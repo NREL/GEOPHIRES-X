@@ -351,10 +351,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example5.txt <tests/examples/example5.txt>`__
      - `.out <tests/examples/example5.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example5>`__
-   * - Example 6: TOUGH2
-     - `example6.txt <https://github.com/NREL/GEOPHIRES-v2/blob/master/Examples/example6.txt>`__\*
-     -
-     -
+   * - Example 6: TOUGH2 (Multiple Gradients)
+     - `example6.txt <tests/examples/example6.txt>`__
+     - `.out <tests/examples/example6.out>`__
+     - \*
+   * - Example 7: TOUGH2 (Single Gradient)
+     - `example7.txt <tests/examples/example7.txt>`__
+     - `.out <tests/examples/example7.out>`__
+     - \*
    * - Example 8: Cornell Direct-Use Heat
      - `example8.txt <tests/examples/example8.txt>`__
      - `.out <tests/examples/example8.out>`__
@@ -452,7 +456,11 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `.out <tests/examples/example_SBT_Lo_T.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
-*\*GEOPHIRES v2.0 input file*
+.. raw:: html
+
+   <embed>
+      <i>* TOUGH2 is not currently supported in the web interface. Comment on <a href="https://github.com/softwareengineerprogrammer/geothermal-ui/issues/15">this tracking issue</a> to request web interface support for TOUGH2.</i>
+   </embed>
 
 Videos
 ------

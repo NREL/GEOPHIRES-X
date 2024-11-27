@@ -1,0 +1,66 @@
+# Example 7: Geothermal Direct-Use Example Problem using TOUGH2 Doublet Model (Single Gradient)
+# This example problem considers a hydrothermal reservoir simulated
+# with the built-in TOUGH2 doublet model. End-use is direct-use heat.
+
+*** Subsurface technical parameters ***
+****************************************
+Reservoir Model, 6,			--- Use TOUGH2 simulator
+TOUGH2 Model/File Name,Doublet,	        --- Use built-in Doublet TOUGH2 model
+Reservoir Depth, 3, 			--- [km]
+Number of Segments, 1,			--- [-] Should be 1, 2, 3, or 4.
+Gradient 1, 50,				--- [deg.C/km]
+Maximum Temperature, 375,		--- [deg.C]
+Number of Production Wells, 1,		--- [-]
+Number of Injection Wells, 1,		--- [-]
+Production Well Diameter, 8,		--- [inch]
+Injection Well Diameter, 8,		--- [inch]
+Ramey Production Wellbore Model, 1,	--- Should be 0 (disable) or 1 (enable)
+Injection Wellbore Temperature Gain,0,	--- [deg.C]
+Production Flow Rate per Well, 50, 	--- [kg/s]
+
+--- Fracture geometry below required for reservoir models 1 and 2
+Reservoir Volume Option, 4,		--- Should be 1, 2, 3, or 4. See manual for details.
+Reservoir Volume, 1E9,			--- [m3] (required for reservoir volume option 3 and 4
+Water Loss Fraction, 0,			--- [-] (total geofluid lost)/(total geofluid produced)
+Reservoir Impedance, 0.05,		--- [GPa*s/m3]
+Injection Temperature, 70,		--- [deg.C]
+Reservoir Heat Capacity, 1050,		--- [J/kg/K]
+Reservoir Density, 2700,		--- [kg/m3]
+Reservoir Thermal Conductivity, 3,	--- [W/m/K]
+Reservoir Porosity, 0.05,		--- [-]
+Reservoir Permeability, 6E-13,		--- [m2]
+Reservoir Thickness, 250,		--- [m]
+Reservoir Width, 500,			--- [m]
+Well Separation, 900,			--- [m]
+
+
+
+*** Surface technical parameters ***
+************************************
+End-Use Option, 2,			--- [-] Direct-Use Heat
+Circulation Pump Efficiency, 0.8,	--- [-]
+Utilization Factor, 0.9,		--- [-]
+End-Use Efficiency Factor, 0.9,		--- [-] End-use efficiency for direct-use heat component
+Surface Temperature, 15,		--- [deg.C]
+Ambient Temperature, 15,		--- [deg.C]
+
+*** Economic/Financial Parameters ***
+*************************************
+Plant Lifetime, 30,			--- [years]
+Economic Model, 2,			--- Should be 1 (FCR model), 2 (Standard LCOE/LCOH model), or 3 (Bicycle model).
+Discount Rate, 0.05,			--- [-] Required if Standard LCOE/LCOH model is selected. See manual for details.
+Inflation Rate During Construction, 0,	--- [-]
+Well Drilling and Completion Capital Cost Adjustment Factor, 1,	--- [-] Adjustment factor for built-in well drilling and completion capital cost correlation
+Well Drilling Cost Correlation, 1,				--- [-] Use built-in well drilling cost correlation #1
+Reservoir Stimulation Capital Cost Adjustment Factor, 0,--- [-] No reservoir stimulation
+Surface Plant Capital Cost Adjustment Factor, 1,	--- [-] Use built-in correlation as is
+Field Gathering System Capital Cost Adjustment Factor, 1,--- [-] Use built-in correlation as is
+Exploration Capital Cost Adjustment Factor, 1,		--- [-] Use built-in correlation as is
+Wellfield O&M Cost Adjustment Factor, 1,		--- [-] Use built-in correlation as is
+Surface Plant O&M Cost Adjustment Factor, 1,		--- [-] Use built-in correlation as is
+Water Cost Adjustment Factor, 1,			--- [-] Use built-in correlation as is
+Electricity Rate, 0.07,					--- [$/kWh] Required to calculate pumping cost in direct-use or additional revenue stream in cogen option.
+
+*** Simulation Parameters ***
+Print Output to Console, 1,				--- [-] Should be 0 (don't print results to console) or 1 (print results to console)
+Time steps per year, 4,					--- [/year]

@@ -383,23 +383,23 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example13.txt <tests/examples/example13.txt>`__
      - `.out <tests/examples/example13.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
-   * - AGS: Coaxial sCO2: Heat
+   * - CLGS: Coaxial sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat>`__
-   * - AGS: Coaxial Water: Heat
+   * - CLGS: Coaxial Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat>`__
-   * - AGS: Uloop sCO2: Electricity
+   * - CLGS: Uloop sCO2: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec>`__
-   * - AGS: Uloop sCO2: Heat
+   * - CLGS: Uloop sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat>`__
-   * - AGS: Uloop Water: Electricity
+   * - CLGS: Uloop Water: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec>`__
@@ -407,6 +407,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat>`__
+   * - CLGS: SBT High Temperature
+     - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
+     - `.out <tests/examples/example_SBT_Hi_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Hi_T>`__
+   * - CLGS: SBT Low Temperature
+     - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
+     - `.out <tests/examples/example_SBT_Lo_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
    * - SUTRA Example 1
      - `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__
      - `.out <tests/examples/SUTRAExample1.out>`__
@@ -447,14 +455,6 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__
      - `.out <tests/examples/example_SHR-2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SHR-2>`__
-   * - SBT High Temperature
-     - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
-     - `.out <tests/examples/example_SBT_Hi_T.out>`__
-     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Hi_T>`__
-   * - SBT Low Temperature
-     - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
-     - `.out <tests/examples/example_SBT_Lo_T.out>`__
-     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
 .. raw:: html
 

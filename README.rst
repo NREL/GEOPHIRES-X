@@ -351,10 +351,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example5.txt <tests/examples/example5.txt>`__
      - `.out <tests/examples/example5.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example5>`__
-   * - Example 6: TOUGH2
-     - `example6.txt <https://github.com/NREL/GEOPHIRES-v2/blob/master/Examples/example6.txt>`__\*
-     -
-     -
+   * - Example 6: TOUGH2 (Multiple Gradients)
+     - `example6.txt <tests/examples/example6.txt>`__
+     - `.out <tests/examples/example6.out>`__
+     - \*
+   * - Example 7: TOUGH2 (Single Gradient)
+     - `example7.txt <tests/examples/example7.txt>`__
+     - `.out <tests/examples/example7.out>`__
+     - \*
    * - Example 8: Cornell Direct-Use Heat
      - `example8.txt <tests/examples/example8.txt>`__
      - `.out <tests/examples/example8.out>`__
@@ -379,23 +383,23 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example13.txt <tests/examples/example13.txt>`__
      - `.out <tests/examples/example13.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example13>`__
-   * - AGS: Coaxial sCO2: Heat
+   * - CLGS: Coaxial sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_sCO2_heat>`__
-   * - AGS: Coaxial Water: Heat
+   * - CLGS: Coaxial Water: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat>`__
-   * - AGS: Uloop sCO2: Electricity
+   * - CLGS: Uloop sCO2: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec>`__
-   * - AGS: Uloop sCO2: Heat
+   * - CLGS: Uloop sCO2: Heat
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_heat>`__
-   * - AGS: Uloop Water: Electricity
+   * - CLGS: Uloop Water: Electricity
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec>`__
@@ -403,6 +407,14 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.txt>`__
      - `.out <tests/examples/Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Beckers_et_al_2023_Tabulated_Database_Uloop_water_heat>`__
+   * - CLGS: SBT High Temperature
+     - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
+     - `.out <tests/examples/example_SBT_Hi_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Hi_T>`__
+   * - CLGS: SBT Low Temperature
+     - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
+     - `.out <tests/examples/example_SBT_Lo_T.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
    * - SUTRA Example 1
      - `SUTRAExample1.txt <tests/examples/SUTRAExample1.txt>`__
      - `.out <tests/examples/SUTRAExample1.out>`__
@@ -443,16 +455,12 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_SHR-2.txt <tests/examples/example_SHR-2.txt>`__
      - `.out <tests/examples/example_SHR-2.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SHR-2>`__
-   * - SBT High Temperature
-     - `example_SBT_Hi_T.txt <tests/examples/example_SBT_Hi_T.txt>`__
-     - `.out <tests/examples/example_SBT_Hi_T.out>`__
-     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Hi_T>`__
-   * - SBT Low Temperature
-     - `example_SBT_Lo_T.txt <tests/examples/example_SBT_Lo_T.txt>`__
-     - `.out <tests/examples/example_SBT_Lo_T.out>`__
-     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SBT_Lo_T>`__
 
-*\*GEOPHIRES v2.0 input file*
+.. raw:: html
+
+   <embed>
+      <i>* TOUGH2 is not currently supported in the web interface. Comment on <a href="https://github.com/softwareengineerprogrammer/geothermal-ui/issues/15">this tracking issue</a> to request web interface support for TOUGH2.</i>
+   </embed>
 
 Videos
 ------

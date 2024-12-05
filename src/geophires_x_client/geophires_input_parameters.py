@@ -69,6 +69,10 @@ class GeophiresInputParameters:
     def get_output_file_path(self):
         return Path(tempfile.gettempdir(), f'geophires-result_{self._id}.out')
 
+    def as_text(self):
+        with open(self.as_file_path(), encoding='UTF-8') as f:
+            return f.read()
+
     def __hash__(self):
         """TODO make hashes for equivalent parameters equal"""
         return self._id

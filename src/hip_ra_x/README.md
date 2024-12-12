@@ -10,4 +10,4 @@ HIP-RA-X is the successor version to HIP-RA.
 
 ## Parameters
 
-[Parameters Reference](https://softwareengineerprogrammer.github.io/GEOPHIRES-X/hip_ra_x_parameters.html)
+[Parameters Reference](https://nrel.github.io/GEOPHIRES-X/hip_ra_x_parameters.html)

@@ -482,7 +482,7 @@ A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <ht
 Monte Carlo
 -----------
 
-`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
+`Monte Carlo User Guide <https://nrel.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
 A Monte Carlo web interface is available at `gtp.scientificwebservices.com/monte-carlo <https://gtp.scientificwebservices.com/monte-carlo>`__.
 

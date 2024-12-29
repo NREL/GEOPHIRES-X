@@ -2149,9 +2149,9 @@ class Economics:
                                                      " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
             if self.HeatStartPrice.value > self.HeatEndPrice.value:
-                s = f'{self.HeatStartPrice.Name} cannot be greater than {self.HeatEndPrice.Name}.  ' \
+                s = f'{self.HeatStartPrice.Name} ({self.HeatStartPrice.quantity()}) cannot be ' \
+                    f'greater than {self.HeatEndPrice.Name} ({self.HeatEndPrice.quantity()}).  ' \
                     f'GEOPHIRES will assume {self.HeatStartPrice.Name} is equal to {self.HeatEndPrice.Name}.'
-                print("Warning:  " + s)
                 model.logger.warning(s)
         else:
             model.logger.info("No parameters read because no content provided")

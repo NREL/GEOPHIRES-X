@@ -56,9 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.6.6.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.6.7.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.6.6...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.6.7...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -482,7 +482,7 @@ A HIP-RA web interface is available at `gtp.scientificwebservices.com/hip-ra <ht
 Monte Carlo
 -----------
 
-`Monte Carlo User Guide <https://softwareengineerprogrammer.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
+`Monte Carlo User Guide <https://nrel.github.io/GEOPHIRES-X/Monte-Carlo-User-Guide.html>`__
 
 A Monte Carlo web interface is available at `gtp.scientificwebservices.com/monte-carlo <https://gtp.scientificwebservices.com/monte-carlo>`__.
 

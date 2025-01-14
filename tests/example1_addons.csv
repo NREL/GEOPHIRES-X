@@ -5,7 +5,7 @@ SUMMARY OF RESULTS,Electricity breakeven price,,1.74,cents/kWh
 SUMMARY OF RESULTS,Number of production wells,,2,count
 SUMMARY OF RESULTS,Number of injection wells,,2,count
 SUMMARY OF RESULTS,Flowrate per production well,,55.0,kg/sec
-SUMMARY OF RESULTS,"Well depth (or total length\, if not vertical)",,3.0,kilometer
+SUMMARY OF RESULTS,Well depth,,3.0,kilometer
 SUMMARY OF RESULTS,Geothermal gradient,,50,degC/km
 SUMMARY OF RESULTS,Total Avoided Carbon Emissions,,472.02,kilotonne
 ECONOMIC PARAMETERS,Economic Model,,Fixed Charge Rate (FCR),
@@ -35,7 +35,7 @@ EXTENDED ECONOMICS,Total Add-on Profit,,2.84,MUSD/yr
 EXTENDED ECONOMICS,AddOns Payback Period,,0.0,yr
 ENGINEERING PARAMETERS,Number of Production Wells,,2,count
 ENGINEERING PARAMETERS,Number of Injection Wells,,2,count
-ENGINEERING PARAMETERS,"Well depth (or total length\, if not vertical)",,3.0,kilometer
+ENGINEERING PARAMETERS,Well depth,,3.0,kilometer
 ENGINEERING PARAMETERS,Water loss rate,,2.0,
 ENGINEERING PARAMETERS,Pump efficiency,,80.0,%
 ENGINEERING PARAMETERS,Injection temperature,,50.0,degC
@@ -98,7 +98,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Total Electricity Generation
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,42.3,GWh
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
-Simulation Metadata,GEOPHIRES Version,,3.6.3,
+Simulation Metadata,GEOPHIRES Version,,3.6.7,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.6
- Simulation Date: 2024-11-21
- Simulation Time:  10:38
- Calculation Time:      0.439 sec
+ GEOPHIRES Version: 3.6.7
+ Simulation Date: 2025-01-14
+ Simulation Time:  07:37
+ Calculation Time:      0.438 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -97,7 +97,7 @@ Simulation Metadata
          Drilling and completion costs:                      10.13 MUSD
              Drilling and completion costs per vertical production well:         3.02 MUSD
              Drilling and completion costs per vertical injection well:          3.02 MUSD
-             Drilling and completion costs per non-vertical sections:            3.61 MUSD
+             Drilling and completion costs per non-vertical section:             3.61 MUSD
          Stimulation costs:                                   1.51 MUSD
          Surface power plant costs:                          11.34 MUSD
          Field gathering system costs:                        1.52 MUSD

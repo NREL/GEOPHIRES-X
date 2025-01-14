@@ -195,7 +195,7 @@ class GeophiresXResult:
                 'Drilling and completion costs per injection well',
                 'Drilling and completion costs per vertical production well',
                 'Drilling and completion costs per vertical injection well',
-                'Drilling and completion costs per non - vertical sections',
+                'Drilling and completion costs per non-vertical section',
                 'Stimulation costs',
                 'Surface power plant costs',
                 'of which Absorption Chiller Cost',

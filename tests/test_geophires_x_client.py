@@ -392,6 +392,13 @@ class GeophiresXClientTestCase(BaseTestCase):
             ccus_profile,
         )
 
+    def test_non_vertical_section_cost(self):
+        result_path = self._get_test_file_path('examples/Fervo_Norbeck_Latimer_2023.out')
+        result = GeophiresXResult(result_path)
+        entry = result.result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
+        self.assertIsNotNone(entry['value'])
+        self.assertEqual(entry['unit'], 'MUSD')
+
     @unittest.skip(
         'Not currently relevant - '
         'see TODO in geophires_x_client.geophires_input_parameters.GeophiresInputParameters.__hash__'

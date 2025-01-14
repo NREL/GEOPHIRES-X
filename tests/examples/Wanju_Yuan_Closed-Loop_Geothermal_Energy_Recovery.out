@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.3
- Simulation Date: 2024-11-11
- Simulation Time:  15:24
- Calculation Time:      6.425 sec
+ GEOPHIRES Version: 3.6.7
+ Simulation Date: 2025-01-14
+ Simulation Time:  07:37
+ Calculation Time:      1.613 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -77,7 +77,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
          Drilling and completion costs:                      65.80 MUSD
              Drilling and completion costs per vertical production well:        10.24 MUSD
              Drilling and completion costs per vertical injection well:         10.24 MUSD
-             Drilling and completion costs per non-vertical sections:           42.18 MUSD
+             Drilling and completion costs per non-vertical section:            42.18 MUSD
          Stimulation costs:                                   0.00 MUSD
          Surface power plant costs:                           6.74 MUSD
          Field gathering system costs:                        0.99 MUSD

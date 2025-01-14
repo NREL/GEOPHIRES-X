@@ -1809,7 +1809,7 @@ class Outputs:
                     elif econ.cost_lateral_section.value > 0.0:
                         f.write(f'             Drilling and completion costs per vertical production well:   {econ.cost_one_production_well.value:10.2f} ' + econ.cost_one_production_well.CurrentUnits.value + NL)
                         f.write(f'             Drilling and completion costs per vertical injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)
-                        f.write(f'             Drilling and completion costs per non-vertical sections:      {econ.cost_lateral_section.value:10.2f} ' + econ.cost_lateral_section.CurrentUnits.value + NL)
+                        f.write(f'             Drilling and completion costs per non-vertical section:       {econ.cost_lateral_section.value:10.2f} ' + econ.cost_lateral_section.CurrentUnits.value + NL)
                     else:
                         f.write(f'         Drilling and completion costs per well:        {model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'         Stimulation costs:                             {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)

@@ -5,6 +5,14 @@ Changelog
 GEOPHIRES-X (2023-2024)
 ------------------------
 
+3.7
+^^^
+
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.7.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.6.0...v3.7.0>`__
+
+"Well depth (or total length, if not vertical)" output field renamed to "Well depth" per https://github.com/NREL/GEOPHIRES-X/issues/321
+
+
 3.6
 ^^^
 

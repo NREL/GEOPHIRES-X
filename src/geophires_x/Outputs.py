@@ -1822,7 +1822,7 @@ class Outputs:
                         f.write(f'            of which Peaking Boiler Cost:               {model.economics.peakingboilercost.value:10.2f} ' + model.economics.peakingboilercost.CurrentUnits.value + NL)
                     f.write(f'         Field gathering system costs:                  {model.economics.Cgath.value:10.2f} ' + model.economics.Cgath.CurrentUnits.value + NL)
                     if model.surfaceplant.piping_length.value > 0:
-                        f.write(f'         Transmission pipeline cost                     {model.economics.Cpiping.value:10.2f} ' + model.economics.Cpiping.CurrentUnits.value + NL)
+                        f.write(f'         Transmission pipeline cost:                    {model.economics.Cpiping.value:10.2f} ' + model.economics.Cpiping.CurrentUnits.value + NL)
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                         f.write(f'         District Heating System Cost:                  {model.economics.dhdistrictcost.value:10.2f} ' + model.economics.dhdistrictcost.CurrentUnits.value + NL)
                     f.write(f'         Total surface equipment costs:                 {(model.economics.Cplant.value+model.economics.Cgath.value):10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)

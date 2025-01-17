@@ -1912,6 +1912,12 @@ class Outputs:
 
                 f.write(f'      Average Pumping Power:                            {np.average(model.wellbores.PumpingPower.value):10.2f} {model.wellbores.PumpingPower.CurrentUnits.value}{NL}')
 
+                if model.surfaceplant.FirstLawEfficiency is not None:
+                    avg_efficiency = np.average(model.surfaceplant.FirstLawEfficiency.value) * 100
+                    if avg_efficiency > 0:  # 0 is presumed to mean N/A
+                        f.write(
+                        f'      {model.surfaceplant.FirstLawEfficiency.Name}:                             {avg_efficiency:10.2f} {model.surfaceplant.FirstLawEfficiency.CurrentUnits.value}\n')
+
                 f.write(NL)
                 f.write('                            ************************************************************\n')
                 f.write('                            *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *\n')

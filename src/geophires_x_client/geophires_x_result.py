@@ -43,7 +43,7 @@ class GeophiresXResult:
                 'Number of injection wells',
                 'Flowrate per production well',
                 'Well depth',
-                'Well depth (or total length, if not vertical)',
+                'Well depth (or total length, if not vertical)',  # deprecated
                 'Geothermal gradient',
                 'Segment 1   Geothermal gradient',
                 'Segment 1   Thickness',
@@ -101,7 +101,8 @@ class GeophiresXResult:
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
                 'Number of Injection Wells',
-                'Well depth (or total length, if not vertical)',
+                'Well depth',
+                'Well depth (or total length, if not vertical)',  # deprecated
                 'Water loss rate',  # %
                 'Pump efficiency',  # %
                 'Injection temperature',

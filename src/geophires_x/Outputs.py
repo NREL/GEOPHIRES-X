@@ -638,6 +638,8 @@ class Outputs:
     This class handles all the outputs for the GEOPHIRESv3 model.
     """
 
+    VERTICAL_WELL_DEPTH_OUTPUT_NAME = 'Well depth'
+
     def __init__(self, model:Model, output_file:str ='HDR.out'):
         model.logger.info(f'Init {__class__!s}: {__name__}')
         self.ParameterDict = {}
@@ -860,7 +862,7 @@ class Outputs:
         summary.append(OutputTableItem('Number of injection wells', '{0:10.0f}'.format(model.wellbores.ninj.value)))
         summary.append(OutputTableItem('Flowrate per production well', '{0:10.1f}'.format(model.wellbores.prodwellflowrate.value),
                             model.wellbores.prodwellflowrate.CurrentUnits.value))
-        summary.append(OutputTableItem('Well depth (or total length, if not vertical)',
+        summary.append(OutputTableItem(Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME,
                                        '{0:10.1f}'.format(model.reserv.depth.value),
                                        model.reserv.depth.CurrentUnits.value))
 
@@ -926,7 +928,7 @@ class Outputs:
 
         engineering_parameters.append(OutputTableItem('Number of Production Wells', '{0:10.0f}'.format(model.wellbores.nprod.value)))
         engineering_parameters.append(OutputTableItem('Number of Injection Wells', '{0:10.0f}'.format(model.wellbores.ninj.value)))
-        engineering_parameters.append(OutputTableItem('Well depth (or total length, if not vertical)',
+        engineering_parameters.append(OutputTableItem(Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME,
                                                       '{0:10.1f}'.format(model.reserv.depth.value),
                                                       model.reserv.depth.CurrentUnits.value))
         engineering_parameters.append(OutputTableItem('Water loss rate', '{0:10.1f}'.format(model.reserv.waterloss.value * 100),
@@ -1613,7 +1615,7 @@ class Outputs:
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} '  + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
-                f.write(f'      Well depth (or total length, if not vertical):   {model.reserv.depth.value:10.1f} ' +model.reserv.depth.CurrentUnits.value + NL)
+                f.write(f'      {Outputs._field_label(Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME, 49)}{model.reserv.depth.value:10.1f} ' + model.reserv.depth.CurrentUnits.value + NL)
 
                 if model.reserv.numseg.value == 1:
                     f.write(f'      Geothermal gradient:                             {model.reserv.gradient.value[0]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
@@ -1669,7 +1671,7 @@ class Outputs:
                 f.write(NL)
                 f.write(f'      Number of Production Wells:                    {model.wellbores.nprod.value:10.0f}' + NL)
                 f.write(f'      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}' + NL)
-                f.write(f'      Well depth (or total length, if not vertical):   {model.reserv.depth.value:10.1f} ' + model.reserv.depth.CurrentUnits.value + NL)
+                f.write(f'      {Outputs._field_label(Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME, 49)}{model.reserv.depth.value:10.1f} ' + model.reserv.depth.CurrentUnits.value + NL)
                 f.write(f'      Water loss rate:                                 {model.reserv.waterloss.value*100:10.1f} ' + model.reserv.waterloss.CurrentUnits.value + NL)
                 f.write(f'      Pump efficiency:                                 {model.surfaceplant.pump_efficiency.value:10.1f} ' + model.surfaceplant.pump_efficiency.CurrentUnits.value + NL)
                 f.write(f'      Injection temperature:                           {model.wellbores.Tinj.value:10.1f} ' + model.wellbores.Tinj.CurrentUnits.value + NL)
@@ -2163,3 +2165,7 @@ class Outputs:
 
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    @staticmethod
+    def _field_label(field_name:str, print_width_before_value: int) -> str:
+        return f'{field_name}:{" " * (print_width_before_value - len(field_name) - 1)}'

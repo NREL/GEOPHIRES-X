@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.7
- Simulation Date: 2025-01-14
- Simulation Time:  07:37
- Calculation Time:      0.438 sec
+ GEOPHIRES Version: 3.7.0
+ Simulation Date: 2025-01-20
+ Simulation Time:  10:49
+ Calculation Time:      0.454 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -17,7 +17,7 @@ Simulation Metadata
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          41.0 kg/sec
-      Well depth (or total length, if not vertical):          2.3 kilometer
+      Well depth:                                             2.3 kilometer
       Geothermal gradient:                                     74 degC/km
 
 
@@ -38,7 +38,7 @@ Simulation Metadata
 
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
-      Well depth (or total length, if not vertical):          2.3 kilometer
+      Well depth:                                             2.3 kilometer
       Water loss rate:                                       10.0
       Pump efficiency:                                       80.0 %
       Injection temperature:                                 41.0 degC

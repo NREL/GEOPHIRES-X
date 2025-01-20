@@ -97,7 +97,7 @@ class SUTRAOutputs(Outputs):
                 f.write(NL)
                 f.write(f"      Number of Production Wells:                    {model.wellbores.nprod.value:10.0f}" + NL)
                 f.write(f"      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}" + NL)
-                f.write(f"      Well Depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
+                f.write(f"      Well depth:                                    {model.reserv.depth.value:10.1f} " + model.reserv.depth.CurrentUnits.value + NL)
 
                 pump_efficiency_display_unit = model.surfaceplant.pump_efficiency.CurrentUnits.value
                 pump_efficiency_display = f'{model.surfaceplant.pump_efficiency.value:10.1f} {pump_efficiency_display_unit}'

@@ -2168,4 +2168,4 @@ class Outputs:
 
     @staticmethod
     def _field_label(field_name:str, print_width_before_value: int) -> str:
-        return f'{field_name}:{" " * (print_width_before_value - len(field_name))}'
+        return f'{field_name}:{" " * (print_width_before_value - len(field_name) - 1)}'

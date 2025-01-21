@@ -1,10 +1,9 @@
 import os
-from pathlib import Path
 
 from geophires_x_client import GeophiresXResult
 
 
-def _get_file_path(file_name: str | Path) -> str:
+def _get_file_path(file_name: str) -> str:
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), str(file_name))
 
 

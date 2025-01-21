@@ -486,7 +486,8 @@ class SurfacePlant:
             Name="First Law Efficiency",
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='Heat to power conversion efficiency'
         )
         self.HeatExtracted = self.OutputParameterDict[self.HeatExtracted.Name] = OutputParameter(
             Name="Heat Extracted",

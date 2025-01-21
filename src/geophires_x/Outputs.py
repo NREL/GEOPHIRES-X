@@ -1914,9 +1914,10 @@ class Outputs:
 
                 if model.surfaceplant.FirstLawEfficiency is not None:
                     avg_efficiency = np.average(model.surfaceplant.FirstLawEfficiency.value) * 100
+                    first_law_efficiency_output_name = 'Heat to power conversion efficiency'
                     if avg_efficiency > 0:  # 0 is presumed to mean N/A
                         f.write(
-                        f'      {model.surfaceplant.FirstLawEfficiency.Name}:                             {avg_efficiency:10.2f} {model.surfaceplant.FirstLawEfficiency.CurrentUnits.value}\n')
+                        f'      {Outputs._field_label(first_law_efficiency_output_name, 50)}{avg_efficiency:10.2f} {model.surfaceplant.FirstLawEfficiency.CurrentUnits.value}\n')
 
                 f.write(NL)
                 f.write('                            ************************************************************\n')

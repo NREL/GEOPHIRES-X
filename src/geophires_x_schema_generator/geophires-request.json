@@ -2086,7 +2086,7 @@
       "type": "number",
       "units": "%",
       "category": "Economics",
-      "default": 7.00,
+      "default": 7.000000000000001,
       "minimum": 0.0,
       "maximum": 100.0
     },

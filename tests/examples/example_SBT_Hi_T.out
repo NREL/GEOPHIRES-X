@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.0
- Simulation Date: 2025-01-20
- Simulation Time:  11:32
- Calculation Time:     72.338 sec
+ GEOPHIRES Version: 3.7.1
+ Simulation Date: 2025-01-21
+ Simulation Time:  14:14
+ Calculation Time:     35.137 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -108,7 +108,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
       Average Annual Total Electricity Generation:           75.03 GWh
       Average Annual Net Electricity Generation:             75.03 GWh
       Average Pumping Power:                                  0.00 MW
-      First Law Efficiency:                                  17.15 %
+      Heat to power conversion efficiency:                   17.15 %
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *

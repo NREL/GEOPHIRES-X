@@ -12,3 +12,9 @@
 cd "$(dirname "$0")"
 python -mgeophires_x examples/$1.txt examples/$1.out
 rm examples/$1.json
+
+if [[ $1 == "example1_addons" ]]
+then
+    echo "Updating CSV..."
+    python regenerate_example_result_csv.py
+fi

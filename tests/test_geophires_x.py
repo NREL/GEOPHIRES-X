@@ -583,3 +583,15 @@ Print Output to Console, 1"""
             assertHasLogRecordWithMessage(
                 logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
             )
+
+    def test_transmission_pipeline_cost(self):
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path(Path('examples/Fervo_Norbeck_Latimer_2023.txt')),
+                params={'Surface Piping Length': 5},
+            )
+        )
+
+        self.assertAlmostEqual(
+            result.result['CAPITAL COSTS (M$)']['Transmission pipeline cost']['value'], 3.75, delta=0.5
+        )

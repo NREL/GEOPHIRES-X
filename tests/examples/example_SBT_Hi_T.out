@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.3
- Simulation Date: 2024-11-11
- Simulation Time:  16:24
- Calculation Time:     16.016 sec
+ GEOPHIRES Version: 3.7.0
+ Simulation Date: 2025-01-20
+ Simulation Time:  10:49
+ Calculation Time:     50.962 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -17,7 +17,7 @@ Simulation Metadata
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          80.0 kg/sec
-      Well depth (or total length, if not vertical):          5.8 kilometer
+      Well depth:                                             5.8 kilometer
       Geothermal gradient:                                     60 degC/km
 
 
@@ -38,7 +38,7 @@ Simulation Metadata
 
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
-      Well depth (or total length, if not vertical):          5.8 kilometer
+      Well depth:                                             5.8 kilometer
       Water loss rate:                                        0.0
       Pump efficiency:                                       75.0 %
       Injection temperature:                                 56.9 degC
@@ -77,7 +77,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
          Drilling and completion costs:                     104.87 MUSD
              Drilling and completion costs per vertical production well:         6.19 MUSD
              Drilling and completion costs per vertical injection well:          6.19 MUSD
-             Drilling and completion costs per non-vertical sections:           92.48 MUSD
+             Drilling and completion costs per non-vertical section:            92.48 MUSD
          Stimulation costs:                                   0.00 MUSD
          Surface power plant costs:                          52.76 MUSD
          Field gathering system costs:                        0.97 MUSD

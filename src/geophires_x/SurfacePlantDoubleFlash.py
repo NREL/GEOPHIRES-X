@@ -118,7 +118,7 @@ class SurfacePlantDoubleFlash(SurfacePlant):
                                                 model.wellbores.Tinj.value, ReinjTemp, self.T_chp_bottom.value,
                                                  self.enduse_efficiency_factor.value, self.chp_fraction.value)
 
-        # subtract pumping power for net electricity and  calculate first law efficiency
+        # subtract pumping power for net electricity and calculate first law efficiency
         self.NetElectricityProduced.value = self.ElectricityProduced.value - model.wellbores.PumpingPower.value
         self.FirstLawEfficiency.value = self.NetElectricityProduced.value/HeatExtractedTowardsElectricity
 

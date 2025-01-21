@@ -340,7 +340,7 @@ class SurfacePlant:
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.KILOMETERS,
             CurrentUnits=LengthUnit.KILOMETERS,
-            ErrMessage="assume default piping length (5km)"
+            ErrMessage="assume default piping length (0km)"
         )
         self.plant_outlet_pressure = self.ParameterDict[self.plant_outlet_pressure.Name] = floatParameter(
             "Plant Outlet Pressure",

@@ -491,6 +491,7 @@ class SurfacePlant:
         )
         self.heat_to_power_conversion_efficiency = self.OutputParameterDict[self.heat_to_power_conversion_efficiency.Name] = OutputParameter(
             Name='Heat to Power Conversion Efficiency',
+            value=None,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,

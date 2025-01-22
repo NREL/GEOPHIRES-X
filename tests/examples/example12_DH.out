@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.1
+ GEOPHIRES Version: 3.7.2
  Simulation Date: 2025-01-22
- Simulation Time:  10:48
- Calculation Time:      0.615 sec
+ Simulation Time:  11:01
+ Calculation Time:      0.567 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -137,7 +137,6 @@ Simulation Metadata
       Average Peaking Boiler Heat Production:                15.27 MW
       Minimum Peaking Boiler Heat Production:                 0.00 MW
       Average Pumping Power:                                  0.44 MW
-      Heat to Power Conversion Efficiency:                    0.00 %
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *

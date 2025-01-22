@@ -23,7 +23,6 @@ from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel,
     PlantType
 from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, InsertImagesIntoHTML
 from geophires_x.Parameter import Parameter
-from geophires_x.Units import convertible_unit, Units, PercentUnit
 
 NL = '\n'
 validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)

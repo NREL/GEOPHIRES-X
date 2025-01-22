@@ -2,6 +2,7 @@ import sys
 import os
 import numpy as np
 
+from .GeoPHIRESUtils import quantity
 from .OptionList import EndUseOptions, PlantType
 from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter, \
     coerce_int_params_to_enum_values
@@ -486,7 +487,7 @@ class SurfacePlant:
             Name="First Law Efficiency",
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,  # FIXME default values are actually in tenths, not percent.
             ToolTipText='Net electricity produced divided by heat extracted towards electricity'
         )
         self.heat_to_power_conversion_efficiency = self.OutputParameterDict[self.heat_to_power_conversion_efficiency.Name] = OutputParameter(
@@ -657,6 +658,8 @@ class SurfacePlant:
         """
 
         if self.FirstLawEfficiency is not None:
-            avg_efficiency = np.average(model.surfaceplant.FirstLawEfficiency.value) * 100  # TODO proper unit conversion
+            fle_unit = PercentUnit.TENTH  # See FIXME on self.FirstLawEfficiency re: CurrentUnit being incorrect.
+            avg_efficiency = quantity(np.average(model.surfaceplant.FirstLawEfficiency.value), fle_unit).to(
+                convertible_unit(self.heat_to_power_conversion_efficiency.CurrentUnits)).magnitude
             if avg_efficiency > 0:  # 0 is presumed to mean N/A
                 self.heat_to_power_conversion_efficiency.value = avg_efficiency

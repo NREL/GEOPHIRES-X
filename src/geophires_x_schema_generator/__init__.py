@@ -210,6 +210,7 @@ Output Parameters
        :header-rows: 1
 
        * - Name
+         - Description
          - Preferred Units
          - Default Value Type"""
 
@@ -223,6 +224,7 @@ Output Parameters
                     return ''
 
             output_rst += f"""\n       * - {param['Name']}
+         - {get_key('ToolTipText')}
          - {get_key('PreferredUnits')}
          - {get_key('json_parameter_type')}"""
 

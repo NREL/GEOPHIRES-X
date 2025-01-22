@@ -726,7 +726,7 @@
       "category": "Well Bores",
       "default": 1.0,
       "minimum": 0.0,
-      "maximum": 1.000001
+      "maximum": "1.0"
     },
     "Is AGS": {
       "description": "Set to true if the model is for an Advanced Geothermal System (AGS)",
@@ -2086,7 +2086,7 @@
       "type": "number",
       "units": "%",
       "category": "Economics",
-      "default": 7.00,
+      "default": "7.0",
       "minimum": 0.0,
       "maximum": 100.0
     },

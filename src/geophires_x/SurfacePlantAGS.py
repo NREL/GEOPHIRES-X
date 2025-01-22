@@ -783,4 +783,5 @@ class SurfacePlantAGS(SurfacePlant):
             print(f'Error: {class_file_info_msg}. Exiting....')
             raise RuntimeError(base_msg)
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")

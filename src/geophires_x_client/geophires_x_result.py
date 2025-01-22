@@ -278,7 +278,7 @@ class GeophiresXResult:
                 'Average Peaking Boiler Heat Production',
                 'Minimum Peaking Boiler Heat Production',
                 'Initial pumping power/net installed power',
-                'First Law Efficiency',
+                'Heat to Power Conversion Efficiency',
                 # AGS/CLGS
                 'Surface Plant Cost',
                 # SUTRA

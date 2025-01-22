@@ -204,5 +204,6 @@ class SurfacePlantSUTRA(SurfacePlant):
         # calculate maximum auxiliary boiler demand
         self.max_peaking_boiler_demand.value = max(self.AnnualAuxiliaryHeatProduced.value)
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f"complete {self.__class__.__name__}: {self.__init__.__name__}")
 

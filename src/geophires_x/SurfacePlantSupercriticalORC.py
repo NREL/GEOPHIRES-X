@@ -130,4 +130,5 @@ class SurfacePlantSupercriticalOrc(SurfacePlant):
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(
             self, model.reserv.InitialReservoirHeatContent.value, self.HeatkWhExtracted.value)
 
-        model.logger.info("complete " + self.__class__.__name__ + ": " + __name__)
+        self._calculate_derived_outputs(model)
+        model.logger.info(f"complete {self.__class__.__name__}: {__name__}")

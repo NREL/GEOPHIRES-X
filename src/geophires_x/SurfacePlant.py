@@ -487,7 +487,14 @@ class SurfacePlant:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
-            ToolTipText='Heat to power conversion efficiency'
+            ToolTipText='Net electricity produced divided by heat extracted towards electricity'
+        )
+        self.heat_to_power_conversion_efficiency = self.OutputParameterDict[self.heat_to_power_conversion_efficiency.Name] = OutputParameter(
+            Name='Heat to Power Conversion Efficiency',
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='First law efficiency average over project lifetime'
         )
         self.HeatExtracted = self.OutputParameterDict[self.HeatExtracted.Name] = OutputParameter(
             Name="Heat Extracted",
@@ -637,4 +644,18 @@ class SurfacePlant:
 
         # All calculations are handled in subclasses of this class, so this function is empty.
 
+        # Subclasses should call _calculate_derived_outputs at the end of their Calculate methods.
+        self._calculate_derived_outputs(model)
+
         model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
+
+    def _calculate_derived_outputs(self, model: Model) -> None:
+        """
+        Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
+        values that are derived from subclass-calculated outputs.
+        """
+
+        if self.FirstLawEfficiency is not None:
+            avg_efficiency = np.average(model.surfaceplant.FirstLawEfficiency.value) * 100  # TODO proper unit conversion
+            if avg_efficiency > 0:  # 0 is presumed to mean N/A
+                self.heat_to_power_conversion_efficiency.value = avg_efficiency

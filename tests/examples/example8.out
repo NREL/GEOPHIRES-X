@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.6.7
- Simulation Date: 2025-01-14
- Simulation Time:  08:40
- Calculation Time:      0.805 sec
+ GEOPHIRES Version: 3.7.1
+ Simulation Date: 2025-01-22
+ Simulation Time:  10:48
+ Calculation Time:      0.791 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -17,7 +17,7 @@ Simulation Metadata
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          40.0 kg/sec
-      Well depth:                                              2.8 kilometer
+      Well depth:                                             2.8 kilometer
       Geothermal gradient:                                     28 degC/km
 
 
@@ -38,7 +38,7 @@ Simulation Metadata
 
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
-      Well depth:                                              2.8 kilometer
+      Well depth:                                             2.8 kilometer
       Water loss rate:                                        2.0
       Pump efficiency:                                       80.0 %
       Injection temperature:                                 30.0 degC
@@ -120,6 +120,7 @@ Simulation Metadata
       Initial Net Heat Production:                            9.67 MW
       Average Annual Heat Production:                        50.20 GWh
       Average Pumping Power:                                  0.09 MW
+      Heat to Power Conversion Efficiency:                    0.00 %
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *

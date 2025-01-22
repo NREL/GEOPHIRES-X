@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-21
- Simulation Time:  14:14
- Calculation Time:      0.104 sec
+ Simulation Date: 2025-01-22
+ Simulation Time:  10:48
+ Calculation Time:      0.107 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -128,7 +128,7 @@ Simulation Metadata
       Initial Net Heat Production:                           14.05 MW
       Average Annual Heat Production:                        -4.73 GWh
       Average Pumping Power:                                  0.19 MW
-      Heat to power conversion efficiency:                   16.55 %
+      Heat to Power Conversion Efficiency:                   16.55 %
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *

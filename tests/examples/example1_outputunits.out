@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-21
- Simulation Time:  14:13
- Calculation Time:      0.836 sec
+ Simulation Date: 2025-01-22
+ Simulation Time:  10:47
+ Calculation Time:      0.778 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -126,7 +126,7 @@ Simulation Metadata
       Average Annual Net Electricity Generation:             42.28 GWh
       Initial pumping power/net installed power:              3.82 %
       Average Pumping Power:                                  0.20 MW
-      Heat to power conversion efficiency:                   10.07 %
+      Heat to Power Conversion Efficiency:                   10.07 %
 
                             ************************************************************
                             *  HEATING, COOLING AND/OR ELECTRICITY PRODUCTION PROFILE  *

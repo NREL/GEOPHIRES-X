@@ -112,7 +112,7 @@ class GeophiresXSchemaGenerator:
                 'type': param['json_parameter_type'],
                 'units': units_val,
                 'category': param['parameter_category'],
-                'default': param['DefaultValue'],
+                'default': _fix_floating_point_error(param['DefaultValue']),
                 'minimum': min_val,
                 'maximum': max_val,
             }
@@ -168,13 +168,15 @@ class GeophiresXSchemaGenerator:
                 # if param['Required']:
                 #     TODO designate required params
 
+                default_value = _fix_floating_point_error(_get_key(param, 'DefaultValue'))
+
                 min_val, max_val = _get_min_and_max(param)
 
                 input_rst += f"""\n       * - {param['Name']}
          - {_get_key(param, 'ToolTipText')}
          - {_get_key(param, 'PreferredUnits')}
          - {_get_key(param, 'json_parameter_type')}
-         - {_get_key(param, 'DefaultValue')}
+         - {default_value}
          - {min_val}
          - {max_val}"""
 
@@ -247,7 +249,14 @@ def _get_min_and_max(param: dict, default_val='') -> Tuple:
         min_val = min(param['AllowableRange'])
         max_val = max(param['AllowableRange'])
 
-    return (min_val, max_val)
+    return _fix_floating_point_error(min_val), _fix_floating_point_error(max_val)
+
+
+def _fix_floating_point_error(val: Any) -> Any:
+    if '.0000' in str(val):
+        return format(float(val), '.1f')
+
+    return val
 
 
 class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):

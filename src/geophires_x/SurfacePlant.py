@@ -2,6 +2,7 @@ import sys
 import os
 import numpy as np
 
+from .GeoPHIRESUtils import quantity
 from .OptionList import EndUseOptions, PlantType
 from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter, \
     coerce_int_params_to_enum_values
@@ -486,7 +487,16 @@ class SurfacePlant:
             Name="First Law Efficiency",
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT
+            CurrentUnits=PercentUnit.PERCENT,  # FIXME default values are actually in tenths, not percent.
+            ToolTipText='Net electricity produced divided by heat extracted towards electricity'
+        )
+        self.heat_to_power_conversion_efficiency = self.OutputParameterDict[self.heat_to_power_conversion_efficiency.Name] = OutputParameter(
+            Name='Heat to Power Conversion Efficiency',
+            value=None,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='First law efficiency average over project lifetime'
         )
         self.HeatExtracted = self.OutputParameterDict[self.HeatExtracted.Name] = OutputParameter(
             Name="Heat Extracted",
@@ -636,4 +646,20 @@ class SurfacePlant:
 
         # All calculations are handled in subclasses of this class, so this function is empty.
 
+        # Subclasses should call _calculate_derived_outputs at the end of their Calculate methods.
+        self._calculate_derived_outputs(model)
+
         model.logger.info(f'Complete {self.__class__.__name__}: {__name__}')
+
+    def _calculate_derived_outputs(self, model: Model) -> None:
+        """
+        Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
+        values that are derived from subclass-calculated outputs.
+        """
+
+        if self.FirstLawEfficiency is not None:
+            fle_unit = PercentUnit.TENTH  # See FIXME on self.FirstLawEfficiency re: CurrentUnit being incorrect.
+            avg_efficiency = quantity(np.average(model.surfaceplant.FirstLawEfficiency.value), fle_unit).to(
+                convertible_unit(self.heat_to_power_conversion_efficiency.CurrentUnits)).magnitude
+            if avg_efficiency > 0:  # 0 is presumed to mean N/A
+                self.heat_to_power_conversion_efficiency.value = avg_efficiency

@@ -23,7 +23,6 @@ from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel,
     PlantType
 from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, InsertImagesIntoHTML
 from geophires_x.Parameter import Parameter
-from geophires_x.Units import convertible_unit, Units, PercentUnit
 
 NL = '\n'
 validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -1911,6 +1910,11 @@ class Outputs:
                     f.write(f'      Minimum Peaking Boiler Heat Production:           {np.min(model.surfaceplant.dh_natural_gas_heating.value):10.2f} ' + model.surfaceplant.dh_natural_gas_heating.PreferredUnits.value + NL)
 
                 f.write(f'      Average Pumping Power:                            {np.average(model.wellbores.PumpingPower.value):10.2f} {model.wellbores.PumpingPower.CurrentUnits.value}{NL}')
+
+                if model.surfaceplant.heat_to_power_conversion_efficiency.value is not None:
+                    hpce = model.surfaceplant.heat_to_power_conversion_efficiency
+                    f.write(f'      {Outputs._field_label(hpce.Name, 50)}'
+                            f'{hpce.value:10.2f} {model.surfaceplant.heat_to_power_conversion_efficiency.CurrentUnits.value}\n')
 
                 f.write(NL)
                 f.write('                            ************************************************************\n')

@@ -122,7 +122,7 @@ class SurfacePlantSingleFlash(SurfacePlant):
         self.NetElectricityProduced.value = self.ElectricityProduced.value - model.wellbores.PumpingPower.value
         self.FirstLawEfficiency.value = self.NetElectricityProduced.value/HeatExtractedTowardsElectricity
 
-        # Calculate annual electricity, pum;ping, and heat production
+        # Calculate annual electricity, pumping, and heat production
         self.HeatkWhExtracted.value, self.PumpingkWh.value, self.TotalkWhProduced.value, self.NetkWhProduced.value, self.HeatkWhProduced.value = \
         SurfacePlant.annual_electricity_pumping_power(self, self.plant_lifetime.value, self.enduse_option.value,
                                 self.HeatExtracted.value, model.economics.timestepsperyear.value, self.utilization_factor.value,
@@ -133,4 +133,5 @@ class SurfacePlantSingleFlash(SurfacePlant):
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(
             self, model.reserv.InitialReservoirHeatContent.value, self.HeatkWhExtracted.value)
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        self._calculate_derived_outputs(model)
+        model.logger.info(f"complete {str(__class__)}: {sys._getframe().f_code.co_name}")

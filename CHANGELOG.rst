@@ -12,6 +12,8 @@ GEOPHIRES-X (2023-2025)
 
 "Well depth (or total length, if not vertical)" output field renamed to "Well depth" per https://github.com/NREL/GEOPHIRES-X/issues/321
 
+3.7.3: Heat to Power Conversion Efficiency output added.
+
 
 3.6
 ^^^

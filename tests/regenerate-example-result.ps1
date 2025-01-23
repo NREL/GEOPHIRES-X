@@ -31,3 +31,5 @@ cd ..
 #./tests/regenerate-example-result.ps1 example_SHR-2
 #./tests/regenerate-example-result.ps1 Fervo_Norbeck_Latimer_2024
 #./tests/regenerate-example-result.ps1 Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery
+
+# TODO regenerate CSV for example1_addons as in regenerate-example-result.sh

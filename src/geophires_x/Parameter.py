@@ -63,8 +63,8 @@ class OutputParameter(HasQuantity):
     """
 
     Name: str = ""
-    value: int = 0
-    ToolTipText: str = "This is ToolTip Text"
+    value: Any = 0
+    ToolTipText: str = ""
     UnitType: IntEnum = Units.NONE
     PreferredUnits: Enum = Units.NONE
     # set to PreferredUnits by default assuming that the current units are the preferred units -

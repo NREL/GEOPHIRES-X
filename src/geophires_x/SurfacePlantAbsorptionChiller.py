@@ -141,4 +141,6 @@ class SurfacePlantAbsorptionChiller(SurfacePlant):
         # calculate reservoir heat content
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(
             self, model.reserv.InitialReservoirHeatContent.value, self.HeatkWhExtracted.value)
+
+        self._calculate_derived_outputs(model)
         model.logger.info(f"complete {self.__class__.__name__}: {__name__}")

@@ -595,3 +595,55 @@ Print Output to Console, 1"""
         self.assertAlmostEqual(
             result.result['CAPITAL COSTS (M$)']['Transmission pipeline cost']['value'], 3.75, delta=0.5
         )
+
+    def test_well_drilling_and_completion_capital_cost_adjustment_factor(self):
+        base_file = self._get_test_file_path('drilling-adjustment-factor.txt')
+        r_no_adj = GeophiresXClient().get_geophires_result(GeophiresInputParameters(from_file_path=base_file))
+
+        r_noop_adj = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=base_file,
+                params={'Well Drilling and Completion Capital Cost Adjustment Factor': 1.0},
+            )
+        )
+
+        r_adj = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=base_file,
+                params={'Well Drilling and Completion Capital Cost Adjustment Factor': 1.175},
+            )
+        )
+
+        def c_well(r, prod: bool = False, inj: bool = False):
+            well_type = 'production ' if prod else 'injection ' if inj else ''
+            try:
+                c = r.result['CAPITAL COSTS (M$)'][f'Drilling and completion costs per {well_type}well']['value']
+
+                if not prod and not inj:
+                    # indirect cost is not applied to prod/inj-specific per-well cost
+                    default_indirect_cost_factor = 1.05
+                    c = c / default_indirect_cost_factor
+
+                return c
+            except TypeError:
+                return None
+
+        self.assertEqual(c_well(r_no_adj), c_well(r_noop_adj))
+
+        self.assertAlmostEqual(1.175 * c_well(r_no_adj), c_well(r_adj), delta=0.1)
+
+        r_adj_diff_prod_inj = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=base_file,
+                params={
+                    'Well Drilling and Completion Capital Cost Adjustment Factor': 1.175,
+                    'Injection Well Drilling and Completion Capital Cost Adjustment Factor': 3,
+                },
+            )
+        )
+
+        c_well_no_adj = c_well(r_no_adj)
+        c_prod_well_adj = c_well(r_adj_diff_prod_inj, prod=True)
+        c_inj_well_adj = c_well(r_adj_diff_prod_inj, inj=True)
+        self.assertAlmostEqual(1.175 * c_well_no_adj, c_prod_well_adj, delta=0.1)
+        self.assertAlmostEqual(3 * c_well_no_adj, c_inj_well_adj, delta=0.1)

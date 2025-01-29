@@ -597,7 +597,7 @@ Print Output to Console, 1"""
         )
 
     def test_well_drilling_and_completion_capital_cost_adjustment_factor(self):
-        base_file = self._get_test_file_path('drilling-adjustment-factor.txt')
+        base_file = self._get_test_file_path('geophires_x_tests/drilling-adjustment-factor.txt')
         r_no_adj = GeophiresXClient().get_geophires_result(GeophiresInputParameters(from_file_path=base_file))
 
         r_noop_adj = GeophiresXClient().get_geophires_result(

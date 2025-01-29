@@ -1,7 +1,6 @@
 Reservoir Model, 1
 Reservoir Volume Option, 1
 Reservoir Density, 2800
-#Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
@@ -21,7 +20,6 @@ Well Separation, 365 feet
 Injection Temperature, 60 degC
 Injection Wellbore Temperature Gain, 3
 Plant Outlet Pressure, 1000 psi
-#Production Wellhead Pressure, 325 psi
 Ramey Production Wellbore Model, 1
 Utilization Factor, .9
 Water Loss Fraction, 0.05
@@ -32,11 +30,8 @@ End-Use Option, 1
 
 Plant Lifetime, 25
 
-#Power Plant Type, 3
 Circulation Pump Efficiency, 0.80
 
-#Exploration Capital Cost, 30
-#Reservoir Stimulation Capital Cost, 234, -- 78 wells @ $3M/well
 Economic Model, 3
 Starting Electricity Sale Price, 0.15
 Ending Electricity Sale Price, 1.00
@@ -62,7 +57,6 @@ Reservoir Depth, 5.4
 Gradient 1, 36.7
 Power Plant Type, 4
 
-# Well Drilling and Completion Capital Cost Adjustment Factor, 1.175
-Number of Injection Wells, 73
-Number of Production Wells, 73
+Number of Injection Wells, 54
+Number of Production Wells, 54
 Production Flow Rate per Well, 80

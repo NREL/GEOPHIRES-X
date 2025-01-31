@@ -647,6 +647,8 @@ class Economics:
             Valid=False,
             ToolTipText="Injection Well Drilling and Completion Capital Cost"
         )
+
+        injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
             DefaultValue=1.0,
@@ -657,10 +659,12 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor"
+            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; "
+                        f"also applies to injection wells unless a value is provided for "
+                        f"{injection_well_cost_adjustment_factor_name}."
         )
         self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
-            "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
+            injection_well_cost_adjustment_factor_name,
             DefaultValue=self.production_well_cost_adjustment_factor.DefaultValue,
             Min=self.production_well_cost_adjustment_factor.Min,
             Max=self.production_well_cost_adjustment_factor.Max,
@@ -669,7 +673,9 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor"
+            ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor. "
+                        f"If not provided, this value will be set automatically to the same value as "
+                        f"{self.production_well_cost_adjustment_factor.Name}."
         )
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
             "Wellfield O&M Cost",

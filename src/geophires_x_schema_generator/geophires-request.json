@@ -1392,7 +1392,7 @@
       "maximum": 200
     },
     "Well Drilling and Completion Capital Cost Adjustment Factor": {
-      "description": "Well Drilling and Completion Capital Cost Adjustment Factor",
+      "description": "Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; also applies to injection wells unless a value is provided for Injection Well Drilling and Completion Capital Cost Adjustment Factor.",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1401,7 +1401,7 @@
       "maximum": 10
     },
     "Injection Well Drilling and Completion Capital Cost Adjustment Factor": {
-      "description": "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
+      "description": "Injection Well Drilling and Completion Capital Cost Adjustment Factor. If not provided, this value will be set automatically to the same value as Well Drilling and Completion Capital Cost Adjustment Factor.",
       "type": "number",
       "units": "",
       "category": "Economics",

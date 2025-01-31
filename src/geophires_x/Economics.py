@@ -1552,11 +1552,16 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
             Name="Wellfield cost",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+
+            # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+            ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
+                        "laterals, plus 5% indirect costs."
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
@@ -1791,6 +1796,12 @@ class Economics:
         )
         self.cost_lateral_section = self.OutputParameterDict[self.cost_lateral_section.Name] = OutputParameter(
             Name="Cost of the entire (multi-) lateral section of a well",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
+        )
+        self.cost_per_lateral_section = self.OutputParameterDict[self.cost_per_lateral_section.Name] = OutputParameter(
+            Name='Drilling and completion costs per non-vertical section',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -2882,7 +2893,20 @@ class Economics:
             np.average(model.surfaceplant.ElectricityProduced.quantity().to(
                 'MW').magnitude * self.jobs_created_per_MW_electricity.value))
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    def _calculate_derived_outputs(self, model: Model) -> None:
+        """
+        Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
+        values that are derived from subclass-calculated outputs.
+        """
+
+        if hasattr(self, 'cost_lateral_section') and self.cost_lateral_section.value != 0:
+            self.cost_per_lateral_section.value = (
+                self.cost_lateral_section.quantity().to(self.cost_per_lateral_section.CurrentUnits).magnitude
+                / model.wellbores.numnonverticalsections.value
+            )
 
     def __str__(self):
         return "Economics"

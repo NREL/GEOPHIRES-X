@@ -417,7 +417,8 @@ class SUTRAEconomics(Economics.Economics):
             * 1e8
         )  # cents/kWh
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        self._calculate_derived_outputs(model)
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "Economics"

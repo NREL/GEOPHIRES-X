@@ -52,6 +52,11 @@ class SBTWellbores(WellBores):
         # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the
         # last possible time
 
+        # Assume CLGS has 1 lateral by default (Non-CLGS default value is 0)
+        self.numnonverticalsections.value = 1
+        self.numnonverticalsections.ErrMessage = (f'assume default for Number of Nonvertical Wellbore Sections '
+                                                  f'({self.numnonverticalsections.value})')
+
         self.vertical_section_length = self.ParameterDict[self.vertical_section_length.Name] = floatParameter(
             'Vertical Section Length',
             DefaultValue=2000.0,

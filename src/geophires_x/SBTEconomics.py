@@ -845,5 +845,6 @@ class SBTEconomics(Economics):
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

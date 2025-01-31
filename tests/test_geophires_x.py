@@ -2,6 +2,7 @@ import os
 import tempfile
 import uuid
 from pathlib import Path
+from typing import Any
 from typing import Optional
 
 from geophires_x.OptionList import PlantType
@@ -661,12 +662,12 @@ Print Output to Console, 1"""
                 )
             )
 
-        self.assertIsNotNone(
-            _get_result(1).result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section'][
-                'value'
-            ]
-        )
+        def _c_non_vert(r: GeophiresXResult) -> dict[str, Any]:
+            return r.result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
 
-        self.assertIsNone(
-            _get_result(0).result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
-        )
+        self.assertIsNone(_c_non_vert(_get_result(0)))
+
+        r_1 = _get_result(1)
+        self.assertIsNotNone(_c_non_vert(r_1)['value'])
+
+        self.assertEqual(_c_non_vert(r_1)['value'], _c_non_vert(_get_result(2))['value'])

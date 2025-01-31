@@ -647,6 +647,10 @@ class Economics:
             Valid=False,
             ToolTipText="Injection Well Drilling and Completion Capital Cost"
         )
+
+        # TODO parameterize/document default 5% indirect cost factor that is applied when neither of the well
+        #  drilling/completion capital cost adjustment factors are provided
+        injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
             DefaultValue=1.0,
@@ -657,19 +661,23 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor"
+            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; "
+                        f"also applies to injection wells unless a value is provided for "
+                        f"{injection_well_cost_adjustment_factor_name}."
         )
         self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
-            "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
-            DefaultValue=self.production_well_cost_adjustment_factor.value,
-            Min=0,
-            Max=10,
+            injection_well_cost_adjustment_factor_name,
+            DefaultValue=self.production_well_cost_adjustment_factor.DefaultValue,
+            Min=self.production_well_cost_adjustment_factor.Min,
+            Max=self.production_well_cost_adjustment_factor.Max,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor"
+            ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor. "
+                        f"If not provided, this value will be set automatically to the same value as "
+                        f"{self.production_well_cost_adjustment_factor.Name}."
         )
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
             "Wellfield O&M Cost",
@@ -1753,7 +1761,8 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH
         )
         self.ProjectMOIC = self.OutputParameterDict[self.ProjectMOIC.Name] = OutputParameter(
-            "Project Multiple of Invested Capital",
+            "Project MOIC",
+            ToolTipText="Project Multiple of Invested Capital",
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH
@@ -1910,35 +1919,30 @@ class Economics:
                                 ParameterToModify.value = 1.0
                     elif ParameterToModify.Name == "Well Drilling and Completion Capital Cost Adjustment Factor":
                         if self.per_production_well_cost.Valid and ParameterToModify.Valid:
-                            print("Warning: Provided well drilling and completion cost adjustment factor not" +
-                                  " considered because valid total well drilling and completion cost provided.")
-                            model.logger.warning("Provided well drilling and completion cost adjustment factor not" +
-                                                 " considered because valid total well drilling and completion cost provided.")
+                            msg = ('Provided well drilling and completion cost adjustment factor not considered '
+                                   'because valid total well drilling and completion cost provided.')
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
                         elif not self.per_production_well_cost.Provided and not self.production_well_cost_adjustment_factor.Provided:
                             ParameterToModify.value = 1.0
-                            print("Warning: No valid well drilling and completion total cost or adjustment" +
-                                  " factor provided. GEOPHIRES will assume default built-in well drilling and" +
-                                  " completion cost correlation with adjustment factor = 1.")
-                            model.logger.warning(
-                                "No valid well drilling and completion total cost or adjustment factor" +
-                                " provided. GEOPHIRES will assume default built-in well drilling and completion cost" +
-                                " correlation with adjustment factor = 1.")
+                            msg = ("No valid well drilling and completion total cost or adjustment factor provided. "
+                                   "GEOPHIRES will assume default built-in well drilling and completion cost "
+                                   "correlation with adjustment factor = 1.")
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
                         elif self.per_production_well_cost.Provided and not self.per_production_well_cost.Valid:
-                            print("Warning: Provided well drilling and completion cost outside of range 0-1000." +
-                                  " GEOPHIRES will assume default built-in well drilling and completion cost correlation" +
-                                  " with adjustment factor = 1.")
-                            model.logger.warning("Provided well drilling and completion cost outside of range 0-1000." +
-                                                 " GEOPHIRES will assume default built-in well drilling and completion cost correlation with" +
-                                                 " adjustment factor = 1.")
+                            msg = ("Provided well drilling and completion cost outside of range 0-1000. GEOPHIRES "
+                                   "will assume default built-in well drilling and completion cost correlation "
+                                   "with adjustment factor = 1.")
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
                             self.production_well_cost_adjustment_factor.value = 1.0
                         elif not self.per_production_well_cost.Provided and self.production_well_cost_adjustment_factor.Provided and not self.production_well_cost_adjustment_factor.Valid:
-                            print("Warning: Provided well drilling and completion cost adjustment factor outside" +
-                                  " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
-                                  " cost correlation with adjustment factor = 1.")
-                            model.logger.warning(
-                                "Provided well drilling and completion cost adjustment factor outside" +
-                                " of range 0-10. GEOPHIRES will assume default built-in well drilling and completion" +
-                                " cost correlation with adjustment factor = 1.")
+                            msg = ("Provided well drilling and completion cost adjustment factor outside of range "
+                                   "0-10. GEOPHIRES will assume default built-in well drilling and completion cost "
+                                   "correlation with adjustment factor = 1.")
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
                             self.production_well_cost_adjustment_factor.value = 1.0
                     elif ParameterToModify.Name == "Wellfield O&M Cost Adjustment Factor":
                         if self.oamtotalfixed.Valid:
@@ -2169,6 +2173,7 @@ class Economics:
 
         coerce_int_params_to_enum_values(self.ParameterDict)
         self.sync_interest_rate(model)
+        self.sync_well_drilling_and_completion_capital_cost_adjustment_factor(model)
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -2197,6 +2202,16 @@ class Economics:
                                  f'It is recommended to only provide one of these values.')
 
         self.interest_rate.value = self.discountrate.quantity().to(convertible_unit(self.interest_rate.CurrentUnits)).magnitude
+
+    def sync_well_drilling_and_completion_capital_cost_adjustment_factor(self, model):
+        if (self.production_well_cost_adjustment_factor.Provided
+                and not self.injection_well_cost_adjustment_factor.Provided):
+            factor = self.production_well_cost_adjustment_factor.value
+            self.injection_well_cost_adjustment_factor.value = factor
+            model.logger.info(
+                f'Set {self.injection_well_cost_adjustment_factor.Name} to {factor} because '
+                f'{self.production_well_cost_adjustment_factor.Name} was provided.')
+
 
     def Calculate(self, model: Model) -> None:
         """
@@ -2281,7 +2296,7 @@ class Economics:
             else:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field
-            # 1.05 for 5% indirect costs
+            # 1.05 for 5% indirect costs - see TODO re:parameterizing at src/geophires_x/Economics.py:652
             self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                           (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                           self.cost_lateral_section.value)

@@ -34,7 +34,8 @@ class GeophiresXSchemaGenerator:
     def __init__(self):
         pass
 
-    def _get_dummy_model(self):
+    @staticmethod
+    def _get_dummy_model():
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
         sys.argv = ['']
@@ -146,9 +147,9 @@ class GeophiresXSchemaGenerator:
 
             input_params_by_category[category][input_param_name] = input_param
 
-        def get_input_params_table(category_params, category_name) -> str:
+        def get_input_params_table(_category_params, category_name) -> str:
             category_display = category_name if category_name is not None else ''
-            input_rst = f"""
+            _input_rst = f"""
 {category_display}
 {'-' * len(category_display)}
     .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Parameters
@@ -162,7 +163,7 @@ class GeophiresXSchemaGenerator:
          - Min
          - Max"""
 
-            for param_name in category_params:
+            for param_name in _category_params:
                 param = input_params[param_name]
 
                 # if param['Required']:
@@ -172,7 +173,7 @@ class GeophiresXSchemaGenerator:
 
                 min_val, max_val = _get_min_and_max(param)
 
-                input_rst += f"""\n       * - {param['Name']}
+                _input_rst += f"""\n       * - {param['Name']}
          - {_get_key(param, 'ToolTipText')}
          - {_get_key(param, 'PreferredUnits')}
          - {_get_key(param, 'json_parameter_type')}
@@ -180,7 +181,7 @@ class GeophiresXSchemaGenerator:
          - {min_val}
          - {max_val}"""
 
-            return input_rst
+            return _input_rst
 
         input_rst = ''
         for category, category_params in input_params_by_category.items():
@@ -204,7 +205,8 @@ Output Parameters
 
         return rst
 
-    def get_output_params_table_rst(self, output_params_json) -> str:
+    @staticmethod
+    def get_output_params_table_rst(output_params_json) -> str:
         output_params = json.loads(output_params_json)
 
         output_rst = """

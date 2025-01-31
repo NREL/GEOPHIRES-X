@@ -404,8 +404,8 @@ class Reservoir:
             CurrentUnits=TemperatureUnit.CELSIUS,
             Required=True,
             ErrMessage="assume default surface temperature (15 deg.C)",
-            ToolTipText="Surface temperature used for calculating bottom-hole temperature \
-            (with geothermal gradient and reservoir depth)"
+            ToolTipText="Surface temperature used for calculating bottom-hole temperature "
+                        "(with geothermal gradient and reservoir depth)"
         )
 
         self.usebuiltintough2model = False

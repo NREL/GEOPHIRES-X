@@ -659,6 +659,9 @@ class GeophiresXResult:
         return data
 
     def _parse_number(self, number_str, field='string') -> int | float:
+        if number_str == 'N/A':
+            return None
+
         try:
             if '.' in number_str:
                 # TODO should probably ideally use decimal.Decimal to preserve precision,

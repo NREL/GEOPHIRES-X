@@ -396,7 +396,7 @@
       "maximum": 0.99
     },
     "Surface Temperature": {
-      "description": "Surface temperature used for calculating bottom-hole temperature             (with geothermal gradient and reservoir depth)",
+      "description": "Surface temperature used for calculating bottom-hole temperature (with geothermal gradient and reservoir depth)",
       "type": "number",
       "units": "degC",
       "category": "Reservoir",

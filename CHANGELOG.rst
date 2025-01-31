@@ -16,6 +16,7 @@ GEOPHIRES-X (2023-2025)
 
 3.7.5: Injection Well Drilling and Completion Capital Cost Adjustment Factor, if not provided, is now automatically set to the provided value of Well Drilling and Completion Capital Cost Adjustment Factor.
 
+3.7.6: Fixes bugs pertaining to specifying non-CLGS laterals and display of per-lateral costs.
 
 3.6
 ^^^

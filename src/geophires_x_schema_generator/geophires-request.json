@@ -916,7 +916,7 @@
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": 1,
+      "default": 0,
       "minimum": 0,
       "maximum": 100
     },

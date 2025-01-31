@@ -515,6 +515,11 @@ class AGSWellBores(WellBores):
         # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the
         # last possible time
 
+        # Assume CLGS has 1 lateral by default (Non-CLGS default value is 0)
+        self.numnonverticalsections.value = 1
+        self.numnonverticalsections.ErrMessage = (f'assume default for Number of Nonvertical Wellbore Sections '
+                                                  f'({self.numnonverticalsections.value})')
+
         self.time_operation = self.ParameterDict[self.time_operation.Name] = floatParameter(
             "Closed Loop Calculation Start Year",
             DefaultValue=0.01,
@@ -577,6 +582,7 @@ class AGSWellBores(WellBores):
             model.logger.info("No parameters read because no content provided")
 
         # handle error checking and special cases:
+
         if model.reserv.numseg.value > 1:
             msg = ('Warning: CLGS model can only handle a single layer gradient segment. '
                    'Number of Segments set to 1, Gradient set to Gradient[0], and Depth set to Reservoir Depth.')

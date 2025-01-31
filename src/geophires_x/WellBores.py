@@ -1033,7 +1033,7 @@ class WellBores:
             DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.NONE,
-            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
+            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (0)",
             ToolTipText="Number of Nonvertical Wellbore Sections"
         )
         self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(

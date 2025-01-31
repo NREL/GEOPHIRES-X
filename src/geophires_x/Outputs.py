@@ -1646,7 +1646,7 @@ class Outputs:
                 f.write(f'      Project NPV:                                     {model.economics.ProjectNPV.value:10.2f} ' + model.economics.ProjectNPV.PreferredUnits.value + NL)
                 f.write(f'      Project IRR:                                     {model.economics.ProjectIRR.value:10.2f} ' + model.economics.ProjectIRR.PreferredUnits.value + NL)
                 f.write(f'      Project VIR=PI=PIR:                              {model.economics.ProjectVIR.value:10.2f}' + NL)
-                f.write(f'      Project MOIC:                                    {model.economics.ProjectMOIC.value:10.2f}' + NL)
+                f.write(f'      {model.economics.ProjectMOIC.Name}:                                    {model.economics.ProjectMOIC.value:10.2f}' + NL)
 
                 payback_period_val = model.economics.ProjectPaybackPeriod.value
                 project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \

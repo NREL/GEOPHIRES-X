@@ -14,6 +14,8 @@ GEOPHIRES-X (2023-2025)
 
 3.7.3: Heat to Power Conversion Efficiency output added.
 
+3.7.5: Injection Well Drilling and Completion Capital Cost Adjustment Factor, if not provided, is now automatically set to the provided value of Well Drilling and Completion Capital Cost Adjustment Factor.
+
 
 3.6
 ^^^

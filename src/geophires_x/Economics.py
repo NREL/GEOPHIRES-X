@@ -661,9 +661,9 @@ class Economics:
         )
         self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
             "Injection Well Drilling and Completion Capital Cost Adjustment Factor",
-            DefaultValue=self.production_well_cost_adjustment_factor.value,
-            Min=0,
-            Max=10,
+            DefaultValue=self.production_well_cost_adjustment_factor.DefaultValue,
+            Min=self.production_well_cost_adjustment_factor.Min,
+            Max=self.production_well_cost_adjustment_factor.Max,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,

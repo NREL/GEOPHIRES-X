@@ -259,5 +259,6 @@ class AGSEconomics(Economics.Economics):
             self.Coam.value = self.AverageOPEX_Plant * 1000
             self.Coam.CurrentUnits = CurrencyFrequencyUnit.KDOLLARSPERYEAR
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

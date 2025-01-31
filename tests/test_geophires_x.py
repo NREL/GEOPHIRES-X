@@ -290,7 +290,7 @@ Print Output to Console, 1"""
             # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
             # different input that is still expected to result in error code 5500.
             input_params = GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('error-code-5500.txt'))
+                from_file_path=self._get_test_file_path(Path('geophires_x_tests/error-code-5500.txt'))
             )
             client.get_geophires_result(input_params)
 
@@ -597,7 +597,7 @@ Print Output to Console, 1"""
         )
 
     def test_well_drilling_and_completion_capital_cost_adjustment_factor(self):
-        base_file = self._get_test_file_path('geophires_x_tests/drilling-adjustment-factor.txt')
+        base_file = self._get_test_file_path('geophires_x_tests/generic-egs-case.txt')
         r_no_adj = GeophiresXClient().get_geophires_result(GeophiresInputParameters(from_file_path=base_file))
 
         r_noop_adj = GeophiresXClient().get_geophires_result(
@@ -648,3 +648,25 @@ Print Output to Console, 1"""
         c_inj_well_adj = c_well(r_adj_diff_prod_inj, inj=True)
         self.assertAlmostEqual(1.175 * c_well_no_adj, c_prod_well_adj, delta=0.1)
         self.assertAlmostEqual(3 * c_well_no_adj, c_inj_well_adj, delta=0.1)
+
+    def test_egs_laterals(self):
+        def _get_result(num_laterals: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    params={
+                        'Well Geometry Configuration': 4,
+                        'Number of Multilateral Sections': num_laterals,
+                    },
+                )
+            )
+
+        def _c_non_vert(r: GeophiresXResult) -> dict:
+            return r.result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
+
+        self.assertIsNone(_c_non_vert(_get_result(0)))
+
+        r_1 = _get_result(1)
+        self.assertIsNotNone(_c_non_vert(r_1)['value'])
+
+        self.assertEqual(_c_non_vert(r_1)['value'], _c_non_vert(_get_result(2))['value'])

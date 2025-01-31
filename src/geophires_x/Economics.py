@@ -648,6 +648,8 @@ class Economics:
             ToolTipText="Injection Well Drilling and Completion Capital Cost"
         )
 
+        # TODO parameterize/document default 5% indirect cost factor that is applied when neither of the well
+        #  drilling/completion capital cost adjustment factors are provided
         injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
@@ -2294,7 +2296,7 @@ class Economics:
             else:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field
-            # 1.05 for 5% indirect costs
+            # 1.05 for 5% indirect costs - see TODO re:parameterizing at src/geophires_x/Economics.py:652
             self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                           (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                           self.cost_lateral_section.value)

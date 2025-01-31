@@ -620,7 +620,8 @@ Print Output to Console, 1"""
                 c = r.result['CAPITAL COSTS (M$)'][f'Drilling and completion costs per {well_type}well']['value']
 
                 if not prod and not inj:
-                    # indirect cost is not applied to prod/inj-specific per-well cost
+                    # indirect cost is not applied to prod/inj-specific per-well cost;
+                    # see TODO re:parameterizing at src/geophires_x/Economics.py:652
                     default_indirect_cost_factor = 1.05
                     c = c / default_indirect_cost_factor
 

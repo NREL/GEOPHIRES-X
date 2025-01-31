@@ -916,12 +916,12 @@
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": 1,
+      "default": 0,
       "minimum": 0,
       "maximum": 100
     },
     "Multilaterals Cased": {
-      "description": "",
+      "description": "If set to True, casing & cementing are assumed to comprise 50% of drilling costs (doubling cost compared to uncased).",
       "type": "boolean",
       "units": null,
       "category": "Well Bores",

@@ -373,6 +373,7 @@ class EconomicsAddOns(Economics.Economics):
         # recalculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):

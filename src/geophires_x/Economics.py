@@ -120,10 +120,8 @@ def calculate_cost_of_non_vertical_section(model: Model, length_m: float, well_c
             f'{fixed_well_cost_name} (fixed cost per well) instead.'
         )
 
-    casing_factor = 1.0
-    if not NonverticalsCased:
-        # assume that casing & cementing costs 50% of drilling costs
-        casing_factor = 0.5
+    # assume that casing & cementing costs 50% of drilling costs
+    casing_factor = 1.0 if NonverticalsCased else 0.5
 
     if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_non_vertical_section = casing_factor * ((num_nonvertical_sections * nonvertical_drilling_cost_per_m * length_per_section_m)) * 1E-6
@@ -1554,11 +1552,16 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
             Name="Wellfield cost",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+
+            # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+            ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
+                        "laterals, plus 5% indirect costs."
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
@@ -1793,6 +1796,12 @@ class Economics:
         )
         self.cost_lateral_section = self.OutputParameterDict[self.cost_lateral_section.Name] = OutputParameter(
             Name="Cost of the entire (multi-) lateral section of a well",
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS
+        )
+        self.cost_per_lateral_section = self.OutputParameterDict[self.cost_per_lateral_section.Name] = OutputParameter(
+            Name='Drilling and completion costs per non-vertical section',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -2286,13 +2295,16 @@ class Economics:
                                                                                          self.injection_well_cost_adjustment_factor.value)
 
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(model, tot_horiz_m,
-                                            self.wellcorrelation.value,
-                                            self.Nonvertical_drilling_cost_per_m.value,
-                                            model.wellbores.numnonverticalsections.value,
-                                            self.per_injection_well_cost.Name,
-                                            model.wellbores.NonverticalsCased.value,
-                                            self.production_well_cost_adjustment_factor.value)
+                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
+                    model,
+                    tot_horiz_m,
+                    self.wellcorrelation.value,
+                    self.Nonvertical_drilling_cost_per_m.value,
+                    model.wellbores.numnonverticalsections.value,
+                    self.Nonvertical_drilling_cost_per_m.Name,
+                    model.wellbores.NonverticalsCased.value,
+                    self.production_well_cost_adjustment_factor.value
+                )
             else:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field
@@ -2881,7 +2893,20 @@ class Economics:
             np.average(model.surfaceplant.ElectricityProduced.quantity().to(
                 'MW').magnitude * self.jobs_created_per_MW_electricity.value))
 
+        self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    def _calculate_derived_outputs(self, model: Model) -> None:
+        """
+        Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
+        values that are derived from subclass-calculated outputs.
+        """
+
+        if hasattr(self, 'cost_lateral_section') and self.cost_lateral_section.value != 0:
+            self.cost_per_lateral_section.value = (
+                self.cost_lateral_section.quantity().to(self.cost_per_lateral_section.CurrentUnits).magnitude
+                / model.wellbores.numnonverticalsections.value
+            )
 
     def __str__(self):
         return "Economics"

@@ -1030,10 +1030,10 @@ class WellBores:
         )
         self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
             "Number of Multilateral Sections",
-            DefaultValue=1,
+            DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.NONE,
-            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",
+            ErrMessage="assume default for Number of Nonvertical Wellbore Sections (0)",
             ToolTipText="Number of Nonvertical Wellbore Sections"
         )
         self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
@@ -1042,7 +1042,9 @@ class WellBores:
             Required=False,
             Provided=False,
             Valid=True,
-            ErrMessage="assume default value (False)"
+            ErrMessage="assume default value (False)",
+            ToolTipText="If set to True, casing & cementing are assumed to comprise 50% of drilling costs "
+                        "(doubling cost compared to uncased)."
         )
 
         # local variable initiation

@@ -290,7 +290,7 @@ Print Output to Console, 1"""
             # https://github.com/NREL/python-geophires-x/issues/13), then error-code-5500.txt should be updated with
             # different input that is still expected to result in error code 5500.
             input_params = GeophiresInputParameters(
-                from_file_path=self._get_test_file_path(Path('error-code-5500.txt'))
+                from_file_path=self._get_test_file_path(Path('geophires_x_tests/error-code-5500.txt'))
             )
             client.get_geophires_result(input_params)
 
@@ -648,3 +648,16 @@ Print Output to Console, 1"""
         c_inj_well_adj = c_well(r_adj_diff_prod_inj, inj=True)
         self.assertAlmostEqual(1.175 * c_well_no_adj, c_prod_well_adj, delta=0.1)
         self.assertAlmostEqual(3 * c_well_no_adj, c_inj_well_adj, delta=0.1)
+
+    def test_egs_laterals(self):
+        base_file = self._get_test_file_path('geophires_x_tests/drilling-adjustment-factor.txt')
+        GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=base_file,
+                params={
+                    'Well Geometry Configuration': 4,
+                    'Nonvertical Length per Multilateral Section': 1500,
+                    'Number of Multilateral Sections': 1,
+                },
+            )
+        )

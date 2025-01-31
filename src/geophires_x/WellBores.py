@@ -1030,7 +1030,7 @@ class WellBores:
         )
         self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
             "Number of Multilateral Sections",
-            DefaultValue=1,
+            DefaultValue=0,
             AllowableRange=list(range(0, 101, 1)),
             UnitType=Units.NONE,
             ErrMessage="assume default for Number of Nonvertical Wellbore Sections (1)",

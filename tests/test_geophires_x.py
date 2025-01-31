@@ -597,7 +597,7 @@ Print Output to Console, 1"""
         )
 
     def test_well_drilling_and_completion_capital_cost_adjustment_factor(self):
-        base_file = self._get_test_file_path('geophires_x_tests/drilling-adjustment-factor.txt')
+        base_file = self._get_test_file_path('geophires_x_tests/generic-egs-case.txt')
         r_no_adj = GeophiresXClient().get_geophires_result(GeophiresInputParameters(from_file_path=base_file))
 
         r_noop_adj = GeophiresXClient().get_geophires_result(
@@ -650,14 +650,23 @@ Print Output to Console, 1"""
         self.assertAlmostEqual(3 * c_well_no_adj, c_inj_well_adj, delta=0.1)
 
     def test_egs_laterals(self):
-        base_file = self._get_test_file_path('geophires_x_tests/drilling-adjustment-factor.txt')
-        GeophiresXClient().get_geophires_result(
-            GeophiresInputParameters(
-                from_file_path=base_file,
-                params={
-                    'Well Geometry Configuration': 4,
-                    'Nonvertical Length per Multilateral Section': 1500,
-                    'Number of Multilateral Sections': 1,
-                },
+        def _get_result(num_laterals: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    params={
+                        'Well Geometry Configuration': 4,
+                        'Number of Multilateral Sections': num_laterals,
+                    },
+                )
             )
+
+        self.assertIsNotNone(
+            _get_result(1).result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section'][
+                'value'
+            ]
+        )
+
+        self.assertIsNone(
+            _get_result(0).result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
         )

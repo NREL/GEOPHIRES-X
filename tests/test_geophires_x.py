@@ -2,7 +2,6 @@ import os
 import tempfile
 import uuid
 from pathlib import Path
-from typing import Any
 from typing import Optional
 
 from geophires_x.OptionList import PlantType
@@ -662,7 +661,7 @@ Print Output to Console, 1"""
                 )
             )
 
-        def _c_non_vert(r: GeophiresXResult) -> dict[str, Any]:
+        def _c_non_vert(r: GeophiresXResult) -> dict:
             return r.result['CAPITAL COSTS (M$)']['Drilling and completion costs per non-vertical section']
 
         self.assertIsNone(_c_non_vert(_get_result(0)))

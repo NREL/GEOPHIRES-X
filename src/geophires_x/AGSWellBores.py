@@ -566,20 +566,8 @@ class AGSWellBores(WellBores):
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the default parameters
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
-        # for the variables in this class because the call to the super.readparameters will set all the variables,
+        # for the variables in this class because the call to the super.read_parameters will set all the variables,
         # including the ones that are specific to this class
-
-        if len(model.InputParameters) > 0:
-            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
-            for item in self.ParameterDict.items():
-                ParameterToModify = item[1]
-                key = ParameterToModify.Name.strip()
-                if key in model.InputParameters:
-                    ParameterReadIn = model.InputParameters[key]
-                    # just handle special cases for this class - the call to super set all the values,
-                    # including the value unique to this class
-        else:
-            model.logger.info("No parameters read because no content provided")
 
         # handle error checking and special cases:
 

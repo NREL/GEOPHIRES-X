@@ -1042,7 +1042,9 @@ class WellBores:
             Required=False,
             Provided=False,
             Valid=True,
-            ErrMessage="assume default value (False)"
+            ErrMessage="assume default value (False)",
+            ToolTipText="If set to True, casing & cementing are assumed to comprise 50% of drilling costs "
+                        "(doubling cost compared to uncased)."
         )
 
         # local variable initiation

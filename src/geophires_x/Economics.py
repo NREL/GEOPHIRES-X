@@ -120,10 +120,8 @@ def calculate_cost_of_non_vertical_section(model: Model, length_m: float, well_c
             f'{fixed_well_cost_name} (fixed cost per well) instead.'
         )
 
-    casing_factor = 1.0
-    if not NonverticalsCased:
-        # assume that casing & cementing costs 50% of drilling costs
-        casing_factor = 0.5
+    # assume that casing & cementing costs 50% of drilling costs
+    casing_factor = 1.0 if NonverticalsCased else 0.5
 
     if model.economics.Nonvertical_drilling_cost_per_m.Provided or well_correlation is WellDrillingCostCorrelation.SIMPLE:
         cost_of_non_vertical_section = casing_factor * ((num_nonvertical_sections * nonvertical_drilling_cost_per_m * length_per_section_m)) * 1E-6
@@ -2286,13 +2284,16 @@ class Economics:
                                                                                          self.injection_well_cost_adjustment_factor.value)
 
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(model, tot_horiz_m,
-                                            self.wellcorrelation.value,
-                                            self.Nonvertical_drilling_cost_per_m.value,
-                                            model.wellbores.numnonverticalsections.value,
-                                            self.per_injection_well_cost.Name,
-                                            model.wellbores.NonverticalsCased.value,
-                                            self.production_well_cost_adjustment_factor.value)
+                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
+                    model,
+                    tot_horiz_m,
+                    self.wellcorrelation.value,
+                    self.Nonvertical_drilling_cost_per_m.value,
+                    model.wellbores.numnonverticalsections.value,
+                    self.Nonvertical_drilling_cost_per_m.Name,
+                    model.wellbores.NonverticalsCased.value,
+                    self.production_well_cost_adjustment_factor.value
+                )
             else:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field

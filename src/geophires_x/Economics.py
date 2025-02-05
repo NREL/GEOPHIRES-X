@@ -1001,8 +1001,8 @@ class Economics:
             PreferredUnits=CostPerDistanceUnit.DOLLARSPERM,
             CurrentUnits=CostPerDistanceUnit.DOLLARSPERM,
             ErrMessage="assume default all-in cost for drill vertical well segment(s) (1000 $/m)",
-            ToolTipText="Set user specified all-in cost per meter of vertical drilling," +
-                        " including drilling, casing, cement, insulated insert"
+            ToolTipText="Set user specified all-in cost per meter of vertical drilling, including drilling, casing, "
+                        "cement, insulated insert"
         )
         self.Nonvertical_drilling_cost_per_m = self.ParameterDict[
             self.Nonvertical_drilling_cost_per_m.Name] = floatParameter(
@@ -1013,9 +1013,9 @@ class Economics:
             UnitType=Units.COSTPERDISTANCE,
             PreferredUnits=CostPerDistanceUnit.DOLLARSPERM,
             CurrentUnits=CostPerDistanceUnit.DOLLARSPERM,
-            ErrMessage="assume default all-in cost for drill non-vertical well segment(s) (1300 $/m)",
-            ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including" +
-                        " drilling, casing, cement, insulated insert"
+            ErrMessage="assume default all-in cost for drill non-vertical well segment(s) ($1300/m)",
+            ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including drilling, "
+                        "casing, cement, insulated insert"
         )
 
         # absorption chiller

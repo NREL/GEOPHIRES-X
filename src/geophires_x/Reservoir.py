@@ -80,8 +80,8 @@ class Reservoir:
             CurrentUnits=TemperatureUnit.CELSIUS,
             Required=True,
             ErrMessage="assume default maximum temperature (400 deg.C)",
-            ToolTipText="Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). \
-            GEOPHIRES will cap the drilling depth to stay below this maximum temperature."
+            ToolTipText="Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). "
+                        "GEOPHIRES will cap the drilling depth to stay below this maximum temperature."
         )
 
         self.numseg = self.ParameterDict[self.numseg.Name] = intParameter(

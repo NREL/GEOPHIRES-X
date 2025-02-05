@@ -107,7 +107,7 @@
       "maximum": 15
     },
     "Maximum Temperature": {
-      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints).             GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
+      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
       "type": "number",
       "units": "degC",
       "category": "Reservoir",

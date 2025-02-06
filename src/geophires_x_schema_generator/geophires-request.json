@@ -107,7 +107,7 @@
       "maximum": 15
     },
     "Maximum Temperature": {
-      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints).             GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
+      "description": "Maximum allowable reservoir temperature (e.g. due to drill bit or logging tools constraints). GEOPHIRES will cap the drilling depth to stay below this maximum temperature.",
       "type": "number",
       "units": "degC",
       "category": "Reservoir",
@@ -916,12 +916,12 @@
       "type": "integer",
       "units": null,
       "category": "Well Bores",
-      "default": 1,
+      "default": 0,
       "minimum": 0,
       "maximum": 100
     },
     "Multilaterals Cased": {
-      "description": "",
+      "description": "If set to True, casing & cementing are assumed to comprise 50% of drilling costs (doubling cost compared to uncased).",
       "type": "boolean",
       "units": null,
       "category": "Well Bores",

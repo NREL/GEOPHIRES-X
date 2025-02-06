@@ -676,4 +676,6 @@ class EconomicsS_DAC_GT(Economics.Economics):
         #                                              (self.CarbonExtractedAnnually.value[i] * model.economics.CarbonPrice.value[i]))
 #            if i > 0:
 #                model.economics.CarbonCummCashFlow.value[i] = model.economics.CarbonCummCashFlow.value[i - 1] + model.economics.CarbonRevenue.value[i]
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+
+        self._calculate_derived_outputs(model)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

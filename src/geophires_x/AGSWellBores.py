@@ -515,6 +515,11 @@ class AGSWellBores(WellBores):
         # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values are set at the
         # last possible time
 
+        # Assume CLGS has 1 lateral by default (Non-CLGS default value is 0)
+        self.numnonverticalsections.value = 1
+        self.numnonverticalsections.ErrMessage = (f'assume default for Number of Nonvertical Wellbore Sections '
+                                                  f'({self.numnonverticalsections.value})')
+
         self.time_operation = self.ParameterDict[self.time_operation.Name] = floatParameter(
             "Closed Loop Calculation Start Year",
             DefaultValue=0.01,
@@ -561,39 +566,28 @@ class AGSWellBores(WellBores):
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the default parameters
         # if we call super, we don't need to deal with setting the parameters here, just deal with the special cases
-        # for the variables in this class because the call to the super.readparameters will set all the variables,
+        # for the variables in this class because the call to the super.read_parameters will set all the variables,
         # including the ones that are specific to this class
 
-        if len(model.InputParameters) > 0:
-            # loop through all the parameters that the user wishes to set, looking for parameters that match this object
-            for item in self.ParameterDict.items():
-                ParameterToModify = item[1]
-                key = ParameterToModify.Name.strip()
-                if key in model.InputParameters:
-                    ParameterReadIn = model.InputParameters[key]
-                    # just handle special cases for this class - the call to super set all the values,
-                    # including the value unique to this class
-        else:
-            model.logger.info("No parameters read because no content provided")
-
         # handle error checking and special cases:
+
         if model.reserv.numseg.value > 1:
-            msg = ('Warning: CLGS model can only handle a single layer gradient segment. '
+            msg = ('CLGS model can only handle a single layer gradient segment. '
                    'Number of Segments set to 1, Gradient set to Gradient[0], and Depth set to Reservoir Depth.')
-            print(msg)
+            print(f'Warning: {msg}')
             model.logger.warning(msg)
             model.reserv.numseg.value = 1
 
         if self.ninj.value > 0:
-            msg = ('Warning: CLGS model considers the only the production wellbore parameters. '
+            msg = ('CLGS model considers the only the production wellbore parameters. '
                    'Anything related to the injection wellbore is ignored.')
-            print(msg)
+            print(f'Warning: {msg}')
             model.logger.warning(msg)
 
         if self.nprod.value != 1:
-            msg = ('Warning: CLGS model considers the only a single production wellbore (coaxial or uloop). '
-                   'Number of production wellboreset set 1.')
-            print(msg)
+            msg = ('CLGS model considers the only a single production wellbore (coaxial or uloop). '
+                   'Number of production wellbores set to 1.')
+            print(f'Warning: {msg}')
             model.logger.warning(msg)
 
         # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time

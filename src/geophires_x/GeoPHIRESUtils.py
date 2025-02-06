@@ -320,7 +320,7 @@ def heat_capacity_water_J_per_kg_per_K(
     max_allowed_temp_degC = 600
     if not isinstance(Twater_degC, numbers.Real) or Twater_degC < 0 or Twater_degC > max_allowed_temp_degC:
         raise ValueError(
-            f'Invalid input for Twater_degC.'
+            f'Invalid input for Twater_degC. '
             f'Twater_degC must be a non-negative number and must be within the range of 0 to {max_allowed_temp_degC} '
             f'degrees Celsius. The input value was: {Twater_degC}'
         )

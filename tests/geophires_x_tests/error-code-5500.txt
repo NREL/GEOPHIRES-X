@@ -6,6 +6,7 @@ Number of Production Wells, 1
 Number of Injection Wells, 0
 All-in Vertical Drilling Costs, 1000
 All-in Nonvertical Drilling Costs, 1000
+Number of Multilateral Sections, 1
 Production Flow Rate per Well, 40
 Gradient 1, 60
 Total Nonvertical Length, 1000

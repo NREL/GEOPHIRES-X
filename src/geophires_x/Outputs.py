@@ -1803,7 +1803,7 @@ class Outputs:
                 f.write(NL)
                 if not model.economics.totalcapcost.Valid:
                     f.write(f'         Drilling and completion costs:                 {model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
-                    if round(econ.cost_one_production_well.value, 3) != round(econ.cost_one_injection_well.value, 3) and \
+                    if round(econ.cost_one_production_well.value, 2) != round(econ.cost_one_injection_well.value, 2) and \
                             model.economics.cost_one_injection_well.value != -1:
                         f.write(f'             Drilling and completion costs per production well:   {econ.cost_one_production_well.value:10.2f} ' + econ.cost_one_production_well.CurrentUnits.value + NL)
                         f.write(f'             Drilling and completion costs per injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)

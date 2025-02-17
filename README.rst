@@ -298,6 +298,9 @@ The capital and O&M costs for the different geothermal system components (explor
 well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
 correlations.
 
+For more information on the theoretical basis for GEOPHIRES see
+`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__.
+
 Parameters
 ----------
 
@@ -495,9 +498,6 @@ Extending GEOPHIRES-X
 
 Additional Documentation
 ------------------------
-
-Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__;
-accompanying `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
 Additional materials can be found in `/References </References>`__.
 

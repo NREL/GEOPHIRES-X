@@ -44,6 +44,11 @@ class GeophiresXClientTestCase(BaseTestCase):
         assert result.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'] == 5.39
         assert result.result['ENGINEERING PARAMETERS']['Power plant type']['value'] == 'Supercritical ORC'
         assert result.result['SUMMARY OF RESULTS']['End-Use Option']['value'] == 'Electricity'
+        assert (
+            'Ramey Model'
+            == result.result['RESERVOIR SIMULATION RESULTS']['Production Wellbore Heat Transmission Model']
+        )
+        assert result.result['RESERVOIR SIMULATION RESULTS']['Wellbore Heat Transmission Model'] is None
 
     def test_geophires_x_result_3(self):
         test_result_path = self._get_test_file_path('geophires-result_example-3.out')

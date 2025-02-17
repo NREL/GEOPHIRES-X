@@ -487,7 +487,7 @@ class GeophiresXResult:
         return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
     def _get_equal_sign_delimited_field(self, field_name):
-        metadata_marker = f'{field_name} = '
+        metadata_marker = f'  {field_name} = '
         matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
 
         if len(matching_lines) == 0:

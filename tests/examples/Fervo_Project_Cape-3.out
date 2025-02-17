@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-22
- Simulation Time:  10:48
- Calculation Time:      0.889 sec
+ GEOPHIRES Version: 3.7.12
+ Simulation Date: 2025-02-17
+ Simulation Time:  10:42
+ Calculation Time:      0.890 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -70,7 +70,7 @@ Simulation Metadata
       Number of fractures:                                  149.00
       Fracture separation:                                   30.00 meter
       Reservoir volume:                              88800000000 m**3
-      Reservoir impedance:                                    0.00 GPa.s/m**3
+      Reservoir impedance:                                  0.0010 GPa.s/m**3
       Reservoir density:                                   2800.00 kg/m**3
       Reservoir thermal conductivity:                         3.05 W/m/K
       Reservoir heat capacity:                              790.00 J/kg/K

@@ -56,9 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.7.6.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.7.13.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.7.6...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.7.13...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -298,6 +298,9 @@ The capital and O&M costs for the different geothermal system components (explor
 well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
 correlations.
 
+For more information on the theoretical basis for GEOPHIRES see
+`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__.
+
 Parameters
 ----------
 
@@ -495,9 +498,6 @@ Extending GEOPHIRES-X
 
 Additional Documentation
 ------------------------
-
-Theoretical basis for GEOPHIRES:  `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__;
-accompanying `GEOPHIRES v2.0 user manual <References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
 Additional materials can be found in `/References </References>`__.
 

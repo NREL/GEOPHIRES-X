@@ -143,10 +143,15 @@ class GeophiresXResult:
                 # TODO moved to power generation profile, parse from there
                 #  'Annual Thermal Drawdown (%/year)',
                 'Bottom-hole temperature',
+                'Well separation: fracture diameter',
                 'Well separation: fracture height',
-                'Fracture area',
                 'Fracture width',
+                'Fracture area',
+                'Number of fractures',
+                'Fracture separation',
+                # TODO reservoir volume note
                 'Reservoir volume',
+                'Reservoir impedance',
                 'Reservoir hydrostatic pressure',
                 'Average reservoir pressure',
                 'Plant outlet pressure',

@@ -749,8 +749,8 @@ class WellBores:
             CurrentUnits=LengthUnit.INCHES,
             Required=True,
             ErrMessage="assume default injection well diameter (8 inch)",
-            ToolTipText="Inner diameter of production wellbore (assumed constant along the wellbore) to calculate \
-            frictional pressure drop and wellbore heat transmission with Rameys model"
+            ToolTipText="Inner diameter of production wellbore (assumed constant along the wellbore) to calculate "
+                        "frictional pressure drop and wellbore heat transmission with Rameys model"
         )
         self.rameyoptionprod = self.ParameterDict[self.rameyoptionprod.Name] = boolParameter(
             "Ramey Production Wellbore Model",
@@ -758,8 +758,8 @@ class WellBores:
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default production wellbore model (Ramey model active)",
-            ToolTipText="Select whether to use Rameys model to estimate the geofluid temperature drop in the \
-            production wells"
+            ToolTipText="Select whether to use Rameys model to estimate the geofluid temperature drop in the "
+                        "production wells"
         )
         self.tempdropprod = self.ParameterDict[self.tempdropprod.Name] = floatParameter(
             "Production Wellbore Temperature Drop",
@@ -803,9 +803,9 @@ class WellBores:
             PreferredUnits=ImpedanceUnit.GPASPERM3,
             CurrentUnits=ImpedanceUnit.GPASPERM3,
             ErrMessage="assume default reservoir impedance (0.1 GPa*s/m^3)",
-            ToolTipText="Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well \
-            is in hydraulic communication with the production well, this parameter specifies the overall pressure drop \
-            in the reservoir between injection well and production well (see docs)"
+            ToolTipText="Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well "
+                        "is in hydraulic communication with the production well, this parameter specifies the overall "
+                        "pressure drop in the reservoir between injection well and production well (see docs)"
         )
         self.wellsep = self.ParameterDict[self.wellsep.Name] = floatParameter(
             "Well Separation",
@@ -839,8 +839,8 @@ class WellBores:
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
             ErrMessage="calculate reservoir hydrostatic pressure using built-in correlation",
-            ToolTipText="Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified \
-            Xie-Bloomfield-Shook equation (DOE, 2016)."
+            ToolTipText="Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified "
+                        "Xie-Bloomfield-Shook equation (DOE, 2016)."
         )
         self.ppwellhead = self.ParameterDict[self.ppwellhead.Name] = floatParameter(
             "Production Wellhead Pressure",
@@ -862,8 +862,8 @@ class WellBores:
             PreferredUnits=InjectivityIndexUnit.KGPERSECPERBAR,
             CurrentUnits=InjectivityIndexUnit.KGPERSECPERBAR,
             ErrMessage="assume default injectivity index (10 kg/s/bar)",
-            ToolTipText="Injectivity index defined as ratio of injection well flow rate over injection well outflow \
-            pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure)."
+            ToolTipText="Injectivity index defined as ratio of injection well flow rate over injection well outflow "
+                        "pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure)."
         )
         self.PI = self.ParameterDict[self.PI.Name] = floatParameter(
             "Productivity Index",
@@ -874,8 +874,8 @@ class WellBores:
             PreferredUnits=ProductivityIndexUnit.KGPERSECPERBAR,
             CurrentUnits=ProductivityIndexUnit.KGPERSECPERBAR,
             ErrMessage="assume default productivity index (10 kg/s/bar)",
-            ToolTipText="Productivity index defined as ratio of production well flow rate over production well inflow \
-            pressure drop (see docs)"
+            ToolTipText="Productivity index defined as ratio of production well flow rate over production well inflow "
+                        "pressure drop (see docs)"
         )
         self.maxdrawdown = self.ParameterDict[self.maxdrawdown.Name] = floatParameter(
             "Maximum Drawdown",
@@ -886,10 +886,10 @@ class WellBores:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default maximum drawdown (1)",
-            ToolTipText="Maximum allowable thermal drawdown before redrilling of all wells into new reservoir \
-            (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that \
-            all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of \
-            its initial temperature"
+            ToolTipText="Maximum allowable thermal drawdown before redrilling of all wells into new reservoir "
+                        "(most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 "
+                        "means that all wells are redrilled after the production temperature (at the wellhead) has "
+                        "dropped by 20% of its initial temperature"
         )
         self.IsAGS = self.ParameterDict[self.IsAGS.Name] = boolParameter(
             "Is AGS",
@@ -946,7 +946,8 @@ class WellBores:
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL,
             Required=False,
-            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir initial pressure",
+            ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir initial "
+                       "pressure",
             ToolTipText="enter the depth of the injection reservoir initial pressure (use lithostatic pressure)"
         )
         self.injection_reservoir_inflation_rate = self.ParameterDict[self.injection_reservoir_inflation_rate.Name] = floatParameter(
@@ -956,7 +957,8 @@ class WellBores:
             CurrentUnits=Inflation_RateUnit.KPASCALPERYEAR,
             Required=False,
             ErrMessage="assume there is not an injection reservoir, so there is no injection reservoir inflation rate",
-            ToolTipText="enter the rate at which the pressure increases per year in the injection reservoir (1000 kPa/yr)"
+            ToolTipText="enter the rate at which the pressure increases per year in the injection reservoir "
+                        "(1000 kPa/yr)"
         )
         # This is a alias for "Well Geometry Configuration" - putting it here for backwards compatibility
         self.Configuration = self.ParameterDict[self.Configuration.Name] = intParameter(

@@ -621,7 +621,7 @@
       "maximum": 30.0
     },
     "Ramey Production Wellbore Model": {
-      "description": "Select whether to use Rameys model to estimate the geofluid temperature drop in the             production wells",
+      "description": "Select whether to use Rameys model to estimate the geofluid temperature drop in the production wells",
       "type": "boolean",
       "units": null,
       "category": "Well Bores",
@@ -684,7 +684,7 @@
       "maximum": 200.0
     },
     "Reservoir Hydrostatic Pressure": {
-      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified             Xie-Bloomfield-Shook equation (DOE, 2016).",
+      "description": "Reservoir hydrostatic far-field pressure.  Default value is calculated with built-in modified Xie-Bloomfield-Shook equation (DOE, 2016).",
       "type": "number",
       "units": "kPa",
       "category": "Well Bores",
@@ -702,7 +702,7 @@
       "maximum": 10000.0
     },
     "Injectivity Index": {
-      "description": "Injectivity index defined as ratio of injection well flow rate over injection well outflow             pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure).",
+      "description": "Injectivity index defined as ratio of injection well flow rate over injection well outflow pressure drop (flowing bottom hole pressure - hydrostatic reservoir pressure).",
       "type": "number",
       "units": "kg/sec/bar",
       "category": "Well Bores",
@@ -711,7 +711,7 @@
       "maximum": 10000.0
     },
     "Productivity Index": {
-      "description": "Productivity index defined as ratio of production well flow rate over production well inflow             pressure drop (see docs)",
+      "description": "Productivity index defined as ratio of production well flow rate over production well inflow pressure drop (see docs)",
       "type": "number",
       "units": "kg/sec/bar",
       "category": "Well Bores",
@@ -720,7 +720,7 @@
       "maximum": 10000.0
     },
     "Maximum Drawdown": {
-      "description": "Maximum allowable thermal drawdown before redrilling of all wells into new reservoir             (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that             all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of             its initial temperature",
+      "description": "Maximum allowable thermal drawdown before redrilling of all wells into new reservoir (most applicable to EGS-type reservoirs with heat farming strategies). E.g. a value of 0.2 means that all wells are redrilled after the production temperature (at the wellhead) has dropped by 20% of its initial temperature",
       "type": "number",
       "units": "",
       "category": "Well Bores",

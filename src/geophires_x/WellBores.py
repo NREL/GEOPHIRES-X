@@ -796,7 +796,11 @@ class WellBores:
         )
         self.impedance = self.ParameterDict[self.impedance.Name] = floatParameter(
             "Reservoir Impedance",
+
+            # Note default/input value units are converted as a special case in read_parameters; see
+            # https://github.com/NREL/GEOPHIRES-X/blob/d51eb8d1dc8b21c7a79c4d35f296d740347658e0/src/geophires_x/WellBores.py#L1280-L1282
             DefaultValue=1000.0,
+
             Min=1E-4,
             Max=1E4,
             UnitType=Units.IMPEDANCE,
@@ -1277,7 +1281,8 @@ class WellBores:
                     # impedance: impedance per well pair (input as GPa*s/m^3 and converted to KPa/kg/s
                     # (assuming 1000 for density; density will be corrected for later))
                     elif ParameterToModify.Name == "Reservoir Impedance":
-                        # shift it by a constant to make the units right, per line 619 of GEOPHIRES 2
+                        # shift it by a constant to make the units right, per line 619 of GEOPHIRES 2:
+                        # https://github.com/NREL/GEOPHIRES-v2/blob/08485b98ae02aeb7a5acd972f906b2ea81ae2647/GEOPHIRESv2.py#L610-L619
                         self.impedance.value = self.impedance.value * (1E6 / 1E3)
                         self.impedancemodelused.value = True
                         if self.impedance.Provided is False:

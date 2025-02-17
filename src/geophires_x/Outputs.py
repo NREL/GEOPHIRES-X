@@ -1743,7 +1743,7 @@ class Outputs:
                         f.write(f'      Fracture separation:                              {model.reserv.fracsepcalc.value:10.2f} ' + model.reserv.fracsep.CurrentUnits.value + NL)
                     f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} ' + model.reserv.resvol.CurrentUnits.value + NL)
                     if model.wellbores.impedancemodelused.value:
-                        f.write(f'      Reservoir impedance:                              {model.wellbores.impedance.value/1000:10.2f} ' + model.wellbores.impedance.CurrentUnits.value + NL)
+                        f.write(f'      Reservoir impedance:                              {model.wellbores.impedance.value/1000:10.4f} {model.wellbores.impedance.CurrentUnits.value}\n')
                     else:
                         if model.wellbores.overpressure_percentage.Provided:
                             # write the reservoir pressure as an average in the overpressure case

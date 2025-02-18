@@ -584,6 +584,42 @@
       "minimum": null,
       "maximum": null
     },
+    "TOUGH2 Executable Path": {
+      "description": "",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir",
+      "default": "xt2_eos1.exe",
+      "minimum": null,
+      "maximum": null
+    },
+    "TOUGH2 Model/File Name": {
+      "description": "File name of reservoir output in case reservoir model 5 is selected",
+      "type": "string",
+      "units": null,
+      "category": "Reservoir",
+      "default": null,
+      "minimum": null,
+      "maximum": null
+    },
+    "Reservoir Thickness": {
+      "description": "Reservoir thickness for built-in TOUGH2 doublet reservoir model",
+      "type": "number",
+      "units": "meter",
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 10,
+      "maximum": 10000
+    },
+    "Reservoir Width": {
+      "description": "Reservoir width for built-in TOUGH2 doublet reservoir model",
+      "type": "number",
+      "units": "meter",
+      "category": "Reservoir",
+      "default": 0.0,
+      "minimum": 10,
+      "maximum": 10000
+    },
     "Number of Production Wells": {
       "description": "Number of (identical) production wells",
       "type": "integer",

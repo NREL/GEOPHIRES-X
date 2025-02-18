@@ -27,6 +27,7 @@ from geophires_x.SUTRAEconomics import SUTRAEconomics
 from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
+from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir
 from hip_ra_x.hip_ra_x import HIP_RA_X
 
 
@@ -60,6 +61,7 @@ class GeophiresXSchemaGenerator:
             (CylindricalReservoir(dummy_model), 'Reservoir'),
             (SBTReservoir(dummy_model), 'Reservoir'),
             (SUTRAReservoir(dummy_model), 'Reservoir'),
+            (TOUGH2Reservoir(dummy_model), 'Reservoir'),
             (dummy_model.wellbores, 'Well Bores'),
             (AGSWellBores(dummy_model), 'Well Bores'),
             (SBTWellbores(dummy_model), 'Well Bores'),

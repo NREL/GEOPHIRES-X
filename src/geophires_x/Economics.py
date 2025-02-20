@@ -1541,7 +1541,7 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )  # $/MMBTU
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",
+            Name="O&M Surface Plant costs", # FIXME wrong name - should be Stimulation Costs
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS

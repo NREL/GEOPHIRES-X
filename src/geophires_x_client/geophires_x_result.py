@@ -143,10 +143,15 @@ class GeophiresXResult:
                 # TODO moved to power generation profile, parse from there
                 #  'Annual Thermal Drawdown (%/year)',
                 'Bottom-hole temperature',
+                'Well separation: fracture diameter',
                 'Well separation: fracture height',
-                'Fracture area',
                 'Fracture width',
+                'Fracture area',
+                'Number of fractures',
+                'Fracture separation',
+                # TODO reservoir volume note
                 'Reservoir volume',
+                'Reservoir impedance',
                 'Reservoir hydrostatic pressure',
                 'Average reservoir pressure',
                 'Plant outlet pressure',
@@ -166,10 +171,16 @@ class GeophiresXResult:
                 'Initial Production Temperature',
                 'Average Reservoir Heat Extraction',
                 _EqualSignDelimitedField('Production Wellbore Heat Transmission Model'),
+                _EqualSignDelimitedField('Wellbore Heat Transmission Model'),
                 'Average Production Well Temperature Drop',
+                'Total Average Pressure Drop',
+                'Average Injection Well Pressure Drop',
+                'Average Production Pressure',  # AGS
+                'Average Reservoir Pressure Drop',
+                'Average Production Well Pressure Drop',
+                'Average Buoyancy Pressure Drop',
                 'Average Injection Well Pump Pressure Drop',
                 'Average Production Well Pump Pressure Drop',
-                'Average Production Pressure',
                 'Average Heat Production',
                 'First Year Heat Production',
                 'Average Net Electricity Production',
@@ -187,7 +198,6 @@ class GeophiresXResult:
                 'Average Annual Heat Supplied',
                 'Minimum Annual Heat Supplied',
                 'Average Round-Trip Efficiency',
-                'Total Average Pressure Drop',
             ],
             'CAPITAL COSTS (M$)': [
                 'Drilling and completion costs',
@@ -477,7 +487,7 @@ class GeophiresXResult:
         return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
     def _get_equal_sign_delimited_field(self, field_name):
-        metadata_marker = f'{field_name} = '
+        metadata_marker = f'  {field_name} = '
         matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
 
         if len(matching_lines) == 0:

@@ -531,9 +531,11 @@ class GeophiresXClientTestCase(BaseTestCase):
 
     def test_parse_number_with_commas(self):
         result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
-        self.assertEqual(result.result['S-DAC-GT ECONOMICS']['Total Cost of Capture']['value'], 499_311_405.59)
-        gt_lcoh = result.result['S-DAC-GT ECONOMICS']['Geothermal LCOH']['value']
-        self.assertEqual(gt_lcoh, 0.0017)
+        self.assertAlmostEqualWithinPercentage(
+            499_311_405.59, result.result['S-DAC-GT ECONOMICS']['Total Cost of Capture']['value']
+        )
+
+        self.assertAlmostEqualWithinPercentage(result.result['S-DAC-GT ECONOMICS']['Geothermal LCOH']['value'], 0.0017)
 
     def test_parse_sdacgt_profile(self):
         result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))

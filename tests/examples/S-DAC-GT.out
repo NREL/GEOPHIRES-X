@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-22
- Simulation Time:  10:48
- Calculation Time:      0.107 sec
+ GEOPHIRES Version: 3.7.13
+ Simulation Date: 2025-02-27
+ Simulation Time:  09:29
+ Calculation Time:      0.099 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -250,18 +250,18 @@ ________________________________________________________________________________
 
 
       S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)
-      Using grid-based electricity only:     387.69 USD/tonne
-      Using natural gas only:                312.00 USD/tonne
-      Using geothermal energy only:          288.87 USD/tonne
+      LCOD Using grid-based electricity only:     387.69 USD/tonne
+      LCOD Using natural gas only:                312.00 USD/tonne
+      LCOD Using geothermal energy only:          288.87 USD/tonne
 
       S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)
-      Using grid-based electricity only:      94.52%
-      Using natural gas only:                 64.85%
-      Using geothermal energy only:           36.91%
+      CO2 Intensity Using grid-based electricity only:      94.52 %
+      CO2 Intensity Using natural gas only:                 64.85 %
+      CO2 Intensity Using geothermal energy only:           36.91 %
 
       Geothermal LCOH:                         0.0017 USD/kWh
-      Geothermal Ratio (electricity vs heat):   20.7259%
-      Percent Energy Devoted To Process:    50.0000%
+      Geothermal Ratio (electricity vs heat):   20.7259 %
+      Percent Energy Devoted To Process:    50.0000 %
 
       Total Tonnes of CO2 Captured:      2,246,284.10 tonne
       Total Cost of Capture:             499,311,405.59 USD

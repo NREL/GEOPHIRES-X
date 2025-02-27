@@ -27,35 +27,41 @@ class OutputsS_DAC_GT(Outputs):
                 sdac_results: list[OutputTableItem] = []
                 f.write(NL)
                 f.write(NL)
-                f.write("                            ***S_DAC_GT ECONOMICS***" + NL)
+                f.write("                            ***S_DAC_GT ECONOMICS***\n")
                 f.write(NL)
                 f.write(NL)
-                f.write(f"      S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)" + NL)
+
+                msdac = model.sdacgteconomics
+
+                f.write(f"      S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)\n")
                 sdac_results.append(OutputTableItem('S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)'))
-                f.write(f"      Using grid-based electricity only: {model.sdacgteconomics.LCOD_elec.value:10.2f} " + model.sdacgteconomics.LCOD_elec.PreferredUnits.value + NL)
-                sdac_results.append(OutputTableItem('Using grid-based electricity only', '{0:10.2f}'.format(model.sdacgteconomics.LCOD_elec.value), model.sdacgteconomics.LCOD_elec.PreferredUnits.value))
-                f.write(f"      Using natural gas only:            {model.sdacgteconomics.LCOD_ng.value:10.2f} " + model.sdacgteconomics.LCOD_ng.PreferredUnits.value + NL)
-                sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(model.sdacgteconomics.LCOD_ng.value), model.sdacgteconomics.LCOD_ng.PreferredUnits.value))
-                f.write(f"      Using geothermal energy only:      {model.sdacgteconomics.LCOD_geo.value:10.2f} " + model.sdacgteconomics.LCOD_geo.PreferredUnits.value + NL + NL)
-                sdac_results.append(OutputTableItem('Using geothermal energy only', '{0:10.2f}'.format(model.sdacgteconomics.LCOD_geo.value), model.sdacgteconomics.LCOD_geo.PreferredUnits.value))
-                f.write(f"      S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)" + NL)
+                lcod_prefix = 'LCOD'
+                f.write(f"      {lcod_prefix} Using grid-based electricity only: {model.sdacgteconomics.LCOD_elec.value:10.2f} {msdac.LCOD_elec.PreferredUnits.value}\n")
+                sdac_results.append(OutputTableItem(f'Using grid-based electricity only', '{0:10.2f}'.format(msdac.LCOD_elec.value), msdac.LCOD_elec.PreferredUnits.value))
+                f.write(f"      {lcod_prefix} Using natural gas only:            {model.sdacgteconomics.LCOD_ng.value:10.2f} {msdac.LCOD_ng.PreferredUnits.value}\n")
+                sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(model.sdacgteconomics.LCOD_ng.value), msdac.LCOD_ng.PreferredUnits.value))
+                f.write(f"      {lcod_prefix} Using geothermal energy only:      {model.sdacgteconomics.LCOD_geo.value:10.2f} {msdac.LCOD_geo.PreferredUnits.value}\n\n")
+                sdac_results.append(OutputTableItem(f'Using geothermal energy only', '{0:10.2f}'.format(msdac.LCOD_geo.value), msdac.LCOD_geo.PreferredUnits.value))
+
+                f.write(f"      S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)\n")
                 sdac_results.append(OutputTableItem('S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)'))
-                f.write(f"      Using grid-based electricity only: {model.sdacgteconomics.CO2total_elec.value*100.0:10.2f}%" + NL)
-                sdac_results.append(OutputTableItem('Using grid-based electricity only', '{0:10.2f}'.format(model.sdacgteconomics.CO2total_elec.value*100.0), '%'))
-                f.write(f"      Using natural gas only:            {model.sdacgteconomics.CO2total_ng.value*100:10.2f}%" + NL)
-                sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(model.sdacgteconomics.CO2total_ng.value*100.0), '%'))
-                f.write(f"      Using geothermal energy only:      {model.sdacgteconomics.CO2total_geo.value*100:10.2f}%" + NL + NL)
-                sdac_results.append(OutputTableItem('Using geothermal energy only', '{0:10.2f}'.format(model.sdacgteconomics.CO2total_geo.value*100.0), '%'))
-                f.write(f"      Geothermal LCOH:                     {model.sdacgteconomics.LCOH.value:10.4f} " + model.sdacgteconomics.LCOH.PreferredUnits.value + NL)
-                sdac_results.append(OutputTableItem('Geothermal LCOH', '{0:10.4f}'.format(model.sdacgteconomics.LCOH.value), model.sdacgteconomics.LCOH.PreferredUnits.value))
-                f.write(f"      Geothermal Ratio (electricity vs heat):{model.sdacgteconomics.percent_thermal_energy_going_to_heat.value*100:10.4f}%" + NL)
-                sdac_results.append(OutputTableItem('Geothermal Ratio (electricity vs heat)', '{0:10.4f}'.format(model.sdacgteconomics.percent_thermal_energy_going_to_heat.value*100.0), '%'))
-                f.write(f"      Percent Energy Devoted To Process: {model.sdacgteconomics.EnergySplit.value*100:10.4f}%" + NL + NL)
-                sdac_results.append(OutputTableItem('Percent Energy Devoted To Process', '{0:10.4f}'.format(model.sdacgteconomics.EnergySplit.value*100.0), '%'))
-                f.write(f"      Total Tonnes of CO2 Captured:      {model.sdacgteconomics.CarbonExtractedTotal.value:,.2f} " + model.sdacgteconomics.CarbonExtractedTotal.PreferredUnits.value + NL)
-                sdac_results.append(OutputTableItem('Total Tonnes of CO2 Captured', '{0:,.2f}'.format(model.sdacgteconomics.CarbonExtractedTotal.value), model.sdacgteconomics.CarbonExtractedTotal.PreferredUnits.value))
-                f.write(f"      Total Cost of Capture:             {model.sdacgteconomics.S_DAC_GTCummCashFlow.value[len(model.sdacgteconomics.S_DAC_GTCummCashFlow.value)-1]:,.2f} " + model.sdacgteconomics.S_DAC_GTCummCashFlow.PreferredUnits.value + NL)
-                sdac_results.append(OutputTableItem('Total Cost of Capture', '{0:,.2f}'.format(model.sdacgteconomics.S_DAC_GTCummCashFlow.value[len(model.sdacgteconomics.S_DAC_GTCummCashFlow.value)-1]), model.sdacgteconomics.S_DAC_GTCummCashFlow.PreferredUnits.value))
+                co2i_prefix = 'CO2 Intensity'
+                f.write(f"      {co2i_prefix} Using grid-based electricity only: {msdac.CO2total_elec.value*100.0:10.2f} %\n")  # TODO CurrentUnits
+                sdac_results.append(OutputTableItem('Using grid-based electricity only', '{0:10.2f}'.format(msdac.CO2total_elec.value*100.0), '%'))
+                f.write(f"      {co2i_prefix} Using natural gas only:            {msdac.CO2total_ng.value*100:10.2f} %\n")  # TODO CurrentUnits
+                sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(msdac.CO2total_ng.value*100.0), '%'))
+                f.write(f"      {co2i_prefix} Using geothermal energy only:      {msdac.CO2total_geo.value*100:10.2f} %\n\n") # TODO CurrentUnits
+                sdac_results.append(OutputTableItem('Using geothermal energy only', '{0:10.2f}'.format(msdac.CO2total_geo.value*100.0), '%'))
+                f.write(f"      Geothermal LCOH:                     {msdac.LCOH.value:10.4f} {msdac.LCOH.PreferredUnits.value}\n")
+                sdac_results.append(OutputTableItem('Geothermal LCOH', '{0:10.4f}'.format(msdac.LCOH.value), msdac.LCOH.PreferredUnits.value))
+                f.write(f"      Geothermal Ratio (electricity vs heat):{msdac.percent_thermal_energy_going_to_heat.value*100:10.4f} %\n")  # TODO CurrentUnits
+                sdac_results.append(OutputTableItem('Geothermal Ratio (electricity vs heat)', '{0:10.4f}'.format(msdac.percent_thermal_energy_going_to_heat.value*100.0), '%'))
+                f.write(f"      Percent Energy Devoted To Process: {msdac.EnergySplit.value*100:10.4f} %\n\n")  # TODO CurrentUnits
+                sdac_results.append(OutputTableItem('Percent Energy Devoted To Process', '{0:10.4f}'.format(msdac.EnergySplit.value*100.0), '%'))
+                f.write(f"      Total Tonnes of CO2 Captured:      {msdac.CarbonExtractedTotal.value:,.2f} {msdac.CarbonExtractedTotal.PreferredUnits.value}\n")
+                sdac_results.append(OutputTableItem('Total Tonnes of CO2 Captured', '{0:,.2f}'.format(msdac.CarbonExtractedTotal.value), msdac.CarbonExtractedTotal.PreferredUnits.value))
+                f.write(f"      Total Cost of Capture:             {msdac.S_DAC_GTCummCashFlow.value[len(msdac.S_DAC_GTCummCashFlow.value)-1]:,.2f} {msdac.S_DAC_GTCummCashFlow.PreferredUnits.value}\n")
+                sdac_results.append(OutputTableItem('Total Cost of Capture', '{0:,.2f}'.format(msdac.S_DAC_GTCummCashFlow.value[len(msdac.S_DAC_GTCummCashFlow.value)-1]), msdac.S_DAC_GTCummCashFlow.PreferredUnits.value))
                 f.write(NL)
 
                 # Build the data frame to hold the SDAC result profile

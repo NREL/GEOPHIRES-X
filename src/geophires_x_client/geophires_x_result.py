@@ -98,6 +98,18 @@ class GeophiresXResult:
                 'Project MOIC           (including carbon credit)',
                 'Project Payback Period (including carbon credit)',
             ],
+            'S_DAC_GT ECONOMICS': [
+                'LCOD Using grid-based electricity only',
+                'LCOD Using natural gas only',
+                'LCOD Using geothermal energy only',
+                'CO2 Intensity Using grid-based electricity only',
+                'CO2 Intensity Using natural gas only',
+                'CO2 Intensity Using geothermal energy only',
+                'Geothermal LCOH',
+                'Geothermal Ratio (electricity vs heat)',
+                'Percent Energy Devoted To Process',
+                'Total Cost of Capture',
+            ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
                 'Number of Injection Wells',

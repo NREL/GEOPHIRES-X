@@ -27,7 +27,7 @@ class OutputsS_DAC_GT(Outputs):
                 sdac_results: list[OutputTableItem] = []
                 f.write(NL)
                 f.write(NL)
-                f.write("                            ***S_DAC_GT ECONOMICS***\n")
+                f.write("                            ***S-DAC-GT ECONOMICS***\n")
                 f.write(NL)
                 f.write(NL)
 
@@ -83,9 +83,9 @@ class OutputsS_DAC_GT(Outputs):
 
                 f.write(NL)
                 f.write("                **********************" + NL)
-                f.write("                *  S_DAC_GT PROFILE  *" + NL)
+                f.write("                *  S-DAC-GT PROFILE  *" + NL)
                 f.write("                **********************" + NL)
-                f.write("Year       Carbon      Cumm. Carbon     S_DAC_GT           S_DAC_GT Cumm.      Cumm. Cost" + NL)
+                f.write("Year       Carbon      Cumm. Carbon     S-DAC-GT           S-DAC-GT Cumm.      Cumm. Cost" + NL)
                 f.write("Since      Captured     Captured       Annual Cost          Cash Flow        Cost Per Tonne" + NL)
                 f.write("Start     ("+model.sdacgteconomics.CarbonExtractedAnnually.PreferredUnits.value +
                                               ")   ("+model.sdacgteconomics.S_DAC_GTCummCarbonExtracted.PreferredUnits.value +

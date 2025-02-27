@@ -98,7 +98,8 @@ class GeophiresXResult:
                 'Project MOIC           (including carbon credit)',
                 'Project Payback Period (including carbon credit)',
             ],
-            'S_DAC_GT ECONOMICS': [
+            'S-DAC-GT ECONOMICS': [
+                # TODO S-DAC-GT Report sub-titles as string value fields
                 'LCOD Using grid-based electricity only',
                 'LCOD Using natural gas only',
                 'LCOD Using geothermal energy only',
@@ -373,7 +374,7 @@ class GeophiresXResult:
 
         sdacgt_profile = self._get_sdacgt_profile()
         if sdacgt_profile is not None:
-            self.result['S_DAC_GT PROFILE'] = sdacgt_profile
+            self.result['S-DAC-GT PROFILE'] = sdacgt_profile
 
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
@@ -606,13 +607,13 @@ class GeophiresXResult:
                 'Year Since Start',
                 'Carbon Captured (tonne/yr)',
                 'Cumm. Carbon Captured (tonne)',
-                'S_DAC_GT Annual Cost (USD/yr)',
-                'S_DAC_GT Cumm. Cash Flow (USD)',
+                'S-DAC-GT Annual Cost (USD/yr)',
+                'S-DAC-GT Cumm. Cash Flow (USD)',
                 'Cumm. Cost Per Tonne (USD/tonne)',
             ]
 
         try:
-            lines = self._get_profile_lines('S_DAC_GT PROFILE')
+            lines = self._get_profile_lines('S-DAC-GT PROFILE')
             profile = [extract_table_header(lines)]
             profile.extend(self._extract_addons_style_table_data(lines))
             return profile

@@ -531,11 +531,11 @@ class GeophiresXClientTestCase(BaseTestCase):
 
     def test_parse_number_with_commas(self):
         result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
-        self.assertEqual(result.result['S_DAC_GT ECONOMICS']['Total Cost of Capture']['value'], 499_311_405.59)
+        self.assertEqual(result.result['S-DAC-GT ECONOMICS']['Total Cost of Capture']['value'], 499_311_405.59)
 
     def test_parse_sdacgt_profile(self):
         result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
-        sdacgt_profile = result.result['S_DAC_GT PROFILE']
+        sdacgt_profile = result.result['S-DAC-GT PROFILE']
         self.assertIsNotNone(sdacgt_profile)
         self.assertEqual(
             sdacgt_profile[0],
@@ -543,8 +543,8 @@ class GeophiresXClientTestCase(BaseTestCase):
                 'Year Since Start',
                 'Carbon Captured (tonne/yr)',
                 'Cumm. Carbon Captured (tonne)',
-                'S_DAC_GT Annual Cost (USD/yr)',
-                'S_DAC_GT Cumm. Cash Flow (USD)',
+                'S-DAC-GT Annual Cost (USD/yr)',
+                'S-DAC-GT Cumm. Cash Flow (USD)',
                 'Cumm. Cost Per Tonne (USD/tonne)',
             ],
         )

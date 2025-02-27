@@ -371,6 +371,10 @@ class GeophiresXResult:
         if ccus_profile is not None:
             self.result['CCUS PROFILE'] = ccus_profile
 
+        sdacgt_profile = self._get_sdacgt_profile()
+        if sdacgt_profile is not None:
+            self.result['S_DAC_GT PROFILE'] = sdacgt_profile
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -593,6 +597,27 @@ class GeophiresXResult:
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get extended economic profile: {e}')
+            return None
+
+    def _get_sdacgt_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Carbon Captured (tonne/yr)',
+                'Cumm. Carbon Captured (tonne)',
+                'S_DAC_GT Annual Cost (USD/yr)',
+                'S_DAC_GT Cumm. Cash Flow (USD)',
+                'Cumm. Cost Per Tonne (USD/tonne)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('S_DAC_GT PROFILE')
+            profile = [extract_table_header(lines)]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get S-DAC-GT profile: {e}')
             return None
 
     def _get_ccus_profile(self):

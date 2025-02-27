@@ -99,11 +99,13 @@ class OutputsS_DAC_GT(Outputs):
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
+            msg = "Error: GEOPHIRES failed to Failed to write the output file. Exiting...Line %i" % tb.tb_lineno
+
             print(str(ex))
-            print("Error: GEOPHIRES failed to Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
+            print(msg)
             model.logger.critical(str(ex))
-            model.logger.critical("Error: GEOPHIRES failed to Failed to write the output file.  Exiting....Line %i" % tb.tb_lineno)
-            sys.exit()
+            model.logger.critical(msg)
+            raise RuntimeError(msg, e)
 
         model.logger.info(f'Complete {str(__class__)}: {__name__}')
 

@@ -36,21 +36,21 @@ class OutputsS_DAC_GT(Outputs):
                 f.write(f"      S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)\n")
                 sdac_results.append(OutputTableItem('S-DAC-GT Report: Levelized Cost of Direct Air Capture (LCOD)'))
                 lcod_prefix = 'LCOD'
-                f.write(f"      {lcod_prefix} Using grid-based electricity only: {model.sdacgteconomics.LCOD_elec.value:10.2f} {msdac.LCOD_elec.PreferredUnits.value}\n")
+                f.write(f"      {lcod_prefix} using grid-based electricity only: {model.sdacgteconomics.LCOD_elec.value:10.2f} {msdac.LCOD_elec.PreferredUnits.value}\n")
                 sdac_results.append(OutputTableItem(f'Using grid-based electricity only', '{0:10.2f}'.format(msdac.LCOD_elec.value), msdac.LCOD_elec.PreferredUnits.value))
-                f.write(f"      {lcod_prefix} Using natural gas only:            {model.sdacgteconomics.LCOD_ng.value:10.2f} {msdac.LCOD_ng.PreferredUnits.value}\n")
+                f.write(f"      {lcod_prefix} using natural gas only:            {model.sdacgteconomics.LCOD_ng.value:10.2f} {msdac.LCOD_ng.PreferredUnits.value}\n")
                 sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(model.sdacgteconomics.LCOD_ng.value), msdac.LCOD_ng.PreferredUnits.value))
-                f.write(f"      {lcod_prefix} Using geothermal energy only:      {model.sdacgteconomics.LCOD_geo.value:10.2f} {msdac.LCOD_geo.PreferredUnits.value}\n\n")
+                f.write(f"      {lcod_prefix} using geothermal energy only:      {model.sdacgteconomics.LCOD_geo.value:10.2f} {msdac.LCOD_geo.PreferredUnits.value}\n\n")
                 sdac_results.append(OutputTableItem(f'Using geothermal energy only', '{0:10.2f}'.format(msdac.LCOD_geo.value), msdac.LCOD_geo.PreferredUnits.value))
 
                 f.write(f"      S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)\n")
                 sdac_results.append(OutputTableItem('S-DAC-GT Report: CO2 Intensity of process (percent of CO2 mitigated that is emitted by S-DAC process)'))
                 co2i_prefix = 'CO2 Intensity'
-                f.write(f"      {co2i_prefix} Using grid-based electricity only: {msdac.CO2total_elec.value*100.0:10.2f} %\n")  # TODO CurrentUnits
+                f.write(f"      {co2i_prefix} using grid-based electricity only: {msdac.CO2total_elec.value*100.0:10.2f} %\n")  # TODO CurrentUnits
                 sdac_results.append(OutputTableItem('Using grid-based electricity only', '{0:10.2f}'.format(msdac.CO2total_elec.value*100.0), '%'))
-                f.write(f"      {co2i_prefix} Using natural gas only:            {msdac.CO2total_ng.value*100:10.2f} %\n")  # TODO CurrentUnits
+                f.write(f"      {co2i_prefix} using natural gas only:            {msdac.CO2total_ng.value*100:10.2f} %\n")  # TODO CurrentUnits
                 sdac_results.append(OutputTableItem('Using natural gas only', '{0:10.2f}'.format(msdac.CO2total_ng.value*100.0), '%'))
-                f.write(f"      {co2i_prefix} Using geothermal energy only:      {msdac.CO2total_geo.value*100:10.2f} %\n\n") # TODO CurrentUnits
+                f.write(f"      {co2i_prefix} using geothermal energy only:      {msdac.CO2total_geo.value*100:10.2f} %\n\n") # TODO CurrentUnits
                 sdac_results.append(OutputTableItem('Using geothermal energy only', '{0:10.2f}'.format(msdac.CO2total_geo.value*100.0), '%'))
                 f.write(f"      Geothermal LCOH:                     {msdac.LCOH.value:10.4f} {msdac.LCOH.PreferredUnits.value}\n")
                 sdac_results.append(OutputTableItem('Geothermal LCOH', '{0:10.4f}'.format(msdac.LCOH.value), msdac.LCOH.PreferredUnits.value))

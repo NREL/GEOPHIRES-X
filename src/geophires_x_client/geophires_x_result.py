@@ -100,12 +100,12 @@ class GeophiresXResult:
             ],
             'S-DAC-GT ECONOMICS': [
                 # TODO S-DAC-GT Report sub-titles as string value fields
-                'LCOD Using grid-based electricity only',
-                'LCOD Using natural gas only',
-                'LCOD Using geothermal energy only',
-                'CO2 Intensity Using grid-based electricity only',
-                'CO2 Intensity Using natural gas only',
-                'CO2 Intensity Using geothermal energy only',
+                'LCOD using grid-based electricity only',
+                'LCOD using natural gas only',
+                'LCOD using geothermal energy only',
+                'CO2 Intensity using grid-based electricity only',
+                'CO2 Intensity using natural gas only',
+                'CO2 Intensity using geothermal energy only',
                 'Geothermal LCOH',
                 'Geothermal Ratio (electricity vs heat)',
                 'Percent Energy Devoted To Process',

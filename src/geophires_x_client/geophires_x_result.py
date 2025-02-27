@@ -6,6 +6,7 @@ import re
 from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
+from typing import ClassVar
 
 from .common import _get_logger
 from .geophires_input_parameters import EndUseOption
@@ -542,27 +543,29 @@ class GeophiresXResult:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
+    _REVENUE_AND_CASHFLOW_PROFILE_HEADERS: ClassVar[list[str]] = [
+        'Year Since Start',
+        'Electricity Price (cents/kWh)',
+        'Electricity Ann. Rev. (MUSD/yr)',
+        'Electricity Cumm. Rev. (MUSD)',
+        'Heat Price (cents/kWh)',
+        'Heat Ann. Rev. (MUSD/yr)',
+        'Heat Cumm. Rev. (MUSD)',
+        'Cooling Price (cents/kWh)',
+        'Cooling Ann. Rev. (MUSD/yr)',
+        'Cooling Cumm. Rev. (MUSD)',
+        'Carbon Price (USD/tonne)',
+        'Carbon Ann. Rev. (MUSD/yr)',
+        'Carbon Cumm. Rev. (MUSD)',
+        'Project OPEX (MUSD/yr)',
+        'Project Net Rev. (MUSD/yr)',
+        'Project Net Cashflow (MUSD)',
+    ]
+
     def _get_revenue_and_cashflow_profile(self):
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
-            return [
-                'Year Since Start',
-                'Electricity Price (cents/kWh)',
-                'Electricity Ann. Rev. (MUSD/yr)',
-                'Electricity Cumm. Rev. (MUSD)',
-                'Heat Price (cents/kWh)',
-                'Heat Ann. Rev. (MUSD/yr)',
-                'Heat Cumm. Rev. (MUSD)',
-                'Cooling Price (cents/kWh)',
-                'Cooling Ann. Rev. (MUSD/yr)',
-                'Cooling Cumm. Rev. (MUSD)',
-                'Carbon Price (USD/tonne)',
-                'Carbon Ann. Rev. (MUSD/yr)',
-                'Carbon Cumm. Rev. (MUSD)',
-                'Project OPEX (MUSD/yr)',
-                'Project Net Rev. (MUSD/yr)',
-                'Project Net Cashflow (MUSD)',
-            ]
+            return GeophiresXResult._REVENUE_AND_CASHFLOW_PROFILE_HEADERS
 
         try:
             lines = self._get_profile_lines('REVENUE & CASHFLOW PROFILE')
@@ -622,11 +625,57 @@ class GeophiresXResult:
             return None
 
     def _get_ccus_profile(self):
-        """
-        FIXME TODO - transform from revenue & cashflow if present (CCUS profile replaced by revenue & cashflow
-            profile in 49ff3a1213ac778ed53120626807e9a680d1ddcf)
-        """
+        profile_legacy = self._get_ccus_profile_legacy()
+        if profile_legacy is not None:
+            return profile_legacy
 
+        revenue_and_cashflow_profile = self._get_revenue_and_cashflow_profile()
+        if revenue_and_cashflow_profile is None:
+            return None
+
+        carbon_price_field_name = 'Carbon Price (USD/tonne)'
+        headers = [
+            'Year Since Start',
+            # 'Carbon Avoided (pound)', # Present in legacy CCUS profile but not in Revenue & Cashflow
+            carbon_price_field_name,  # Legacy field name: 'CCUS Price (USD/lb)'
+            'Carbon Ann. Rev. (MUSD/yr)',  # Legacy field name:  'CCUS Revenue (MUSD/yr)'
+            # 'CCUS Annual Cash Flow (MUSD/yr)', # Present in legacy CCUS profile but not in Revenue & Cashflow
+            'Carbon Cumm. Rev. (MUSD)',  # # Legacy field name: 'CCUS Cumm. Cash Flow (MUSD)'
+            # 'Project Annual Cash Flow (MUSD/yr)',  # Present in legacy CCUS profile but not in Revenue & Cashflow
+            # 'Project Cumm. Cash Flow (MUSD)',  # Present in legacy CCUS profile but not in Revenue & Cashflow
+        ]
+
+        carbon_price_index = revenue_and_cashflow_profile[0].index(carbon_price_field_name)
+        has_ccus_profile_in_revenue_and_cashflow = (
+            len(revenue_and_cashflow_profile) > 1
+            and carbon_price_field_name in revenue_and_cashflow_profile[0]
+            # Treat all-zero values as not having CCUS profile
+            and any(it != 0 for it in [x[carbon_price_index] for x in revenue_and_cashflow_profile[1:]])
+        )
+
+        if not has_ccus_profile_in_revenue_and_cashflow:
+            return None
+
+        try:
+            profile = [headers]
+
+            headers_with_rcp_index = [
+                (header, GeophiresXResult._REVENUE_AND_CASHFLOW_PROFILE_HEADERS.index(header)) for header in headers
+            ]
+
+            for i in range(1, len(revenue_and_cashflow_profile)):
+                ccus_entry = []
+                for j in range(len(headers_with_rcp_index)):
+                    rcp_index = headers_with_rcp_index[j][1]
+                    ccus_entry.append(revenue_and_cashflow_profile[i][rcp_index])
+                profile.append(ccus_entry)
+
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get CCUS profile: {e}')
+            return None
+
+    def _get_ccus_profile_legacy(self):
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
             return [
@@ -646,7 +695,7 @@ class GeophiresXResult:
             profile.extend(self._extract_addons_style_table_data(lines))
             return profile
         except BaseException as e:
-            self._logger.debug(f'Failed to get CCUS profile: {e}')
+            self._logger.debug(f'Failed to get legacy CCUS profile: {e}')
             return None
 
     def _extract_addons_style_table_data(self, lines: list):

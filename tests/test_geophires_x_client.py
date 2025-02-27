@@ -346,9 +346,27 @@ class GeophiresXClientTestCase(BaseTestCase):
         )
 
     def test_ccus_profile(self):
-        test_result_path = self._get_test_file_path('result_with_ccus_profile.out')
+        result_example1 = GeophiresXResult(self._get_test_file_path('examples/example1.out'))
+        self.assertTrue('CCUS PROFILE' not in result_example1.result)
+
+        result_addons = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
+        ccus_profile = result_addons.result['CCUS PROFILE']
+        self.assertIsNotNone(ccus_profile)
+        self.assertListEqual(
+            ccus_profile[0],
+            ['Year Since Start', 'Carbon Price (USD/tonne)', 'Carbon Ann. Rev. (MUSD/yr)', 'Carbon Cumm. Rev. (MUSD)'],
+        )
+
+        self.assertListEqual(ccus_profile[1], [1, 0.0, 0.0, 0.0])
+
+        self.assertListEqual(ccus_profile[2], [2, 0.01, 0.51, 0.51])
+
+        self.assertListEqual(ccus_profile[30], [30, 0.1, 3.5, 72.36])
+
+    def test_ccus_profile_legacy(self):
+        test_result_path = self._get_test_file_path('result_with_ccus_profile_legacy.out')
         result = GeophiresXResult(test_result_path)
-        ccus_profile = result.result['CCUS PROFILE']
+        ccus_profile_legacy = result.result['CCUS PROFILE']
 
         self.assertListEqual(
             [
@@ -394,7 +412,7 @@ class GeophiresXClientTestCase(BaseTestCase):
                 [30, 8035085.158, 0.1, 0.8, 0.8, 16.45, 3.07, 44.31],
                 [31, 6703146.945, 0.1, 0.67, 0.67, 17.12, 2.7, 47.01],
             ],
-            ccus_profile,
+            ccus_profile_legacy,
         )
 
     def test_non_vertical_section_cost(self):

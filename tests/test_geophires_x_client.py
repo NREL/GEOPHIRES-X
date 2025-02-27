@@ -528,3 +528,7 @@ class GeophiresXClientTestCase(BaseTestCase):
     def test_parse_annualized_capital_costs(self):
         result = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
         self.assertIsNotNone(result.result['CAPITAL COSTS (M$)']['Annualized capital costs']['value'])
+
+    def test_parse_number_with_commas(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
+        self.assertEqual(result.result['S_DAC_GT ECONOMICS']['Total Cost of Capture']['value'], 499_311_405.59)

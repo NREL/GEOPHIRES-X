@@ -681,10 +681,11 @@ class GeophiresXResult:
         return data
 
     def _parse_number(self, number_str, field='string') -> int | float:
-        if number_str == 'N/A':
+        if number_str == 'N/A' or number_str is None:
             return None
 
         try:
+            number_str = number_str.replace(',', '')
             if '.' in number_str:
                 # TODO should probably ideally use decimal.Decimal to preserve precision,
                 #  i.e. 1.00 for USD instead of 1.0

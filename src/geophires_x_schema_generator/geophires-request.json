@@ -1956,7 +1956,7 @@
       "maximum": 100
     },
     "Ending Electricity Sale Price": {
-      "description": "",
+      "description": "The maximum price to which the electricity sale price can escalate. For example, if Starting Electricity Sale Price = 0.10 USD/kWh and Electricity Escalation Rate = 0.01 USD/kWh/yr: Electricity Price will reach 0.15 USD/kWh after 4 years of escalation. The price will then remain at 0.15 USD/kWh for the remaining years of the project lifetime. If the Ending Electricity Sale Price is not reached by escalation during the project lifetime, then the value will have no effect beyond allowing escalation to occur every year.",
       "type": "number",
       "units": "USD/kWh",
       "category": "Economics",

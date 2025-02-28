@@ -350,7 +350,7 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertTrue(GeophiresXResult.CARBON_REVENUE_PROFILE_NAME not in result_example1.result)
 
         result_addons = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
-        ccus_profile = result_addons.result['CCUS PROFILE']
+        ccus_profile = result_addons.result['CARBON REVENUE PROFILE']
         self.assertIsNotNone(ccus_profile)
         self.assertListEqual(
             ccus_profile[0],

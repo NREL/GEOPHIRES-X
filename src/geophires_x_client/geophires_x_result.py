@@ -343,7 +343,7 @@ class GeophiresXResult:
     ]
 
     CCUS_PROFILE_LEGACY_NAME: ClassVar[str] = 'CCUS PROFILE'
-    CARBON_REVENUE_PROFILE_NAME: ClassVar[str] = 'CCUS PROFILE'  # FIXME WIP change to 'CARBON REVENUE PROFILE'
+    CARBON_REVENUE_PROFILE_NAME: ClassVar[str] = 'CARBON REVENUE PROFILE'
 
     def __init__(self, output_file_path, logger_name=None):
         if logger_name is None:

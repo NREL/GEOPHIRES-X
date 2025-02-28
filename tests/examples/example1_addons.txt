@@ -89,8 +89,8 @@ Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 
-Annual License Etc, 0, -- FIXME TODO change to correct parameter name: "Annual License Fees Etc"
-Flat License Etc, 0, -- FIXME TODO change to correct parameter name: "One-time Flat License Fees Etc"
+Annual License Fees Etc, 0
+One-time Flat License Fees Etc, 0
 Other Incentives, 2.112
 Tax Relief Per Year, 2.212
 One-time Grants Etc,20.212

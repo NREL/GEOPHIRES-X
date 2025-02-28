@@ -2217,7 +2217,7 @@
       "maximum": 10000.0
     },
     "AddOn Nickname": {
-      "description": "If using multiple add-ons, suffix with a number e.g. 'AddOn Nickname 1', 'AddOn Nickname 2', etc.",
+      "description": "If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Nickname 1', 'AddOn Nickname 2', etc.",
       "type": "array",
       "units": null,
       "category": "Economics",
@@ -2226,7 +2226,7 @@
       "maximum": 1000.0
     },
     "AddOn CAPEX": {
-      "description": "If using multiple add-ons, suffix with a number e.g. 'AddOn CAPEX 1', 'AddOn CAPEX 2', etc.",
+      "description": "If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn CAPEX 1', 'AddOn CAPEX 2', etc.",
       "type": "array",
       "units": "MUSD",
       "category": "Economics",
@@ -2235,7 +2235,7 @@
       "maximum": 1000.0
     },
     "AddOn OPEX": {
-      "description": "Annual operating cost. If using multiple add-ons, suffix with a number e.g. 'AddOn OPEX 1', 'AddOn OPEX 2', etc.",
+      "description": "Annual operating cost. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn OPEX 1', 'AddOn OPEX 2', etc.",
       "type": "array",
       "units": "MUSD/yr",
       "category": "Economics",
@@ -2244,7 +2244,7 @@
       "maximum": 1000.0
     },
     "AddOn Electricity Gained": {
-      "description": "Annual electricity gained. If using multiple add-ons, suffix with a number e.g. 'AddOn Electricity Gained 1', 'AddOn Electricity Gained 2', etc.",
+      "description": "Annual electricity gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Electricity Gained 1', 'AddOn Electricity Gained 2', etc.",
       "type": "array",
       "units": "kW/yr",
       "category": "Economics",
@@ -2253,7 +2253,7 @@
       "maximum": 1000.0
     },
     "AddOn Heat Gained": {
-      "description": "Annual heat gained. If using multiple add-ons, suffix with a number e.g. 'AddOn Heat Gained 1', 'AddOn Heat Gained 2', etc.",
+      "description": "Annual heat gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Heat Gained 1', 'AddOn Heat Gained 2', etc.",
       "type": "array",
       "units": "kW/yr",
       "category": "Economics",
@@ -2262,7 +2262,7 @@
       "maximum": 1000.0
     },
     "AddOn Profit Gained": {
-      "description": "Annual profit gained. If using multiple add-ons, suffix with a number e.g. 'AddOn Profit Gained 1', 'AddOn Profit Gained 2', etc.",
+      "description": "Annual profit gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Profit Gained 1', 'AddOn Profit Gained 2', etc.",
       "type": "array",
       "units": "MUSD/yr",
       "category": "Economics",

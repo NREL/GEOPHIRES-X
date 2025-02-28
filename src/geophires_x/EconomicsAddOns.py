@@ -47,7 +47,9 @@ class EconomicsAddOns(Economics.Economics):
         self.MyPath = os.path.abspath(__file__)
 
         def multi_addon_tooltip_text(param_name: str) -> str:
-            return f'If using multiple add-ons, suffix with a number e.g. \'{param_name} 1\', \'{param_name} 2\', etc.'
+            return (f'If using multiple add-ons: either (1) specify this value as an array or '
+                    f'(2) use multiple parameters suffixed with a number '
+                    f'e.g. \'{param_name} 1\', \'{param_name} 2\', etc.')
 
         self.AddOnNickname = self.ParameterDict[self.AddOnNickname.Name] = listParameter(
             "AddOn Nickname",

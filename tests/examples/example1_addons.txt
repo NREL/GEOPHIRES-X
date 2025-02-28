@@ -1,4 +1,4 @@
-# Example 1 with Add-ons
+# Example 1 with Add-Ons
 
 # ***ADD-ONS PARAMETERS***
 # ************************

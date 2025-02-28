@@ -334,7 +334,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example1.txt <tests/examples/example1.txt>`__
      - `.out <tests/examples/example1.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1>`__
-   * - Example 1 with Addons
+   * - Example 1 with Add-Ons
      - `example1_addons.txt <tests/examples/example1_addons.txt>`__
      - `.out <tests/examples/example1_addons.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1_addons>`__

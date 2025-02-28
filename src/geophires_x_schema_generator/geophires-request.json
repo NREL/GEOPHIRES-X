@@ -1247,7 +1247,7 @@
       "description": "Number of years spent in construction (assumes whole years, no fractions)",
       "type": "integer",
       "units": null,
-      "category": "Economics",
+      "category": "Surface Plant",
       "default": 1,
       "minimum": 1,
       "maximum": 14
@@ -2215,51 +2215,6 @@
       "default": 3000.0,
       "minimum": 0.0,
       "maximum": 10000.0
-    },
-    "Do CCUS Calculations": {
-      "description": "Set to true if you want the CCUS economics calculations to be made",
-      "type": "boolean",
-      "units": null,
-      "category": "Economics",
-      "default": false,
-      "minimum": null,
-      "maximum": null
-    },
-    "Ending CCUS Credit Value": {
-      "description": "",
-      "type": "number",
-      "units": "USD/lb",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0,
-      "maximum": 1000
-    },
-    "CCUS Escalation Start Year": {
-      "description": "Number of years after start of project before start of CCUS incentives",
-      "type": "integer",
-      "units": "yr",
-      "category": "Economics",
-      "default": 0,
-      "minimum": 0,
-      "maximum": 100
-    },
-    "CCUS Escalation Rate Per Year": {
-      "description": "additional value per year of price after escalation starts",
-      "type": "number",
-      "units": "USD/mt",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0.0,
-      "maximum": 100.0
-    },
-    "Starting CCUS Credit Value": {
-      "description": "",
-      "type": "number",
-      "units": "USD/mt",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0,
-      "maximum": 1000
     },
     "AddOn Nickname": {
       "description": "",

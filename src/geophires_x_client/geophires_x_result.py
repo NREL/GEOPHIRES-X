@@ -323,6 +323,28 @@ class GeophiresXResult:
         'Reservoir Model',
     )
 
+    _REVENUE_AND_CASHFLOW_PROFILE_HEADERS: ClassVar[list[str]] = [
+        'Year Since Start',
+        'Electricity Price (cents/kWh)',
+        'Electricity Ann. Rev. (MUSD/yr)',
+        'Electricity Cumm. Rev. (MUSD)',
+        'Heat Price (cents/kWh)',
+        'Heat Ann. Rev. (MUSD/yr)',
+        'Heat Cumm. Rev. (MUSD)',
+        'Cooling Price (cents/kWh)',
+        'Cooling Ann. Rev. (MUSD/yr)',
+        'Cooling Cumm. Rev. (MUSD)',
+        'Carbon Price (USD/tonne)',
+        'Carbon Ann. Rev. (MUSD/yr)',
+        'Carbon Cumm. Rev. (MUSD)',
+        'Project OPEX (MUSD/yr)',
+        'Project Net Rev. (MUSD/yr)',
+        'Project Net Cashflow (MUSD)',
+    ]
+
+    CCUS_PROFILE_LEGACY_NAME: ClassVar[str] = 'CCUS PROFILE'
+    CARBON_REVENUE_PROFILE_NAME: ClassVar[str] = 'CCUS PROFILE'  # FIXME WIP change to 'CARBON REVENUE PROFILE'
+
     def __init__(self, output_file_path, logger_name=None):
         if logger_name is None:
             logger_name = __name__
@@ -369,9 +391,11 @@ class GeophiresXResult:
         if revenue_and_cashflow_profile is not None:
             self.result['REVENUE & CASHFLOW PROFILE'] = revenue_and_cashflow_profile
 
-        ccus_profile = self._get_ccus_profile()
-        if ccus_profile is not None:
-            self.result['CCUS PROFILE'] = ccus_profile
+        carbon_revenue_or_ccus_profile_key, carbon_revenue_or_ccus_profile = (
+            self._get_carbon_revenue_or_ccus_legacy_profile()
+        )
+        if carbon_revenue_or_ccus_profile is not None:
+            self.result[carbon_revenue_or_ccus_profile_key] = carbon_revenue_or_ccus_profile
 
         sdacgt_profile = self._get_sdacgt_profile()
         if sdacgt_profile is not None:
@@ -428,8 +452,10 @@ class GeophiresXResult:
                     'POWER GENERATION PROFILE',
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
                     'EXTENDED ECONOMIC PROFILE',
-                    'CCUS PROFILE',
                     'REVENUE & CASHFLOW PROFILE',
+                    GeophiresXResult.CARBON_REVENUE_PROFILE_NAME,
+                    GeophiresXResult.CCUS_PROFILE_LEGACY_NAME,
+                    'S-DAC-GT PROFILE',
                 ):
                     raise RuntimeError('unexpected category')
 
@@ -543,25 +569,6 @@ class GeophiresXResult:
             profile_lines = self._get_profile_lines('HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE')
         return self._get_data_from_profile_lines(profile_lines)
 
-    _REVENUE_AND_CASHFLOW_PROFILE_HEADERS: ClassVar[list[str]] = [
-        'Year Since Start',
-        'Electricity Price (cents/kWh)',
-        'Electricity Ann. Rev. (MUSD/yr)',
-        'Electricity Cumm. Rev. (MUSD)',
-        'Heat Price (cents/kWh)',
-        'Heat Ann. Rev. (MUSD/yr)',
-        'Heat Cumm. Rev. (MUSD)',
-        'Cooling Price (cents/kWh)',
-        'Cooling Ann. Rev. (MUSD/yr)',
-        'Cooling Cumm. Rev. (MUSD)',
-        'Carbon Price (USD/tonne)',
-        'Carbon Ann. Rev. (MUSD/yr)',
-        'Carbon Cumm. Rev. (MUSD)',
-        'Project OPEX (MUSD/yr)',
-        'Project Net Rev. (MUSD/yr)',
-        'Project Net Cashflow (MUSD)',
-    ]
-
     def _get_revenue_and_cashflow_profile(self):
         def extract_table_header(lines: list) -> list:
             # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
@@ -624,14 +631,23 @@ class GeophiresXResult:
             self._logger.debug(f'Failed to get S-DAC-GT profile: {e}')
             return None
 
-    def _get_ccus_profile(self):
+    def _get_carbon_revenue_or_ccus_legacy_profile(self) -> tuple:
+        """
+        :return: tuple[profile key name, profile]
+        """
+
         profile_legacy = self._get_ccus_profile_legacy()
         if profile_legacy is not None:
-            return profile_legacy
+            # Earlier versions of GEOPHIRES referred to the profile containing carbon revenue as the 'CCUS PROFILE';
+            # the name was changed to 'CARBON REVENUE PROFILE' for technical accuracy, as it does not include data
+            # for capture or storage, only revenue according to carbon avoided given a carbon price. However, we still
+            # check for and parse CCUS profile if it is present in order to retain backwards compatibility in terms
+            # of the client being able to read results from previous GEOPHIRES versions.
+            return GeophiresXResult.CCUS_PROFILE_LEGACY_NAME, profile_legacy
 
         revenue_and_cashflow_profile = self._get_revenue_and_cashflow_profile()
         if revenue_and_cashflow_profile is None:
-            return None
+            return None, None
 
         carbon_price_field_name = 'Carbon Price (USD/tonne)'
         headers = [
@@ -654,7 +670,7 @@ class GeophiresXResult:
         )
 
         if not has_ccus_profile_in_revenue_and_cashflow:
-            return None
+            return None, None
 
         try:
             profile = [headers]
@@ -670,10 +686,10 @@ class GeophiresXResult:
                     ccus_entry.append(revenue_and_cashflow_profile[i][rcp_index])
                 profile.append(ccus_entry)
 
-            return profile
+            return GeophiresXResult.CARBON_REVENUE_PROFILE_NAME, profile
         except BaseException as e:
-            self._logger.debug(f'Failed to get CCUS profile: {e}')
-            return None
+            self._logger.debug(f'Failed to get {GeophiresXResult.CARBON_REVENUE_PROFILE_NAME}: {e}')
+            return None, None
 
     def _get_ccus_profile_legacy(self):
         def extract_table_header(lines: list) -> list:
@@ -690,12 +706,12 @@ class GeophiresXResult:
             ]
 
         try:
-            lines = self._get_profile_lines('CCUS PROFILE')
+            lines = self._get_profile_lines(GeophiresXResult.CCUS_PROFILE_LEGACY_NAME)
             profile = [extract_table_header(lines)]
             profile.extend(self._extract_addons_style_table_data(lines))
             return profile
         except BaseException as e:
-            self._logger.debug(f'Failed to get legacy CCUS profile: {e}')
+            self._logger.debug(f'Failed to get legacy {GeophiresXResult.CCUS_PROFILE_LEGACY_NAME}: {e}')
             return None
 
     def _extract_addons_style_table_data(self, lines: list):

@@ -345,9 +345,9 @@ class GeophiresXClientTestCase(BaseTestCase):
             rcf_profile,
         )
 
-    def test_ccus_profile(self):
+    def test_carbon_revenue_profile(self):
         result_example1 = GeophiresXResult(self._get_test_file_path('examples/example1.out'))
-        self.assertTrue('CCUS PROFILE' not in result_example1.result)
+        self.assertTrue(GeophiresXResult.CARBON_REVENUE_PROFILE_NAME not in result_example1.result)
 
         result_addons = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
         ccus_profile = result_addons.result['CCUS PROFILE']

@@ -46,11 +46,15 @@ class EconomicsAddOns(Economics.Economics):
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
 
+        def multi_addon_tooltip_text(param_name: str) -> str:
+            return f'If using multiple add-ons, suffix with a number e.g. \'{param_name} 1\', \'{param_name} 2\', etc.'
+
         self.AddOnNickname = self.ParameterDict[self.AddOnNickname.Name] = listParameter(
             "AddOn Nickname",
             UnitType=Units.NONE,
             Min=0.0,
-            Max=1000.0
+            Max=1000.0,
+            ToolTipText=multi_addon_tooltip_text("AddOn Nickname")
         )
         self.AddOnCAPEX = self.ParameterDict[self.AddOnCAPEX.Name] = listParameter(
             "AddOn CAPEX",
@@ -58,7 +62,8 @@ class EconomicsAddOns(Economics.Economics):
             Max=1000.0,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=multi_addon_tooltip_text("AddOn CAPEX")
         )
         self.AddOnOPEXPerYear = self.ParameterDict[self.AddOnOPEXPerYear.Name] = listParameter(
             "AddOn OPEX",
@@ -66,7 +71,8 @@ class EconomicsAddOns(Economics.Economics):
             Max=1000.0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText=f'Annual operating cost. {multi_addon_tooltip_text("AddOn OPEX")}'
         )
         self.AddOnElecGainedPerYear = self.ParameterDict[self.AddOnElecGainedPerYear.Name] = listParameter(
             "AddOn Electricity Gained",
@@ -74,7 +80,8 @@ class EconomicsAddOns(Economics.Economics):
             Max=1000.0,
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWPERYEAR,
-            CurrentUnits=EnergyFrequencyUnit.KWPERYEAR
+            CurrentUnits=EnergyFrequencyUnit.KWPERYEAR,
+            ToolTipText=f'Annual electricity gained. {multi_addon_tooltip_text("AddOn Electricity Gained")}'
         )
         self.AddOnHeatGainedPerYear = self.ParameterDict[self.AddOnHeatGainedPerYear.Name] = listParameter(
             "AddOn Heat Gained",
@@ -82,7 +89,8 @@ class EconomicsAddOns(Economics.Economics):
             Max=1000.0,
             UnitType=Units.ENERGYFREQUENCY,
             PreferredUnits=EnergyFrequencyUnit.KWPERYEAR,
-            CurrentUnits=EnergyFrequencyUnit.KWPERYEAR
+            CurrentUnits=EnergyFrequencyUnit.KWPERYEAR,
+            ToolTipText=f'Annual heat gained. {multi_addon_tooltip_text("AddOn Heat Gained")}'
         )
         self.AddOnProfitGainedPerYear = self.ParameterDict[self.AddOnProfitGainedPerYear.Name] = listParameter(
             "AddOn Profit Gained",
@@ -90,7 +98,8 @@ class EconomicsAddOns(Economics.Economics):
             Max=1000.0,
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText=f'Annual profit gained. {multi_addon_tooltip_text("AddOn Profit Gained")}'
         )
 
         # local variables that need initialization
@@ -99,7 +108,7 @@ class EconomicsAddOns(Economics.Economics):
             "AddOn CAPEX Total",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
         )
         self.AddOnOPEXTotalPerYear = self.OutputParameterDict[self.AddOnOPEXTotalPerYear.Name] = OutputParameter(
             "AddOn OPEX Total Per Year",
@@ -242,7 +251,7 @@ class EconomicsAddOns(Economics.Economics):
             if key.startswith("AddOn Profit Gained"):
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnProfitGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"complete {__class__!s}: {sys._getframe().f_code.co_name}")
 
     def Calculate(self, model: Model) -> None:
         """

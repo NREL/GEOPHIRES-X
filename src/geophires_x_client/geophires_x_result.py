@@ -344,7 +344,7 @@ class GeophiresXResult:
 
     CCUS_PROFILE_LEGACY_NAME: ClassVar[str] = 'CCUS PROFILE'
     CARBON_REVENUE_PROFILE_NAME: ClassVar[str] = 'CARBON REVENUE PROFILE'
-    _CARBON_PRICE_FIELD_NAME = 'Carbon Price (USD/lb)'
+    _CARBON_PRICE_FIELD_NAME: ClassVar[str] = 'Carbon Price (USD/lb)'
 
     def __init__(self, output_file_path, logger_name=None):
         if logger_name is None:

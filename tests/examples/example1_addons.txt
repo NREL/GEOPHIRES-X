@@ -29,15 +29,6 @@ Starting Carbon Credit Value,0.015
 Ending Carbon Credit Value, 0.1
 Carbon Escalation Start Year, 5
 Carbon Escalation Rate Per Year, 0.01
-Current Grid CO2 production,0.82
-Starting Heat Sale Price,0.0123
-Ending Heat Sale Price,0.0359
-Heat Escalation Start Year,7
-Heat Escalation Rate Per Year,0.01
-Starting Electricity Sale Price,0.09
-Ending Electricity Sale Price,0.15
-Electricity Escalation Start Year,5
-Electricity Escalation Rate Per Year,0.012
 
 # ***RESERVOIR PARAMETERS***
 # **************************
@@ -83,8 +74,8 @@ Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]
 Ambient Temperature,20,		 				---[deg.C]
 
-# ***FINANCIAL PARAMETERS***
-# **************************
+# ***FINANCIAL & ECONOMIC PARAMETERS***
+# *************************************
 Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
@@ -94,6 +85,16 @@ One-time Flat License Fees Etc, 0
 Other Incentives, 2.112
 Tax Relief Per Year, 2.212
 One-time Grants Etc,20.212
+
+Current Grid CO2 production,0.82
+Starting Heat Sale Price,0.0123
+Ending Heat Sale Price,0.0359
+Heat Escalation Start Year,7
+Heat Escalation Rate Per Year,0.01
+Starting Electricity Sale Price,0.09
+Ending Electricity Sale Price,0.15
+Electricity Escalation Start Year,5
+Electricity Escalation Rate Per Year,0.012
 
 # ***Simulation Parameters***
 # ***************************

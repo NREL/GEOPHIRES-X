@@ -334,7 +334,7 @@ class GeophiresXResult:
         'Cooling Price (cents/kWh)',
         'Cooling Ann. Rev. (MUSD/yr)',
         'Cooling Cumm. Rev. (MUSD)',
-        'Carbon Price (USD/tonne)',
+        'Carbon Price (USD/lb)',
         'Carbon Ann. Rev. (MUSD/yr)',
         'Carbon Cumm. Rev. (MUSD)',
         'Project OPEX (MUSD/yr)',
@@ -344,6 +344,7 @@ class GeophiresXResult:
 
     CCUS_PROFILE_LEGACY_NAME: ClassVar[str] = 'CCUS PROFILE'
     CARBON_REVENUE_PROFILE_NAME: ClassVar[str] = 'CARBON REVENUE PROFILE'
+    _CARBON_PRICE_FIELD_NAME = 'Carbon Price (USD/lb)'
 
     def __init__(self, output_file_path, logger_name=None):
         if logger_name is None:
@@ -649,11 +650,10 @@ class GeophiresXResult:
         if revenue_and_cashflow_profile is None:
             return None, None
 
-        carbon_price_field_name = 'Carbon Price (USD/tonne)'
         headers = [
             'Year Since Start',
             # 'Carbon Avoided (pound)', # Present in legacy CCUS profile but not in Revenue & Cashflow
-            carbon_price_field_name,  # Legacy field name: 'CCUS Price (USD/lb)'
+            GeophiresXResult._CARBON_PRICE_FIELD_NAME,  # Legacy field name: 'CCUS Price (USD/lb)'
             'Carbon Ann. Rev. (MUSD/yr)',  # Legacy field name:  'CCUS Revenue (MUSD/yr)'
             # 'CCUS Annual Cash Flow (MUSD/yr)', # Present in legacy CCUS profile but not in Revenue & Cashflow
             'Carbon Cumm. Rev. (MUSD)',  # # Legacy field name: 'CCUS Cumm. Cash Flow (MUSD)'
@@ -661,10 +661,10 @@ class GeophiresXResult:
             # 'Project Cumm. Cash Flow (MUSD)',  # Present in legacy CCUS profile but not in Revenue & Cashflow
         ]
 
-        carbon_price_index = revenue_and_cashflow_profile[0].index(carbon_price_field_name)
+        carbon_price_index = revenue_and_cashflow_profile[0].index(GeophiresXResult._CARBON_PRICE_FIELD_NAME)
         has_ccus_profile_in_revenue_and_cashflow = (
             len(revenue_and_cashflow_profile) > 1
-            and carbon_price_field_name in revenue_and_cashflow_profile[0]
+            and GeophiresXResult._CARBON_PRICE_FIELD_NAME in revenue_and_cashflow_profile[0]
             # Treat all-zero values as not having CCUS profile
             and any(it != 0 for it in [x[carbon_price_index] for x in revenue_and_cashflow_profile[1:]])
         )

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.2
- Simulation Date: 2025-01-22
- Simulation Time:  11:01
- Calculation Time:      0.047 sec
+ GEOPHIRES Version: 3.7.19
+ Simulation Date: 2025-02-28
+ Simulation Time:  11:32
+ Calculation Time:      0.048 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -65,7 +65,7 @@ Simulation Metadata
                They are only used for calculating remaining heat content.
       Reservoir volume provided as input
       Reservoir volume:                              1000000000 m**3
-      Reservoir impedance:                                    0.05 GPa.s/m**3
+      Reservoir impedance:                                  0.0500 GPa.s/m**3
       Reservoir density:                                   2700.00 kg/m**3
       Reservoir thermal conductivity:                         3.00 W/m/K
       Reservoir heat capacity:                             1050.00 J/kg/K
@@ -198,7 +198,7 @@ Simulation Metadata
                              ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
-Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
+Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
   1      0.00           0.00   0.00     |    0.00    -41.59         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -41.59     -41.59
   2      5.50           0.00   0.00     |    2.50     3.62         4.82    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.20      3.62     -37.97

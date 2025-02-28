@@ -293,7 +293,7 @@ class GeophiresXClientTestCase(BaseTestCase):
             'Cooling Price (cents/kWh)',
             'Cooling Ann. Rev. (MUSD/yr)',
             'Cooling Cumm. Rev. (MUSD)',
-            'Carbon Price (USD/tonne)',
+            'Carbon Price (USD/lb)',
             'Carbon Ann. Rev. (MUSD/yr)',
             'Carbon Cumm. Rev. (MUSD)',
             'Project OPEX (MUSD/yr)',
@@ -354,7 +354,7 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertIsNotNone(ccus_profile)
         self.assertListEqual(
             ccus_profile[0],
-            ['Year Since Start', 'Carbon Price (USD/tonne)', 'Carbon Ann. Rev. (MUSD/yr)', 'Carbon Cumm. Rev. (MUSD)'],
+            ['Year Since Start', 'Carbon Price (USD/lb)', 'Carbon Ann. Rev. (MUSD/yr)', 'Carbon Cumm. Rev. (MUSD)'],
         )
 
         self.assertListEqual(ccus_profile[1], [1, 0.0, 0.0, 0.0])

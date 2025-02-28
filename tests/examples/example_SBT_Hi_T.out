@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.5
- Simulation Date: 2025-01-31
- Simulation Time:  11:36
- Calculation Time:      8.431 sec
+ GEOPHIRES Version: 3.7.19
+ Simulation Date: 2025-02-28
+ Simulation Time:  11:34
+ Calculation Time:     73.745 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -191,7 +191,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
                              ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
-Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
+Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
   1      0.00          -158.59   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -158.59     -158.59
   2     19.00          21.93  25.31     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  3.37     21.93     -136.66

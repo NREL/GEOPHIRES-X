@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.2
- Simulation Date: 2025-01-22
- Simulation Time:  11:01
- Calculation Time:      0.101 sec
+ GEOPHIRES Version: 3.7.19
+ Simulation Date: 2025-02-28
+ Simulation Time:  11:33
+ Calculation Time:      0.102 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -203,7 +203,7 @@ Simulation Metadata
                              ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
-Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
+Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
   1      0.00           0.00   0.00     |    0.00    -31.11         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -31.11     -31.11
   2      5.50           0.00   0.00     |    2.50     2.84         3.46    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  0.62      2.84     -28.26

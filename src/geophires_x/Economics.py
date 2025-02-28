@@ -1523,8 +1523,8 @@ class Economics:
         self.CarbonPrice = self.OutputParameterDict[self.CarbonPrice.Name] = OutputParameter(
             "Carbon Price Model",
             UnitType=Units.COSTPERMASS,
-            PreferredUnits=CostPerMassUnit.DOLLARSPERTONNE,
-            CurrentUnits=CostPerMassUnit.DOLLARSPERTONNE
+            PreferredUnits=CostPerMassUnit.DOLLARSPERLB,
+            CurrentUnits=CostPerMassUnit.DOLLARSPERLB
         )
 
         self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(

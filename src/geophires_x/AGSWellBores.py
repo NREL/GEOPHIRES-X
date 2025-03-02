@@ -816,6 +816,12 @@ class AGSWellBores(WellBores):
         """
         model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
+        if model.reserv.Trock.value > model.reserv.Tmax.value:
+            s = f'{model.reserv.Trock.Name} ({model.reserv.Trock.value}) exceeds ' \
+                f'{model.reserv.Tmax.Name} ({model.reserv.Tmax.value})'
+            model.logger.critical(s)
+            raise ValueError(s)
+
         self.Tini = model.reserv.Trock.value  # initialize the temperature to be the initial temperature of the reservoir
         if self.Tini > 375.0 or self.numnonverticalsections.value > 1:
             # must be a multilateral setup or too hot for CLGS, so must try to use wanju code.

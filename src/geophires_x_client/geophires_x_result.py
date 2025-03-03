@@ -98,6 +98,19 @@ class GeophiresXResult:
                 'Project MOIC           (including carbon credit)',
                 'Project Payback Period (including carbon credit)',
             ],
+            'S-DAC-GT ECONOMICS': [
+                # TODO S-DAC-GT Report sub-titles as string value fields
+                'LCOD using grid-based electricity only',
+                'LCOD using natural gas only',
+                'LCOD using geothermal energy only',
+                'CO2 Intensity using grid-based electricity only',
+                'CO2 Intensity using natural gas only',
+                'CO2 Intensity using geothermal energy only',
+                'Geothermal LCOH',
+                'Geothermal Ratio (electricity vs heat)',
+                'Percent Energy Devoted To Process',
+                'Total Cost of Capture',
+            ],
             'ENGINEERING PARAMETERS': [
                 'Number of Production Wells',
                 'Number of Injection Wells',
@@ -359,6 +372,10 @@ class GeophiresXResult:
         if ccus_profile is not None:
             self.result['CCUS PROFILE'] = ccus_profile
 
+        sdacgt_profile = self._get_sdacgt_profile()
+        if sdacgt_profile is not None:
+            self.result['S-DAC-GT PROFILE'] = sdacgt_profile
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -583,6 +600,27 @@ class GeophiresXResult:
             self._logger.debug(f'Failed to get extended economic profile: {e}')
             return None
 
+    def _get_sdacgt_profile(self):
+        def extract_table_header(lines: list) -> list:
+            # Tried various regexy approaches to extract this programmatically but landed on hard-coding.
+            return [
+                'Year Since Start',
+                'Carbon Captured (tonne/yr)',
+                'Cumm. Carbon Captured (tonne)',
+                'S-DAC-GT Annual Cost (USD/yr)',
+                'S-DAC-GT Cumm. Cash Flow (USD)',
+                'Cumm. Cost Per Tonne (USD/tonne)',
+            ]
+
+        try:
+            lines = self._get_profile_lines('S-DAC-GT PROFILE')
+            profile = [extract_table_header(lines)]
+            profile.extend(self._extract_addons_style_table_data(lines))
+            return profile
+        except BaseException as e:
+            self._logger.debug(f'Failed to get S-DAC-GT profile: {e}')
+            return None
+
     def _get_ccus_profile(self):
         """
         FIXME TODO - transform from revenue & cashflow if present (CCUS profile replaced by revenue & cashflow
@@ -669,10 +707,11 @@ class GeophiresXResult:
         return data
 
     def _parse_number(self, number_str, field='string') -> int | float:
-        if number_str == 'N/A':
+        if number_str == 'N/A' or number_str is None:
             return None
 
         try:
+            number_str = number_str.replace(',', '')
             if '.' in number_str:
                 # TODO should probably ideally use decimal.Decimal to preserve precision,
                 #  i.e. 1.00 for USD instead of 1.0

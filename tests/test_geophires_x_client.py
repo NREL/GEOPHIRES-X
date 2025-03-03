@@ -528,3 +528,38 @@ class GeophiresXClientTestCase(BaseTestCase):
     def test_parse_annualized_capital_costs(self):
         result = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
         self.assertIsNotNone(result.result['CAPITAL COSTS (M$)']['Annualized capital costs']['value'])
+
+    def test_parse_number_with_commas(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
+        sdac_e = result.result['S-DAC-GT ECONOMICS']
+        self.assertAlmostEqualWithinPercentage(499_311_405.59, sdac_e['Total Cost of Capture']['value'])
+
+        self.assertAlmostEqualWithinPercentage(0.0017, sdac_e['Geothermal LCOH']['value'])
+
+        self.assertAlmostEqualWithinPercentage(20.7259, sdac_e['Geothermal Ratio (electricity vs heat)']['value'])
+
+    def test_parse_sdacgt_profile(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
+        sdacgt_profile = result.result['S-DAC-GT PROFILE']
+        self.assertIsNotNone(sdacgt_profile)
+        self.assertEqual(
+            sdacgt_profile[0],
+            [
+                'Year Since Start',
+                'Carbon Captured (tonne/yr)',
+                'Cumm. Carbon Captured (tonne)',
+                'S-DAC-GT Annual Cost (USD/yr)',
+                'S-DAC-GT Cumm. Cash Flow (USD)',
+                'Cumm. Cost Per Tonne (USD/tonne)',
+            ],
+        )
+
+        # Values below need to be synchronized if S-DAC-GT example output values change.
+        self.assertEqual(sdacgt_profile[1], [1, 78330.8, 78330.8, 17411627.98, 17411627.98, 222.28])
+
+        self.assertEqual(
+            sdacgt_profile[15],
+            [15, 76263.89, 1167207.48, 16952186.81, 259450710.33, 222.28],
+        )
+
+        self.assertEqual(sdacgt_profile[30], [30, 61974.61, 2246284.1, 13775920.11, 499311405.59, 222.28])

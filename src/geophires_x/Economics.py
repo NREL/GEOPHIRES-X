@@ -1221,7 +1221,13 @@ class Economics:
             Max=100,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
+            ToolTipText="The maximum price to which the electricity sale price can escalate. For example, if "
+                        "Starting Electricity Sale Price = 0.10 USD/kWh and Electricity Escalation Rate = "
+                        "0.01 USD/kWh/yr: Electricity Price will reach 0.15 USD/kWh after 4 years of escalation. "
+                        "The price will then remain at 0.15 USD/kWh for the remaining years of the project lifetime. "
+                        "If the Ending Electricity Sale Price is not reached by escalation during the project "
+                        "lifetime, then the value will have no effect beyond allowing escalation to occur every year."
         )
         self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name] = intParameter(
             "Electricity Escalation Start Year",
@@ -1541,7 +1547,7 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )  # $/MMBTU
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",
+            Name="O&M Surface Plant costs", # FIXME wrong name - should be Stimulation Costs
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS

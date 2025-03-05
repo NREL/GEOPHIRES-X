@@ -41,7 +41,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, and is used to initialize the class
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
 
         # These dictionaries contains a list of all the parameters set in this object, stored as "Parameter" and
         # OutputParameter Objects.  This will allow us later to access them in a user interface and get that list,
@@ -335,7 +335,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
             CurrentUnits=CostPerMassUnit.DOLLARSPERTONNE
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Complete {str(__class__)}: {sys._getframe().f_code.co_name}")
 
     def __str__(self):
         return "EconomicsS_DAC_GT"
@@ -349,7 +349,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
 
         # Deal with all the parameter values that the user has provided.  They should really only provide values
         # that they want to change from the default values, but they can provide a value that is already set because it
@@ -374,7 +374,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
                     # none in this case so far
         else:
             model.logger.info("No parameters read becuase no content provided")
-        model.logger.info("read parameters complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"read parameters complete {str(__class__)}: {sys._getframe().f_code.co_name}")
 
     def calculate_CRF(self, wacc: float, num_years: float) -> float:
         """
@@ -579,9 +579,10 @@ class EconomicsS_DAC_GT(Economics.Economics):
         # Ensure parameters are within range.  If not, exit function without completing calculation or generating charts
         err_state, err_message = self.range_check()
         if err_state:
-            model.logger.fatal(err_message + "  Exiting....")
-            print(err_message + "  Exiting....")
-            sys.exit()
+            msg = f'{err_message}. Exiting...'
+            model.logger.fatal(msg)
+            print(msg)
+            raise RuntimeError(err_message)
 
         # Calculate initial CRF value based on default inputs
         self.CRF = self.calculate_CRF(self.wacc.value, model.surfaceplant.plant_lifetime.value)
@@ -666,6 +667,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
                 model.surfaceplant.HeatkWhProduced.value[i] = (model.surfaceplant.HeatkWhProduced.value[i] -
                                                                (self.CarbonExtractedAnnually.value[i] * self.therm.value))
 
+        # FIXME TODO https://github.com/NREL/GEOPHIRES-X/issues/341?title=S-DAC+does+not+calculate+carbon+revenue
         # Build a revenue generation model for the carbon capture, assuming the capture is being sequestered and that
         # there is some sort of credit involved for doing that sequestering
         # note that there may already be values in the CarbonRevenue array, so we need to
@@ -674,8 +676,8 @@ class EconomicsS_DAC_GT(Economics.Economics):
         #for i in range(0, total_duration, 1):
         #    model.sdacgteconomics.CarbonRevenue.value[i] = (model.sdacgteconomics.CarbonRevenue.value[i] +
         #                                              (self.CarbonExtractedAnnually.value[i] * model.economics.CarbonPrice.value[i]))
-#            if i > 0:
-#                model.economics.CarbonCummCashFlow.value[i] = model.economics.CarbonCummCashFlow.value[i - 1] + model.economics.CarbonRevenue.value[i]
+        #   if i > 0:
+        #       model.economics.CarbonCummCashFlow.value[i] = model.economics.CarbonCummCashFlow.value[i - 1] + model.economics.CarbonRevenue.value[i]
 
         self._calculate_derived_outputs(model)
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

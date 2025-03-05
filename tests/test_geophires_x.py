@@ -168,6 +168,12 @@ class GeophiresXTestCase(BaseTestCase):
             )
         )
 
+        # Run SBT examples last because they take an inordinately long time (tens of seconds even on a fast machine).
+        # This reduces time spent waiting for tests to run if you are iterating on changes that affect non-SBT examples.
+        for ef in [_ef for _ef in example_files if _ef.startswith('example_SBT')]:
+            example_files.remove(ef)
+            example_files.append(ef)
+
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
         regenerate_cmds = []
         for example_file_path in example_files:

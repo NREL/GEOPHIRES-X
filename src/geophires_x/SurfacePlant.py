@@ -1,16 +1,33 @@
-import sys
-import os
 import numpy as np
 
 from .GeoPHIRESUtils import quantity
 from .OptionList import EndUseOptions, PlantType
-from .Parameter import floatParameter, intParameter, strParameter, OutputParameter, ReadParameter, \
+from .Parameter import floatParameter, intParameter, OutputParameter, ReadParameter, \
     coerce_int_params_to_enum_values
 from .Units import *
 import geophires_x.Model as Model
-import pandas as pd
+
 
 class SurfacePlant:
+    @staticmethod
+    def integrate_time_series_slice(
+        series: np.ndarray,
+        _i: int,
+        time_steps_per_year: int,
+        utilization_factor: float
+    ) -> np.float64:
+        _slice = series[(0 + _i * time_steps_per_year):((_i + 1) * time_steps_per_year) + 1]
+
+        # Note that len(_slice) - 1 may be less than time_steps_per_year for the last slice.
+
+        if len(_slice) == 1:
+            return _slice[0]
+
+        return np.trapz(
+            _slice,
+            dx=1. / (len(_slice) - 1) * 365. * 24.
+        ) * 1000. * utilization_factor
+
     def remaining_reservoir_heat_content(self, InitialReservoirHeatContent: np.ndarray, HeatkWhExtracted:  np.ndarray) -> np.ndarray:
         """
         Calculate reservoir heat content
@@ -176,19 +193,12 @@ class SurfacePlant:
         NetkWhProduced = np.zeros(plant_lifetime)
         HeatkWhProduced = np.zeros(plant_lifetime)
 
-        def integrate_slice(series: np.ndarray, _i: int) -> np.float64:
-            _slice = series[(0 + _i * time_steps_per_year):((_i + 1) * time_steps_per_year) + 1]
-
-            # Note that len(_slice) - 1 may be less than time_steps_per_year for the last slice.
-
-            return np.trapz(
-                _slice,
-                dx=1. / (len(_slice) - 1) * 365. * 24.
-            ) * 1000. * utilization_factor
+        def _integrate_slice(series: np.ndarray, _i: int) -> np.float64:
+            return SurfacePlant.integrate_time_series_slice(series, _i, time_steps_per_year, utilization_factor)
 
         for i in range(0, plant_lifetime):
-            HeatkWhExtracted[i] = integrate_slice(HeatExtracted, i)
-            PumpingkWh[i] = integrate_slice(PumpingPower, i)
+            HeatkWhExtracted[i] = _integrate_slice(HeatExtracted, i)
+            PumpingkWh[i] = _integrate_slice(PumpingPower, i)
 
 
         if enduse_option in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
@@ -201,14 +211,14 @@ class SurfacePlant:
             TotalkWhProduced = np.zeros(plant_lifetime)
             NetkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
-                TotalkWhProduced[i] = integrate_slice(ElectricityProduced, i)
-                NetkWhProduced[i] = integrate_slice(NetElectricityProduced, i)
+                TotalkWhProduced[i] = _integrate_slice(ElectricityProduced, i)
+                NetkWhProduced[i] = _integrate_slice(NetElectricityProduced, i)
 
         if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
-                HeatkWhProduced[i] = integrate_slice(HeatProduced, i)
+                HeatkWhProduced[i] = _integrate_slice(HeatProduced, i)
 
         return HeatkWhExtracted, PumpingkWh, TotalkWhProduced, NetkWhProduced, HeatkWhProduced
 

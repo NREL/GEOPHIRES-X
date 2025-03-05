@@ -19,7 +19,7 @@ class SurfacePlantHeatPump(SurfacePlant):
         :return: None
         """
 
-        model.logger.info("Init " + str(__class__) + ": " + inspect.currentframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {inspect.currentframe().f_code.co_name}')
         super().__init__(model)  # Initialize all the parameters in the superclass
 
         # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
@@ -65,7 +65,7 @@ class SurfacePlantHeatPump(SurfacePlant):
             CurrentUnits=EnergyFrequencyUnit.KWhPERYEAR
         )
 
-        model.logger.info("Complete " + str(__class__) + ": " + inspect.currentframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {inspect.currentframe().f_code.co_name}')
 
     def __str__(self):
         return "SurfacePlantHeatPump"
@@ -78,12 +78,12 @@ class SurfacePlantHeatPump(SurfacePlant):
         :param model: The container class of the application, giving access to everything else, including the logger
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + inspect.currentframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {inspect.currentframe().f_code.co_name}')
         super().read_parameters(model)  # Read in all the parameters from the superclass
 
         # Since there are no parameters unique to this class, we don't need to read any in here.
 
-        model.logger.info("complete "+ str(__class__) + ": " + inspect.currentframe().f_code.co_name)
+        model.logger.info(f'complete {str(__class__)}: {inspect.currentframe().f_code.co_name}')
 
     def Calculate(self, model: Model) -> None:
         """
@@ -93,7 +93,7 @@ class SurfacePlantHeatPump(SurfacePlant):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + inspect.currentframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {inspect.currentframe().f_code.co_name}')
 
         # This is where all the calculations are made using all the values that have been set.
         # If you subclass this class, you can choose to run these calculations before (or after) your calculations,
@@ -115,24 +115,26 @@ class SurfacePlantHeatPump(SurfacePlant):
         self.HeatkWhExtracted.value = np.zeros(self.plant_lifetime.value)
         self.PumpingkWh.value = np.zeros(self.plant_lifetime.value)
 
+        def _integrate_slice(series, _i):
+            return SurfacePlant.integrate_time_series_slice(
+                series, _i, model.economics.timestepsperyear.value, self.utilization_factor.value
+            )
+
         for i in range(0, self.plant_lifetime.value):
-            # FIXME TODO WIP adjust dx for slice size
-            self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[(0 + i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1],dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
-            self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[(0 + i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1],dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
+            self.HeatkWhExtracted.value[i] = _integrate_slice(self.HeatExtracted.value, i)
+            self.PumpingkWh.value[i] = _integrate_slice(model.wellbores.PumpingPower.value, i)
 
         self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
         for i in range(0, self.plant_lifetime.value):
-            # FIXME TODO WIP adjust dx for slice size
-            self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[(0+i*model.economics.timestepsperyear.value):((i+1)*model.economics.timestepsperyear.value)+1],dx = 1./model.economics.timestepsperyear.value*365.*24.)*1000.*self.utilization_factor.value
+            self.HeatkWhProduced.value[i] = _integrate_slice(self.HeatProduced.value, i)
 
         self.heat_pump_electricity_kwh_used.value = np.zeros(self.plant_lifetime.value)
         for i in range(0, self.plant_lifetime.value):
-            # FIXME TODO WIP adjust dx for slice size
-            self.heat_pump_electricity_kwh_used.value[i] = np.trapz(self.heat_pump_electricity_used.value[(0 + i * model.economics.timestepsperyear.value):((i + 1) * model.economics.timestepsperyear.value) + 1], dx =1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
+            self.heat_pump_electricity_kwh_used.value[i] = _integrate_slice(self.heat_pump_electricity_used.value, i)
 
         # calculate reservoir heat content
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(
             self, model.reserv.InitialReservoirHeatContent.value, self.HeatkWhExtracted.value)
 
         self._calculate_derived_outputs(model)
-        model.logger.info(f"complete {str(__class__)}: {inspect.currentframe().f_code.co_name}")
+        model.logger.info(f'complete {str(__class__)}: {inspect.currentframe().f_code.co_name}')

@@ -177,8 +177,9 @@ class SurfacePlant:
         HeatkWhProduced = np.zeros(plant_lifetime)
 
         for i in range(0, plant_lifetime):
-            HeatkWhExtracted[i] = np.trapz(HeatExtracted[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
-                                                dx = 1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
+            heat_extracted_slice = HeatExtracted[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1]
+            HeatkWhExtracted[i] = np.trapz(heat_extracted_slice,
+                                                dx = 1. / (len(heat_extracted_slice)-1) * 365. * 24.) * 1000. * utilization_factor
             PumpingkWh[i] = np.trapz(PumpingPower[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
                                                 dx = 1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
 

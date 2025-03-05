@@ -739,6 +739,7 @@ class SurfacePlantAGS(SurfacePlant):
         # useful direct-use heat provided to application [MWth]
         self.HeatProduced.value = self.HeatExtracted.value * self.enduseefficiencyfactor.value
         for i in range(0, self.plant_lifetime.value):
+            # FIXME TODO WIP adjust dx for slice size
             self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
                                                       (i * model.economics.timestepsperyear.value):((
                                                         i + 1) * model.economics.timestepsperyear.value) + 1],
@@ -754,6 +755,7 @@ class SurfacePlantAGS(SurfacePlant):
         if self.End_use is not EndUseOptions.ELECTRICITY:
             self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
             for i in range(0, self.plant_lifetime.value):
+                # FIXME TODO WIP adjust dx for slice size
                 self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
                                                          (0 + i * model.economics.timestepsperyear.value):((
                                                               i + 1) * model.economics.timestepsperyear.value) + 1],

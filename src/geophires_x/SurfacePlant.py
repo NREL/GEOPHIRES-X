@@ -152,15 +152,15 @@ class SurfacePlant:
 
         return ElectricityProduced, HeatExtracted, HeatProduced, HeatExtractedTowardsElectricity
 
-    def annual_electricity_pumping_power(self, plant_lifetime: int, enduse_option: EndUseOptions, HeatExtracted: np.ndarray,
-                                         timestepsperyear: np.ndarray, utilization_factor: float, PumpingPower: np.ndarray,
+    def annual_electricity_pumping_power(self, plant_lifetime: int,enduse_option: EndUseOptions, HeatExtracted: np.ndarray,
+                                         time_steps_per_year: int, utilization_factor: float, PumpingPower: np.ndarray,
                                          ElectricityProduced: np.ndarray, NetElectricityProduced: np.ndarray, HeatProduced: np.ndarray) -> tuple:
         """
         Calculate annual electricity/heat production
         :param plant_lifetime: plant lifetime
         :param enduse_option: end-use option
         :param HeatExtracted: heat extracted
-        :param timestepsperyear: timesteps per year
+        :param time_steps_per_year: time steps per year
         :param utilization_factor: utilization factor
         :param PumpingPower: pumping power
         :param ElectricityProduced: electricity produced
@@ -176,12 +176,20 @@ class SurfacePlant:
         NetkWhProduced = np.zeros(plant_lifetime)
         HeatkWhProduced = np.zeros(plant_lifetime)
 
+        def integrate_slice(series: np.ndarray, _i: int) -> np.float64:
+            _slice = series[(0 + _i * time_steps_per_year):((_i + 1) * time_steps_per_year) + 1]
+
+            # Note that len(_slice) - 1 may be less than time_steps_per_year for the last slice.
+
+            return np.trapz(
+                _slice,
+                dx=1. / (len(_slice) - 1) * 365. * 24.
+            ) * 1000. * utilization_factor
+
         for i in range(0, plant_lifetime):
-            heat_extracted_slice = HeatExtracted[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1]
-            HeatkWhExtracted[i] = np.trapz(heat_extracted_slice,
-                                                dx = 1. / (len(heat_extracted_slice)-1) * 365. * 24.) * 1000. * utilization_factor
-            PumpingkWh[i] = np.trapz(PumpingPower[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
-                                                dx = 1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
+            HeatkWhExtracted[i] = integrate_slice(HeatExtracted, i)
+            PumpingkWh[i] = integrate_slice(PumpingPower, i)
+
 
         if enduse_option in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                         EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
@@ -193,16 +201,14 @@ class SurfacePlant:
             TotalkWhProduced = np.zeros(plant_lifetime)
             NetkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
-                TotalkWhProduced[i] = np.trapz(ElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
-                                                        dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
-                NetkWhProduced[i] = np.trapz(NetElectricityProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
-                                                        dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
+                TotalkWhProduced[i] = integrate_slice(ElectricityProduced, i)
+                NetkWhProduced[i] = integrate_slice(NetElectricityProduced, i)
+
         if enduse_option is not EndUseOptions.ELECTRICITY:
             # all those end-use options have a direct-use component
             HeatkWhProduced = np.zeros(plant_lifetime)
             for i in range(0, plant_lifetime):
-                HeatkWhProduced[i] = np.trapz(HeatProduced[(0 + i * timestepsperyear):((i + 1) * timestepsperyear) + 1],
-                                                         dx=1. / timestepsperyear * 365. * 24.) * 1000. * utilization_factor
+                HeatkWhProduced[i] = integrate_slice(HeatProduced, i)
 
         return HeatkWhExtracted, PumpingkWh, TotalkWhProduced, NetkWhProduced, HeatkWhProduced
 

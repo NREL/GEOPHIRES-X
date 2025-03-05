@@ -217,6 +217,7 @@ class SurfacePlantDistrictHeating(SurfacePlant):
 
         for i in range(0, self.plant_lifetime.value):
             if self.plant_type.value == PlantType.DISTRICT_HEATING:  # for district heating, we have a util_factor_array
+                # FIXME TODO WIP adjust dx for slice size
                 self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
                                                           (0 + i * model.economics.timestepsperyear.value):((
                                                            i + 1) * model.economics.timestepsperyear.value) + 1],
@@ -228,6 +229,7 @@ class SurfacePlantDistrictHeating(SurfacePlant):
                                                     dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * \
                                            self.util_factor_array.value[i]
             else:
+                # FIXME TODO WIP adjust dx for slice size
                 self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
                                                           (0 + i * model.economics.timestepsperyear.value):((
                                                           i + 1) * model.economics.timestepsperyear.value) + 1],

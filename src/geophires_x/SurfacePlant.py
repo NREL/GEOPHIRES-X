@@ -23,7 +23,7 @@ class SurfacePlant:
         if len(_slice) == 1:
             return _slice[0]
 
-        dx_steps = (len(_slice) - 1)
+        dx_steps = len(_slice) - 1
 
         return np.trapz(
             _slice,

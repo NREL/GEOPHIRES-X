@@ -4,17 +4,17 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
- Calculation Time:      0.102 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
+ Calculation Time:      0.101 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Surface Application: Heat Pump
       Average Direct-Use Heat Production:                    16.89 MW
-      Direct-Use heat breakeven price (LCOH):                 14.42 USD/MMBTU
+      Direct-Use heat breakeven price (LCOH):                 14.41 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          70.0 kg/sec
@@ -29,8 +29,8 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                          11.28 MUSD
-      Project IRR:                                           8.07 %
+      Project NPV:                                          11.35 MUSD
+      Project IRR:                                           8.08 %
       Project VIR=PI=PIR:                                    1.36
       Project MOIC:                                          1.01
       Project Payback Period:                               11.96 yr
@@ -108,8 +108,8 @@ Simulation Metadata
          Power plant maintenance costs:                       0.31 MUSD/yr
          Water costs:                                         0.07 MUSD/yr
          Average Reservoir Pumping Cost:                      0.25 MUSD/yr
-         Average Heat Pump Electricity Cost:                  3.69 MUSD/yr
-      Total operating and maintenance costs:                  4.55 MUSD/yr
+         Average Heat Pump Electricity Cost:                  3.70 MUSD/yr
+      Total operating and maintenance costs:                  4.56 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -118,8 +118,8 @@ Simulation Metadata
       Average Net Heat Production:                           16.89 MW
       Minimum Net Heat Production:                           15.44 MW
       Initial Net Heat Production:                           17.55 MW
-      Average Annual Heat Production:                       132.75 GWh
-      Average Annual Heat Pump Electricity Use:              52.68 GWh/year
+      Average Annual Heat Production:                       133.16 GWh
+      Average Annual Heat Pump Electricity Use:              52.84 GWh/year
       Average Pumping Power:                                  0.45 MW
 
                             ************************************************************
@@ -195,7 +195,7 @@ Simulation Metadata
   27                 125.0                   89.3                49.59                 4.67                 66.63
   28                 124.0                   88.6                49.21                 4.35                 68.91
   29                 123.0                   87.9                48.83                 4.03                 71.17
-  30                 109.9                   78.5                43.62                 3.75                 73.19
+  30                 122.1                   87.2                48.47                 3.72                 73.41
 
 
                              ********************************

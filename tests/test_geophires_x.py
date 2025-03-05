@@ -379,7 +379,7 @@ Print Output to Console, 1"""
 
         self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
         self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
-        self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)
+        self.assertAlmostEqual(103.76, get_fcr_lcoe(0.8), places=0)
 
     def test_vapor_pressure_above_critical_temperature(self):
         """https://github.com/NREL/GEOPHIRES-X/issues/214"""

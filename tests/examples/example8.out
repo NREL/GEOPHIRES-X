@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:32
- Calculation Time:      0.801 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      0.938 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Average Direct-Use Heat Production:                     9.60 MW
-      Direct-Use heat breakeven price (LCOH):                  9.01 USD/MMBTU
+      Direct-Use heat breakeven price (LCOH):                  8.96 USD/MMBTU
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          40.0 kg/sec
@@ -28,8 +28,8 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       60.0 %
-      Project NPV:                                         -10.75 MUSD
-      Project IRR:                                           1.02 %
+      Project NPV:                                         -10.73 MUSD
+      Project IRR:                                           1.06 %
       Project VIR=PI=PIR:                                    0.49
       Project MOIC:                                          0.10
       Project Payback Period:                               26.31 yr
@@ -118,7 +118,7 @@ Simulation Metadata
       Average Net Heat Production:                            9.60 MW
       Minimum Net Heat Production:                            9.04 MW
       Initial Net Heat Production:                            9.67 MW
-      Average Annual Heat Production:                        50.20 GWh
+      Average Annual Heat Production:                        50.46 GWh
       Average Pumping Power:                                  0.09 MW
 
                             ************************************************************
@@ -194,7 +194,7 @@ Simulation Metadata
   27                  48.4                        53.8                 24.71                  18.15
   28                  48.2                        53.5                 24.52                  18.79
   29                  47.9                        53.2                 24.33                  19.42
-  30                  39.7                        44.1                 24.17                  19.95
+  30                  47.6                        52.9                 24.14                  20.06
 
 
                              ********************************

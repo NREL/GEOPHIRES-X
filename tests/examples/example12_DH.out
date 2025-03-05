@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
- Calculation Time:      0.590 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      0.616 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -32,10 +32,10 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      20 yr
       Capacity factor:                                       96.3 %
-      Project NPV:                                         -20.81 MUSD
-      Project IRR:                                           2.18 %
-      Project VIR=PI=PIR:                                    0.67
-      Project MOIC:                                          0.16
+      Project NPV:                                         -20.39 MUSD
+      Project IRR:                                           2.36 %
+      Project VIR=PI=PIR:                                    0.68
+      Project MOIC:                                          0.18
       Project Payback Period:                               16.46 yr
 
                           ***ENGINEERING PARAMETERS***
@@ -113,10 +113,10 @@ Simulation Metadata
          Wellfield maintenance costs:                         0.62 MUSD/yr
          Power plant maintenance costs:                       0.50 MUSD/yr
          Water costs:                                         0.00 MUSD/yr
-         Average Reservoir Pumping Cost:                      0.25 MUSD/yr
+         Average Reservoir Pumping Cost:                      0.26 MUSD/yr
          Annual District Heating O&M Cost:                    0.34 MUSD/yr
          Average Annual Peaking Fuel Cost:                    4.30 MUSD/yr
-      Total operating and maintenance costs:                  1.71 MUSD/yr
+      Total operating and maintenance costs:                  1.72 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -125,7 +125,7 @@ Simulation Metadata
       Average Net Heat Production:                           12.95 MW
       Minimum Net Heat Production:                           11.29 MW
       Initial Net Heat Production:                           13.45 MW
-      Average Annual Heat Production:                       107.53 GWh
+      Average Annual Heat Production:                       109.17 GWh
       Annual District Heating Demand:                       242.90 GWh/year
       Maximum Daily District Heating Demand:               1683.32 MWh/day
       Average Daily District Heating Demand:                665.47 MWh/day
@@ -191,7 +191,7 @@ Simulation Metadata
   17               103.2                 139.7                128.98                 6.34               57.21
   18               101.6                 141.3                126.97                 5.88               60.29
   19                99.9                 143.0                124.84                 5.43               63.32
-  20                65.6                 144.7                 82.02                 5.14               65.32
+  20                98.4                 144.7                123.03                 4.99               66.31
 
 
                              ********************************

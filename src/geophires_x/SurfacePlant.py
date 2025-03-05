@@ -23,9 +23,7 @@ class SurfacePlant:
         if len(_slice) == 1:
             return _slice[0]
 
-        # FIXME TEMP - WIP to ensure unit tests are unchanged by refactoring but with original behavior retained
-        # dx_steps = (len(_slice) - 1) # correct behavior
-        dx_steps = time_steps_per_year # original behavior
+        dx_steps = (len(_slice) - 1)
 
         return np.trapz(
             _slice,

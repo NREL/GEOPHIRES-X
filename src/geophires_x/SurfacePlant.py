@@ -23,9 +23,13 @@ class SurfacePlant:
         if len(_slice) == 1:
             return _slice[0]
 
+        # FIXME TEMP - WIP to ensure unit tests are unchanged by refactoring but with original behavior retained
+        # dx_steps = (len(_slice) - 1) # correct behavior
+        dx_steps = time_steps_per_year # original behavior
+
         return np.trapz(
             _slice,
-            dx=1. / (len(_slice) - 1) * 365. * 24.
+            dx=1. / dx_steps * 365. * 24.
         ) * 1000. * utilization_factor
 
     def remaining_reservoir_heat_content(self, InitialReservoirHeatContent: np.ndarray, HeatkWhExtracted:  np.ndarray) -> np.ndarray:

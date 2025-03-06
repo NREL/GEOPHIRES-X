@@ -1005,8 +1005,15 @@ class Economics:
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
                         '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
+                        # TODO citation(s):
+                        # Akindipe, D. and Witter. E. 2025.
+                        #   "2025 Geothermal Drilling Cost Curves Update".
+                        #   https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555
+                        #
+                        # Robins, J.C., Kesseli, D., Witter, E. and Rhodes, G. 2022.
+                        #   "2022 GETEM Geothermal Drilling Cost Curve Update."
+                        #   https://www.nrel.gov/docs/fy23osti/82771.pdf
         )
-
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
             DefaultValue=False,

@@ -157,14 +157,24 @@ class ReservoirVolume(GeophiresInputEnum):
 
 
 class WellDrillingCostCorrelation(GeophiresInputEnum):
-    """Note: order must be retained since input is read as an int; first int arg is duplicative of order"""
+    """
+    Akindipe, D. and Witter. E. 2025.
+        "2025 Geothermal Drilling Cost Curves Update".
+        https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555
 
-    VERTICAL_SMALL = 1, "vertical small diameter, baseline", 0.30212, 584.91124, 751368.47270
+    Robins, J.C., Kesseli, D., Witter, E. and Rhodes, G. 2022.
+        "2022 GETEM Geothermal Drilling Cost Curve Update."
+        https://www.nrel.gov/docs/fy23osti/82771.pdf
+
+    Note: order must be retained since input is read as an int; first int arg is duplicative of order
+    """
+
+    VERTICAL_SMALL = 1, "vertical small diameter, baseline (2025 curve)", 0.258496, 357.967, 738531.58
     DEVIATED_SMALL = 2, "deviated small diameter, baseline", 0.28977, 882.15067, 680562.50150
-    VERTICAL_LARGE = 3, "vertical large diameter, baseline", 0.28180, 1275.52130, 632315.12640
+    VERTICAL_LARGE = 3, "vertical large diameter, baseline (2025 curve)", 0.248458, 935.8985, 626586.68
     DEVIATED_LARGE = 4, "deviated large diameter, baseline", 0.25528, 1716.71568, 500866.89110
 
-    SIMPLE = 5, "Simple", 0, 1846*1E6, 0 # Based on Fervo Project Cape cost per meter (~$1846/m)
+    SIMPLE = 5, "Simple", 0, 1846*1E6, 0  # Based on Fervo Project Cape cost per meter (~$1846/m)
 
     VERTICAL_SMALL_INT1 = 6, "vertical small diameter, intermediate1", 0.13710, 129.61033, 1205587.57100
     VERTICAL_SMALL_INT2 = 7, "vertical small diameter, intermediate2", 0.00804, 455.60507, 921007.68680

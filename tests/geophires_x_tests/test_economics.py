@@ -2,8 +2,11 @@ import os
 import sys
 from pathlib import Path
 
-from geophires_x.Economics import CalculateFinancialPerformance
+import numpy_financial as npf
+
+# ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
+from geophires_x.Economics import CalculateFinancialPerformance
 from tests.base_test_case import BaseTestCase
 
 
@@ -32,6 +35,19 @@ class EconomicsTestCase(BaseTestCase):
         self.assertAlmostEqual(-8.33, calc_irr([-100, 100, 0, -7]), places=2)
         self.assertAlmostEqual(6.21, calc_irr([-100, 100, 0, 7]), places=2)
         self.assertAlmostEqual(8.86, calc_irr([-5, 10.5, 1, -8, 1]), places=2)
+
+    def test_numpy_financial_npv(self):
+        # https://www.nrel.gov/docs/legosti/old/5173.pdf, p. 41
+        rate = 0.12
+        cashflow_series = [-10000, 7274, 6558, 6223, 6087, 6259]
+        npv = npf.npv(rate, cashflow_series)
+        self.assertEqual(13572, round(npv))
+
+        # https://support.microsoft.com/en-us/office/npv-function-8672cb67-2576-4d07-b67b-ac28acf2a568
+        rate = 0.1
+        cashflow_series = [-10000, 3000, 4200, 6800]
+        excel_npv = npf.npv(rate, [0, *cashflow_series])
+        self.assertEqual(1188.44, round(excel_npv, 2))
 
     def test_well_drilling_cost_correlation_tooltiptext(self):
         ec = self._new_model().economics

@@ -153,15 +153,6 @@ class SUTRAEconomics(Economics.Economics):
             ErrMessage="assume default: no economics calculations",
             ToolTipText="Set to true if you want the add-on economics calculations to be made",
         )
-        self.DoCCUSCalculations = self.ParameterDict[self.DoCCUSCalculations.Name] = boolParameter(
-            "Do CCUS Calculations",
-            value=False,
-            DefaultValue=False,
-            UnitType=Units.NONE,
-            Required=False,
-            ErrMessage="assume default: no CCUS calculations",
-            ToolTipText="Set to true if you want the CCUS economics calculations to be made",
-        )
         self.DoSDACGTCalculations = self.ParameterDict[self.DoSDACGTCalculations.Name] = boolParameter(
             "Do S-DAC-GT Calculations",
             value=False,

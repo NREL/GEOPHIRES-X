@@ -1,26 +1,8 @@
-# Example 1 with Addons
+# Example 1 with Add-Ons
 
+# ***ADD-ONS PARAMETERS***
+# ************************
 Do AddOn Calculations, True
-Do Carbon Price Calculations, True
-
-Starting Carbon Credit Value,0.015
-Ending Carbon Credit Value, 0.1
-Carbon Escalation Start Year, 5
-Carbon Escalation Rate Per Year, 0.01
-Current Grid CO2 production,0.82
-Starting Heat Sale Price,0.0123
-Ending Heat Sale Price,0.0359
-Heat Escalation Start Year,7
-Heat Escalation Rate Per Year,0.01
-Starting Electricity Sale Price,0.09
-Ending Electricity Sale Price,0.15
-Electricity Escalation Start Year,5
-Electricity Escalation Rate Per Year,0.012
-Annual License Etc,0
-Flat License Etc,0
-Other Incentives,2.112
-Tax Relief Per Year,2.212
-One-time Grants Etc,20.212
 AddOn Nickname 1, Desalinization
 AddOn CAPEX 1, 10
 AddOn OPEX 1, 0.1
@@ -39,6 +21,17 @@ AddOn OPEX 3, 0.6
 AddOn Electricity Gained 3, 0.0
 AddOn Heat Gained 3, 0
 AddOn Profit Gained 3, 0
+
+# ***CARBON PRICE PARAMETERS***
+# *****************************
+Do Carbon Price Calculations, True
+Starting Carbon Credit Value,0.015
+Ending Carbon Credit Value, 0.1
+Carbon Escalation Start Year, 5
+Carbon Escalation Rate Per Year, 0.01
+
+# ***RESERVOIR PARAMETERS***
+# **************************
 Reservoir Model,1,                        			---Multiple Fractures reservoir model
 Reservoir Depth,3,                     				---[km]
 Number of Segments,1,                  				---[-]
@@ -58,14 +51,18 @@ Reservoir Volume Option,3,              			---[-]
 Reservoir Volume,1000000000,		 			---[m^3]
 Number of Fractures,20,		  				---[-]
 Water Loss Fraction,.02,					---[-]
+Reservoir Heat Capacity,1000,		  			---[J/kg/K]
+Reservoir Density,2700,			  			---[kg/m^3]
+Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
+
+# ***WELLBORES PARAMETERS***
+# **************************
 Productivity Index,5,						---[kg/s/bar]
 Injectivity Index,5,						---[kg/s/bar]
 Injection Temperature,50,		 			---[deg.C]
 Maximum Drawdown,1,			  			---[-] no redrilling considered,
 Well Drilling Cost Correlation,1,		---[-] Use built-in correlations
-Reservoir Heat Capacity,1000,		  			---[J/kg/K]
-Reservoir Density,2700,			  			---[kg/m^3]
-Reservoir Thermal Conductivity,2.7,	  			---[W/m/K]
+
 
 # ***SURFACE TECHNICAL PARAMETERS***
 # **********************************
@@ -77,15 +74,30 @@ Utilization Factor,.9,			  			---[-] between .1 and 1
 Surface Temperature,20,		  				---[deg.C]
 Ambient Temperature,20,		 				---[deg.C]
 
-# ***FINANCIAL PARAMETERS***
-# **************************
+# ***FINANCIAL & ECONOMIC PARAMETERS***
+# *************************************
 Plant Lifetime,30,			  			---[years]
 Fixed Charge Rate,.05,			 			---[-] between 0 and 1
 Inflation Rate During Construction,0,   			---[-]
 
+Annual License Fees Etc, 0
+One-time Flat License Fees Etc, 0
+Other Incentives, 2.112
+Tax Relief Per Year, 2.212
+One-time Grants Etc,20.212
+
+Current Grid CO2 production,0.82
+Starting Heat Sale Price,0.0123
+Ending Heat Sale Price,0.0359
+Heat Escalation Start Year,7
+Heat Escalation Rate Per Year,0.01
+Starting Electricity Sale Price,0.09
+Ending Electricity Sale Price,0.15
+Electricity Escalation Start Year,5
+Electricity Escalation Rate Per Year,0.012
+
 # ***Simulation Parameters***
 # ***************************
-
 Print Output to Console,1,		  			---[-] Should be 0 (don't print results) or 1 (print results)
 Time steps per year,6,		  				---[1/year]
 Units:Total Saved Carbon Production, kilotonne,

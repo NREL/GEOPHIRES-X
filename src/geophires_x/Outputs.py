@@ -2091,7 +2091,7 @@ class Outputs:
                         ') (' + o(econ.CoolingRevenue).CurrentUnits.value +
                         ')    (' + o(econ.CoolingCummRevenue).CurrentUnits.value +
                         ')    |(' + o(econ.CarbonPrice).CurrentUnits.value +
-                        ') (' + o(econ.CarbonRevenue).CurrentUnits.value +
+                        ')    (' + o(econ.CarbonRevenue).CurrentUnits.value +
                         ')    (' + o(econ.CarbonCummCashFlow).CurrentUnits.value +
                         ')    |(' + o(econ.Coam).CurrentUnits.value +
                         ') (' + o(econ.TotalRevenue).CurrentUnits.value +

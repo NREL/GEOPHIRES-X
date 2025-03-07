@@ -876,10 +876,10 @@ class Economics:
         )
 
         # TODO add support for float values
-        self.cashflow_series_start_year = self.ParameterDict[self.discountrate.Name] = intParameter(
+        self.cashflow_series_start_year = self.ParameterDict[self.cashflow_series_start_year.Name] = intParameter(
             "Cashflow Series Start Year",
             DefaultValue=0,
-            AllowableRange=[0,1],
+            AllowableRange=[0, 1],
             UnitType=Units.NONE,
             ErrMessage=f'assume default Cashflow Series Start Year ({0})',
             ToolTipText="Cashflow Series Start Year used to calculate NPV"

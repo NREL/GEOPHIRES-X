@@ -309,7 +309,8 @@ def CalculateFinancialPerformance(plantlifetime: int,
                                   TotalRevenue: list,
                                   TotalCummRevenue: list,
                                   CAPEX: float,
-                                  OPEX: float):
+                                  OPEX: float,
+                                  cashflow_series_start_year: float = 0.):
     """
     CalculateFinancialPerformance calculates the financial performance of the project.  It is used to calculate the
     financial performance of the project. It is used to calculate the revenue stream for the project.
@@ -325,6 +326,9 @@ def CalculateFinancialPerformance(plantlifetime: int,
     :type CAPEX: float
     :param OPEX: The total annual operating cost of the project in MUSD
     :type OPEX: float
+    :param cashflow_series_start_year: The starting year of the cashflow series used to calculate NPV
+    :type cashflow_series_start_year: float
+
     :return: NPV: The net present value of the project in MUSD
     :rtype: float
     :return: IRR: The internal rate of return of the project in %
@@ -336,8 +340,19 @@ def CalculateFinancialPerformance(plantlifetime: int,
     :rtype: tuple
     """
     # Calculate financial performance values using numpy financials
-    NPV = npf.npv(FixedInternalRate / 100, TotalRevenue)
-    IRR = npf.irr(TotalRevenue)
+
+    cashflow_series = TotalRevenue.copy()
+
+    if cashflow_series_start_year not in [0., 1.]:
+        param_name = 'Cashflow Series Start Year'  # TODO reference name defined in parameter dict
+        raise NotImplementedError(f'Unsupported value for {param_name}: {cashflow_series_start_year}')
+
+
+    if cashflow_series_start_year == 1.:
+        cashflow_series = [0, *cashflow_series]
+
+    NPV = npf.npv(FixedInternalRate / 100, cashflow_series)
+    IRR = npf.irr(cashflow_series)
     if math.isnan(IRR):
         IRR = 0.0
     else:
@@ -859,6 +874,19 @@ class Economics:
                         "Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value "
                         "will be automatically set to the same value."
         )
+
+        # TODO add support for float values
+        self.cashflow_series_start_year = self.ParameterDict[self.discountrate.Name] = intParameter(
+            "Cashflow Series Start Year",
+            DefaultValue=0,
+            AllowableRange=[0,1],
+            UnitType=Units.NONE,
+            ErrMessage=f'assume default Cashflow Series Start Year ({0})',
+            ToolTipText="Cashflow Series Start Year used to calculate NPV"
+                        # "in the Standard Levelized Cost Model." # (?)
+                        # TODO documentation re: values/conventions
+        )
+
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
             DefaultValue=0.5,
@@ -2881,9 +2909,15 @@ class Economics:
 
         # Calculate more financial values using numpy financials
         self.ProjectNPV.value, self.ProjectIRR.value, self.ProjectVIR.value, self.ProjectMOIC.value = \
-            CalculateFinancialPerformance(model.surfaceplant.plant_lifetime.value, self.FixedInternalRate.value,
-                                          self.TotalRevenue.value, self.TotalCummRevenue.value, self.CCap.value,
-                                          self.Coam.value)
+            CalculateFinancialPerformance(
+                model.surfaceplant.plant_lifetime.value,
+                self.FixedInternalRate.value,
+                self.TotalRevenue.value,
+                self.TotalCummRevenue.value,
+                self.CCap.value,
+                self.Coam.value,
+                self.cashflow_series_start_year.value
+            )
 
         # Calculate the project payback period
         self.ProjectPaybackPeriod.value = 0.0   # start by assuming the project never pays back

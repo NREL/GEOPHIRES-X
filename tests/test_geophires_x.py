@@ -590,6 +590,25 @@ Print Output to Console, 1"""
                 logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
             )
 
+    def test_cashflow_series_start_year(self):
+        def _get_result(series_start_year: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    # TODO switch over to generic EGS case to avoid thrash from example updates
+                    # from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    from_file_path=self._get_test_file_path('examples/Fervo_Project_Cape-3.txt'),
+                    params={
+                        'Cashflow Series Start Year': series_start_year,
+                    },
+                )
+            )
+
+        def _npv(r: GeophiresXResult) -> dict:
+            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+        self.assertEqual(4561.96, _npv(_get_result(0)))
+        self.assertEqual(4263.51, _npv(_get_result(1)))
+
     def test_transmission_pipeline_cost(self):
         result = GeophiresXClient().get_geophires_result(
             GeophiresInputParameters(

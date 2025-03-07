@@ -18,6 +18,12 @@ GEOPHIRES-X (2023-2025)
 
 3.7.6: Fixes bugs pertaining to specifying non-CLGS laterals and display of per-lateral costs.
 
+3.7.21:
+
+1. Carbon Revenue Profile (CCUS Profile `replacement <https://github.com/NREL/GEOPHIRES-X/issues/141>`__) added to client result.
+
+2. Electricity annual revenue profile data `issue <https://github.com/NREL/GEOPHIRES-X/issues/342>`__ resolved.
+
 3.6
 ^^^
 

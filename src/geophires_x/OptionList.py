@@ -166,13 +166,13 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
         "2022 GETEM Geothermal Drilling Cost Curve Update."
         https://www.nrel.gov/docs/fy23osti/82771.pdf
 
-    Note: order must be retained since input is read as an int; first int arg is duplicative of order
+    Note: order should be retained since input is read as an int; first int arg is duplicative of order
     """
 
-    VERTICAL_SMALL = 1, "vertical small diameter, baseline (2025 curve)", 0.258496, 357.967, 738531.58
-    DEVIATED_SMALL = 2, "deviated small diameter, baseline", 0.28977, 882.15067, 680562.50150
-    VERTICAL_LARGE = 3, "vertical large diameter, baseline (2025 curve)", 0.248458, 935.8985, 626586.68
-    DEVIATED_LARGE = 4, "deviated large diameter, baseline", 0.25528, 1716.71568, 500866.89110
+    VERTICAL_SMALL = 1, "vertical small diameter, baseline (2025 cost curve)", 0.258496, 357.967, 738531.58
+    DEVIATED_SMALL = 2, "deviated small diameter, baseline (2025 cost curve)", 0.240624, 646.1621, 503625.06
+    VERTICAL_LARGE = 3, "vertical large diameter, baseline (2025 cost curve)", 0.248458, 935.8985, 626586.68
+    DEVIATED_LARGE = 4, "deviated large diameter, baseline (2025 cost curve)", 0.217333, 1362.93, 301066.16
 
     SIMPLE = 5, "Simple", 0, 1846*1E6, 0  # Based on Fervo Project Cape cost per meter (~$1846/m)
 

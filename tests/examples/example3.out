@@ -4,18 +4,18 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.19
- Simulation Date: 2025-02-28
- Simulation Time:  11:33
- Calculation Time:      0.117 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
+ Calculation Time:      0.119 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Cogeneration Topping Cycle, Heat sales considered as extra income
       Average Net Electricity Production:                    19.50 MW
       Average Direct-Use Heat Production:                    10.73 MW
-      Electricity breakeven price:                            6.42 cents/kWh
-      Direct-Use heat breakeven price (LCOH):                 2.38 USD/MMBTU
+      Electricity breakeven price:                            6.41 cents/kWh
+      Direct-Use heat breakeven price (LCOH):                 2.37 USD/MMBTU
       Number of production wells:                             3
       Number of injection wells:                              3
       Flowrate per production well:                          70.0 kg/sec
@@ -29,8 +29,8 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      35 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -11.42 MUSD
-      Project IRR:                                           5.99 %
+      Project NPV:                                         -11.33 MUSD
+      Project IRR:                                           6.00 %
       Project VIR=PI=PIR:                                    0.90
       Project MOIC:                                          0.64
       Project Payback Period:                               14.84 yr
@@ -119,14 +119,14 @@ Simulation Metadata
       Average Net Electricity Generation:                    19.50 MW
       Minimum Net Electricity Generation:                    16.73 MW
       Initial Net Electricity Generation:                    20.96 MW
-      Average Annual Total Electricity Generation:          154.85 GWh
-      Average Annual Net Electricity Generation:            153.28 GWh
+      Average Annual Total Electricity Generation:          155.24 GWh
+      Average Annual Net Electricity Generation:            153.66 GWh
       Initial pumping power/net installed power:              0.95 %
       Maximum Net Heat Production:                           11.67 MW
       Average Net Heat Production:                           10.73 MW
       Minimum Net Heat Production:                            8.80 MW
       Initial Net Heat Production:                           11.67 MW
-      Average Annual Heat Production:                        84.33 GWh
+      Average Annual Heat Production:                        84.53 GWh
       Average Pumping Power:                                  0.20 MW
       Heat to Power Conversion Efficiency:                   16.50 %
 
@@ -213,7 +213,7 @@ Simulation Metadata
   32                72.9                  136.5                    950.78              -34.96               141.64
   33                71.9                  135.2                    944.54              -38.36               145.69
   34                70.8                  133.8                    938.36              -41.74               149.72
-  35                62.8                  119.3                    839.28              -44.76               153.32
+  35                69.8                  132.5                    932.53              -45.10               153.72
 
 
                              ********************************

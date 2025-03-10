@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:32
- Calculation Time:      0.797 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      0.967 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     0.47 MW
-      Electricity breakeven price:                           50.47 cents/kWh
+      Electricity breakeven price:                           50.22 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          40.0 kg/sec
@@ -31,7 +31,7 @@ Simulation Metadata
       Project NPV:                                         -30.84 MUSD
       Project IRR:                                           0.00 %
       Project VIR=PI=PIR:                                   -0.12
-      Project MOIC:                                         -0.86
+      Project MOIC:                                         -0.85
       Project Payback Period:                          N/A
       Estimated Jobs Created:                                 1
 
@@ -124,8 +124,8 @@ Simulation Metadata
       Average Net Electricity Generation:                     0.47 MW
       Minimum Net Electricity Generation:                     0.41 MW
       Initial Net Electricity Generation:                     0.46 MW
-      Average Annual Total Electricity Generation:            4.29 GWh
-      Average Annual Net Electricity Generation:              3.67 GWh
+      Average Annual Total Electricity Generation:            4.31 GWh
+      Average Annual Net Electricity Generation:              3.69 GWh
       Initial pumping power/net installed power:             16.55 %
       Average Pumping Power:                                  0.08 MW
       Heat to Power Conversion Efficiency:                    4.64 %
@@ -203,7 +203,7 @@ Simulation Metadata
   27                   3.4                        76.4                 21.54                  26.51
   28                   3.3                        76.0                 21.27                  27.44
   29                   3.3                        75.5                 21.00                  28.37
-  30                   2.7                        62.6                 20.77                  29.14
+  30                   3.2                        75.1                 20.73                  29.29
 
 
                              ********************************

@@ -573,11 +573,11 @@ class GeophiresXClientTestCase(BaseTestCase):
         )
 
         # Values below need to be synchronized if S-DAC-GT example output values change.
-        self.assertEqual(sdacgt_profile[1], [1, 78330.8, 78330.8, 17411627.98, 17411627.98, 222.28])
+        self.assertEqual([1, 78330.8, 78330.8, 17411627.98, 17411627.98, 222.28], sdacgt_profile[1])
 
         self.assertEqual(
-            sdacgt_profile[15],
             [15, 76263.89, 1167207.48, 16952186.81, 259450710.33, 222.28],
+            sdacgt_profile[15],
         )
 
-        self.assertEqual(sdacgt_profile[30], [30, 61974.61, 2246284.1, 13775920.11, 499311405.59, 222.28])
+        self.assertEqual([30, 68860.68, 2253170.17, 15306577.89, 500842063.38, 222.28], sdacgt_profile[30])

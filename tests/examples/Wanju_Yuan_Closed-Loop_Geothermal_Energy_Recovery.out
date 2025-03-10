@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
- Calculation Time:      1.612 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      1.655 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     1.10 MW
-      Electricity breakeven price:                           82.16 cents/kWh
+      Electricity breakeven price:                           81.93 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                         110.0 kg/sec
@@ -105,8 +105,8 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
       Average Net Electricity Generation:                     1.10 MW
       Minimum Net Electricity Generation:                     0.94 MW
       Initial Net Electricity Generation:                     1.66 MW
-      Average Annual Total Electricity Generation:            8.64 GWh
-      Average Annual Net Electricity Generation:              8.63 GWh
+      Average Annual Total Electricity Generation:            8.71 GWh
+      Average Annual Net Electricity Generation:              8.69 GWh
       Initial pumping power/net installed power:              0.13 %
       Average Pumping Power:                                  0.00 MW
       Heat to Power Conversion Efficiency:                    5.16 %
@@ -204,7 +204,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
   37                   8.0                       159.3                 11.09                  66.90
   38                   8.4                       164.8                 10.50                  68.67
   39                   7.7                       155.4                  9.94                  70.34
-  40                   7.5                       138.1                  9.44                  71.82
+  40                  10.1                       184.1                  9.28                  72.32
 
 
                              ********************************

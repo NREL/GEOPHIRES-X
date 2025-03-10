@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:37
- Calculation Time:     22.627 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
+ Calculation Time:     12.779 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     0.00 MW
-      Electricity breakeven price:                        18339.44 cents/kWh
+      Electricity breakeven price:                        18276.64 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                           6.0 kg/sec
@@ -183,7 +183,7 @@ The AGS models contain an intrinsic reservoir model that doesn't expose values t
   27                   0.0                         6.8                  0.22                  75.29
   28                   0.0                         6.8                  0.19                  78.07
   29                   0.0                         6.8                  0.17                  80.85
-  30                   0.0                         5.1                  0.15                  82.94
+  30                   0.0                         6.8                  0.14                  83.63
 
 
                              ********************************

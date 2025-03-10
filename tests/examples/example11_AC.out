@@ -4,9 +4,9 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
  Calculation Time:      0.102 sec
 
                            ***SUMMARY OF RESULTS***
@@ -15,7 +15,7 @@ Simulation Metadata
       Surface Application: Absorption Chiller
       Average Direct-Use Heat Production:                     8.62 MW
       Average Cooling Production:                             5.58 MW
-      Direct-Use Cooling Breakeven Price (LCOC):              17.28 USD/MMBTU
+      Direct-Use Cooling Breakeven Price (LCOC):              17.26 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          50.0 kg/sec
@@ -30,8 +30,8 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                           6.22 MUSD
-      Project IRR:                                           6.82 %
+      Project NPV:                                           6.28 MUSD
+      Project IRR:                                           6.83 %
       Project VIR=PI=PIR:                                    1.21
       Project MOIC:                                          0.83
       Project Payback Period:                               13.36 yr
@@ -119,12 +119,12 @@ Simulation Metadata
       Average Net Heat Production:                            8.62 MW
       Minimum Net Heat Production:                            7.88 MW
       Initial Net Heat Production:                            8.95 MW
-      Average Annual Heat Production:                        67.73 GWh
+      Average Annual Heat Production:                        67.94 GWh
       Maximum Cooling Production:                             5.80 MW
       Average Cooling Production:                             5.58 MW
       Minimum Cooling Production:                             5.10 MW
       Initial Cooling Production:                             5.80 MW
-      Average Annual Cooling Production:                     43.89 GWh/year
+      Average Annual Cooling Production:                     44.02 GWh/year
       Average Pumping Power:                                  0.20 MW
 
                             ************************************************************
@@ -200,7 +200,7 @@ Simulation Metadata
   27                  41.3                   63.8                  7.33                  47.59
   28                  41.0                   63.3                  7.11                  49.22
   29                  40.7                   62.8                  6.88                  50.84
-  30                  36.3                   56.1                  6.68                  52.28
+  30                  40.4                   62.3                  6.65                  52.44
 
 
                              ********************************

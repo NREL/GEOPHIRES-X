@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
- Calculation Time:      0.447 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      0.461 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     2.26 MW
-      Electricity breakeven price:                           26.95 cents/kWh
+      Electricity breakeven price:                           26.75 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              1
       Flowrate per production well:                          41.0 kg/sec
@@ -27,10 +27,10 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      10 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -13.17 MUSD
-      Project IRR:                                          -4.65 %
-      Project VIR=PI=PIR:                                    0.53
-      Project MOIC:                                         -0.19
+      Project NPV:                                         -13.03 MUSD
+      Project IRR:                                          -4.40 %
+      Project VIR=PI=PIR:                                    0.54
+      Project MOIC:                                         -0.18
       Project Payback Period:                          N/A
       Estimated Jobs Created:                                 6
 
@@ -125,8 +125,8 @@ Simulation Metadata
       Average Net Electricity Generation:                     2.26 MW
       Minimum Net Electricity Generation:                     1.74 MW
       Initial Net Electricity Generation:                     2.24 MW
-      Average Annual Total Electricity Generation:           22.63 GWh
-      Average Annual Net Electricity Generation:             17.70 GWh
+      Average Annual Total Electricity Generation:           22.83 GWh
+      Average Annual Net Electricity Generation:             17.85 GWh
       Initial pumping power/net installed power:             28.16 %
       Average Pumping Power:                                  0.63 MW
       Heat to Power Conversion Efficiency:                    9.95 %
@@ -164,7 +164,7 @@ Simulation Metadata
    7                  18.4                       181.3                  5.26                  46.44
    8                  18.1                       180.2                  4.61                  53.05
    9                  17.1                       176.6                  3.98                  59.52
-  10                  13.6                       151.9                  3.43                  65.09
+  10                  15.1                       168.8                  3.37                  65.70
 
 
                              ********************************

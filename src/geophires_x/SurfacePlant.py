@@ -21,14 +21,16 @@ class SurfacePlant:
         # Note that len(_slice) - 1 may be less than time_steps_per_year for the last slice.
 
         if len(_slice) == 1:
-            return _slice[0]
+            integral = _slice[0]
+        else:
+            dx_steps = len(_slice) - 1
 
-        dx_steps = len(_slice) - 1
+            integral = np.trapz(
+                _slice,
+                dx=1. / dx_steps * 365. * 24.
+            )
 
-        return np.trapz(
-            _slice,
-            dx=1. / dx_steps * 365. * 24.
-        ) * 1000. * utilization_factor
+        return integral * 1000. * utilization_factor
 
     def remaining_reservoir_heat_content(self, InitialReservoirHeatContent: np.ndarray, HeatkWhExtracted:  np.ndarray) -> np.ndarray:
         """

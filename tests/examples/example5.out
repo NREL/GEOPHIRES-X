@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
- Calculation Time:      0.049 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
+ Calculation Time:      0.048 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Average Direct-Use Heat Production:                    19.69 MW
-      Direct-Use heat breakeven price (LCOH):                  8.86 USD/MMBTU
+      Direct-Use heat breakeven price (LCOH):                  8.84 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          50.0 kg/sec
@@ -27,10 +27,10 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                          -3.98 MUSD
-      Project IRR:                                           5.86 %
-      Project VIR=PI=PIR:                                    0.90
-      Project MOIC:                                          0.49
+      Project NPV:                                          -3.88 MUSD
+      Project IRR:                                           5.90 %
+      Project VIR=PI=PIR:                                    0.91
+      Project MOIC:                                          0.50
       Project Payback Period:                               13.32 yr
 
                           ***ENGINEERING PARAMETERS***
@@ -104,8 +104,8 @@ Simulation Metadata
          Wellfield maintenance costs:                         0.44 MUSD/yr
          Power plant maintenance costs:                       0.71 MUSD/yr
          Water costs:                                         0.05 MUSD/yr
-         Average Reservoir Pumping Cost:                      0.30 MUSD/yr
-      Total operating and maintenance costs:                  1.50 MUSD/yr
+         Average Reservoir Pumping Cost:                      0.31 MUSD/yr
+      Total operating and maintenance costs:                  1.51 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -114,7 +114,7 @@ Simulation Metadata
       Average Net Heat Production:                           19.69 MW
       Minimum Net Heat Production:                           14.65 MW
       Initial Net Heat Production:                           24.29 MW
-      Average Annual Heat Production:                       153.95 GWh
+      Average Annual Heat Production:                       154.92 GWh
       Average Pumping Power:                                  0.55 MW
 
                             ************************************************************
@@ -190,7 +190,7 @@ Simulation Metadata
   27                 121.8                       135.3                181.27                   8.65
   28                 119.8                       133.1                180.80                   8.90
   29                 117.8                       130.9                180.32                   9.13
-  30                  87.2                        96.9                179.98                   9.31
+  30                 116.2                       129.1                179.86                   9.37
 
 
                              ********************************

@@ -196,7 +196,7 @@ def RameyCalc(krock: float, rhorock: float, cprock: float, welldiam: float, tv, 
     framey = np.zeros(alen)
     framey[1:] = -np.log(
         1.1 * (welldiam / 2.0) / np.sqrt(4. * alpharock * tv[1:] * 365.0 * 24.0 * 3600.0 * utilfactor)) - 0.29
-    framey[0] = framey[1]  # fource the first value to be the same as the second to get away from near surface effects
+    framey[0] = framey[1]  # force the first value to be the same as the second to get away from near surface effects
     rameyA = flowrate * cpwater * framey / 2 / math.pi / krock
     TempDrop = -((Trock - Tresoutput) - averagegradient * (depth - rameyA) + (
         Tresoutput - averagegradient * rameyA - Trock) * np.exp(-depth / rameyA))

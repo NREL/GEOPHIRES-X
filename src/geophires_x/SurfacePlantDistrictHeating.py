@@ -215,35 +215,37 @@ class SurfacePlantDistrictHeating(SurfacePlant):
         self.HeatkWhExtracted.value = np.zeros(self.plant_lifetime.value)
         self.PumpingkWh.value = np.zeros(self.plant_lifetime.value)
 
+        def _integrate_slice(series, _i, util_factor):
+            return SurfacePlant.integrate_time_series_slice(
+                series, _i, model.economics.timestepsperyear.value, util_factor
+            )
+
+
         for i in range(0, self.plant_lifetime.value):
-            if self.plant_type.value == PlantType.DISTRICT_HEATING:  # for district heating, we have a util_factor_array
-                self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
-                                                          (0 + i * model.economics.timestepsperyear.value):((
-                                                           i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * \
-                                                 self.util_factor_array.value[i]
-                self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
-                                                    (0 + i * model.economics.timestepsperyear.value):((
-                                                    i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * \
-                                           self.util_factor_array.value[i]
+            if self.plant_type.value == PlantType.DISTRICT_HEATING:
+                self.HeatkWhExtracted.value[i] = _integrate_slice(
+                    self.HeatExtracted.value,
+                    i,
+                    self.util_factor_array.value[i]
+                )
+
+                self.PumpingkWh.value[i] = _integrate_slice(
+                    model.wellbores.PumpingPower.value,
+                    i,
+                    # for district heating, we have a util_factor_array
+                    self.util_factor_array.value[i]
+                )
             else:
-                self.HeatkWhExtracted.value[i] = np.trapz(self.HeatExtracted.value[
-                                                          (0 + i * model.economics.timestepsperyear.value):((
-                                                          i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                          dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
-                self.PumpingkWh.value[i] = np.trapz(model.wellbores.PumpingPower.value[
-                                                    (0 + i * model.economics.timestepsperyear.value):((
-                                                    i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                    dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * self.utilization_factor.value
+                self.HeatkWhExtracted.value[i] = _integrate_slice(self.HeatExtracted.value, i, self.utilization_factor.value)
+                self.PumpingkWh.value[i] = _integrate_slice(model.wellbores.PumpingPower.value, i, self.utilization_factor.value)
 
         self.HeatkWhProduced.value = np.zeros(self.plant_lifetime.value)
         for i in range(0, self.plant_lifetime.value):
-            self.HeatkWhProduced.value[i] = np.trapz(self.HeatProduced.value[
-                                                     (0 + i * model.economics.timestepsperyear.value):((
-                                                     i + 1) * model.economics.timestepsperyear.value) + 1],
-                                                     dx=1. / model.economics.timestepsperyear.value * 365. * 24.) * 1000. * \
-                                                     self.util_factor_array.value[i]
+            self.HeatkWhProduced.value[i] = _integrate_slice(
+                self.HeatProduced.value,
+                i,
+                self.util_factor_array.value[i]
+            )
 
         # calculate reservoir heat content
         self.RemainingReservoirHeatContent.value = SurfacePlant.remaining_reservoir_heat_content(

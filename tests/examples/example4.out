@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.20
- Simulation Date: 2025-03-04
- Simulation Time:  08:31
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
  Calculation Time:      0.049 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     7.00 MW
-      Electricity breakeven price:                           11.27 cents/kWh
+      Electricity breakeven price:                           11.23 cents/kWh
       Number of production wells:                             3
       Number of injection wells:                              2
       Flowrate per production well:                         110.0 kg/sec
@@ -27,8 +27,8 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -38.19 MUSD
-      Project IRR:                                          -2.92 %
+      Project NPV:                                         -38.10 MUSD
+      Project IRR:                                          -2.75 %
       Project VIR=PI=PIR:                                    0.31
       Project MOIC:                                         -0.17
       Project Payback Period:                          N/A
@@ -120,8 +120,8 @@ Simulation Metadata
       Average Net Electricity Generation:                     7.00 MW
       Minimum Net Electricity Generation:                     5.87 MW
       Initial Net Electricity Generation:                     8.18 MW
-      Average Annual Total Electricity Generation:           64.97 GWh
-      Average Annual Net Electricity Generation:             54.69 GWh
+      Average Annual Total Electricity Generation:           65.44 GWh
+      Average Annual Net Electricity Generation:             55.08 GWh
       Initial pumping power/net installed power:             15.60 %
       Average Pumping Power:                                  1.31 MW
       Heat to Power Conversion Efficiency:                    7.30 %
@@ -199,7 +199,7 @@ Simulation Metadata
   27                  48.2                       706.2                138.79                  34.72
   28                  47.6                       702.0                136.27                  35.91
   29                  47.0                       697.9                133.75                  37.09
-  30                  34.9                       520.8                131.88                  37.98
+  30                  46.5                       694.3                131.25                  38.27
 
 
                              ********************************

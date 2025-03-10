@@ -168,6 +168,12 @@ class GeophiresXTestCase(BaseTestCase):
             )
         )
 
+        # Run SBT examples last because they take an inordinately long time (tens of seconds even on a fast machine).
+        # This reduces time spent waiting for tests to run if you are iterating on changes that affect non-SBT examples.
+        for ef in [_ef for _ef in example_files if _ef.startswith('example_SBT')]:
+            example_files.remove(ef)
+            example_files.append(ef)
+
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
         regenerate_cmds = []
         for example_file_path in example_files:
@@ -379,7 +385,7 @@ Print Output to Console, 1"""
 
         self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
         self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
-        self.assertAlmostEqual(104.34, get_fcr_lcoe(0.8), places=0)
+        self.assertAlmostEqual(103.76, get_fcr_lcoe(0.8), places=0)
 
     def test_vapor_pressure_above_critical_temperature(self):
         """https://github.com/NREL/GEOPHIRES-X/issues/214"""
@@ -670,3 +676,37 @@ Print Output to Console, 1"""
         self.assertIsNotNone(_c_non_vert(r_1)['value'])
 
         self.assertEqual(_c_non_vert(r_1)['value'], _c_non_vert(_get_result(2))['value'])
+
+    def test_single_time_step_per_year(self):
+        result_1 = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={'Time steps per year': 1},
+            )
+        )
+
+        result_1_final_val = result_1.heat_electricity_extraction_generation_profile[-1][1]
+        self.assertGreater(result_1_final_val, 0)
+
+        result_2 = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={'Time steps per year': 2},
+            )
+        )
+
+        result_2_final_val = result_2.heat_electricity_extraction_generation_profile[-1][1]
+        self.assertAlmostEqual(result_2_final_val, result_1_final_val, delta=1.5)
+
+        # TODO enable once https://github.com/NREL/GEOPHIRES-X/issues/352 is resolved
+        # result_1_1 = GeophiresXClient().get_geophires_result(
+        #     GeophiresInputParameters(
+        #         from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+        #         params={
+        #             'Time steps per year': 1,
+        #             'Plant Lifetime': 1
+        #         },
+        #     )
+        # )
+        #
+        # self.assertIsNotNone(result_1_1)

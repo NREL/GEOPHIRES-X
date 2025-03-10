@@ -676,3 +676,37 @@ Print Output to Console, 1"""
         self.assertIsNotNone(_c_non_vert(r_1)['value'])
 
         self.assertEqual(_c_non_vert(r_1)['value'], _c_non_vert(_get_result(2))['value'])
+
+    def test_single_time_step_per_year(self):
+        result_1 = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={'Time steps per year': 1},
+            )
+        )
+
+        result_1_final_val = result_1.heat_electricity_extraction_generation_profile[-1][1]
+        self.assertGreater(result_1_final_val, 0)
+
+        result_2 = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={'Time steps per year': 2},
+            )
+        )
+
+        result_2_final_val = result_2.heat_electricity_extraction_generation_profile[-1][1]
+        self.assertAlmostEqual(result_2_final_val, result_1_final_val, delta=1.5)
+
+        # TODO enable once https://github.com/NREL/GEOPHIRES-X/issues/352 is resolved
+        # result_1_1 = GeophiresXClient().get_geophires_result(
+        #     GeophiresInputParameters(
+        #         from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+        #         params={
+        #             'Time steps per year': 1,
+        #             'Plant Lifetime': 1
+        #         },
+        #     )
+        # )
+        #
+        # self.assertIsNotNone(result_1_1)

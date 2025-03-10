@@ -73,7 +73,8 @@ class SurfacePlantTestCase(BaseTestCase):
             TotalkWhProduced[i] = _integrate_slice(ElectricityProduced, i)
             NetkWhProduced[i] = _integrate_slice(NetElectricityProduced, i)
 
-        self.assertEqual(TotalkWhProduced[-1], ElectricityProduced[-1])
+        self.assertAlmostEqual(3194711457.45603, NetkWhProduced[-1], places=3)
+        self.assertAlmostEqual(TotalkWhProduced[-2], TotalkWhProduced[-1], delta=308_000)
 
     def _workaround_module_initialization_order_dependency(self) -> Model:
         stash_cwd = Path.cwd()

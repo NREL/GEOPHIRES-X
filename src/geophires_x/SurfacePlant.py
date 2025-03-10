@@ -16,19 +16,25 @@ class SurfacePlant:
         time_steps_per_year: int,
         utilization_factor: float
     ) -> np.float64:
-        _slice = series[(0 + _i * time_steps_per_year):((_i + 1) * time_steps_per_year) + 1]
+        slice_start_index = _i * time_steps_per_year
+        slice_end_index = ((_i + 1) * time_steps_per_year) + 1
+        _slice = list(series[slice_start_index:slice_end_index])
 
         # Note that len(_slice) - 1 may be less than time_steps_per_year for the last slice.
 
         if len(_slice) == 1:
-            integral = _slice[0]
-        else:
-            dx_steps = len(_slice) - 1
+            extrapolated_future_datapoint = _slice[0]
+            if slice_start_index - 1 > 0:
+                delta = series[slice_start_index] - series[slice_start_index - 1]
+                extrapolated_future_datapoint = _slice[0] + delta
+            _slice.append(extrapolated_future_datapoint)
 
-            integral = np.trapz(
-                _slice,
-                dx=1. / dx_steps * 365. * 24.
-            )
+        dx_steps = len(_slice) - 1
+
+        integral = np.trapz(
+            _slice,
+            dx=1. / dx_steps * 365. * 24.
+        )
 
         return integral * 1000. * utilization_factor
 

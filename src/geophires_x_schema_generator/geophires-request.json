@@ -1247,7 +1247,7 @@
       "description": "Number of years spent in construction (assumes whole years, no fractions)",
       "type": "integer",
       "units": null,
-      "category": "Economics",
+      "category": "Surface Plant",
       "default": 1,
       "minimum": 1,
       "maximum": 14
@@ -1956,7 +1956,7 @@
       "maximum": 100
     },
     "Ending Electricity Sale Price": {
-      "description": "",
+      "description": "The maximum price to which the electricity sale price can escalate. For example, if Starting Electricity Sale Price = 0.10 USD/kWh and Electricity Escalation Rate = 0.01 USD/kWh/yr: Electricity Price will reach 0.15 USD/kWh after 4 years of escalation. The price will then remain at 0.15 USD/kWh for the remaining years of the project lifetime. If the Ending Electricity Sale Price is not reached by escalation during the project lifetime, then the value will have no effect beyond allowing escalation to occur every year.",
       "type": "number",
       "units": "USD/kWh",
       "category": "Economics",
@@ -2216,53 +2216,8 @@
       "minimum": 0.0,
       "maximum": 10000.0
     },
-    "Do CCUS Calculations": {
-      "description": "Set to true if you want the CCUS economics calculations to be made",
-      "type": "boolean",
-      "units": null,
-      "category": "Economics",
-      "default": false,
-      "minimum": null,
-      "maximum": null
-    },
-    "Ending CCUS Credit Value": {
-      "description": "",
-      "type": "number",
-      "units": "USD/lb",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0,
-      "maximum": 1000
-    },
-    "CCUS Escalation Start Year": {
-      "description": "Number of years after start of project before start of CCUS incentives",
-      "type": "integer",
-      "units": "yr",
-      "category": "Economics",
-      "default": 0,
-      "minimum": 0,
-      "maximum": 100
-    },
-    "CCUS Escalation Rate Per Year": {
-      "description": "additional value per year of price after escalation starts",
-      "type": "number",
-      "units": "USD/mt",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0.0,
-      "maximum": 100.0
-    },
-    "Starting CCUS Credit Value": {
-      "description": "",
-      "type": "number",
-      "units": "USD/mt",
-      "category": "Economics",
-      "default": 0.0,
-      "minimum": 0,
-      "maximum": 1000
-    },
     "AddOn Nickname": {
-      "description": "",
+      "description": "If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Nickname 1', 'AddOn Nickname 2', etc.",
       "type": "array",
       "units": null,
       "category": "Economics",
@@ -2271,7 +2226,7 @@
       "maximum": 1000.0
     },
     "AddOn CAPEX": {
-      "description": "",
+      "description": "If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn CAPEX 1', 'AddOn CAPEX 2', etc.",
       "type": "array",
       "units": "MUSD",
       "category": "Economics",
@@ -2280,7 +2235,7 @@
       "maximum": 1000.0
     },
     "AddOn OPEX": {
-      "description": "",
+      "description": "Annual operating cost. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn OPEX 1', 'AddOn OPEX 2', etc.",
       "type": "array",
       "units": "MUSD/yr",
       "category": "Economics",
@@ -2289,7 +2244,7 @@
       "maximum": 1000.0
     },
     "AddOn Electricity Gained": {
-      "description": "",
+      "description": "Annual electricity gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Electricity Gained 1', 'AddOn Electricity Gained 2', etc.",
       "type": "array",
       "units": "kW/yr",
       "category": "Economics",
@@ -2298,7 +2253,7 @@
       "maximum": 1000.0
     },
     "AddOn Heat Gained": {
-      "description": "",
+      "description": "Annual heat gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Heat Gained 1', 'AddOn Heat Gained 2', etc.",
       "type": "array",
       "units": "kW/yr",
       "category": "Economics",
@@ -2307,7 +2262,7 @@
       "maximum": 1000.0
     },
     "AddOn Profit Gained": {
-      "description": "",
+      "description": "Annual profit gained. If using multiple add-ons: either (1) specify this value as an array or (2) use multiple parameters suffixed with a number e.g. 'AddOn Profit Gained 1', 'AddOn Profit Gained 2', etc.",
       "type": "array",
       "units": "MUSD/yr",
       "category": "Economics",

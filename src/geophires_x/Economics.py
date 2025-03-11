@@ -1221,7 +1221,13 @@ class Economics:
             Max=100,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
+            ToolTipText="The maximum price to which the electricity sale price can escalate. For example, if "
+                        "Starting Electricity Sale Price = 0.10 USD/kWh and Electricity Escalation Rate = "
+                        "0.01 USD/kWh/yr: Electricity Price will reach 0.15 USD/kWh after 4 years of escalation. "
+                        "The price will then remain at 0.15 USD/kWh for the remaining years of the project lifetime. "
+                        "If the Ending Electricity Sale Price is not reached by escalation during the project "
+                        "lifetime, then the value will have no effect beyond allowing escalation to occur every year."
         )
         self.ElecEscalationStart = self.ParameterDict[self.ElecEscalationStart.Name] = intParameter(
             "Electricity Escalation Start Year",
@@ -1517,8 +1523,8 @@ class Economics:
         self.CarbonPrice = self.OutputParameterDict[self.CarbonPrice.Name] = OutputParameter(
             "Carbon Price Model",
             UnitType=Units.COSTPERMASS,
-            PreferredUnits=CostPerMassUnit.DOLLARSPERTONNE,
-            CurrentUnits=CostPerMassUnit.DOLLARSPERTONNE
+            PreferredUnits=CostPerMassUnit.DOLLARSPERLB,
+            CurrentUnits=CostPerMassUnit.DOLLARSPERLB
         )
 
         self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
@@ -1541,7 +1547,7 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )  # $/MMBTU
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",
+            Name="O&M Surface Plant costs", # FIXME wrong name - should be Stimulation Costs
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -2798,19 +2804,19 @@ class Economics:
             self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
-            self.TotalRevenue.value = self.ElecRevenue.value
+            self.TotalRevenue.value = self.ElecRevenue.value.copy()
             #self.TotalCummRevenue.value = self.ElecCummRevenue.value
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
             self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
-            self.TotalRevenue.value = self.HeatRevenue.value
+            self.TotalRevenue.value = self.HeatRevenue.value.copy()
             #self.TotalCummRevenue.value = self.HeatCummRevenue.value
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]:
             self.CoolingRevenue.value, self.CoolingCummRevenue.value = CalculateRevenue(
                 model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
                 model.surfaceplant.cooling_kWh_Produced.value, self.CoolingPrice.value)
-            self.TotalRevenue.value = self.CoolingRevenue.value
+            self.TotalRevenue.value = self.CoolingRevenue.value.copy()
             #self.TotalCummRevenue.value = self.CoolingCummRevenue.value
         elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,

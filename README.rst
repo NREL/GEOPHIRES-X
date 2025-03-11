@@ -56,9 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.7.13.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.7.23.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.7.13...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.7.23...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -334,7 +334,7 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example1.txt <tests/examples/example1.txt>`__
      - `.out <tests/examples/example1.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1>`__
-   * - Example 1 with Addons
+   * - Example 1 with Add-Ons
      - `example1_addons.txt <tests/examples/example1_addons.txt>`__
      - `.out <tests/examples/example1_addons.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example1_addons>`__

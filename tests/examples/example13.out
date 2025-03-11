@@ -4,18 +4,18 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-22
- Simulation Time:  10:47
- Calculation Time:      0.035 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:04
+ Calculation Time:      0.036 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Cogeneration Bottoming Cycle, Electricity sales considered as extra income
       Average Net Electricity Production:                     3.15 MW
       Average Direct-Use Heat Production:                    15.63 MW
-      Electricity breakeven price:                           18.16 cents/kWh
-      Direct-Use heat breakeven price (LCOH):                 7.20 USD/MMBTU
+      Electricity breakeven price:                           18.07 cents/kWh
+      Direct-Use heat breakeven price (LCOH):                 7.18 USD/MMBTU
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          50.0 kg/sec
@@ -30,10 +30,10 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       80.0 %
-      Project NPV:                                         -43.00 MUSD
-      Project IRR:                                          -5.99 %
+      Project NPV:                                         -42.75 MUSD
+      Project IRR:                                          -5.36 %
       Project VIR=PI=PIR:                                    0.24
-      Project MOIC:                                         -0.22
+      Project MOIC:                                         -0.21
       Project Payback Period:                          N/A
       CHP: Percent cost allocation for electrical plant:      60.28 %
 
@@ -123,14 +123,14 @@ Simulation Metadata
       Average Net Electricity Generation:                     3.15 MW
       Minimum Net Electricity Generation:                     3.09 MW
       Initial Net Electricity Generation:                     3.22 MW
-      Average Annual Total Electricity Generation:           23.57 GWh
-      Average Annual Net Electricity Generation:             21.85 GWh
+      Average Annual Total Electricity Generation:           23.84 GWh
+      Average Annual Net Electricity Generation:             22.09 GWh
       Initial pumping power/net installed power:              5.80 %
       Maximum Net Heat Production:                           19.63 MW
       Average Net Heat Production:                           15.63 MW
       Minimum Net Heat Production:                           11.45 MW
       Initial Net Heat Production:                           19.63 MW
-      Average Annual Heat Production:                       108.31 GWh
+      Average Annual Heat Production:                       109.25 GWh
       Average Pumping Power:                                  0.25 MW
       Heat to Power Conversion Efficiency:                    7.58 %
 
@@ -207,7 +207,7 @@ Simulation Metadata
   27                94.9                   21.9                    410.08               12.78                76.63
   28                91.1                   21.8                    405.31               11.32                79.30
   29                87.3                   21.8                    400.53                9.88                81.93
-  30                56.1                   14.5                    264.37                8.93                83.67
+  30                84.1                   21.7                    396.55                8.45                84.54
 
 
                              ********************************
@@ -215,7 +215,7 @@ Simulation Metadata
                              ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
-Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
+Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
   1      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -56.49     -56.49
   2      5.50           1.24   1.24     |    2.50     3.39         3.39    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  3.14      1.49     -55.00

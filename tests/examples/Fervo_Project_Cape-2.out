@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.1
- Simulation Date: 2025-01-22
- Simulation Time:  10:48
- Calculation Time:      0.684 sec
+ GEOPHIRES Version: 3.7.21
+ Simulation Date: 2025-03-05
+ Simulation Time:  15:05
+ Calculation Time:      0.678 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     8.90 MW
-      Electricity breakeven price:                           10.19 cents/kWh
+      Electricity breakeven price:                           10.14 cents/kWh
       Number of production wells:                             1
       Number of injection wells:                              2
       Flowrate per production well:                          93.0 kg/sec
@@ -27,10 +27,10 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      15 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                          41.82 MUSD
-      Project IRR:                                          17.54 %
-      Project VIR=PI=PIR:                                    1.82
-      Project MOIC:                                          1.40
+      Project NPV:                                          42.33 MUSD
+      Project IRR:                                          17.60 %
+      Project VIR=PI=PIR:                                    1.83
+      Project MOIC:                                          1.42
       Project Payback Period:                                6.50 yr
       Estimated Jobs Created:                                 19
 
@@ -70,7 +70,7 @@ Simulation Metadata
       Number of fractures:                                  108.00
       Fracture separation:                                   30.00 meter
       Reservoir volume:                               385200000 m**3
-      Reservoir impedance:                                    0.01 GPa.s/m**3
+      Reservoir impedance:                                  0.0100 GPa.s/m**3
       Reservoir density:                                   2800.00 kg/m**3
       Reservoir thermal conductivity:                         3.05 W/m/K
       Reservoir heat capacity:                              790.00 J/kg/K
@@ -123,8 +123,8 @@ Simulation Metadata
       Average Net Electricity Generation:                     8.90 MW
       Minimum Net Electricity Generation:                     8.75 MW
       Initial Net Electricity Generation:                     8.75 MW
-      Average Annual Total Electricity Generation:           70.80 GWh
-      Average Annual Net Electricity Generation:             69.67 GWh
+      Average Annual Total Electricity Generation:           71.28 GWh
+      Average Annual Net Electricity Generation:             70.14 GWh
       Initial pumping power/net installed power:              1.68 %
       Average Pumping Power:                                  0.15 MW
       Heat to Power Conversion Efficiency:                   16.00 %
@@ -172,7 +172,7 @@ Simulation Metadata
   12                  70.3                       438.9                 99.26                  16.02
   13                  70.3                       439.0                 97.68                  17.36
   14                  70.3                       439.0                 96.10                  18.69
-  15                  63.3                       395.1                 94.68                  19.90
+  15                  70.3                       439.0                 94.52                  20.03
 
 
                              ********************************
@@ -180,20 +180,20 @@ Simulation Metadata
                              ********************************
 Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
-Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/tonne) (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
+Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
-  1      0.00          -50.77   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -50.77     -50.77
-  2     15.00           8.75  10.43     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      8.75     -42.02
-  3     15.00           8.81  20.91     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      8.81     -33.21
-  4     15.41           9.11  31.69     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.11     -24.10
-  5     15.81           9.40  42.77     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.40     -14.70
-  6     16.22           9.70  54.14     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.70     -5.00
-  7     16.62           9.99  65.80     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.99      4.98
-  8     17.03          10.28  77.75     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.28     15.26
-  9     17.43          10.56  89.99     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.56     25.83
- 10     17.84          10.85  102.51     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.85     36.68
- 11     18.24          11.14  115.33     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.14     47.82
- 12     18.65          11.43  128.43     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.43     59.25
- 13     19.05          11.72  141.82     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.72     70.97
- 14     19.46          12.00  155.50     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     12.00     82.97
- 15     19.86          12.29  169.47     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     12.29     95.26
+  1      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -50.77     -50.77
+  2     15.00          10.43  10.43     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      8.75     -42.02
+  3     15.00          10.48  20.91     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      8.81     -33.21
+  4     15.41          10.78  31.69     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.11     -24.10
+  5     15.81          11.08  42.77     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.40     -14.70
+  6     16.22          11.37  54.14     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.70     -5.00
+  7     16.62          11.66  65.80     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67      9.99      4.98
+  8     17.03          11.95  77.75     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.28     15.26
+  9     17.43          12.24  89.99     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.56     25.83
+ 10     17.84          12.53  102.51     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     10.85     36.68
+ 11     18.24          12.82  115.33     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.14     47.82
+ 12     18.65          13.10  128.43     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.43     59.25
+ 13     19.05          13.39  141.82     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     11.72     70.97
+ 14     19.46          13.68  155.50     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     12.00     82.97
+ 15     19.86          13.97  169.47     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  1.67     12.29     95.26

@@ -293,7 +293,7 @@ class GeophiresXClientTestCase(BaseTestCase):
             'Cooling Price (cents/kWh)',
             'Cooling Ann. Rev. (MUSD/yr)',
             'Cooling Cumm. Rev. (MUSD)',
-            'Carbon Price (USD/tonne)',
+            'Carbon Price (USD/lb)',
             'Carbon Ann. Rev. (MUSD/yr)',
             'Carbon Cumm. Rev. (MUSD)',
             'Project OPEX (MUSD/yr)',
@@ -345,10 +345,28 @@ class GeophiresXClientTestCase(BaseTestCase):
             rcf_profile,
         )
 
-    def test_ccus_profile(self):
-        test_result_path = self._get_test_file_path('result_with_ccus_profile.out')
+    def test_carbon_revenue_profile(self):
+        result_example1 = GeophiresXResult(self._get_test_file_path('examples/example1.out'))
+        self.assertTrue(GeophiresXResult.CARBON_REVENUE_PROFILE_NAME not in result_example1.result)
+
+        result_addons = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
+        ccus_profile = result_addons.result['CARBON REVENUE PROFILE']
+        self.assertIsNotNone(ccus_profile)
+        self.assertListEqual(
+            ccus_profile[0],
+            ['Year Since Start', 'Carbon Price (USD/lb)', 'Carbon Ann. Rev. (MUSD/yr)', 'Carbon Cumm. Rev. (MUSD)'],
+        )
+
+        self.assertListEqual(ccus_profile[1], [1, 0.0, 0.0, 0.0])
+
+        self.assertListEqual(ccus_profile[2], [2, 0.01, 0.51, 0.51])
+
+        self.assertListEqual(ccus_profile[30], [30, 0.1, 3.5, 72.36])
+
+    def test_ccus_profile_legacy(self):
+        test_result_path = self._get_test_file_path('result_with_ccus_profile_legacy.out')
         result = GeophiresXResult(test_result_path)
-        ccus_profile = result.result['CCUS PROFILE']
+        ccus_profile_legacy = result.result['CCUS PROFILE']
 
         self.assertListEqual(
             [
@@ -394,7 +412,7 @@ class GeophiresXClientTestCase(BaseTestCase):
                 [30, 8035085.158, 0.1, 0.8, 0.8, 16.45, 3.07, 44.31],
                 [31, 6703146.945, 0.1, 0.67, 0.67, 17.12, 2.7, 47.01],
             ],
-            ccus_profile,
+            ccus_profile_legacy,
         )
 
     def test_non_vertical_section_cost(self):
@@ -528,3 +546,38 @@ class GeophiresXClientTestCase(BaseTestCase):
     def test_parse_annualized_capital_costs(self):
         result = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
         self.assertIsNotNone(result.result['CAPITAL COSTS (M$)']['Annualized capital costs']['value'])
+
+    def test_parse_number_with_commas(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
+        sdac_e = result.result['S-DAC-GT ECONOMICS']
+        self.assertAlmostEqualWithinPercentage(499_311_405.59, sdac_e['Total Cost of Capture']['value'])
+
+        self.assertAlmostEqualWithinPercentage(0.0017, sdac_e['Geothermal LCOH']['value'])
+
+        self.assertAlmostEqualWithinPercentage(20.7259, sdac_e['Geothermal Ratio (electricity vs heat)']['value'])
+
+    def test_parse_sdacgt_profile(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/S-DAC-GT.out'))
+        sdacgt_profile = result.result['S-DAC-GT PROFILE']
+        self.assertIsNotNone(sdacgt_profile)
+        self.assertEqual(
+            sdacgt_profile[0],
+            [
+                'Year Since Start',
+                'Carbon Captured (tonne/yr)',
+                'Cumm. Carbon Captured (tonne)',
+                'S-DAC-GT Annual Cost (USD/yr)',
+                'S-DAC-GT Cumm. Cash Flow (USD)',
+                'Cumm. Cost Per Tonne (USD/tonne)',
+            ],
+        )
+
+        # Values below need to be synchronized if S-DAC-GT example output values change.
+        self.assertEqual([1, 78330.8, 78330.8, 17411627.98, 17411627.98, 222.28], sdacgt_profile[1])
+
+        self.assertEqual(
+            [15, 76263.89, 1167207.48, 16952186.81, 259450710.33, 222.28],
+            sdacgt_profile[15],
+        )
+
+        self.assertEqual([30, 68860.68, 2253170.17, 15306577.89, 500842063.38, 222.28], sdacgt_profile[30])

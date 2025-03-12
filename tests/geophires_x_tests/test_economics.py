@@ -45,7 +45,7 @@ class EconomicsTestCase(BaseTestCase):
 
         rate = 0.12
 
-        def calc_npv(total_revenue, cashflow_series_start_year=0):
+        def calc_npv(total_revenue, discount_initial_year_cashflow=False):
             NPV, IRR, VIR, MOIC = CalculateFinancialPerformance(
                 len(total_revenue) + 1,
                 rate * 100,
@@ -53,7 +53,7 @@ class EconomicsTestCase(BaseTestCase):
                 EconomicsTestCase.cumm_revenue(total_revenue),
                 total_revenue[0],
                 10,
-                cashflow_series_start_year=cashflow_series_start_year,
+                discount_initial_year_cashflow=discount_initial_year_cashflow,
             )
 
             return NPV
@@ -73,7 +73,7 @@ class EconomicsTestCase(BaseTestCase):
         excel_npv = npf.npv(rate, [0, *cashflow_series])
         self.assertEqual(1188.44, round(excel_npv, 2))
 
-        geophires_npv = calc_npv(cashflow_series, cashflow_series_start_year=1)
+        geophires_npv = calc_npv(cashflow_series, discount_initial_year_cashflow=True)
         self.assertEqual(1188.44, round(geophires_npv, 2))
 
     def test_well_drilling_cost_correlation_tooltiptext(self):

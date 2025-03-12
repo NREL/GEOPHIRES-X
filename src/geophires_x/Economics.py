@@ -310,7 +310,7 @@ def CalculateFinancialPerformance(plantlifetime: int,
                                   TotalCummRevenue: list,
                                   CAPEX: float,
                                   OPEX: float,
-                                  cashflow_series_start_year: float = 0.):
+                                  discount_initial_year_cashflow: bool = False):
     """
     CalculateFinancialPerformance calculates the financial performance of the project.  It is used to calculate the
     financial performance of the project. It is used to calculate the revenue stream for the project.
@@ -326,8 +326,8 @@ def CalculateFinancialPerformance(plantlifetime: int,
     :type CAPEX: float
     :param OPEX: The total annual operating cost of the project in MUSD
     :type OPEX: float
-    :param cashflow_series_start_year: The starting year of the cashflow series used to calculate NPV
-    :type cashflow_series_start_year: float
+    :param discount_initial_year_cashflow: Whether to discount the initial year of cashflow used to calculate NPV
+    :type discount_initial_year_cashflow: bool
 
     :return: NPV: The net present value of the project in MUSD
     :rtype: float
@@ -343,12 +343,7 @@ def CalculateFinancialPerformance(plantlifetime: int,
 
     cashflow_series = TotalRevenue.copy()
 
-    if cashflow_series_start_year not in [0., 1.]:
-        param_name = 'Cashflow Series Start Year'  # TODO reference name defined in parameter dict
-        raise NotImplementedError(f'Unsupported value for {param_name}: {cashflow_series_start_year}')
-
-
-    if cashflow_series_start_year == 1.:
+    if discount_initial_year_cashflow:
         cashflow_series = [0, *cashflow_series]
 
     NPV = npf.npv(FixedInternalRate / 100, cashflow_series)
@@ -875,16 +870,22 @@ class Economics:
                         "will be automatically set to the same value."
         )
 
-        # TODO add support for float values
-        self.cashflow_series_start_year = self.ParameterDict[self.cashflow_series_start_year.Name] = intParameter(
-            "Cashflow Series Start Year",
-            DefaultValue=0,
-            AllowableRange=[0, 1],
+
+        self.discount_initial_year_cashflow = self.ParameterDict[self.discount_initial_year_cashflow.Name] = boolParameter(
+            'Discount Initial Year Cashflow',
+            DefaultValue=False,
             UnitType=Units.NONE,
-            ErrMessage=f'assume default Cashflow Series Start Year ({0})',
-            ToolTipText="Cashflow Series Start Year used to calculate NPV"
-                        # "in the Standard Levelized Cost Model." # (?)
-                        # TODO documentation re: values/conventions
+            ToolTipText='Whether to discount cashflow in the initial project year when calculating NPV. '
+                        'The default value of False conforms to NREL\'s standard convention for NPV calculation '
+                        '(Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). '
+                        'A value of True will, by contrast, cause NPV calculation to follow the convention used by '
+                        'Excel, Google Sheets, and other common spreadsheet software. '
+                        'Although NREL\'s NPV convention may typically be considered more technically correct '
+                        'from a financial mathematics perspective, '
+                        'Excel-style NPV calculation may be preferred by some for familiarity, '
+                        'compliance with de-facto organizational standards, or comparison of '
+                        'GEOPHIRES with independent financial calculations. '
+                        'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for discussion and further details.'
         )
 
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
@@ -2916,7 +2917,7 @@ class Economics:
                 self.TotalCummRevenue.value,
                 self.CCap.value,
                 self.Coam.value,
-                self.cashflow_series_start_year.value
+                self.discount_initial_year_cashflow.value
             )
 
         # Calculate the project payback period

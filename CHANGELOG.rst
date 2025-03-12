@@ -24,6 +24,8 @@ GEOPHIRES-X (2023-2025)
 
 2. Electricity annual revenue profile data `issue <https://github.com/NREL/GEOPHIRES-X/issues/342>`__ resolved.
 
+3.7.23: Surface Plant time series integration `fix <https://github.com/NREL/GEOPHIRES-X/pull/353>`__: production and revenue in the final year of project lifetime are now fully accounted for in results.
+
 3.6
 ^^^
 

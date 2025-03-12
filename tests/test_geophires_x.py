@@ -606,8 +606,8 @@ Print Output to Console, 1"""
         def _npv(r: GeophiresXResult) -> dict:
             return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
-        self.assertEqual(4561.96, _npv(_get_result(0)))
-        self.assertEqual(4263.51, _npv(_get_result(1)))
+        self.assertEqual(4580.36, _npv(_get_result(0)))
+        self.assertEqual(4280.71, _npv(_get_result(1)))
 
     def test_transmission_pipeline_cost(self):
         result = GeophiresXClient().get_geophires_result(

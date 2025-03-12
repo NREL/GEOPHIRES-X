@@ -1755,7 +1755,12 @@ class Economics:
             "Project Net Present Value",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText='NPV is calculated with cashflows lumped at the end of periods. '
+                        'See: Short W et al, 1995. '
+                        '"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy '
+                        'Technologies.", p. 41. '
+                        'https://www.nrel.gov/docs/legosti/old/5173.pdf'
         )
         self.ProjectIRR = self.OutputParameterDict[self.ProjectIRR.Name] = OutputParameter(
             "Project Internal Rate of Return",

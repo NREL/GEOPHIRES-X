@@ -350,18 +350,17 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertTrue(GeophiresXResult.CARBON_REVENUE_PROFILE_NAME not in result_example1.result)
 
         result_addons = GeophiresXResult(self._get_test_file_path('examples/example1_addons.out'))
-        ccus_profile = result_addons.result['CARBON REVENUE PROFILE']
-        self.assertIsNotNone(ccus_profile)
+        carbon_revenue_profile = result_addons.result['CARBON REVENUE PROFILE']
+        self.assertIsNotNone(carbon_revenue_profile)
         self.assertListEqual(
-            ccus_profile[0],
+            carbon_revenue_profile[0],
             ['Year Since Start', 'Carbon Price (USD/lb)', 'Carbon Ann. Rev. (MUSD/yr)', 'Carbon Cumm. Rev. (MUSD)'],
         )
 
-        self.assertListEqual(ccus_profile[1], [1, 0.0, 0.0, 0.0])
-
-        self.assertListEqual(ccus_profile[2], [2, 0.01, 0.51, 0.51])
-
-        self.assertListEqual(ccus_profile[30], [30, 0.1, 3.5, 72.36])
+        self.assertListEqual([0, 0.0, 0.0, 0.0], carbon_revenue_profile[1])
+        self.assertListEqual([1, 0.01, 0.51, 0.51], carbon_revenue_profile[2])
+        self.assertListEqual([29, 0.1, 3.5, 72.36], carbon_revenue_profile[30])
+        self.assertListEqual([30, 0.1, 3.5, 75.86], carbon_revenue_profile[31])
 
     def test_ccus_profile_legacy(self):
         test_result_path = self._get_test_file_path('result_with_ccus_profile_legacy.out')

@@ -304,6 +304,22 @@ def CalculateCarbonRevenue(model, plant_lifetime: int, construction_years: int, 
     return cash_flow_musd, cumm_cash_flow_musd, carbon_that_would_have_been_produced_annually_lbs, carbon_that_would_have_been_produced_total_lbs
 
 
+def calculate_npv(
+    discount_rate_tenths: float,
+    cashflow_series: list[float],
+    discount_initial_year_cashflow: bool
+) -> float:
+    # TODO warn/raise exception if discount rate > 1 (i.e. it's probably not converted from percent to tenths)
+
+    npv_cashflow_series = cashflow_series.copy()  # Copy to guard against unintentional mutation of consumer field
+
+    if discount_initial_year_cashflow:
+        # Enable Excel-style NPV calculation - see https://github.com/NREL/GEOPHIRES-X/discussions/344
+        npv_cashflow_series = [0, *npv_cashflow_series]
+
+    return npf.npv(discount_rate_tenths, npv_cashflow_series)
+
+
 def CalculateFinancialPerformance(plantlifetime: int,
                                   FixedInternalRate: float,
                                   TotalRevenue: list,
@@ -341,13 +357,8 @@ def CalculateFinancialPerformance(plantlifetime: int,
     """
     # Calculate financial performance values using numpy financials
 
-    cashflow_series = TotalRevenue.copy()
-
-    if discount_initial_year_cashflow:
-        cashflow_series = [0, *cashflow_series]
-
-    NPV = npf.npv(FixedInternalRate / 100, cashflow_series)
-    IRR = npf.irr(cashflow_series)
+    NPV = calculate_npv(FixedInternalRate / 100, TotalRevenue.copy(), discount_initial_year_cashflow)
+    IRR = npf.irr(TotalRevenue)
     if math.isnan(IRR):
         IRR = 0.0
     else:

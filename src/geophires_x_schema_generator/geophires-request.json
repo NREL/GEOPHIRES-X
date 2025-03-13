@@ -1581,7 +1581,7 @@
       "maximum": 1.0
     },
     "Discount Initial Year Cashflow": {
-      "description": "Whether to discount cashflow in the initial project year when calculating NPV. The default value of False conforms to NREL's standard convention for NPV calculation (Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). A value of True will, by contrast, cause NPV calculation to follow the convention used by Excel, Google Sheets, and other common spreadsheet software. Although NREL's NPV convention may typically be considered more technically correct from a financial mathematics perspective, Excel-style NPV calculation may be preferred by some for familiarity, compliance with de-facto organizational standards, or comparison of GEOPHIRES with independent financial calculations. See https://github.com/NREL/GEOPHIRES-X/discussions/344 for discussion and further details.",
+      "description": "Whether to discount cashflow in the initial project year when calculating NPV (Net Present Value). The default value of False conforms to NREL's standard convention for NPV calculation (Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). A value of True will, by contrast, cause NPV calculation to follow the convention used by Excel, Google Sheets, and other common spreadsheet software. Although NREL's NPV convention may typically be considered more technically correct, Excel-style NPV calculation may be preferred by some for familiarity or compatibility with existing business processes.See https://github.com/NREL/GEOPHIRES-X/discussions/344 for discussion and further details.",
       "type": "boolean",
       "units": null,
       "category": "Economics",

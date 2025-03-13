@@ -537,7 +537,7 @@ def ProdPressureDropAndPumpingPowerUsingIndexes(
         pumpdepthfinal_m = np.max(pumpdepth_m)
         if pumpdepthfinal_m < 0.0:
             pumpdepthfinal_m = 0.0
-            msg = (f'GEOPHIRES calculates negative production well pumping depth. ({pumpdepthfinal_m:.2f}m)'
+            msg = (f'GEOPHIRES calculates negative production well pumping depth. ({pumpdepthfinal_m:.2f}m). '
                    f'No production well pumps will be assumed')
             print(f'Warning: {msg}')
             model.logger.warning(msg)

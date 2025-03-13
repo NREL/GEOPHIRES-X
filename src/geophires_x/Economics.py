@@ -894,7 +894,7 @@ class Economics:
                         'Excel, Google Sheets, and other common spreadsheet software. '
                         'Although NREL\'s NPV convention may typically be considered more technically correct, '
                         'Excel-style NPV calculation may be preferred by some for familiarity '
-                        'or compatibility with existing business processes.'
+                        'or compatibility with existing business processes. '
                         'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for discussion and further details.'
         )
 

@@ -306,7 +306,7 @@ def CalculateCarbonRevenue(model, plant_lifetime: int, construction_years: int, 
 
 def calculate_npv(
     discount_rate_tenths: float,
-    cashflow_series: list[float],
+    cashflow_series: list,
     discount_initial_year_cashflow: bool
 ) -> float:
     # TODO warn/raise exception if discount rate > 1 (i.e. it's probably not converted from percent to tenths)

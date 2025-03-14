@@ -893,9 +893,9 @@ class Economics:
                         'A value of True will, by contrast, cause NPV calculation to follow the convention used by '
                         'Excel, Google Sheets, and other common spreadsheet software. '
                         'Although NREL\'s NPV convention may typically be considered more technically correct, '
-                        'Excel-style NPV calculation may be preferred by some for familiarity '
+                        'Excel-style NPV calculation might be preferred for familiarity '
                         'or compatibility with existing business processes. '
-                        'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for discussion and further details.'
+                        'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.'
         )
 
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(

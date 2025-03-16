@@ -710,3 +710,38 @@ Print Output to Console, 1"""
         # )
         #
         # self.assertIsNotNone(result_1_1)
+
+    def test_multiple_construction_years(self):
+        construction_years = 2
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={'Construction Years': construction_years},
+            )
+        )
+
+        total_capex = result.result['CAPITAL COSTS (M$)']['Total capital costs']['value']
+
+        rcp = result.result['REVENUE & CASHFLOW PROFILE']
+        project_lifetime = 25
+        self.assertEqual(project_lifetime + construction_years, len(rcp) - 1)  # Subtract 1 for headers
+        net_rev_idx = 14
+        net_cashflow_idx = 15
+
+        # Example expected output for first 2 years:
+        # [
+        #    ...
+        #   [0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -657.4, -657.4]
+        #   [1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -657.4, -1314.79]
+        #   ...
+        # ]
+
+        yearly_net_rev = -1 * total_capex / construction_years
+        self.assertAlmostEqual(yearly_net_rev, rcp[1][net_rev_idx], places=1)
+        self.assertAlmostEqual(yearly_net_rev, rcp[1][net_cashflow_idx], places=1)
+        self.assertAlmostEqual(yearly_net_rev, rcp[2][net_rev_idx], places=1)
+        self.assertEqual(-1 * total_capex, rcp[2][net_cashflow_idx])
+
+        pre_rev_idx = min(net_rev_idx, net_cashflow_idx)
+        self.assertListEqual([0] * pre_rev_idx, rcp[1][:pre_rev_idx])
+        self.assertListEqual([1] + [0] * (pre_rev_idx - 1), rcp[2][:pre_rev_idx])

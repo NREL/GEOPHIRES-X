@@ -5,6 +5,14 @@ Changelog
 GEOPHIRES-X (2023-2025)
 ------------------------
 
+3.8
+^^^
+
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.8.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.7.0...v3.8.0>`__
+
+Revenue & Cashflow Profile period output aligned with NREL convention used to calculate NPV.
+See https://github.com/NREL/GEOPHIRES-X/discussions/344
+
 3.7
 ^^^
 
@@ -23,6 +31,8 @@ GEOPHIRES-X (2023-2025)
 1. Carbon Revenue Profile (CCUS Profile `replacement <https://github.com/NREL/GEOPHIRES-X/issues/141>`__) added to client result.
 
 2. Electricity annual revenue profile data `issue <https://github.com/NREL/GEOPHIRES-X/issues/342>`__ resolved.
+
+3.7.23: Surface Plant time series integration `fix <https://github.com/NREL/GEOPHIRES-X/pull/353>`__: production and revenue in the final year of project lifetime are now fully accounted for in results.
 
 3.6
 ^^^
@@ -104,3 +114,19 @@ Internal changes to support unit testing
 ------------
 
 * `GEOPHIRES v1 </References/Beckers%202013%20GEOPHIRES%20v1.pdf>`__
+
+
+Versioning Notes
+----------------
+
+GEOPHIRES 3.0 (GEOPHIRES-X) and subsequent releases use `semantic versioning <https://en.wikipedia.org/wiki/Software_versioning#Semantic_versioning>`__.
+Major, minor, and notable patch versions are documented above.
+You may also be interested in viewing the list of all PRs merged into the repository `here <https://github.com/NREL/GEOPHIRES-X/pulls?q=is%3Apr+is%3Amerged+>`__.
+
+Each semantic version has a corresponding tag, the full list of which can be viewed `here <https://github.com/NREL/GEOPHIRES-X/tags>`__.
+The latest patch version in this repository and patch versions explicitly mentioned in this changelog are always suitable for public consumption;
+but note that not all patch version tags in the list are meant for public consumption
+as intermediate internal-only patch versions are sometimes introduced during the development process.
+(Improved designation and distribution of releases for public consumption may eventually be addressed by
+`publishing to PyPI <https://github.com/NREL/GEOPHIRES-X/issues/117>`__ and/or use of
+`GitHub releases <https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases>`__.)

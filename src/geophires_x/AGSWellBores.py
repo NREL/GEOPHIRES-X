@@ -716,28 +716,24 @@ class AGSWellBores(WellBores):
         errors = []
 
         def on_invalid_parameter_value(err_msg):
-            errors.append(err_msg)
-            print(err_msg)
-            model.logger.fatal(err_msg)
+            s = f'Error: CLGS model database imposes additional range restrictions: {err_msg}. Simulation terminated.'
+            errors.append(s)
+            print(s)
+            model.logger.fatal(s)
             self.error = 1
 
         if self.Nonvertical_length.value < 1000 or self.Nonvertical_length.value > 20000:
-            on_invalid_parameter_value(
-                'Error: CLGS model database imposes additional range restrictions: Nonvertical length must be '
-                'between 1,000 and 20,000 m. Simulation terminated.'
-            )
+            on_invalid_parameter_value('Nonvertical length must be between 1,000 and 20,000 m')
 
         if self.Tinj.value < 30.0 or self.Tinj.value > 60.0:
-            on_invalid_parameter_value(
-                'Error: CLGS model database imposes additional range restrictions: Injection temperature '
-                'must be between 30 and 60 C. Simulation terminated.'
-            )
+            on_invalid_parameter_value('Injection temperature must be between 30 and 60 C')
 
         if self.krock < 1.5 or self.krock > 4.5:
-            on_invalid_parameter_value(
-                'Error: CLGS model database imposes additional range restrictions: '
-                'Rock thermal conductivity must be between 1.5 and 4.5 W/m/K. Simulation terminated.'
-            )
+            on_invalid_parameter_value('Rock thermal conductivity must be between 1.5 and 4.5 W/m/K')
+
+        if model.reserv.gradient1.value < 30 or model.reserv.gradient1.value > 70:
+            on_invalid_parameter_value(f'{model.reserv.gradient1.Name} must be between '
+                                       f'30 and 70 {model.reserv.gradient1.CurrentUnits}')
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

@@ -731,9 +731,9 @@ class AGSWellBores(WellBores):
         if self.krock < 1.5 or self.krock > 4.5:
             on_invalid_parameter_value('Rock thermal conductivity must be between 1.5 and 4.5 W/m/K')
 
-        if model.reserv.gradient1.value < 30 or model.reserv.gradient1.value > 70:
+        if model.reserv.gradient.value[0] < 0.03 or model.reserv.gradient.value[0] > 0.07:
             on_invalid_parameter_value(f'{model.reserv.gradient1.Name} must be between '
-                                       f'30 and 70 {model.reserv.gradient1.CurrentUnits}')
+                                       f'30 and 70 {TemperatureGradientUnit.DEGREESCPERKM.value}')
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

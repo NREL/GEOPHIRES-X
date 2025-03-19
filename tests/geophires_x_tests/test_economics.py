@@ -81,10 +81,10 @@ class EconomicsTestCase(BaseTestCase):
         self.assertEqual(
             ec.wellcorrelation.ToolTipText,
             'Select the built-in well drilling and completion cost correlation: '
-            + '1: vertical small diameter, baseline; '
-            + '2: deviated small diameter, baseline; '
-            + '3: vertical large diameter, baseline; '
-            + '4: deviated large diameter, baseline; '
+            + '1: vertical small diameter, baseline (2025 cost curve); '
+            + '2: deviated small diameter, baseline (2025 cost curve); '
+            + '3: vertical large diameter, baseline (2025 cost curve); '
+            + '4: deviated large diameter, baseline (2025 cost curve); '
             + '5: Simple; '
             + '6: vertical small diameter, intermediate1; '
             + '7: vertical small diameter, intermediate2; '

@@ -383,9 +383,9 @@ Print Output to Console, 1"""
                 .result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
             )
 
-        self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
-        self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
-        self.assertAlmostEqual(103.76, get_fcr_lcoe(0.8), places=0)
+        self.assertAlmostEqual(8.82, get_fcr_lcoe(0.05), places=1)
+        self.assertAlmostEqual(3.19, get_fcr_lcoe(0.0001), places=1)
+        self.assertAlmostEqual(93.48, get_fcr_lcoe(0.8), places=0)
 
     def test_vapor_pressure_above_critical_temperature(self):
         """https://github.com/NREL/GEOPHIRES-X/issues/214"""

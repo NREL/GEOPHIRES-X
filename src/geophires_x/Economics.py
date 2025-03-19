@@ -4,7 +4,8 @@ import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
-from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType
+from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
+    _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
     coerce_int_params_to_enum_values
 from geophires_x.Units import *
@@ -996,6 +997,18 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)"
         )
+
+
+        def cost_corr_footnote_symbol(c: _WellDrillingCostCorrelationCitation) -> str:
+            if c == _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025:
+                return '*'
+
+            if c == _WellDrillingCostCorrelationCitation.SIMPLE:
+                return '†'
+
+            if c == _WellDrillingCostCorrelationCitation.GEOVISION:
+                return '‡'
+
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1.int_value,
@@ -1004,16 +1017,16 @@ class Economics:
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
-                        # TODO citation(s):
-                        # Akindipe, D. and Witter. E. 2025.
-                        #   "2025 Geothermal Drilling Cost Curves Update".
-                        #   https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555
-                        #
-                        # Robins, J.C., Kesseli, D., Witter, E. and Rhodes, G. 2022.
-                        #   "2022 GETEM Geothermal Drilling Cost Curve Update."
-                        #   https://www.nrel.gov/docs/fy23osti/82771.pdf
+                        '; '.join([f'{it.int_value}: {it.value}{cost_corr_footnote_symbol(it.citation)}'
+                                   for it in WellDrillingCostCorrelation]) +
+                        f'. | Citations: '
+                        f'* {_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025.value}. '
+                        f'† {_WellDrillingCostCorrelationCitation.SIMPLE.value}. '
+                        f'‡ {_WellDrillingCostCorrelationCitation.GEOVISION.value}.'
+
         )
+
+
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
             DefaultValue=False,

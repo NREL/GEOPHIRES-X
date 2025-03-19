@@ -1,6 +1,6 @@
 # copyright, 2023, Malcolm I Ross
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
 class GeophiresInputEnum(str, Enum):
@@ -36,7 +36,7 @@ class EndUseOptions(GeophiresInputEnum):
     COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
 
     @staticmethod
-    def from_input_string(input_string:str):
+    def from_input_string(input_string: str):
         """
         :rtype: EndUseOptions
         """
@@ -66,7 +66,7 @@ class PlantType(GeophiresInputEnum):
     INDUSTRIAL = 9, "Industrial"
 
     @staticmethod
-    def from_input_string(input_string:str):
+    def from_input_string(input_string: str):
         """
         :rtype: PlantType
         """
@@ -97,7 +97,7 @@ class EconomicModel(GeophiresInputEnum):
                 return member
 
     @staticmethod
-    def from_input_string(input_string:str):
+    def from_input_string(input_string: str):
         for member in __class__:
             if input_string == str(member.int_value):
                 return member
@@ -117,7 +117,7 @@ class ReservoirModel(GeophiresInputEnum):
     SBT = 8, "SBT"
 
     @staticmethod
-    def get_reservoir_model_from_input_string(input_string:str):
+    def get_reservoir_model_from_input_string(input_string: str):
         """
         :rtype: ReservoirModel
         """
@@ -148,12 +148,22 @@ class ReservoirVolume(GeophiresInputEnum):
                 return member
 
     @staticmethod
-    def from_input_string(input_string:str):
+    def from_input_string(input_string: str):
         for member in __class__:
             if input_string == str(member.int_value):
                 return member
 
         raise ValueError(f'Unknown Reservoir Volume input value: {input_string}')
+
+
+class _WellDrillingCostCorrelationCitation(StrEnum):
+    NREL_COST_CURVE_2025 = ('Akindipe, D. and Witter. E. 2025. '
+                            '"2025 Geothermal Drilling Cost Curves Update". '
+                            'https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555')
+    SIMPLE = 'Based on Fervo Project Cape cost per meter (~$1846/m)'
+    GEOVISION = ('DOE 2019. '
+                 '"GeoVision" p. 163. '
+                 'https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf')
 
 
 class WellDrillingCostCorrelation(GeophiresInputEnum):
@@ -169,30 +179,49 @@ class WellDrillingCostCorrelation(GeophiresInputEnum):
     Note: order should be retained since input is read as an int; first int arg is duplicative of order
     """
 
-    VERTICAL_SMALL = 1, "vertical small diameter, baseline (2025 cost curve)", 0.258496, 357.967, 738531.58
-    DEVIATED_SMALL = 2, "deviated small diameter, baseline (2025 cost curve)", 0.240624, 646.1621, 503625.06
-    VERTICAL_LARGE = 3, "vertical large diameter, baseline (2025 cost curve)", 0.248458, 935.8985, 626586.68
-    DEVIATED_LARGE = 4, "deviated large diameter, baseline (2025 cost curve)", 0.217333, 1362.93, 301066.16
+    VERTICAL_SMALL = 1, "vertical small diameter, baseline", 0.258496, 357.967, 738531.58, \
+        _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025
+    DEVIATED_SMALL = 2, "deviated small diameter, baseline", 0.240624, 646.1621, 503625.06, \
+        _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025
+    VERTICAL_LARGE = 3, "vertical large diameter, baseline", 0.248458, 935.8985, 626586.68, \
+        _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025
+    DEVIATED_LARGE = 4, "deviated large diameter, baseline", 0.217333, 1362.93, 301066.16, \
+        _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025
 
-    SIMPLE = 5, "Simple", 0, 1846*1E6, 0  # Based on Fervo Project Cape cost per meter (~$1846/m)
+    SIMPLE = 5, "Simple (per-meter cost)", 0, 1846 * 1E6, 0, \
+        _WellDrillingCostCorrelationCitation.SIMPLE
 
-    VERTICAL_SMALL_INT1 = 6, "vertical small diameter, intermediate1", 0.13710, 129.61033, 1205587.57100
-    VERTICAL_SMALL_INT2 = 7, "vertical small diameter, intermediate2", 0.00804, 455.60507, 921007.68680
-    DEVIATED_SMALL_INT1 = 8, "deviated small diameter, intermediate1", 0.15340, 120.31700, 1431801.54400
-    DEVIATED_SMALL_INT2 = 9, "deviated small diameter, intermediate2", 0.00854, 506.08357, 1057330.39000
-    VERTICAL_LARGE_INT1 = 10, "vertical large diameter, intermediate1", 0.18927, 293.45174, 1326526.31300
-    VERTICAL_LARGE_INT2 = 11, "vertical large diameter, intermediate2", 0.00315, 782.69676, 983620.25270
-    DEVIATED_LARGE_INT1 = 12, "deviated large diameter, intermediate1", 0.19950, 296.13011, 1697867.70900
-    DEVIATED_LARGE_INT2 = 13, "deviated large diameter, intermediate2", 0.00380, 838.90249, 1181947.04400
-    VERTICAL_SMALL_IDEAL = 14, "vertical open-hole, small diameter, ideal", 0.00252, 439.44503, 590611.90110
-    DEVIATED_SMALL_IDEAL = 15, "deviated liner, small diameter, ideal", 0.00719, 455.85233, 753377.73080
-    VERTICAL_LARGE_IDEAL = 16, "vertical open-hole, large diameter, ideal", -0.00240, 752.93946, 524337.65380
-    DEVIATED_LARGE_IDEAL = 17, "deviated liner, large diameter, ideal", 0.00376, 762.52696, 765103.07690
+    VERTICAL_SMALL_INT1 = 6, "vertical small diameter, intermediate1", 0.13710, 129.61033, 1205587.57100, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    VERTICAL_SMALL_INT2 = 7, "vertical small diameter, intermediate2", 0.00804, 455.60507, 921007.68680, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_SMALL_INT1 = 8, "deviated small diameter, intermediate1", 0.15340, 120.31700, 1431801.54400, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_SMALL_INT2 = 9, "deviated small diameter, intermediate2", 0.00854, 506.08357, 1057330.39000, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    VERTICAL_LARGE_INT1 = 10, "vertical large diameter, intermediate1", 0.18927, 293.45174, 1326526.31300, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    VERTICAL_LARGE_INT2 = 11, "vertical large diameter, intermediate2", 0.00315, 782.69676, 983620.25270, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_LARGE_INT1 = 12, "deviated large diameter, intermediate1", 0.19950, 296.13011, 1697867.70900, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_LARGE_INT2 = 13, "deviated large diameter, intermediate2", 0.00380, 838.90249, 1181947.04400, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    VERTICAL_SMALL_IDEAL = 14, "vertical open-hole, small diameter, ideal", 0.00252, 439.44503, 590611.90110, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_SMALL_IDEAL = 15, "deviated liner, small diameter, ideal", 0.00719, 455.85233, 753377.73080, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    VERTICAL_LARGE_IDEAL = 16, "vertical open-hole, large diameter, ideal", -0.00240, 752.93946, 524337.65380, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
+    DEVIATED_LARGE_IDEAL = 17, "deviated liner, large diameter, ideal", 0.00376, 762.52696, 765103.07690, \
+        _WellDrillingCostCorrelationCitation.GEOVISION
 
-    def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float):
+    def __init__(self, int_value: int, _: str, c2: float, c1: float, c0: float,
+                 citation: _WellDrillingCostCorrelationCitation):
         self._c2 = c2
         self._c1 = c1
         self._c0 = c0
+        self.citation: _WellDrillingCostCorrelationCitation = citation
         super().__init__(int_value, _)
 
     def calculate_cost_MUSD(self, meters) -> float:
@@ -226,7 +255,7 @@ class FractureShape(GeophiresInputEnum):
                 return member
 
     @staticmethod
-    def from_input_string(input_string:str):
+    def from_input_string(input_string: str):
         for member in __class__:
             if input_string == str(member.int_value):
                 return member
@@ -251,8 +280,6 @@ class WorkingFluid(GeophiresInputEnum):
                 return member
 
         raise ValueError(f'Unknown Working Fluid input value: {input_string}')
-
-
 
 
 class Configuration(GeophiresInputEnum):
@@ -294,6 +321,7 @@ class FlowrateModel(GeophiresInputEnum):
                 return member
 
         raise ValueError(f'Unknown Flow Rate Model input value: {input_string}')
+
 
 class InjectionTemperatureModel(GeophiresInputEnum):
     USER_SUPPLIED = 1, "user supplied"

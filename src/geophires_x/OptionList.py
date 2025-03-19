@@ -157,13 +157,22 @@ class ReservoirVolume(GeophiresInputEnum):
 
 
 class _WellDrillingCostCorrelationCitation(StrEnum):
-    NREL_COST_CURVE_2025 = ('Akindipe, D. and Witter. E. 2025. '
-                            '"2025 Geothermal Drilling Cost Curves Update". '
-                            'https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555')
+    """
+    Values are abbreviated citations used in tooltip text.
+    Commented full citations could be used in future documentation.
+    """
+
+    NREL_COST_CURVE_2025 = 'NREL\'s 2025 cost curve update'
+    # ('Akindipe, D. and Witter. E. 2025. '
+    #       '"2025 Geothermal Drilling Cost Curves Update". '
+    #       'https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555')
+
     SIMPLE = 'Based on Fervo Project Cape cost per meter (~$1846/m)'
-    GEOVISION = ('DOE 2019. '
-                 '"GeoVision" p. 163. '
-                 'https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf')
+
+    GEOVISION = 'GeoVision'
+    # ('DOE 2019. '
+    #   '"GeoVision" p. 163. '
+    #   'https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf')
 
 
 class WellDrillingCostCorrelation(GeophiresInputEnum):

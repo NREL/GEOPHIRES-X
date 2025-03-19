@@ -997,18 +997,6 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)"
         )
-
-
-        def cost_corr_footnote_symbol(c: _WellDrillingCostCorrelationCitation) -> str:
-            if c == _WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025:
-                return '*'
-
-            if c == _WellDrillingCostCorrelationCitation.SIMPLE:
-                return '†'
-
-            if c == _WellDrillingCostCorrelationCitation.GEOVISION:
-                return '‡'
-
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1.int_value,
@@ -1017,16 +1005,15 @@ class Economics:
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.int_value}: {it.value}{cost_corr_footnote_symbol(it.citation)}'
+                        '; '.join([f'{it.int_value}: {it.value}'
                                    for it in WellDrillingCostCorrelation]) +
-                        f'. | Citations: '
-                        f'* {_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025.value}. '
-                        f'† {_WellDrillingCostCorrelationCitation.SIMPLE.value}. '
-                        f'‡ {_WellDrillingCostCorrelationCitation.GEOVISION.value}.'
+                        f'. '
+                        f'Baseline correlations (1-4) are from '
+                        f'{_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025}.'
+                        f' Intermediate and ideal correlations (6-17) are from '
+                        f'{_WellDrillingCostCorrelationCitation.GEOVISION}.'
 
         )
-
-
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
             DefaultValue=False,

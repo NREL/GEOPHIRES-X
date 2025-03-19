@@ -37,6 +37,20 @@ class WellDrillingCostCorrelationTestCase(BaseTestCase):
         self.assertFalse(WellDrillingCostCorrelation.VERTICAL_SMALL == WellDrillingCostCorrelation.DEVIATED_SMALL)
         self.assertTrue(WellDrillingCostCorrelation.VERTICAL_SMALL == WellDrillingCostCorrelation.VERTICAL_SMALL)
 
+    def test_baseline_curve_costs(self):
+        # Sanity-check calibration with NREL 2025 Cost Curve Update
+        # https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555
+
+        self.assertAlmostEqual(5.1, WellDrillingCostCorrelation.VERTICAL_SMALL.calculate_cost_MUSD(3500), delta=0.1)
+        self.assertAlmostEqual(13.9, WellDrillingCostCorrelation.VERTICAL_SMALL.calculate_cost_MUSD(6500), delta=0.1)
+        self.assertAlmostEqual(15.9, WellDrillingCostCorrelation.VERTICAL_SMALL.calculate_cost_MUSD(7000), delta=0.1)
+
+        self.assertAlmostEqual(17.2, WellDrillingCostCorrelation.VERTICAL_LARGE.calculate_cost_MUSD(6500), delta=0.1)
+
+        self.assertAlmostEqual(14.9, WellDrillingCostCorrelation.DEVIATED_SMALL.calculate_cost_MUSD(6500), delta=0.1)
+
+        self.assertAlmostEqual(18.3, WellDrillingCostCorrelation.DEVIATED_LARGE.calculate_cost_MUSD(6500), delta=0.1)
+
 
 class PlantTypeTestCase(BaseTestCase):
     def test_equality(self):

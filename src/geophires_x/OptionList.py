@@ -159,7 +159,7 @@ class ReservoirVolume(GeophiresInputEnum):
 class _WellDrillingCostCorrelationCitation(StrEnum):
     """
     Values are abbreviated citations used in tooltip text.
-    Commented full citations could be used in future documentation.
+    Commented full citations are present in CHANGELOG and could also be used in future documentation.
     """
 
     NREL_COST_CURVE_2025 = 'NREL\'s 2025 cost curve update'

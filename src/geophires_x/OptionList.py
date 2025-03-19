@@ -1,6 +1,6 @@
 # copyright, 2023, Malcolm I Ross
 
-from enum import Enum, StrEnum
+from enum import Enum
 
 
 class GeophiresInputEnum(str, Enum):
@@ -156,7 +156,7 @@ class ReservoirVolume(GeophiresInputEnum):
         raise ValueError(f'Unknown Reservoir Volume input value: {input_string}')
 
 
-class _WellDrillingCostCorrelationCitation(StrEnum):
+class _WellDrillingCostCorrelationCitation(str, Enum):
     """
     Values are abbreviated citations used in tooltip text.
     Commented full citations are present in CHANGELOG and could also be used in future documentation.

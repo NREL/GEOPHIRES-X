@@ -1009,9 +1009,9 @@ class Economics:
                                    for it in WellDrillingCostCorrelation]) +
                         f'. '
                         f'Baseline correlations (1-4) are from '
-                        f'{_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025}.'
+                        f'{_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025.value}.'
                         f' Intermediate and ideal correlations (6-17) are from '
-                        f'{_WellDrillingCostCorrelationCitation.GEOVISION}.'
+                        f'{_WellDrillingCostCorrelationCitation.GEOVISION.value}.'
 
         )
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(

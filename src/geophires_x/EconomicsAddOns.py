@@ -347,7 +347,12 @@ class EconomicsAddOns(Economics.Economics):
 
         # Now calculate a new "NPV", "IRR", "VIR", "Payback Period", and "MOIC"
         # Calculate more financial values using numpy financials
-        self.ProjectNPV.value = npf.npv(self.FixedInternalRate.value / 100, self.ProjectCashFlow.value)
+        self.ProjectNPV.value = Economics.calculate_npv(
+            self.FixedInternalRate.value / 100,
+            self.ProjectCashFlow.value.copy(),
+            self.discount_initial_year_cashflow.value
+        )
+
         self.ProjectIRR.value = npf.irr(self.ProjectCashFlow.value)
         if math.isnan(self.ProjectIRR.value):
             self.ProjectIRR.value = 0.0

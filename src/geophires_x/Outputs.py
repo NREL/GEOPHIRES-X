@@ -1643,7 +1643,12 @@ class Outputs:
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} ' + model.economics.inflrateconstruction.CurrentUnits.value + NL)
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} ' + model.surfaceplant.plant_lifetime.CurrentUnits.value + NL)
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %' + NL)
-                f.write(f'      Project NPV:                                     {model.economics.ProjectNPV.value:10.2f} ' + model.economics.ProjectNPV.PreferredUnits.value + NL)
+
+                e_npv = model.economics.ProjectNPV
+                npv_field_label = Outputs._field_label('Project NPV', 49)
+                # TODO should use CurrentUnits instead of PreferredUnits
+                f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
+
                 f.write(f'      Project IRR:                                     {model.economics.ProjectIRR.value:10.2f} ' + model.economics.ProjectIRR.PreferredUnits.value + NL)
                 f.write(f'      Project VIR=PI=PIR:                              {model.economics.ProjectVIR.value:10.2f}' + NL)
                 f.write(f'      {model.economics.ProjectMOIC.Name}:                                    {model.economics.ProjectMOIC.value:10.2f}' + NL)

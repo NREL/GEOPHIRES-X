@@ -1580,6 +1580,15 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Discount Initial Year Cashflow": {
+      "description": "Whether to discount cashflow in the initial project year when calculating NPV (Net Present Value). The default value of False conforms to NREL's standard convention for NPV calculation (Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). A value of True will, by contrast, cause NPV calculation to follow the convention used by Excel, Google Sheets, and other common spreadsheet software. Although NREL's NPV convention may typically be considered more technically correct, Excel-style NPV calculation might be preferred for familiarity or compatibility with existing business processes. See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.",
+      "type": "boolean",
+      "units": null,
+      "category": "Economics",
+      "default": false,
+      "minimum": null,
+      "maximum": null
+    },
     "Fraction of Investment in Bonds": {
       "description": "Fraction of geothermal project financing through bonds (see docs)",
       "type": "number",

@@ -1784,12 +1784,16 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+
+        # TODO this is displayed as "Project Net Cashflow" in Revenue & Cashflow Profile which is probably not an
+        #   accurate synonym for cumulative revenue
         self.TotalCummRevenue = self.OutputParameterDict[self.TotalCummRevenue.Name] = OutputParameter(
             Name="Cumulative Revenue from Project",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
         self.ProjectNPV = self.OutputParameterDict[self.ProjectNPV.Name] = OutputParameter(
             "Project Net Present Value",
             UnitType=Units.CURRENCY,

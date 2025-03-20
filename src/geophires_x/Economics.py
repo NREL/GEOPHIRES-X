@@ -1778,6 +1778,9 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+
+        # TODO this is displayed as "Project Net Revenue" in Revenue & Cashflow Profile which is probably not an
+        #   accurate synonym for annual revenue
         self.TotalRevenue = self.OutputParameterDict[self.TotalRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Project",
             UnitType=Units.CURRENCYFREQUENCY,

@@ -572,9 +572,9 @@ Print Output to Console, 1"""
         with self.assertLogs(level='INFO') as logs:
             result = client.get_geophires_result(input_params(discount_rate='0.042'))
 
-            assert result is not None
-            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
-            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+            self.assertIsNotNone(result)
+            self.assertEqual(4.2, result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
+            self.assertEqual('%', result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
             assertHasLogRecordWithMessage(
                 logs, 'Set Fixed Internal Rate to 4.2 percent because Discount Rate was provided (0.042)'
             )
@@ -582,13 +582,52 @@ Print Output to Console, 1"""
         with self.assertLogs(level='INFO') as logs2:
             result2 = client.get_geophires_result(input_params(fixed_internal_rate='4.2'))
 
-            assert result2 is not None
-            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
-            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+            self.assertIsNotNone(result2)
+            self.assertEqual(4.2, result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
+            self.assertEqual('%', result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
 
             assertHasLogRecordWithMessage(
                 logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
             )
+
+    def test_discount_initial_year_cashflow(self):
+        def _get_result(base_example: str, do_discount: bool) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    # TODO switch over to generic EGS case to avoid thrash from example updates
+                    # from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    from_file_path=self._get_test_file_path(f'examples/{base_example}.txt'),
+                    params={
+                        'Discount Initial Year Cashflow': do_discount,
+                    },
+                )
+            )
+
+        def _npv(r: GeophiresXResult) -> dict:
+            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+        self.assertEqual(4580.36, _npv(_get_result('Fervo_Project_Cape-3', False)))
+        self.assertEqual(4280.71, _npv(_get_result('Fervo_Project_Cape-3', True)))
+
+        def _extended_economics_npv(r: GeophiresXResult) -> dict:
+            return r.result['EXTENDED ECONOMICS']['Project NPV   (including AddOns)']['value']
+
+        add_ons_result_without_discount = _get_result('example1_addons', False)
+        add_ons_result_with_discount = _get_result('example1_addons', True)
+
+        self.assertGreater(_npv(add_ons_result_without_discount), _npv(add_ons_result_with_discount))
+
+        ee_npv_without_discount = _extended_economics_npv(add_ons_result_without_discount)
+        assert ee_npv_without_discount < 0, (
+            'Test is expecting example1_addons extended economics NPV to be negative '
+            'as a precondition - if this error is encountered, '
+            'create a test-only copy of the previous version of example1_addons and '
+            'use it in this test (like geophires_x_tests/generic-egs-case.txt).'
+        )
+
+        # Discounting first year causes negative NPVs to be less negative (according to Google Sheets,
+        # which was used to manually validate the expected NPVs here).
+        self.assertLess(ee_npv_without_discount, _extended_economics_npv(add_ons_result_with_discount))
 
     def test_transmission_pipeline_cost(self):
         result = GeophiresXClient().get_geophires_result(

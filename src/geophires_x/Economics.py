@@ -304,12 +304,29 @@ def CalculateCarbonRevenue(model, plant_lifetime: int, construction_years: int, 
     return cash_flow_musd, cumm_cash_flow_musd, carbon_that_would_have_been_produced_annually_lbs, carbon_that_would_have_been_produced_total_lbs
 
 
+def calculate_npv(
+    discount_rate_tenths: float,
+    cashflow_series: list,
+    discount_initial_year_cashflow: bool
+) -> float:
+    # TODO warn/raise exception if discount rate > 1 (i.e. it's probably not converted from percent to tenths)
+
+    npv_cashflow_series = cashflow_series.copy()  # Copy to guard against unintentional mutation of consumer field
+
+    if discount_initial_year_cashflow:
+        # Enable Excel-style NPV calculation - see https://github.com/NREL/GEOPHIRES-X/discussions/344
+        npv_cashflow_series = [0, *npv_cashflow_series]
+
+    return npf.npv(discount_rate_tenths, npv_cashflow_series)
+
+
 def CalculateFinancialPerformance(plantlifetime: int,
                                   FixedInternalRate: float,
                                   TotalRevenue: list,
                                   TotalCummRevenue: list,
                                   CAPEX: float,
-                                  OPEX: float):
+                                  OPEX: float,
+                                  discount_initial_year_cashflow: bool = False):
     """
     CalculateFinancialPerformance calculates the financial performance of the project.  It is used to calculate the
     financial performance of the project. It is used to calculate the revenue stream for the project.
@@ -325,6 +342,9 @@ def CalculateFinancialPerformance(plantlifetime: int,
     :type CAPEX: float
     :param OPEX: The total annual operating cost of the project in MUSD
     :type OPEX: float
+    :param discount_initial_year_cashflow: Whether to discount the initial year of cashflow used to calculate NPV
+    :type discount_initial_year_cashflow: bool
+
     :return: NPV: The net present value of the project in MUSD
     :rtype: float
     :return: IRR: The internal rate of return of the project in %
@@ -336,7 +356,8 @@ def CalculateFinancialPerformance(plantlifetime: int,
     :rtype: tuple
     """
     # Calculate financial performance values using numpy financials
-    NPV = npf.npv(FixedInternalRate / 100, TotalRevenue)
+
+    NPV = calculate_npv(FixedInternalRate / 100, TotalRevenue.copy(), discount_initial_year_cashflow)
     IRR = npf.irr(TotalRevenue)
     if math.isnan(IRR):
         IRR = 0.0
@@ -859,6 +880,24 @@ class Economics:
                         "Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value "
                         "will be automatically set to the same value."
         )
+
+
+        self.discount_initial_year_cashflow = self.ParameterDict[self.discount_initial_year_cashflow.Name] = boolParameter(
+            'Discount Initial Year Cashflow',
+            DefaultValue=False,
+            UnitType=Units.NONE,
+            ToolTipText='Whether to discount cashflow in the initial project year when calculating NPV '
+                        '(Net Present Value). '
+                        'The default value of False conforms to NREL\'s standard convention for NPV calculation '
+                        '(Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). '
+                        'A value of True will, by contrast, cause NPV calculation to follow the convention used by '
+                        'Excel, Google Sheets, and other common spreadsheet software. '
+                        'Although NREL\'s NPV convention may typically be considered more technically correct, '
+                        'Excel-style NPV calculation might be preferred for familiarity '
+                        'or compatibility with existing business processes. '
+                        'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.'
+        )
+
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
             DefaultValue=0.5,
@@ -1739,18 +1778,25 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+
+        # TODO this is displayed as "Project Net Revenue" in Revenue & Cashflow Profile which is probably not an
+        #   accurate synonym for annual revenue
         self.TotalRevenue = self.OutputParameterDict[self.TotalRevenue.Name] = OutputParameter(
             Name="Annual Revenue from Project",
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+
+        # TODO this is displayed as "Project Net Cashflow" in Revenue & Cashflow Profile which is probably not an
+        #   accurate synonym for cumulative revenue
         self.TotalCummRevenue = self.OutputParameterDict[self.TotalCummRevenue.Name] = OutputParameter(
             Name="Cumulative Revenue from Project",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
         self.ProjectNPV = self.OutputParameterDict[self.ProjectNPV.Name] = OutputParameter(
             "Project Net Present Value",
             UnitType=Units.CURRENCY,
@@ -2881,9 +2927,15 @@ class Economics:
 
         # Calculate more financial values using numpy financials
         self.ProjectNPV.value, self.ProjectIRR.value, self.ProjectVIR.value, self.ProjectMOIC.value = \
-            CalculateFinancialPerformance(model.surfaceplant.plant_lifetime.value, self.FixedInternalRate.value,
-                                          self.TotalRevenue.value, self.TotalCummRevenue.value, self.CCap.value,
-                                          self.Coam.value)
+            CalculateFinancialPerformance(
+                model.surfaceplant.plant_lifetime.value,
+                self.FixedInternalRate.value,
+                self.TotalRevenue.value,
+                self.TotalCummRevenue.value,
+                self.CCap.value,
+                self.Coam.value,
+                self.discount_initial_year_cashflow.value
+            )
 
         # Calculate the project payback period
         self.ProjectPaybackPeriod.value = 0.0   # start by assuming the project never pays back

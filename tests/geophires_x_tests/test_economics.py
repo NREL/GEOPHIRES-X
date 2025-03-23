@@ -2,27 +2,31 @@ import os
 import sys
 from pathlib import Path
 
-from geophires_x.Economics import CalculateFinancialPerformance
+import numpy_financial as npf
+
+# ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
+from geophires_x.Economics import CalculateFinancialPerformance
 from tests.base_test_case import BaseTestCase
 
 
 class EconomicsTestCase(BaseTestCase):
+    @staticmethod
+    def cumm_revenue(total_revenue):
+        cumm_revenue = [total_revenue[0]] * len(total_revenue)
+        cumm_revenue[1] = total_revenue[1]
+        for i in range(2, len(total_revenue)):
+            cumm_revenue[i] = cumm_revenue[i - 1] + total_revenue[i]
+        return cumm_revenue
+
     def test_irr(self):
         """
         Test cases adapted from https://numpy.org/numpy-financial/latest/irr.html
         """
 
-        def cumm_revenue(total_revenue):
-            cumm_revenue = [total_revenue[0]] * len(total_revenue)
-            cumm_revenue[1] = total_revenue[1]
-            for i in range(2, len(total_revenue)):
-                cumm_revenue[i] = cumm_revenue[i - 1] + total_revenue[i]
-            return cumm_revenue
-
         def calc_irr(total_revenue):
             NPV, IRR, VIR, MOIC = CalculateFinancialPerformance(
-                30, 5, total_revenue, cumm_revenue(total_revenue), 1000, 10
+                30, 5, total_revenue, EconomicsTestCase.cumm_revenue(total_revenue), 1000, 10
             )
 
             return IRR
@@ -32,6 +36,45 @@ class EconomicsTestCase(BaseTestCase):
         self.assertAlmostEqual(-8.33, calc_irr([-100, 100, 0, -7]), places=2)
         self.assertAlmostEqual(6.21, calc_irr([-100, 100, 0, 7]), places=2)
         self.assertAlmostEqual(8.86, calc_irr([-5, 10.5, 1, -8, 1]), places=2)
+
+    def test_npv(self):
+        """
+        Includes sanity checks that numpy-financial.npv used by CalculateFinancialPerformance
+        matches reference calculations
+        """
+
+        rate = 0.12
+
+        def calc_npv(total_revenue, discount_initial_year_cashflow=False):
+            NPV, IRR, VIR, MOIC = CalculateFinancialPerformance(
+                len(total_revenue) + 1,
+                rate * 100,
+                total_revenue,
+                EconomicsTestCase.cumm_revenue(total_revenue),
+                total_revenue[0],
+                10,
+                discount_initial_year_cashflow=discount_initial_year_cashflow,
+            )
+
+            return NPV
+
+        # https://www.nrel.gov/docs/legosti/old/5173.pdf, p. 41
+        cashflow_series = [-10000, 7274, 6558, 6223, 6087, 6259]
+
+        npf_npv = npf.npv(rate, cashflow_series)
+        self.assertEqual(13572, round(npf_npv))
+
+        geophires_npv = calc_npv(cashflow_series)
+        self.assertEqual(13572, round(geophires_npv))
+
+        # https://support.microsoft.com/en-us/office/npv-function-8672cb67-2576-4d07-b67b-ac28acf2a568
+        rate = 0.1
+        cashflow_series = [-10000, 3000, 4200, 6800]
+        excel_npv = npf.npv(rate, [0, *cashflow_series])
+        self.assertEqual(1188.44, round(excel_npv, 2))
+
+        geophires_npv = calc_npv(cashflow_series, discount_initial_year_cashflow=True)
+        self.assertEqual(1188.44, round(geophires_npv, 2))
 
     def test_well_drilling_cost_correlation_tooltiptext(self):
         ec = self._new_model().economics

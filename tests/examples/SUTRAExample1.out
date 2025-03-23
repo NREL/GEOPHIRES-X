@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.19
- Simulation Date: 2025-02-28
- Simulation Time:  11:32
- Calculation Time:      0.524 sec
+ GEOPHIRES Version: 3.8.4
+ Simulation Date: 2025-03-19
+ Simulation Time:  10:29
+ Calculation Time:      0.519 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Direct-Use Heat
       Reservoir Model = SUTRA Model
-      Direct-Use heat breakeven price:                     1730.66 cents/kWh
+      Direct-Use heat breakeven price:                     1729.92 cents/kWh
       Number of Production Wells:                             1
       Number of Injection Wells:                              1
       Lifetime Average Well Flow Rate:                     16.2 kg/sec
@@ -69,11 +69,11 @@ Simulation Metadata
 
                           ***CAPITAL COSTS (M$)***
 
-      Drilling and Completion Costs:                       2.42 MUSD
-      Drilling and Completion Costs per Well:              1.21 MUSD
+      Drilling and Completion Costs:                       2.09 MUSD
+      Drilling and Completion Costs per Well:              1.05 MUSD
       Auxiliary Heater Cost:                               0.21 MUSD
       Pump Cost:                                           0.17 MUSD
-      Total Capital Costs:                                 2.81 MUSD
+      Total Capital Costs:                                 2.48 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***

@@ -76,28 +76,31 @@ class EconomicsTestCase(BaseTestCase):
         geophires_npv = calc_npv(cashflow_series, discount_initial_year_cashflow=True)
         self.assertEqual(1188.44, round(geophires_npv, 2))
 
-    def test_well_drilling_cost_correlation_tooltiptext(self):
+    def test_well_drilling_cost_correlation_tooltip_text(self):
         ec = self._new_model().economics
         self.assertEqual(
             ec.wellcorrelation.ToolTipText,
+            # noinspection SqlNoDataSourceInspection
             'Select the built-in well drilling and completion cost correlation: '
-            + '1: vertical small diameter, baseline; '
-            + '2: deviated small diameter, baseline; '
-            + '3: vertical large diameter, baseline; '
-            + '4: deviated large diameter, baseline; '
-            + '5: Simple; '
-            + '6: vertical small diameter, intermediate1; '
-            + '7: vertical small diameter, intermediate2; '
-            + '8: deviated small diameter, intermediate1; '
-            + '9: deviated small diameter, intermediate2; '
-            + '10: vertical large diameter, intermediate1; '
-            + '11: vertical large diameter, intermediate2; '
-            + '12: deviated large diameter, intermediate1; '
-            + '13: deviated large diameter, intermediate2; '
-            + '14: vertical open-hole, small diameter, ideal; '
-            + '15: deviated liner, small diameter, ideal; '
-            + '16: vertical open-hole, large diameter, ideal; '
-            + '17: deviated liner, large diameter, ideal',
+            '1: vertical small diameter, baseline; '
+            '2: deviated small diameter, baseline; '
+            '3: vertical large diameter, baseline; '
+            '4: deviated large diameter, baseline; '
+            '5: Simple (per-meter cost); '
+            '6: vertical small diameter, intermediate1; '
+            '7: vertical small diameter, intermediate2; '
+            '8: deviated small diameter, intermediate1; '
+            '9: deviated small diameter, intermediate2; '
+            '10: vertical large diameter, intermediate1; '
+            '11: vertical large diameter, intermediate2; '
+            '12: deviated large diameter, intermediate1; '
+            '13: deviated large diameter, intermediate2; '
+            '14: vertical open-hole, small diameter, ideal; '
+            '15: deviated liner, small diameter, ideal; '
+            '16: vertical open-hole, large diameter, ideal; '
+            '17: deviated liner, large diameter, ideal. '
+            "Baseline correlations (1-4) are from NREL's 2025 cost curve update. "
+            'Intermediate and ideal correlations (6-17) are from GeoVision.',
         )
 
     def _new_model(self) -> Model:

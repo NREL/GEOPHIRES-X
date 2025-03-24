@@ -5,11 +5,13 @@ from pathlib import Path
 from typing import Optional
 
 from geophires_x.OptionList import PlantType
+from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
 from tests.base_test_case import BaseTestCase
 
 
@@ -784,3 +786,36 @@ Print Output to Console, 1"""
         pre_rev_idx = min(net_rev_idx, net_cashflow_idx)
         self.assertListEqual([0] * pre_rev_idx, rcp[1][:pre_rev_idx])
         self.assertListEqual([1] + [0] * (pre_rev_idx - 1), rcp[2][:pre_rev_idx])
+
+    def test_drilling_cost_curves(self):
+        """
+        Note this is similar to
+        geophires_x_tests.test_options_list.WellDrillingCostCorrelationTestCase.test_drilling_cost_curve_correlations;
+        this test ensures that the indirect cost factor is responsible for the discrepancy between GEOPHIRES-calculated
+        drilling cost per well and the raw value calculated by the curve.
+        """
+
+        indirect_cost_factor = 1.05  # See TODO re:parameterizing at src/geophires_x/Economics.py:652
+
+        for test_case in WellDrillingCostCorrelationTestCase.COST_CORRELATION_TEST_CASES:
+            correlation: WellDrillingCostCorrelation = test_case[0]
+            depth_m = test_case[1]
+            expected_cost_musd = test_case[2]
+            with self.subTest(msg=str(f'{correlation.name}, {depth_m}m')):
+                result = GeophiresXClient().get_geophires_result(
+                    GeophiresInputParameters(
+                        from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                        params={
+                            'Well Drilling Cost Correlation': correlation.int_value,
+                            'Reservoir Depth': f'{depth_m} meter',
+                            'Number of Production Wells': 1,
+                            'Number of Injection Wells': 1,
+                            'Well Drilling and Completion Capital Cost Adjustment Factor': 1,
+                        },
+                    )
+                )
+
+                cost_per_well_val = result.result['CAPITAL COSTS (M$)']['Drilling and completion costs per well'][
+                    'value'
+                ]
+                self.assertAlmostEqual(indirect_cost_factor * expected_cost_musd, cost_per_well_val, delta=0.1)

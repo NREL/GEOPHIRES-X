@@ -40,7 +40,7 @@ class WellDrillingCostCorrelationTestCase(BaseTestCase):
         self.assertFalse(WellDrillingCostCorrelation.VERTICAL_SMALL == WellDrillingCostCorrelation.DEVIATED_SMALL)
         self.assertTrue(WellDrillingCostCorrelation.VERTICAL_SMALL == WellDrillingCostCorrelation.VERTICAL_SMALL)
 
-    COST_CORRELATION_TEST_CASES: ClassVar[list[tuple[WellDrillingCostCorrelation, int, float]]] = [
+    COST_CORRELATION_TEST_CASES: ClassVar[list] = [
         (WellDrillingCostCorrelation.VERTICAL_SMALL, 3500, 5.1),
         (WellDrillingCostCorrelation.VERTICAL_SMALL, 6500, 13.9),
         (WellDrillingCostCorrelation.VERTICAL_SMALL, 7000, 15.9),

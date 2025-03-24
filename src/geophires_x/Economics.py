@@ -4,7 +4,8 @@ import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
-from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType
+from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
+    _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
     coerce_int_params_to_enum_values
 from geophires_x.Units import *
@@ -1004,9 +1005,15 @@ class Economics:
             UnitType=Units.NONE,
             ErrMessage="assume default well drilling cost correlation (10)",
             ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
-        )
+                        '; '.join([f'{it.int_value}: {it.value}'
+                                   for it in WellDrillingCostCorrelation]) +
+                        f'. '
+                        f'Baseline correlations (1-4) are from '
+                        f'{_WellDrillingCostCorrelationCitation.NREL_COST_CURVE_2025.value}.'
+                        f' Intermediate and ideal correlations (6-17) are from '
+                        f'{_WellDrillingCostCorrelationCitation.GEOVISION.value}.'
 
+        )
         self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
             "Do AddOn Calculations",
             DefaultValue=False,

@@ -13,6 +13,12 @@ GEOPHIRES-X (2023-2025)
 Revenue & Cashflow Profile period output aligned with NREL convention used to calculate NPV.
 See https://github.com/NREL/GEOPHIRES-X/discussions/344
 
+3.8.6: Baseline well drilling cost curves updated to NREL's 2025 cost curve update:
+Akindipe, D. and Witter. E. 2025. "2025 Geothermal Drilling Cost Curves Update". https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555.
+
+Intermediate and ideal correlations retain existing values from GeoVision:
+DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf.
+
 3.7
 ^^^
 

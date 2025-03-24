@@ -5,11 +5,13 @@ from pathlib import Path
 from typing import Optional
 
 from geophires_x.OptionList import PlantType
+from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
 from tests.base_test_case import BaseTestCase
 
 
@@ -383,9 +385,9 @@ Print Output to Console, 1"""
                 .result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
             )
 
-        self.assertAlmostEqual(9.61, get_fcr_lcoe(0.05), places=1)
-        self.assertAlmostEqual(3.33, get_fcr_lcoe(0.0001), places=1)
-        self.assertAlmostEqual(103.76, get_fcr_lcoe(0.8), places=0)
+        self.assertAlmostEqual(8.82, get_fcr_lcoe(0.05), places=1)
+        self.assertAlmostEqual(3.19, get_fcr_lcoe(0.0001), places=1)
+        self.assertAlmostEqual(93.48, get_fcr_lcoe(0.8), places=0)
 
     def test_vapor_pressure_above_critical_temperature(self):
         """https://github.com/NREL/GEOPHIRES-X/issues/214"""
@@ -572,9 +574,9 @@ Print Output to Console, 1"""
         with self.assertLogs(level='INFO') as logs:
             result = client.get_geophires_result(input_params(discount_rate='0.042'))
 
-            assert result is not None
-            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
-            assert result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+            self.assertIsNotNone(result)
+            self.assertEqual(4.2, result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
+            self.assertEqual('%', result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
             assertHasLogRecordWithMessage(
                 logs, 'Set Fixed Internal Rate to 4.2 percent because Discount Rate was provided (0.042)'
             )
@@ -582,13 +584,52 @@ Print Output to Console, 1"""
         with self.assertLogs(level='INFO') as logs2:
             result2 = client.get_geophires_result(input_params(fixed_internal_rate='4.2'))
 
-            assert result2 is not None
-            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'] == 4.2
-            assert result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'] == '%'
+            self.assertIsNotNone(result2)
+            self.assertEqual(4.2, result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
+            self.assertEqual('%', result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
 
             assertHasLogRecordWithMessage(
                 logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
             )
+
+    def test_discount_initial_year_cashflow(self):
+        def _get_result(base_example: str, do_discount: bool) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    # TODO switch over to generic EGS case to avoid thrash from example updates
+                    # from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    from_file_path=self._get_test_file_path(f'examples/{base_example}.txt'),
+                    params={
+                        'Discount Initial Year Cashflow': do_discount,
+                    },
+                )
+            )
+
+        def _npv(r: GeophiresXResult) -> dict:
+            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+        self.assertEqual(4580.36, _npv(_get_result('Fervo_Project_Cape-3', False)))
+        self.assertEqual(4280.71, _npv(_get_result('Fervo_Project_Cape-3', True)))
+
+        def _extended_economics_npv(r: GeophiresXResult) -> dict:
+            return r.result['EXTENDED ECONOMICS']['Project NPV   (including AddOns)']['value']
+
+        add_ons_result_without_discount = _get_result('example1_addons', False)
+        add_ons_result_with_discount = _get_result('example1_addons', True)
+
+        self.assertGreater(_npv(add_ons_result_without_discount), _npv(add_ons_result_with_discount))
+
+        ee_npv_without_discount = _extended_economics_npv(add_ons_result_without_discount)
+        assert ee_npv_without_discount < 0, (
+            'Test is expecting example1_addons extended economics NPV to be negative '
+            'as a precondition - if this error is encountered, '
+            'create a test-only copy of the previous version of example1_addons and '
+            'use it in this test (like geophires_x_tests/generic-egs-case.txt).'
+        )
+
+        # Discounting first year causes negative NPVs to be less negative (according to Google Sheets,
+        # which was used to manually validate the expected NPVs here).
+        self.assertLess(ee_npv_without_discount, _extended_economics_npv(add_ons_result_with_discount))
 
     def test_transmission_pipeline_cost(self):
         result = GeophiresXClient().get_geophires_result(
@@ -745,3 +786,36 @@ Print Output to Console, 1"""
         pre_rev_idx = min(net_rev_idx, net_cashflow_idx)
         self.assertListEqual([0] * pre_rev_idx, rcp[1][:pre_rev_idx])
         self.assertListEqual([1] + [0] * (pre_rev_idx - 1), rcp[2][:pre_rev_idx])
+
+    def test_drilling_cost_curves(self):
+        """
+        Note this is similar to
+        geophires_x_tests.test_options_list.WellDrillingCostCorrelationTestCase.test_drilling_cost_curve_correlations;
+        this test ensures that the indirect cost factor is responsible for the discrepancy between GEOPHIRES-calculated
+        drilling cost per well and the raw value calculated by the curve.
+        """
+
+        indirect_cost_factor = 1.05  # See TODO re:parameterizing at src/geophires_x/Economics.py:652
+
+        for test_case in WellDrillingCostCorrelationTestCase.COST_CORRELATION_TEST_CASES:
+            correlation: WellDrillingCostCorrelation = test_case[0]
+            depth_m = test_case[1]
+            expected_cost_musd = test_case[2]
+            with self.subTest(msg=str(f'{correlation.name}, {depth_m}m')):
+                result = GeophiresXClient().get_geophires_result(
+                    GeophiresInputParameters(
+                        from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                        params={
+                            'Well Drilling Cost Correlation': correlation.int_value,
+                            'Reservoir Depth': f'{depth_m} meter',
+                            'Number of Production Wells': 1,
+                            'Number of Injection Wells': 1,
+                            'Well Drilling and Completion Capital Cost Adjustment Factor': 1,
+                        },
+                    )
+                )
+
+                cost_per_well_val = result.result['CAPITAL COSTS (M$)']['Drilling and completion costs per well'][
+                    'value'
+                ]
+                self.assertAlmostEqual(indirect_cost_factor * expected_cost_musd, cost_per_well_val, delta=0.1)

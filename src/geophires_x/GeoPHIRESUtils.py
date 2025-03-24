@@ -252,7 +252,7 @@ def density_water_kg_per_m3(Twater_degC: float, pressure: Optional[PlainQuantity
 
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
-                         f'are out of range or otherwise could not be used to calculate') from e
+                         f'are out of range or otherwise could not be used to calculate water density.') from e
 
 
 def celsius_to_kelvin(celsius: float) -> float:
@@ -298,7 +298,7 @@ def viscosity_water_Pa_sec(
 
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
-                         f'are out of range or otherwise could not be used to calculate') from e
+                         f'are out of range or otherwise could not be used to calculate water viscosity.') from e
 
 
 @lru_cache
@@ -334,7 +334,7 @@ def heat_capacity_water_J_per_kg_per_K(
 
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature & pressure ({Twater_degC}, {pressure}) '
-                         f'are out of range or otherwise could not be used to calculate') from e
+                         f'are out of range or otherwise could not be used to calculate heat capacity of water.') from e
 
 
 @lru_cache

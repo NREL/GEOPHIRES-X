@@ -144,7 +144,7 @@ class boolParameter(Parameter):
 
     def __post_init__(self):
         if self.value is None:
-            self.value:bool = self.DefaultValue
+            self.value: bool = self.DefaultValue
 
     value: bool = None
     DefaultValue: bool = value

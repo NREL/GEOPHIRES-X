@@ -13,6 +13,12 @@ GEOPHIRES-X (2023-2025)
 Revenue & Cashflow Profile period output aligned with NREL convention used to calculate NPV.
 See https://github.com/NREL/GEOPHIRES-X/discussions/344
 
+3.8.6: Baseline well drilling cost curves updated to NREL's 2025 cost curve update:
+Akindipe, D. and Witter. E. 2025. "2025 Geothermal Drilling Cost Curves Update". https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555.
+
+Intermediate and ideal correlations retain existing values from GeoVision:
+DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf.
+
 3.7
 ^^^
 
@@ -124,7 +130,7 @@ Major, minor, and notable patch versions are documented above.
 You may also be interested in viewing the list of all PRs merged into the repository `here <https://github.com/NREL/GEOPHIRES-X/pulls?q=is%3Apr+is%3Amerged+>`__.
 
 Each semantic version has a corresponding tag, the full list of which can be viewed `here <https://github.com/NREL/GEOPHIRES-X/tags>`__.
-The latest patch version in this repository and patch versions explicitly mentioned in this changelog are always suitable for public consumption;
+The patch version displayed on the package badge in the README and patch versions explicitly mentioned in this changelog are always suitable for public consumption;
 but note that not all patch version tags in the list are meant for public consumption
 as intermediate internal-only patch versions are sometimes introduced during the development process.
 (Improved designation and distribution of releases for public consumption may eventually be addressed by

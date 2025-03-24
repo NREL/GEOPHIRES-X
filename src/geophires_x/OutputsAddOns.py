@@ -41,7 +41,7 @@ class OutputsAddOns(Outputs):
                 addon_results.append(OutputTableItem('Adjusted Project CAPEX (after incentives, grants, AddOns, etc)', '{0:10.2f}'.format(model.addeconomics.AdjustedProjectCAPEX.value), model.addeconomics.AdjustedProjectCAPEX.PreferredUnits.value))
                 f.write(f"      Adjusted Project OPEX (after incentives, grants, AddOns, etc):    {model.addeconomics.AdjustedProjectOPEX.value:10.2f} " + model.addeconomics.AdjustedProjectOPEX.PreferredUnits.value + NL)
                 addon_results.append(OutputTableItem('Adjusted Project OPEX (after incentives, grants, AddOns, etc)', '{0:10.2f}'.format(model.addeconomics.AdjustedProjectOPEX.value), model.addeconomics.AdjustedProjectOPEX.PreferredUnits.value))
-                f.write(f"      Project NPV   (including AddOns):                                 {model.addeconomics.ProjectNPV.value:10.2f} " + model.addeconomics.ProjectNPV.PreferredUnits.value + NL)
+                f.write(f'      Project NPV   (including AddOns):                                 {model.addeconomics.ProjectNPV.value:10.2f} {model.addeconomics.ProjectNPV.PreferredUnits.value}\n')
                 addon_results.append(OutputTableItem('Project NPV (including AddOns)', '{0:10.2f}'.format(model.addeconomics.ProjectNPV.value), model.addeconomics.ProjectNPV.PreferredUnits.value))
                 f.write(f"      Project IRR   (including AddOns):                                 {model.addeconomics.ProjectIRR.value:10.2f} " + model.addeconomics.ProjectIRR.PreferredUnits.value + NL)
                 addon_results.append(OutputTableItem('Project IRR (including AddOns)', '{0:10.2f}'.format(model.addeconomics.ProjectIRR.value), model.addeconomics.ProjectIRR.PreferredUnits.value))

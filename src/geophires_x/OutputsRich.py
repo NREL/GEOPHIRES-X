@@ -44,6 +44,13 @@ class OutputTableItem:
 
 
 def print_outputs_rich(output_file: str, text_output_file: strParameter, html_output_file: strParameter, model: Model):
+    """
+    TODO Implementation of rich output in this method/file is duplicative of Outputs.PrintOutputs. This adds undue
+      code complexity, maintenance overhead, inconsistency, and potential for bugs. Rich output should instead be
+      generated in a module that uses GeophiresXClient or an equivalent pattern which maintains Outputs.PrintOutputs
+      as the ultimate source of truth/authority for output logic.
+    """
+
     # data structures and assignments for HTML and Improved Text Output formats
     simulation_metadata = []
     summary = []

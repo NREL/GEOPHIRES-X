@@ -1621,7 +1621,7 @@ class Outputs:
                 else:
                     for i in range(1, model.reserv.numseg.value):
                         f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4g} ' + model.reserv.gradient.CurrentUnits.value +NL)
-                        f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]} {model.reserv.layerthickness.CurrentUnits.value}\n')
+                        f.write(f'      Segment {str(i):s}   Thickness:                         {round(model.reserv.layerthickness.value[i-1], 10)} {model.reserv.layerthickness.CurrentUnits.value}\n')
                     f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 if model.economics.DoCarbonCalculations.value:
                     f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value:10.2f} '
@@ -1702,7 +1702,7 @@ class Outputs:
                 else:
                     for i in range(1, model.reserv.numseg.value):
                         f.write(f'      Segment {str(i):s}   Geothermal gradient:                    {model.reserv.gradient.value[i-1]:10.4g} ' + model.reserv.gradient.CurrentUnits.value +NL)
-                        f.write(f'      Segment {str(i):s}   Thickness:                         {model.reserv.layerthickness.value[i-1]} {model.reserv.layerthickness.CurrentUnits.value}\n')
+                        f.write(f'      Segment {str(i):s}   Thickness:                         {round(model.reserv.layerthickness.value[i-1], 10)} {model.reserv.layerthickness.CurrentUnits.value}\n')
                     f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
 
                 f.write(NL)

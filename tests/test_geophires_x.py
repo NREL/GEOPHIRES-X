@@ -840,9 +840,7 @@ Print Output to Console, 1"""
         )
 
         self.assertEqual(thickness_1, result.result['SUMMARY OF RESULTS']['Segment 1   Thickness']['value'])
-        self.assertAlmostEqual(
-            thickness_2, result.result['SUMMARY OF RESULTS']['Segment 2   Thickness']['value'], places=3
-        )
+        self.assertEqual(thickness_2, result.result['SUMMARY OF RESULTS']['Segment 2   Thickness']['value'])
 
     def test_field_gathering_cost(self):
         fg_cost = 2.99

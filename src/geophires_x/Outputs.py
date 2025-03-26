@@ -747,12 +747,15 @@ class Outputs:
             model.logger.critical(msg)
             raise RuntimeError(msg) from ex
 
-        self.print_outputs_rich(model)
+        Outputs.print_outputs_rich(self.output_file, self.text_output_file, self.html_output_file, model)
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
-    def print_outputs_rich(self, model: Model):
-        #data structures and assignments for HTML and Improved Text Output formats
+
+    @staticmethod
+    def print_outputs_rich(output_file: str, text_output_file: strParameter, html_output_file: strParameter, model: Model):
+
+        # data structures and assignments for HTML and Improved Text Output formats
         simulation_metadata = []
         summary = []
         economic_parameters = []
@@ -1602,8 +1605,8 @@ class Outputs:
         if model.economics.DoSDACGTCalculations.value:
             sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
-        if self.text_output_file.Provided:
-            Write_Text_Output(self.output_file, simulation_metadata, summary, economic_parameters,
+        if text_output_file.Provided:
+            Write_Text_Output(output_file, simulation_metadata, summary, economic_parameters,
                               engineering_parameters,
                               resource_characteristics, reservoir_parameters, reservoir_stimulation_results, CAPEX,
                               OPEX,
@@ -1611,7 +1614,7 @@ class Outputs:
                               pumping_power_profiles, sdac_df, addon_df)
 
             # Get rid of any trailing spaces in that output file - they are confusing the testing code
-            with open(self.output_file, 'r+') as fp:
+            with open(output_file, 'r+') as fp:
                 lines = fp.readlines()
                 fp.seek(0)
                 fp.truncate()
@@ -1622,18 +1625,18 @@ class Outputs:
         # uncomment these to allow for testing of the HTML output
         #        self.html_output_file.value = 'd:\\temp\\test_table_geophires.html'
         #        self.html_output_file.Provided = True
-        if self.html_output_file.Provided:
-            Write_HTML_Output(self.html_output_file.value, simulation_metadata, summary, economic_parameters,
+        if html_output_file.Provided:
+            Write_HTML_Output(html_output_file.value, simulation_metadata, summary, economic_parameters,
                               engineering_parameters, resource_characteristics, reservoir_parameters,
                               reservoir_stimulation_results, CAPEX, OPEX, surface_equipment_results, sdac_results,
                               addon_results, hce, ahce, cashflow, pumping_power_profiles, sdac_df, addon_df)
 
             Plot_Tables_Into_HTML(model.surfaceplant.enduse_option, model.surfaceplant.plant_type,
-                                  self.html_output_file.value, hce, ahce, cashflow, pumping_power_profiles, sdac_df,
+                                  html_output_file.value, hce, ahce, cashflow, pumping_power_profiles, sdac_df,
                                   addon_df)
             # make district heating plot
             if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-                MakeDistrictHeatingPlot(self.html_output_file.value, model.surfaceplant.dh_geothermal_heating.value,
+                MakeDistrictHeatingPlot(html_output_file.value, model.surfaceplant.dh_geothermal_heating.value,
                                         model.surfaceplant.daily_heating_demand.value)
 
 

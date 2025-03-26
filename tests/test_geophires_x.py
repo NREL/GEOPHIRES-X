@@ -819,3 +819,25 @@ Print Output to Console, 1"""
                     'value'
                 ]
                 self.assertAlmostEqual(indirect_cost_factor * expected_cost_musd, cost_per_well_val, delta=0.1)
+
+    def test_segment_thickness_output(self):
+        thickness_1 = 0.793
+        thickness_2 = 1.646
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={
+                    'Number of Segments': 3,
+                    'Gradient 1': 42.69972,
+                    'Gradient 2': 51.66667,
+                    'Thickness 1': thickness_1,
+                    'Gradient 3': 46.9697,
+                    'Thickness 2': thickness_2,
+                },
+            )
+        )
+
+        self.assertEqual(thickness_1, result.result['SUMMARY OF RESULTS']['Segment 1   Thickness']['value'])
+        self.assertAlmostEqual(
+            thickness_2, result.result['SUMMARY OF RESULTS']['Segment 2   Thickness']['value'], places=3
+        )

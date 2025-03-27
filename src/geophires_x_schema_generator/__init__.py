@@ -271,6 +271,10 @@ Output Parameters
 
     @staticmethod
     def get_output_params_table_rst(output_params_json) -> str:
+        """
+        FIXME TODO consolidate with generated result schema
+        """
+
         output_params = json.loads(output_params_json)
 
         output_rst = """

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -151,12 +152,19 @@ class GeophiresXSchemaGenerator:
             # noinspection PyProtectedMember
             for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
                 param_name = field if isinstance(field, str) else field.field_name
-                param = {}
+                param = {
+                    'category': category,
+                }
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
                     param['description'] = output_param['ToolTipText']
+                    param['units'] = (
+                        output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
+                    )
 
+                if param_name in properties:
+                    _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')
                 properties[param_name] = param.copy()
 
         # for param_name in output_params:
@@ -330,3 +338,20 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
 
     def get_result_json_schema(self, output_params_json) -> dict:
         return None  # FIXME TODO
+
+
+def _get_logger(logger_name=None):
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.INFO)
+    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+
+    if logger_name is None:
+        logger_name = __name__
+
+    _l = logging.getLogger(logger_name)
+    _l.addHandler(sh)
+
+    return _l
+
+
+_log = _get_logger()

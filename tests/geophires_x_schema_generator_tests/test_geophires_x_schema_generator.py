@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from geophires_x_schema_generator import GeophiresXSchemaGenerator
@@ -15,6 +16,8 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
         req_schema, result_schema = g.generate_json_schema()
         self.assertIsNotNone(req_schema)  # TODO sanity checks on content
         self.assertIsNotNone(result_schema)  # TODO sanity checks on content
+
+        print(f'Generated result schema: {json.dumps(result_schema, indent=2)}')
 
 
 if __name__ == '__main__':

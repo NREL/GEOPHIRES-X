@@ -152,9 +152,19 @@ class GeophiresXSchemaGenerator:
             # noinspection PyProtectedMember
             for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
                 param_name = field if isinstance(field, str) else field.field_name
-                param = {
-                    'category': category,
-                }
+
+                if param_name in properties:
+                    _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')
+
+                param = (
+                    {
+                        'categories': [],
+                    }
+                    if param_name not in properties
+                    else properties[param_name]
+                )
+
+                param['categories'].append(category)
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
@@ -163,30 +173,7 @@ class GeophiresXSchemaGenerator:
                         output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
                     )
 
-                if param_name in properties:
-                    _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')
                 properties[param_name] = param.copy()
-
-        # for param_name in output_params:
-        #     param = output_params[param_name]
-        #
-        #     units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
-        #     min_val, max_val = _get_min_and_max(param, default_val=None)
-        #     properties[param_name] = {
-        #         'description': param['ToolTipText'],
-        #         'type': param['json_parameter_type'],
-        #         'units': units_val,
-        #         'category': param['parameter_category'],
-        #         'default': _fix_floating_point_error(param['DefaultValue']),
-        #         'minimum': min_val,
-        #         'maximum': max_val,
-        #     }
-        #
-        #     if param['Required']:
-        #         required.append(param_name)
-        #
-        #     if param['ValuesEnum']:
-        #         properties[param_name]['enum_values'] = param['ValuesEnum']
 
         result_schema = {
             'definitions': {},

@@ -10,6 +10,12 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
         rst = g.generate_parameters_reference_rst()
         self.assertIsNotNone(rst)  # TODO sanity checks on content
 
+    def test_get_json_schema(self):
+        g = GeophiresXSchemaGenerator()
+        req_schema, result_schema = g.generate_json_schema()
+        self.assertIsNotNone(req_schema)  # TODO sanity checks on content
+        self.assertIsNotNone(result_schema)  # TODO sanity checks on content
+
 
 if __name__ == '__main__':
     unittest.main()

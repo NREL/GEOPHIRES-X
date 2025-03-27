@@ -27,6 +27,7 @@ from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
 from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir
+from geophires_x_client import GeophiresXResult
 from hip_ra_x.hip_ra_x import HIP_RA_X
 
 
@@ -96,7 +97,11 @@ class GeophiresXSchemaGenerator:
 
         return json_dumpse(input_params), json_dumpse(output_params)
 
-    def generate_json_schema(self) -> dict:
+    def generate_json_schema(self) -> Tuple[dict, dict]:
+        """
+        :return: request schema, result schema
+        :rtype: Tuple[dict, dict]
+        """
         input_params_json, output_params_json = self.get_parameters_json()
         input_params = json.loads(input_params_json)
 
@@ -124,16 +129,67 @@ class GeophiresXSchemaGenerator:
             if param['ValuesEnum']:
                 properties[param_name]['enum_values'] = param['ValuesEnum']
 
-        schema = {
+        request_schema = {
             'definitions': {},
             '$schema': 'http://json-schema.org/draft-04/schema#',
             'type': 'object',
-            'title': f'{self.get_schema_title()} Schema',
+            'title': f'{self.get_schema_title()} Request Schema',
             'required': required,
             'properties': properties,
         }
 
-        return schema
+        return request_schema, self.get_result_json_schema(output_params_json)
+
+    def get_result_json_schema(self, output_params_json) -> dict:
+        properties = {}
+        required = []
+
+        output_params = json.loads(output_params_json)
+
+        # noinspection PyProtectedMember
+        for category in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY:
+            # noinspection PyProtectedMember
+            for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
+                param_name = field if isinstance(field, str) else field.field_name
+                param = {}
+
+                if param_name in output_params:
+                    output_param = output_params[param_name]
+                    param['description'] = output_param['ToolTipText']
+
+                properties[param_name] = param.copy()
+
+        # for param_name in output_params:
+        #     param = output_params[param_name]
+        #
+        #     units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
+        #     min_val, max_val = _get_min_and_max(param, default_val=None)
+        #     properties[param_name] = {
+        #         'description': param['ToolTipText'],
+        #         'type': param['json_parameter_type'],
+        #         'units': units_val,
+        #         'category': param['parameter_category'],
+        #         'default': _fix_floating_point_error(param['DefaultValue']),
+        #         'minimum': min_val,
+        #         'maximum': max_val,
+        #     }
+        #
+        #     if param['Required']:
+        #         required.append(param_name)
+        #
+        #     if param['ValuesEnum']:
+        #         properties[param_name]['enum_values'] = param['ValuesEnum']
+
+        result_schema = {
+            'definitions': {},
+            '$schema': 'http://json-schema.org/draft-04/schema#',
+            'type': 'object',
+            'title': f'{self.get_schema_title()} Result Schema',
+            'required': required,
+            'properties': properties,
+        }
+
+        return result_schema
 
     def generate_parameters_reference_rst(self) -> str:
         input_params_json, output_params_json = self.get_parameters_json()
@@ -271,3 +327,6 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
 
     def get_schema_title(self) -> str:
         return 'HIP-RA-X'
+
+    def get_result_json_schema(self, output_params_json) -> dict:
+        return None  # FIXME TODO

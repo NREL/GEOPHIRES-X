@@ -250,8 +250,8 @@ class Outputs:
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} ' + model.surfaceplant.plant_lifetime.CurrentUnits.value + NL)
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %' + NL)
 
-                e_npv = model.economics.ProjectNPV
-                npv_field_label = Outputs._field_label('Project NPV', 49)
+                e_npv: OutputParameter = model.economics.ProjectNPV
+                npv_field_label = Outputs._field_label(e_npv.display_name, 49)
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 

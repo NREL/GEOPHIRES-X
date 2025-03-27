@@ -146,6 +146,15 @@ class GeophiresXSchemaGenerator:
         required = []
 
         output_params = json.loads(output_params_json)
+        display_name_aliases = {}
+        for param_name in output_params:
+            if 'display_name' in output_params[param_name]:
+                display_name = output_params[param_name]['display_name']
+                if display_name not in [None, ''] and display_name != param_name:
+                    # output_params[display_name] = output_params[param_name]
+                    display_name_aliases[display_name] = output_params[param_name]
+
+        output_params = {**output_params, **display_name_aliases}
 
         # noinspection PyProtectedMember
         for category in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY:

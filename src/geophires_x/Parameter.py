@@ -63,6 +63,7 @@ class OutputParameter(HasQuantity):
     """
 
     Name: str = ""
+    display_name:str =None
     value: Any = 0
     ToolTipText: str = ""
     UnitType: IntEnum = Units.NONE
@@ -81,6 +82,9 @@ class OutputParameter(HasQuantity):
         ret.CurrentUnits = ret.PreferredUnits
         return ret
 
+    def __post_init__(self):
+        if self.display_name is None:
+            self.display_name: str = self.Name
 
 
 @dataclass

@@ -1806,6 +1806,7 @@ class Economics:
 
         self.ProjectNPV = self.OutputParameterDict[self.ProjectNPV.Name] = OutputParameter(
             "Project Net Present Value",
+            display_name='Project NPV',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,

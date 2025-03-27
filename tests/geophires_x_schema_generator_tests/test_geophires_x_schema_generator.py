@@ -19,6 +19,10 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
 
         print(f'Generated result schema: {json.dumps(result_schema, indent=2)}')
 
+        self.assertIn(
+            'multiple of invested capital', result_schema['properties']['Project MOIC']['description'].lower()
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

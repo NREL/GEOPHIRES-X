@@ -23,6 +23,8 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
             'multiple of invested capital', result_schema['properties']['Project MOIC']['description'].lower()
         )
 
+        self.assertIn('Wellfield cost. ', result_schema['properties']['Drilling and completion costs']['description'])
+
 
 if __name__ == '__main__':
     unittest.main()

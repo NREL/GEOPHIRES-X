@@ -153,6 +153,7 @@ class GeophiresXSchemaGenerator:
                 if display_name not in [None, ''] and display_name != param_name:
                     # output_params[display_name] = output_params[param_name]
                     display_name_aliases[display_name] = output_params[param_name]
+                    display_name_aliases[display_name]['output_parameter_name'] = param_name
 
         output_params = {**output_params, **display_name_aliases}
 
@@ -177,7 +178,10 @@ class GeophiresXSchemaGenerator:
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
-                    param['description'] = output_param['ToolTipText']
+                    description = output_param['ToolTipText']
+                    if 'output_parameter_name' in output_param:
+                        description = f'{output_param["output_parameter_name"]}. {description}'
+                    param['description'] = description
                     param['units'] = (
                         output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
                     )

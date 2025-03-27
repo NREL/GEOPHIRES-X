@@ -210,7 +210,7 @@
       "categories": [
         "ECONOMIC PARAMETERS"
       ],
-      "description": "NPV is calculated with cashflows lumped at the end of periods. See: Short W et al, 1995. \"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy Technologies.\", p. 41. https://www.nrel.gov/docs/legosti/old/5173.pdf",
+      "description": "Project Net Present Value. NPV is calculated with cashflows lumped at the end of periods. See: Short W et al, 1995. \"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy Technologies.\", p. 41. https://www.nrel.gov/docs/legosti/old/5173.pdf",
       "units": "MUSD"
     },
     "Project IRR": {
@@ -789,7 +789,9 @@
     "Drilling and completion costs": {
       "categories": [
         "CAPITAL COSTS (M$)"
-      ]
+      ],
+      "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
+      "units": "MUSD"
     },
     "Drilling and completion costs per well": {
       "categories": [

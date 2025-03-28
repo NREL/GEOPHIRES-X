@@ -158,6 +158,7 @@ class GeophiresXTestCase(BaseTestCase):
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
 
+        # @formatter:off
         example_files = list(
             filter(
                 lambda example_file_path: example_file_path.startswith(
@@ -169,6 +170,7 @@ class GeophiresXTestCase(BaseTestCase):
                 self._list_test_files_dir(test_files_dir='examples'),
             )
         )
+        # @formatter:on
 
         # Run SBT examples last because they take an inordinately long time (tens of seconds even on a fast machine).
         # This reduces time spent waiting for tests to run if you are iterating on changes that affect non-SBT examples.
@@ -819,3 +821,36 @@ Print Output to Console, 1"""
                     'value'
                 ]
                 self.assertAlmostEqual(indirect_cost_factor * expected_cost_musd, cost_per_well_val, delta=0.1)
+
+    def test_segment_thickness_output(self):
+        thickness_1 = 0.793
+        thickness_2 = 1.646
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={
+                    'Number of Segments': 3,
+                    'Gradient 1': 42.69972,
+                    'Gradient 2': 51.66667,
+                    'Thickness 1': thickness_1,
+                    'Gradient 3': 46.9697,
+                    'Thickness 2': thickness_2,
+                },
+            )
+        )
+
+        self.assertEqual(thickness_1, result.result['SUMMARY OF RESULTS']['Segment 1   Thickness']['value'])
+        self.assertEqual(thickness_2, result.result['SUMMARY OF RESULTS']['Segment 2   Thickness']['value'])
+
+    def test_field_gathering_cost(self):
+        fg_cost = 2.99
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={
+                    'Field Gathering System Capital Cost': fg_cost,
+                },
+            )
+        )
+
+        self.assertEqual(fg_cost, result.result['CAPITAL COSTS (M$)']['Field gathering system costs']['value'])

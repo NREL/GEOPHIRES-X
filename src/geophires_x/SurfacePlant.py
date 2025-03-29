@@ -152,6 +152,9 @@ class SurfacePlant:
 
         # next do the electricity produced - the same for all, except enduse=5, where it is recalculated
         ElectricityProduced = availability * etau * nprod * prodwellflowrate
+        if ElectricityProduced.max() < 0:
+            raise RuntimeError('Electricity production calculated as negative.  '
+                               'Check maximum temperature for power plant type.')
 
         if enduse_option == EndUseOptions.ELECTRICITY:
             # pure electricity

@@ -2417,9 +2417,9 @@ class Economics:
                             1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
                 self.Cpumps = Cpumpsinj + Cpumpsprod
 
-        # Based on GETEM 2016 #1.15 for 15% contingency and 1.12 for 12% indirect costs
-        self.Cgath.value = 1.15 * self.ccgathadjfactor.value * 1.12 * (
-                (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
+            # Based on GETEM 2016: 1.15 for 15% contingency and 1.12 for 12% indirect costs
+            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * 1.12 * (
+                    (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
         # plant costs
         if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT

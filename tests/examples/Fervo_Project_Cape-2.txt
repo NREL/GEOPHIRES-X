@@ -14,11 +14,11 @@ Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.01
 
-Number of Fractures, 108
+Number of Fractures, 80, -- "The initial completions batch consisted of 80 individual stages in the cased and cemented horizontal sections of 3 wells."
 Fracture Shape, 4
-Fracture Height, 300
+Fracture Height, 300, -- Estimated value supported by modeling.
 Fracture Width, 400
-Fracture Separation, 30
+Fracture Separation, 18, -- Lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
 
 Number of Segments, 1
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)

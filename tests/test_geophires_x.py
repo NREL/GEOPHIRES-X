@@ -858,7 +858,7 @@ Print Output to Console, 1"""
     def test_temperature_limitations(self):
         client = GeophiresXClient()
 
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(RuntimeError) as e:
             params = GeophiresInputParameters(
                 {
                     'Is AGS': True,

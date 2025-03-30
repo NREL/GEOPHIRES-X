@@ -854,3 +854,37 @@ Print Output to Console, 1"""
         )
 
         self.assertEqual(fg_cost, result.result['CAPITAL COSTS (M$)']['Field gathering system costs']['value'])
+
+    def test_temperature_limitations(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(ValueError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Is AGS': True,
+                    'Well Geometry Configuration': 1,
+                    'Injection Temperature': 60,
+                    'Cylindrical Reservoir Input Depth': 8,
+                    'Economic Model': 3,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn(' exceeds ', str(e.exception))
+
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Is AGS': True,
+                    'Closed-loop Configuration': 2,
+                    'Gradient 1': 25,
+                    'Injection Temperature': 60,
+                    'Economic Model': 4,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn(' must be between 30 and 70 ', str(e.exception))
+
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters({'Power Plant Type': 2, 'Maximum Temperature': 600})
+            client.get_geophires_result(params)
+        self.assertIn('Check maximum temperature for power plant type', str(e.exception))

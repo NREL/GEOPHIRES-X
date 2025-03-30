@@ -882,7 +882,7 @@ Print Output to Console, 1"""
                 }
             )
             client.get_geophires_result(params)
-        self.assertIn(' must be between 30 and 70 ', str(e.exception))
+        self.assertIn('failed to validate CLGS input value', str(e.exception))
 
         with self.assertRaises(RuntimeError) as e:
             params = GeophiresInputParameters({'Power Plant Type': 2, 'Maximum Temperature': 600})

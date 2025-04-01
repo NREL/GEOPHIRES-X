@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
-from geophires_x.Outputs import Outputs, OutputTableItem
+from geophires_x.Outputs import Outputs
+from geophires_x.OutputsRich import OutputTableItem
 
 NL = "\n"
 

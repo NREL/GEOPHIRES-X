@@ -2687,10 +2687,10 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
-        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        if self.RITC.Provided:
-            self.RITCValue.value = self.RITC.value * self.CCap.value
-            self.CCap.value = self.CCap.value - self.RITCValue.value
+        # # update the capital costs, assuming the entire ITC is used to reduce the capital costs
+        # if self.RITC.Provided:
+        #     self.RITCValue.value = self.RITC.value * self.CCap.value
+        #     self.CCap.value = self.CCap.value - self.RITCValue.value
 
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
@@ -2927,6 +2927,12 @@ class Economics:
         for i in range(model.surfaceplant.construction_years.value,
                        model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
             self.TotalRevenue.value[i] = self.TotalRevenue.value[i] - self.Coam.value
+
+
+        if self.RITC.Provided:
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            # ITC is credited year after construction
+            self.TotalRevenue.value[model.surfaceplant.construction_years.value] += self.RITCValue.value
 
         # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
         for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):

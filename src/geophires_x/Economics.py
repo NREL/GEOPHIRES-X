@@ -479,7 +479,10 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
         NPVcap = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * CRF * discountvector)
         NPVfc = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * self.PTR.value * inflationvector * discountvector)
         NPVit = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * self.CCap.value * CRF - self.CCap.value / model.surfaceplant.plant_lifetime.value) * discountvector)
-        NPVitc = (1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
+
+        npv_itc_discount_factor = discountvector[model.surfaceplant.construction_years.value]
+        NPVitc = ((1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
+                  * npv_itc_discount_factor)
 
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
             NPVoandm = np.sum(self.Coam.value * inflationvector * discountvector)
@@ -502,7 +505,8 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
             NPVcap_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * CRF * discountvector)
             NPVfc_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * self.PTR.value * inflationvector * discountvector)
             NPVit_elec = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_elec * CRF - CCap_elec / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_elec = (1 + self.inflrateconstruction.value) * CCap_elec * self.RITC.value / (1 - self.CTR.value)
+            NPVitc_elec = ((1 + self.inflrateconstruction.value) * CCap_elec * self.RITC.value / (1 - self.CTR.value)
+                           * npv_itc_discount_factor)
             NPVoandm_elec = np.sum(Coam_elec * inflationvector * discountvector)
             NPVgrt_elec = self.GTR.value / (1 - self.GTR.value) * (NPVcap_elec + NPVoandm_elec + NPVfc_elec + NPVit_elec - NPVitc_elec)
 
@@ -512,7 +516,8 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
             NPVcap_heat = np.sum((1 + self.inflrateconstruction.value) * CCap_heat * CRF * discountvector)
             NPVfc_heat = np.sum((1 + self.inflrateconstruction.value) * (self.CCap.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * self.PTR.value * inflationvector * discountvector)
             NPVit_heat = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_heat * CRF - CCap_heat / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_heat = (1 + self.inflrateconstruction.value) * CCap_heat * self.RITC.value / (1 - self.CTR.value)
+            NPVitc_heat = ((1 + self.inflrateconstruction.value) * CCap_heat * self.RITC.value / (1 - self.CTR.value)
+                           * npv_itc_discount_factor)
             NPVoandm_heat = np.sum((self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * inflationvector * discountvector)
             NPVgrt_heat = self.GTR.value / (1 - self.GTR.value) * (NPVcap_heat + NPVoandm_heat + NPVfc_heat + NPVit_heat - NPVitc_heat)
 

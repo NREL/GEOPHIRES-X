@@ -6,14 +6,14 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.8.9
  Simulation Date: 2025-04-02
- Simulation Time:  12:28
- Calculation Time:      0.783 sec
+ Simulation Time:  12:41
+ Calculation Time:      0.777 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                    18.84 MW
-      Electricity breakeven price:                            4.44 cents/kWh
+      Electricity breakeven price:                            4.89 cents/kWh
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          55.0 kg/sec

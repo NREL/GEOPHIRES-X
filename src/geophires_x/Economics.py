@@ -2692,11 +2692,6 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
-        # # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        # if self.RITC.Provided:
-        #     self.RITCValue.value = self.RITC.value * self.CCap.value
-        #     self.CCap.value = self.CCap.value - self.RITCValue.value
-
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 

@@ -979,7 +979,8 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default investment tax credit rate (0)",
-            ToolTipText="Investment tax credit rate (see docs)"
+            ToolTipText="Investment tax credit rate "
+                        "(see https://programs.dsireusa.org/system/program/detail/658)"
         )
         self.PTR = self.ParameterDict[self.PTR.Name] = floatParameter(
             "Property Tax Rate",

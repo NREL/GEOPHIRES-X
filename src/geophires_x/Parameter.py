@@ -6,6 +6,7 @@ import dataclasses
 
 import sys
 from array import array
+from collections.abc import Iterable
 from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from enum import IntEnum
@@ -20,6 +21,13 @@ from geophires_x.Units import *
 
 _ureg = get_unit_registry()
 _DISABLE_FOREX_API = True  # See https://github.com/NREL/GEOPHIRES-X/issues/236#issuecomment-2414681434
+
+_JSON_PARAMETER_TYPE_STRING = 'string'
+_JSON_PARAMETER_TYPE_INTEGER = 'integer'
+_JSON_PARAMETER_TYPE_NUMBER = 'number'
+_JSON_PARAMETER_TYPE_ARRAY = 'array'
+_JSON_PARAMETER_TYPE_BOOLEAN = 'boolean'
+_JSON_PARAMETER_TYPE_OBJECT = 'object'
 
 class HasQuantity(ABC):
 
@@ -63,6 +71,7 @@ class OutputParameter(HasQuantity):
     """
 
     Name: str = ""
+    display_name: str = None
     value: Any = 0
     ToolTipText: str = ""
     UnitType: IntEnum = Units.NONE
@@ -70,6 +79,7 @@ class OutputParameter(HasQuantity):
     # set to PreferredUnits by default assuming that the current units are the preferred units -
     # they will only change if the read function reads a different unit associated with a parameter
     CurrentUnits: Enum = PreferredUnits
+    json_parameter_type: str = None
 
     @property
     def UnitsMatch(self) -> str:
@@ -81,7 +91,27 @@ class OutputParameter(HasQuantity):
         ret.CurrentUnits = ret.PreferredUnits
         return ret
 
+    def __post_init__(self):
+        if self.display_name is None:
+            self.display_name: str = self.Name
 
+        if self.json_parameter_type is None:
+            # Note that this is sensitive to order of comparison; unit test ensures correct behavior:
+            # test_parameter.ParameterTestCase.test_output_parameter_json_types
+            if isinstance(self.value, str):
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_STRING
+            elif isinstance(self.value, bool):
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_BOOLEAN
+            elif isinstance(self.value, float) or isinstance(self.value, int):
+                # Default number values may not be representative of whether calculated values are integer-only,
+                # so we specify number type even if value is int.
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_NUMBER
+            elif isinstance(self.value, dict):
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_OBJECT
+            elif isinstance(self.value, Iterable):
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_ARRAY
+            else:
+                self.json_parameter_type = _JSON_PARAMETER_TYPE_OBJECT
 
 @dataclass
 class Parameter(HasQuantity):
@@ -148,7 +178,7 @@ class boolParameter(Parameter):
 
     value: bool = None
     DefaultValue: bool = value
-    json_parameter_type: str = 'boolean'
+    json_parameter_type: str = _JSON_PARAMETER_TYPE_BOOLEAN
 
 
 @dataclass
@@ -170,7 +200,7 @@ class intParameter(Parameter):
     value: int = None
     DefaultValue: int = value
     AllowableRange: List[int] = field(default_factory=list)
-    json_parameter_type: str = 'integer'
+    json_parameter_type: str = _JSON_PARAMETER_TYPE_INTEGER
 
     def coerce_value_to_enum(self):
         if self.ValuesEnum is not None:
@@ -203,7 +233,7 @@ class floatParameter(Parameter):
     DefaultValue: float = 0.0
     Min: float = -1.8e30
     Max: float = 1.8e30
-    json_parameter_type: str = 'number'
+    json_parameter_type: str = _JSON_PARAMETER_TYPE_NUMBER
 
 
 @dataclass
@@ -218,11 +248,11 @@ class strParameter(Parameter):
     """
     def __post_init__(self):
         if self.value is None:
-            self.value:str = self.DefaultValue
+            self.value: str = self.DefaultValue
 
     value: str = None
     DefaultValue: str = value
-    json_parameter_type: str = 'string'
+    json_parameter_type: str = _JSON_PARAMETER_TYPE_STRING
 
 
 @dataclass
@@ -242,13 +272,13 @@ class listParameter(Parameter):
 
     def __post_init__(self):
         if self.value is None:
-            self.value:str = self.DefaultValue
+            self.value: str = self.DefaultValue
 
     value: List[float] = None
     DefaultValue: List[float] = field(default_factory=list)
     Min: float = -1.8e308
     Max: float = 1.8e308
-    json_parameter_type: str = 'array'
+    json_parameter_type: str = _JSON_PARAMETER_TYPE_ARRAY
 
 
 def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model):

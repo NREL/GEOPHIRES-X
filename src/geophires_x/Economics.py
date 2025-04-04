@@ -535,7 +535,7 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
             NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
             LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(
                 model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
-            LCOH = self.LCOH.value * 2.931  # $/MMBTU
+            LCOH = LCOH * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
@@ -1575,6 +1575,7 @@ class Economics:
 
         self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
             Name="LCOC",
+            display_name='Direct-Use Cooling Breakeven Price (LCOC)',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
@@ -1582,24 +1583,27 @@ class Economics:
 
         self.LCOE = self.OutputParameterDict[self.LCOE.Name] = OutputParameter(
             Name="LCOE",
+            display_name='Electricity breakeven price',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH
         )
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             Name="LCOH",
+            display_name='Direct-Use heat breakeven price (LCOH)',
             UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,  # $/MMBTU
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
-        )  # $/MMBTU
+        )
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs", # FIXME wrong name - should be Stimulation Costs
+            Name="O&M Surface Plant costs",  # FIXME wrong name - should be Stimulation Costs
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
+            display_name='Exploration costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1607,6 +1611,7 @@ class Economics:
 
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
             Name="Wellfield cost",
+            display_name='Drilling and completion costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
@@ -1617,6 +1622,7 @@ class Economics:
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
+            display_name='Wellfield maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1629,30 +1635,35 @@ class Economics:
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
+            display_name='Power plant maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(
             Name="Field gathering system cost",
+            display_name='Field gathering system costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Cpiping = self.OutputParameterDict[self.Cpiping.Name] = OutputParameter(
             Name="Transmission pipeline costs",
+            display_name='Transmission pipeline cost',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
         self.Coamwater = self.OutputParameterDict[self.Coamwater.Name] = OutputParameter(
             Name="O&M Make-up Water costs",
+            display_name='Water costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
+            display_name='Total capital costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1663,8 +1674,6 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-#        self.averageannualpumpingcosts = self.OutputParameterDict[
-#            self.averageannualpumpingcosts.Name] = OutputParameter(  #typo here!??!
         self.averageannualpumpingcosts = OutputParameter(
             Name="Average Annual Pumping Costs",
             UnitType=Units.CURRENCYFREQUENCY,
@@ -1775,6 +1784,7 @@ class Economics:
         self.CarbonThatWouldHaveBeenProducedTotal = self.OutputParameterDict[
             self.CarbonThatWouldHaveBeenProducedTotal.Name] = OutputParameter(
             "Total Saved Carbon Production",
+            display_name='Total Avoided Carbon Emissions',
             UnitType=Units.MASS,
             PreferredUnits=MassUnit.LB,
             CurrentUnits=MassUnit.LB
@@ -1806,6 +1816,7 @@ class Economics:
 
         self.ProjectNPV = self.OutputParameterDict[self.ProjectNPV.Name] = OutputParameter(
             "Project Net Present Value",
+            display_name='Project NPV',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
@@ -1817,12 +1828,14 @@ class Economics:
         )
         self.ProjectIRR = self.OutputParameterDict[self.ProjectIRR.Name] = OutputParameter(
             "Project Internal Rate of Return",
+            display_name='Project IRR',
             UnitType=Units.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
         )
         self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = OutputParameter(
             "Project Value Investment Ratio",
+            display_name='Project VIR=PI=PIR',
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH
@@ -1842,6 +1855,7 @@ class Economics:
         )
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
+            display_name='Investment Tax Credit',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -2687,7 +2701,7 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
-        # update the capitol costs, assuming the entire ITC is used to reduce the capitol costs
+        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
         if self.RITC.Provided:
             self.RITCValue.value = self.RITC.value * self.CCap.value
             self.CCap.value = self.CCap.value - self.RITCValue.value

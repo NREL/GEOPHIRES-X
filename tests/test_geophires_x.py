@@ -854,3 +854,16 @@ Print Output to Console, 1"""
         )
 
         self.assertEqual(fg_cost, result.result['CAPITAL COSTS (M$)']['Field gathering system costs']['value'])
+
+    def test_heat_pump_lcoh_bicycle(self):
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/example10_HP.txt'),
+                params={
+                    'Economic Model': 3,
+                },
+            )
+        )
+
+        lcoh = result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price (LCOH)']['value']
+        self.assertTrue(10 < lcoh < 20)  # Sanity-check that value is non-zero and broadly within the expected range.

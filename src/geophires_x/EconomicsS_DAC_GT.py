@@ -267,6 +267,7 @@ class EconomicsS_DAC_GT(Economics.Economics):
         )
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             Name="LCOH",
+            display_name='Direct-Use heat breakeven price (LCOH)',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKWH

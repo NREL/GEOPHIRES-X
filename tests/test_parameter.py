@@ -151,6 +151,23 @@ class ParameterTestCase(BaseTestCase):
         self.assertEqual(5.5, result.value[0])
         self.assertEqual(5.5, result.value[-1])
 
+    def test_output_parameter_json_types(self):
+        cases = [
+            ('foo', 'string'),
+            (1, 'number'),
+            (44.4, 'number'),
+            (True, 'boolean'),
+            ([1, 2, 3], 'array'),
+            ({4, 5, 6}, 'array'),
+            (None, 'object'),
+            ({'foo': 'bar'}, 'object'),
+        ]
+
+        for case in cases:
+            with self.subTest(case=case):
+                jpt = OutputParameter(value=case[0]).json_parameter_type
+                self.assertEqual(case[1], jpt)
+
     def test_convert_units_back_currency(self):
         model = self._new_model()
 

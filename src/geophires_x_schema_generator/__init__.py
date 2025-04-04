@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -27,6 +28,7 @@ from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
 from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir
+from geophires_x_client import GeophiresXResult
 from hip_ra_x.hip_ra_x import HIP_RA_X
 
 
@@ -96,7 +98,11 @@ class GeophiresXSchemaGenerator:
 
         return json_dumpse(input_params), json_dumpse(output_params)
 
-    def generate_json_schema(self) -> dict:
+    def generate_json_schema(self) -> Tuple[dict, dict]:
+        """
+        :return: request schema, result schema
+        :rtype: Tuple[dict, dict]
+        """
         input_params_json, output_params_json = self.get_parameters_json()
         input_params = json.loads(input_params_json)
 
@@ -108,6 +114,7 @@ class GeophiresXSchemaGenerator:
 
             units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
             min_val, max_val = _get_min_and_max(param, default_val=None)
+
             properties[param_name] = {
                 'description': param['ToolTipText'],
                 'type': param['json_parameter_type'],
@@ -124,16 +131,73 @@ class GeophiresXSchemaGenerator:
             if param['ValuesEnum']:
                 properties[param_name]['enum_values'] = param['ValuesEnum']
 
-        schema = {
+        request_schema = {
             'definitions': {},
             '$schema': 'http://json-schema.org/draft-04/schema#',
             'type': 'object',
-            'title': f'{self.get_schema_title()} Schema',
+            'title': f'{self.get_schema_title()} Request Schema',
             'required': required,
             'properties': properties,
         }
 
-        return schema
+        return request_schema, self.get_result_json_schema(output_params_json)
+
+    def get_result_json_schema(self, output_params_json) -> dict:
+        properties = {}
+        required = []
+
+        output_params = json.loads(output_params_json)
+        display_name_aliases = {}
+        for param_name in output_params:
+            if 'display_name' in output_params[param_name]:
+                display_name = output_params[param_name]['display_name']
+                if display_name not in [None, ''] and display_name != param_name:
+                    # output_params[display_name] = output_params[param_name]
+                    display_name_aliases[display_name] = output_params[param_name]
+                    display_name_aliases[display_name]['output_parameter_name'] = param_name
+
+        output_params = {**output_params, **display_name_aliases}
+
+        # noinspection PyProtectedMember
+        for category in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY:
+            cat_properties = {}
+            # noinspection PyProtectedMember
+            for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
+                param_name = field if isinstance(field, str) else field.field_name
+
+                if param_name in properties:
+                    _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')
+
+                param = {} if param_name not in properties else properties[param_name]
+
+                if param_name in output_params:
+                    output_param = output_params[param_name]
+                    param['type'] = output_param['json_parameter_type']
+                    description = output_param['ToolTipText']
+                    if 'output_parameter_name' in output_param:
+                        if description is not None and description != '':
+                            description = f'{output_param["output_parameter_name"]}. {description}'
+                        else:
+                            description = output_param['output_parameter_name']
+                    param['description'] = description
+                    param['units'] = (
+                        output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
+                    )
+
+                cat_properties[param_name] = param.copy()
+
+            properties[category] = {'type': 'object', 'properties': cat_properties}
+
+        result_schema = {
+            'definitions': {},
+            '$schema': 'http://json-schema.org/draft-04/schema#',
+            'type': 'object',
+            'title': f'{self.get_schema_title()} Result Schema',
+            'required': required,
+            'properties': properties,
+        }
+
+        return result_schema
 
     def generate_parameters_reference_rst(self) -> str:
         input_params_json, output_params_json = self.get_parameters_json()
@@ -189,6 +253,25 @@ class GeophiresXSchemaGenerator:
 
         output_rst = self.get_output_params_table_rst(output_params_json)
 
+        schema_ref_base_url = (
+            'https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/main/src/geophires_x_schema_generator/'
+        )
+        input_schema_ref_rst = ''
+        if self.get_input_schema_reference() is not None:
+            input_schema_ref_rst = (
+                f'Schema: '
+                f'`{self.get_input_schema_reference()} '
+                f'<{schema_ref_base_url}{self.get_input_schema_reference()}>`__'
+            )
+
+        output_schema_ref_rst = ''
+        if self.get_output_schema_reference() is not None:
+            output_schema_ref_rst = (
+                f'Schema: '
+                f'`{self.get_output_schema_reference()} '
+                f'<{schema_ref_base_url}{self.get_output_schema_reference()}>`__'
+            )
+
         rst = f"""{self.get_schema_title()} Parameters
 ==========
 
@@ -196,21 +279,36 @@ class GeophiresXSchemaGenerator:
 
 Input Parameters
 ################
+{input_schema_ref_rst}
 {input_rst}
 
-Output Parameters
+Outputs
 #################
+{output_schema_ref_rst}
 {output_rst}
 """
 
         return rst
 
-    @staticmethod
-    def get_output_params_table_rst(output_params_json) -> str:
-        output_params = json.loads(output_params_json)
+    def get_output_params_table_rst(self, output_params_json) -> str:
+        output_schema = self.get_result_json_schema(output_params_json)
 
-        output_rst = """
-    .. list-table:: Output Parameters
+        output_params_by_category: dict = {}
+
+        for category, category_params in output_schema['properties'].items():
+            if category not in output_params_by_category:
+                output_params_by_category[category] = {}  # []
+
+            for param_name, param in category_params['properties'].items():
+                output_params_by_category[category][param_name] = param
+
+        def get_output_params_table(_category_params, category_name) -> str:
+            category_display = category_name if category_name is not None else ''
+            category_display = category_display.replace(' (M$)', '').replace(' (M$/yr)', '')
+            _output_rst = f"""
+{category_display}
+{'-' * len(category_display)}
+    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Outputs
        :header-rows: 1
 
        * - Name
@@ -218,21 +316,25 @@ Output Parameters
          - Preferred Units
          - Default Value Type"""
 
-        for param_name in output_params:
-            param = output_params[param_name]
+            for _param_name, _param in _category_params.items():
+                _output_rst += f"""\n       * - {_param_name}
+         - {_get_key(_param, 'description')}
+         - {_get_key(_param, 'units')}
+         - {_get_key(_param, 'type')}"""
 
-            def get_key(k):
-                if k in param and str(param[k]) != '':  # noqa
-                    return param[k]  # noqa
-                else:
-                    return ''
+            return _output_rst
 
-            output_rst += f"""\n       * - {param['Name']}
-         - {get_key('ToolTipText')}
-         - {get_key('PreferredUnits')}
-         - {get_key('json_parameter_type')}"""
+        output_rst = ''
+        for category, category_params in output_params_by_category.items():
+            output_rst += get_output_params_table(category_params, category)
 
         return output_rst
+
+    def get_input_schema_reference(self) -> str:
+        return 'geophires-request.json'
+
+    def get_output_schema_reference(self) -> str:
+        return 'geophires-result.json'
 
 
 def _get_key(param: dict, k: str, default_val='') -> Any:
@@ -271,3 +373,61 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
 
     def get_schema_title(self) -> str:
         return 'HIP-RA-X'
+
+    def get_result_json_schema(self, output_params_json) -> dict:
+        return None  # FIXME TODO
+
+    def get_output_params_table_rst(self, output_params_json) -> str:
+        """
+        FIXME TODO consolidate with generated result schema
+        """
+
+        output_params = json.loads(output_params_json)
+
+        output_rst = """
+    .. list-table:: Outputs
+       :header-rows: 1
+
+       * - Name
+         - Description
+         - Preferred Units
+         - Default Value Type"""
+
+        for param_name in output_params:
+            param = output_params[param_name]
+
+            def get_key(k):
+                if k in param and str(param[k]) != '':  # noqa
+                    return param[k]  # noqa
+                else:
+                    return ''
+
+            output_rst += f"""\n       * - {param['Name']}
+         - {get_key('ToolTipText')}
+         - {get_key('PreferredUnits')}
+         - {get_key('json_parameter_type')}"""
+
+        return output_rst
+
+    def get_input_schema_reference(self) -> str:
+        return 'hip-ra-x-request.json'
+
+    def get_output_schema_reference(self) -> str:
+        return None
+
+
+def _get_logger(logger_name=None):
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.INFO)
+    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+
+    if logger_name is None:
+        logger_name = __name__
+
+    _l = logging.getLogger(logger_name)
+    _l.addHandler(sh)
+
+    return _l
+
+
+_log = _get_logger()

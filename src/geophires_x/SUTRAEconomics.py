@@ -204,6 +204,7 @@ class SUTRAEconomics(Economics.Economics):
 
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             "Heat Sale Price Model",
+            display_name='Direct-Use heat breakeven price (LCOH)',
             value=[0.025],
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,

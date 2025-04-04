@@ -1,0 +1,470 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "GEOPHIRES-X Result Schema",
+  "required": [],
+  "properties": {
+    "SUMMARY OF RESULTS": {
+      "type": "object",
+      "properties": {
+        "End-Use Option": {},
+        "End-Use": {},
+        "Surface Application": {},
+        "Average Net Electricity Production": {},
+        "Electricity breakeven price": {
+          "type": "number",
+          "description": "LCOE",
+          "units": "cents/kWh"
+        },
+        "Average Direct-Use Heat Production": {},
+        "Direct-Use heat breakeven price": {},
+        "Direct-Use heat breakeven price (LCOH)": {
+          "type": "number",
+          "description": "LCOH",
+          "units": "USD/MMBTU"
+        },
+        "Direct-Use Cooling Breakeven Price (LCOC)": {
+          "type": "number",
+          "description": "LCOC",
+          "units": "USD/MMBTU"
+        },
+        "Annual District Heating Demand": {},
+        "Average Cooling Production": {},
+        "Average Annual Geothermal Heat Production": {},
+        "Average Annual Peaking Fuel Heat Production": {},
+        "Direct-Use Cooling Breakeven Price": {},
+        "Number of production wells": {},
+        "Number of injection wells": {},
+        "Flowrate per production well": {},
+        "Well depth": {},
+        "Well depth (or total length, if not vertical)": {},
+        "Geothermal gradient": {},
+        "Segment 1   Geothermal gradient": {},
+        "Segment 1   Thickness": {},
+        "Segment 2   Geothermal gradient": {},
+        "Segment 2   Thickness": {},
+        "Segment 3   Geothermal gradient": {},
+        "Segment 3   Thickness": {},
+        "Segment 4   Geothermal gradient": {},
+        "LCOE": {
+          "type": "number",
+          "description": "LCOE",
+          "units": "cents/kWh"
+        },
+        "LCOH": {
+          "type": "number",
+          "description": "LCOH",
+          "units": "USD/MMBTU"
+        },
+        "Lifetime Average Well Flow Rate": {},
+        "Total Avoided Carbon Emissions": {
+          "type": "number",
+          "description": "Total Saved Carbon Production",
+          "units": "pound"
+        }
+      }
+    },
+    "ECONOMIC PARAMETERS": {
+      "type": "object",
+      "properties": {
+        "Economic Model": {},
+        "Interest Rate": {
+          "type": "number",
+          "description": "",
+          "units": "%"
+        },
+        "Accrued financing during construction": {},
+        "Project lifetime": {},
+        "Capacity factor": {},
+        "Project NPV": {
+          "type": "number",
+          "description": "Project Net Present Value. NPV is calculated with cashflows lumped at the end of periods. See: Short W et al, 1995. \"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy Technologies.\", p. 41. https://www.nrel.gov/docs/legosti/old/5173.pdf",
+          "units": "MUSD"
+        },
+        "Project IRR": {
+          "type": "number",
+          "description": "Project Internal Rate of Return",
+          "units": "%"
+        },
+        "Project VIR=PI=PIR": {
+          "type": "number",
+          "description": "Project Value Investment Ratio",
+          "units": ""
+        },
+        "Project MOIC": {
+          "type": "number",
+          "description": "Project Multiple of Invested Capital",
+          "units": ""
+        },
+        "Fixed Charge Rate (FCR)": {},
+        "Project Payback Period": {
+          "type": "number",
+          "description": "",
+          "units": "yr"
+        },
+        "CHP: Percent cost allocation for electrical plant": {},
+        "Estimated Jobs Created": {
+          "type": "number",
+          "description": "",
+          "units": null
+        }
+      }
+    },
+    "EXTENDED ECONOMICS": {
+      "type": "object",
+      "properties": {
+        "Adjusted Project LCOE (after incentives, grants, AddOns,etc)": {},
+        "Adjusted Project LCOH (after incentives, grants, AddOns,etc)": {},
+        "Adjusted Project CAPEX (after incentives, grants, AddOns, etc)": {},
+        "Adjusted Project OPEX (after incentives, grants, AddOns, etc)": {},
+        "Project NPV   (including AddOns)": {},
+        "Project IRR   (including AddOns)": {},
+        "Project VIR=PI=PIR   (including AddOns)": {},
+        "Project MOIC  (including AddOns)": {},
+        "Project Payback Period       (including AddOns)": {},
+        "Total Add-on CAPEX": {},
+        "Total Add-on OPEX": {},
+        "Total Add-on Net Elec": {},
+        "Total Add-on Net Heat": {},
+        "Total Add-on Profit": {},
+        "AddOns Payback Period": {}
+      }
+    },
+    "CCUS ECONOMICS": {
+      "type": "object",
+      "properties": {
+        "Total Avoided Carbon Production": {},
+        "Project NPV            (including carbon credit)": {},
+        "Project IRR            (including carbon credit)": {},
+        "Project VIR=IR=PIR     (including carbon credit)": {},
+        "Project MOIC           (including carbon credit)": {},
+        "Project Payback Period (including carbon credit)": {}
+      }
+    },
+    "S-DAC-GT ECONOMICS": {
+      "type": "object",
+      "properties": {
+        "LCOD using grid-based electricity only": {},
+        "LCOD using natural gas only": {},
+        "LCOD using geothermal energy only": {},
+        "CO2 Intensity using grid-based electricity only": {},
+        "CO2 Intensity using natural gas only": {},
+        "CO2 Intensity using geothermal energy only": {},
+        "Geothermal LCOH": {},
+        "Geothermal Ratio (electricity vs heat)": {},
+        "Percent Energy Devoted To Process": {},
+        "Total Cost of Capture": {}
+      }
+    },
+    "ENGINEERING PARAMETERS": {
+      "type": "object",
+      "properties": {
+        "Number of Production Wells": {},
+        "Number of Injection Wells": {},
+        "Well depth": {},
+        "Well depth (or total length, if not vertical)": {},
+        "Water loss rate": {},
+        "Pump efficiency": {},
+        "Injection temperature": {},
+        "Injection Temperature": {
+          "type": "array",
+          "description": "",
+          "units": "degC"
+        },
+        "Average production well temperature drop": {},
+        "Flowrate per production well": {},
+        "Injection well casing ID": {},
+        "Production well casing ID": {},
+        "Number of times redrilling": {},
+        "Power plant type": {},
+        "Fluid": {},
+        "Design": {},
+        "Flow rate": {},
+        "Lateral Length": {},
+        "Vertical Depth": {},
+        "Wellbore Diameter": {},
+        "Lifetime Average Well Flow Rate": {}
+      }
+    },
+    "RESOURCE CHARACTERISTICS": {
+      "type": "object",
+      "properties": {
+        "Maximum reservoir temperature": {},
+        "Number of segments": {},
+        "Geothermal gradient": {},
+        "Segment 1   Geothermal gradient": {},
+        "Segment 1   Thickness": {},
+        "Segment 2   Geothermal gradient": {},
+        "Segment 2   Thickness": {},
+        "Segment 3   Geothermal gradient": {},
+        "Segment 3   Thickness": {},
+        "Segment 4   Geothermal gradient": {}
+      }
+    },
+    "RESERVOIR PARAMETERS": {
+      "type": "object",
+      "properties": {
+        "Reservoir Model": {},
+        "Fracture model": {},
+        "Bottom-hole temperature": {
+          "type": "number",
+          "description": "",
+          "units": "degC"
+        },
+        "Well separation: fracture diameter": {},
+        "Well separation: fracture height": {},
+        "Fracture width": {
+          "type": "number",
+          "description": "Calculated Fracture Width",
+          "units": "meter"
+        },
+        "Fracture area": {
+          "type": "number",
+          "description": "Calculated Fracture Area",
+          "units": "m**2"
+        },
+        "Number of fractures": {
+          "type": "number",
+          "description": "Calculated Number of Fractures",
+          "units": null
+        },
+        "Fracture separation": {
+          "type": "number",
+          "description": "Calculated Fracture Separation",
+          "units": "meter"
+        },
+        "Reservoir volume": {},
+        "Reservoir impedance": {},
+        "Reservoir hydrostatic pressure": {},
+        "Average reservoir pressure": {
+          "type": "number",
+          "description": "Average Reservoir Pressure",
+          "units": "kPa"
+        },
+        "Plant outlet pressure": {},
+        "Production wellhead pressure": {
+          "type": "number",
+          "description": "",
+          "units": "kPa"
+        },
+        "Productivity Index": {},
+        "Injectivity Index": {},
+        "Reservoir density": {},
+        "Reservoir thermal conductivity": {},
+        "Reservoir heat capacity": {},
+        "Reservoir porosity": {},
+        "Thermal Conductivity": {}
+      }
+    },
+    "RESERVOIR SIMULATION RESULTS": {
+      "type": "object",
+      "properties": {
+        "Maximum Production Temperature": {},
+        "Average Production Temperature": {
+          "type": "number",
+          "description": "",
+          "units": "degC"
+        },
+        "Minimum Production Temperature": {},
+        "Initial Production Temperature": {},
+        "Average Reservoir Heat Extraction": {},
+        "Production Wellbore Heat Transmission Model": {},
+        "Wellbore Heat Transmission Model": {},
+        "Average Production Well Temperature Drop": {},
+        "Total Average Pressure Drop": {},
+        "Average Injection Well Pressure Drop": {},
+        "Average Production Pressure": {
+          "type": "number",
+          "description": "",
+          "units": "bar"
+        },
+        "Average Reservoir Pressure Drop": {},
+        "Average Production Well Pressure Drop": {},
+        "Average Buoyancy Pressure Drop": {},
+        "Average Injection Well Pump Pressure Drop": {},
+        "Average Production Well Pump Pressure Drop": {},
+        "Average Heat Production": {},
+        "First Year Heat Production": {},
+        "Average Net Electricity Production": {},
+        "First Year Electricity Production": {},
+        "Maximum Storage Well Temperature": {},
+        "Average Storage Well Temperature": {},
+        "Minimum Storage Well Temperature": {},
+        "Maximum Balance Well Temperature": {},
+        "Average Balance Well Temperature": {},
+        "Minimum Balance Well Temperature": {},
+        "Maximum Annual Heat Stored": {},
+        "Average Annual Heat Stored": {},
+        "Minimum Annual Heat Stored": {},
+        "Maximum Annual Heat Supplied": {},
+        "Average Annual Heat Supplied": {},
+        "Minimum Annual Heat Supplied": {},
+        "Average Round-Trip Efficiency": {}
+      }
+    },
+    "CAPITAL COSTS (M$)": {
+      "type": "object",
+      "properties": {
+        "Drilling and completion costs": {
+          "type": "number",
+          "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
+          "units": "MUSD"
+        },
+        "Drilling and completion costs per well": {},
+        "Drilling and completion costs per production well": {},
+        "Drilling and completion costs per injection well": {},
+        "Drilling and completion costs per vertical production well": {},
+        "Drilling and completion costs per vertical injection well": {},
+        "Drilling and completion costs per non-vertical section": {
+          "type": "number",
+          "description": "",
+          "units": "MUSD"
+        },
+        "Drilling and completion costs (for redrilling)": {},
+        "Drilling and completion costs per redrilled well": {},
+        "Stimulation costs": {},
+        "Stimulation costs (for redrilling)": {},
+        "Surface power plant costs": {},
+        "of which Absorption Chiller Cost": {},
+        "of which Heat Pump Cost": {},
+        "of which Peaking Boiler Cost": {},
+        "Transmission pipeline cost": {
+          "type": "number",
+          "description": "Transmission pipeline costs",
+          "units": "MUSD"
+        },
+        "District Heating System Cost": {
+          "type": "number",
+          "description": "",
+          "units": "MUSD"
+        },
+        "Field gathering system costs": {
+          "type": "number",
+          "description": "Field gathering system cost",
+          "units": "MUSD"
+        },
+        "Total surface equipment costs": {},
+        "Exploration costs": {
+          "type": "number",
+          "description": "Exploration cost",
+          "units": "MUSD"
+        },
+        "Investment Tax Credit": {
+          "type": "number",
+          "description": "Investment Tax Credit Value",
+          "units": "MUSD"
+        },
+        "Total capital costs": {
+          "type": "number",
+          "description": "Total Capital Cost",
+          "units": "MUSD"
+        },
+        "Annualized capital costs": {},
+        "Total CAPEX": {},
+        "Drilling Cost": {},
+        "Drilling and Completion Costs": {},
+        "Drilling and Completion Costs per Well": {},
+        "Auxiliary Heater Cost": {},
+        "Pump Cost": {},
+        "Total Capital Costs": {}
+      }
+    },
+    "OPERATING AND MAINTENANCE COSTS (M$/yr)": {
+      "type": "object",
+      "properties": {
+        "Wellfield maintenance costs": {
+          "type": "number",
+          "description": "O&M Wellfield cost",
+          "units": "MUSD/yr"
+        },
+        "Power plant maintenance costs": {
+          "type": "number",
+          "description": "O&M Surface Plant costs",
+          "units": "MUSD/yr"
+        },
+        "Water costs": {
+          "type": "number",
+          "description": "O&M Make-up Water costs",
+          "units": "MUSD/yr"
+        },
+        "Average Reservoir Pumping Cost": {},
+        "Absorption Chiller O&M Cost": {},
+        "Average Heat Pump Electricity Cost": {},
+        "Annual District Heating O&M Cost": {
+          "type": "number",
+          "description": "",
+          "units": "MUSD/yr"
+        },
+        "Average Annual Peaking Fuel Cost": {
+          "type": "number",
+          "description": "",
+          "units": "MUSD/yr"
+        },
+        "Average annual pumping costs": {},
+        "Total operating and maintenance costs": {},
+        "OPEX": {},
+        "Average annual auxiliary fuel cost": {},
+        "Average annual pumping cost": {},
+        "Total average annual O&M costs": {}
+      }
+    },
+    "SURFACE EQUIPMENT SIMULATION RESULTS": {
+      "type": "object",
+      "properties": {
+        "Initial geofluid availability": {},
+        "Maximum Total Electricity Generation": {},
+        "Average Total Electricity Generation": {},
+        "Minimum Total Electricity Generation": {},
+        "Initial Total Electricity Generation": {},
+        "Maximum Net Electricity Generation": {},
+        "Average Net Electricity Generation": {},
+        "Minimum Net Electricity Generation": {},
+        "Initial Net Electricity Generation": {},
+        "Average Annual Total Electricity Generation": {},
+        "Average Annual Net Electricity Generation": {},
+        "Maximum Net Heat Production": {},
+        "Average Net Heat Production": {},
+        "Minimum Net Heat Production": {},
+        "Initial Net Heat Production": {},
+        "Average Annual Heat Production": {},
+        "Average Pumping Power": {},
+        "Average Annual Heat Pump Electricity Use": {},
+        "Maximum Cooling Production": {},
+        "Average Cooling Production": {},
+        "Minimum Cooling Production": {},
+        "Initial Cooling Production": {},
+        "Average Annual Cooling Production": {},
+        "Annual District Heating Demand": {},
+        "Maximum Daily District Heating Demand": {},
+        "Average Daily District Heating Demand": {},
+        "Minimum Daily District Heating Demand": {},
+        "Maximum Geothermal Heating Production": {},
+        "Average Geothermal Heating Production": {},
+        "Minimum Geothermal Heating Production": {},
+        "Maximum Peaking Boiler Heat Production": {},
+        "Average Peaking Boiler Heat Production": {},
+        "Minimum Peaking Boiler Heat Production": {},
+        "Initial pumping power/net installed power": {},
+        "Heat to Power Conversion Efficiency": {
+          "type": "object",
+          "description": "First law efficiency average over project lifetime",
+          "units": "%"
+        },
+        "Surface Plant Cost": {},
+        "Average RTES Heating Production": {},
+        "Average Auxiliary Heating Production": {},
+        "Average Annual RTES Heating Production": {},
+        "Average Annual Auxiliary Heating Production": {},
+        "Average Annual Total Heating Production": {},
+        "Average Annual Electricity Use for Pumping": {}
+      }
+    },
+    "Simulation Metadata": {
+      "type": "object",
+      "properties": {
+        "GEOPHIRES Version": {}
+      }
+    }
+  }
+}

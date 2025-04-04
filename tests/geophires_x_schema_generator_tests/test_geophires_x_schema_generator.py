@@ -11,6 +11,35 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
         rst = g.generate_parameters_reference_rst()
         self.assertIsNotNone(rst)  # TODO sanity checks on content
 
+    def test_outputs_rst(self):
+        g = GeophiresXSchemaGenerator()
+        _, output_params_json = g.get_parameters_json()
+        rst = g.get_output_params_table_rst(output_params_json)
+
+        self.assertIn(
+            """ECONOMIC PARAMETERS
+-------------------
+    .. list-table:: ECONOMIC PARAMETERS Outputs
+       :header-rows: 1
+
+       * - Name
+         - Description
+         - Preferred Units
+         - Default Value Type
+       * - Economic Model
+""",
+            rst,
+        )
+
+        self.assertIn(
+            """       * - Project IRR
+         - Project Internal Rate of Return
+         - %
+         - number
+""",
+            rst,
+        )
+
     def test_get_json_schema(self):
         g = GeophiresXSchemaGenerator()
         req_schema, result_schema = g.generate_json_schema()

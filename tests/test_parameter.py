@@ -154,7 +154,8 @@ class ParameterTestCase(BaseTestCase):
     def test_output_parameter_json_types(self):
         cases = [
             ('foo', 'string'),
-            (1, 'integer'),
+            (1, 'number'),
+            (44.4, 'number'),
             (True, 'boolean'),
             ([1, 2, 3], 'array'),
             ({4, 5, 6}, 'array'),

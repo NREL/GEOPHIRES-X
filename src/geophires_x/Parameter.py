@@ -102,9 +102,9 @@ class OutputParameter(HasQuantity):
                 self.json_parameter_type = _JSON_PARAMETER_TYPE_STRING
             elif isinstance(self.value, bool):
                 self.json_parameter_type = _JSON_PARAMETER_TYPE_BOOLEAN
-            elif isinstance(self.value, int):
-                self.json_parameter_type = _JSON_PARAMETER_TYPE_INTEGER
-            elif isinstance(self.value, float):
+            elif isinstance(self.value, float) or isinstance(self.value, int):
+                # Default number values may not be representative of whether calculated values are integer-only,
+                # so we specify number type even if value is int.
                 self.json_parameter_type = _JSON_PARAMETER_TYPE_NUMBER
             elif isinstance(self.value, dict):
                 self.json_parameter_type = _JSON_PARAMETER_TYPE_OBJECT

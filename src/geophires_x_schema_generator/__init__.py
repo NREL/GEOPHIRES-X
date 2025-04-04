@@ -114,6 +114,7 @@ class GeophiresXSchemaGenerator:
 
             units_val = param['CurrentUnits'] if isinstance(param['CurrentUnits'], str) else None
             min_val, max_val = _get_min_and_max(param, default_val=None)
+
             properties[param_name] = {
                 'description': param['ToolTipText'],
                 'type': param['json_parameter_type'],
@@ -179,6 +180,7 @@ class GeophiresXSchemaGenerator:
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
+                    param['type'] = output_param['json_parameter_type']
                     description = output_param['ToolTipText']
                     if 'output_parameter_name' in output_param:
                         description = f'{output_param["output_parameter_name"]}. {description}'

@@ -20,15 +20,16 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
 
         print(f'Generated result schema: {json.dumps(result_schema, indent=2)}')
 
-        def get_prop(cat: str, name: str) -> dict[str, Any]:
+        def get_result_prop(cat: str, name: str) -> dict[str, Any]:
             return result_schema['properties'][cat]['properties'][name]
 
         self.assertIn(
-            'multiple of invested capital', get_prop('ECONOMIC PARAMETERS', 'Project MOIC')['description'].lower()
+            'multiple of invested capital',
+            get_result_prop('ECONOMIC PARAMETERS', 'Project MOIC')['description'].lower(),
         )
 
         self.assertIn(
-            'Wellfield cost. ', get_prop('CAPITAL COSTS (M$)', 'Drilling and completion costs')['description']
+            'Wellfield cost. ', get_result_prop('CAPITAL COSTS (M$)', 'Drilling and completion costs')['description']
         )
 
 

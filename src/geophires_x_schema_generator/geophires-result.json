@@ -36,10 +36,12 @@
         "Segment 3   Thickness": {},
         "Segment 4   Geothermal gradient": {},
         "LCOE": {
+          "type": "number",
           "description": "",
           "units": "cents/kWh"
         },
         "LCOH": {
+          "type": "number",
           "description": "",
           "units": "USD/MMBTU"
         },
@@ -52,6 +54,7 @@
       "properties": {
         "Economic Model": {},
         "Interest Rate": {
+          "type": "number",
           "description": "",
           "units": "%"
         },
@@ -59,22 +62,26 @@
         "Project lifetime": {},
         "Capacity factor": {},
         "Project NPV": {
+          "type": "number",
           "description": "Project Net Present Value. NPV is calculated with cashflows lumped at the end of periods. See: Short W et al, 1995. \"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy Technologies.\", p. 41. https://www.nrel.gov/docs/legosti/old/5173.pdf",
           "units": "MUSD"
         },
         "Project IRR": {},
         "Project VIR=PI=PIR": {},
         "Project MOIC": {
+          "type": "number",
           "description": "Project Multiple of Invested Capital",
           "units": ""
         },
         "Fixed Charge Rate (FCR)": {},
         "Project Payback Period": {
+          "type": "number",
           "description": "",
           "units": "yr"
         },
         "CHP: Percent cost allocation for electrical plant": {},
         "Estimated Jobs Created": {
+          "type": "number",
           "description": "",
           "units": null
         }
@@ -137,6 +144,7 @@
         "Pump efficiency": {},
         "Injection temperature": {},
         "Injection Temperature": {
+          "type": "array",
           "description": "",
           "units": "degC"
         },
@@ -176,6 +184,7 @@
         "Reservoir Model": {},
         "Fracture model": {},
         "Bottom-hole temperature": {
+          "type": "number",
           "description": "",
           "units": "degC"
         },
@@ -191,6 +200,7 @@
         "Average reservoir pressure": {},
         "Plant outlet pressure": {},
         "Production wellhead pressure": {
+          "type": "number",
           "description": "",
           "units": "kPa"
         },
@@ -208,6 +218,7 @@
       "properties": {
         "Maximum Production Temperature": {},
         "Average Production Temperature": {
+          "type": "number",
           "description": "",
           "units": "degC"
         },
@@ -220,6 +231,7 @@
         "Total Average Pressure Drop": {},
         "Average Injection Well Pressure Drop": {},
         "Average Production Pressure": {
+          "type": "number",
           "description": "",
           "units": "bar"
         },
@@ -251,6 +263,7 @@
       "type": "object",
       "properties": {
         "Drilling and completion costs": {
+          "type": "number",
           "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
           "units": "MUSD"
         },
@@ -260,6 +273,7 @@
         "Drilling and completion costs per vertical production well": {},
         "Drilling and completion costs per vertical injection well": {},
         "Drilling and completion costs per non-vertical section": {
+          "type": "number",
           "description": "",
           "units": "MUSD"
         },
@@ -273,6 +287,7 @@
         "of which Peaking Boiler Cost": {},
         "Transmission pipeline cost": {},
         "District Heating System Cost": {
+          "type": "number",
           "description": "",
           "units": "MUSD"
         },
@@ -301,10 +316,12 @@
         "Absorption Chiller O&M Cost": {},
         "Average Heat Pump Electricity Cost": {},
         "Annual District Heating O&M Cost": {
+          "type": "number",
           "description": "",
           "units": "MUSD/yr"
         },
         "Average Annual Peaking Fuel Cost": {
+          "type": "number",
           "description": "",
           "units": "MUSD/yr"
         },
@@ -354,6 +371,7 @@
         "Minimum Peaking Boiler Heat Production": {},
         "Initial pumping power/net installed power": {},
         "Heat to Power Conversion Efficiency": {
+          "type": "object",
           "description": "First law efficiency average over project lifetime",
           "units": "%"
         },

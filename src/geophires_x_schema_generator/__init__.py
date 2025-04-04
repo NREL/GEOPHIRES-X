@@ -269,16 +269,24 @@ Output Parameters
 
         return rst
 
-    @staticmethod
-    def get_output_params_table_rst(output_params_json) -> str:
-        """
-        FIXME TODO consolidate with generated result schema
-        """
+    def get_output_params_table_rst(self, output_params_json) -> str:
+        output_schema = self.get_result_json_schema(output_params_json)
 
-        output_params = json.loads(output_params_json)
+        output_params_by_category: dict = {}
 
-        output_rst = """
-    .. list-table:: Output Parameters
+        for category, category_params in output_schema['properties'].items():
+            if category not in output_params_by_category:
+                output_params_by_category[category] = {}  # []
+
+            for param_name, param in category_params['properties'].items():
+                output_params_by_category[category][param_name] = param
+
+        def get_output_params_table(_category_params, category_name) -> str:
+            category_display = category_name if category_name is not None else ''
+            _output_rst = f"""
+{category_display}
+{'-' * len(category_display)}
+    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Parameters
        :header-rows: 1
 
        * - Name
@@ -286,19 +294,17 @@ Output Parameters
          - Preferred Units
          - Default Value Type"""
 
-        for param_name in output_params:
-            param = output_params[param_name]
+            for _param_name, _param in _category_params.items():
+                _output_rst += f"""\n       * - {_param_name}
+         - {_get_key(_param, 'description')}
+         - {_get_key(_param, 'units')}
+         - {_get_key(_param, 'type')}"""
 
-            def get_key(k):
-                if k in param and str(param[k]) != '':  # noqa
-                    return param[k]  # noqa
-                else:
-                    return ''
+            return _output_rst
 
-            output_rst += f"""\n       * - {param['Name']}
-         - {get_key('ToolTipText')}
-         - {get_key('PreferredUnits')}
-         - {get_key('json_parameter_type')}"""
+        output_rst = ''
+        for category, category_params in output_params_by_category.items():
+            output_rst += get_output_params_table(category_params, category)
 
         return output_rst
 
@@ -342,6 +348,38 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
 
     def get_result_json_schema(self, output_params_json) -> dict:
         return None  # FIXME TODO
+
+    def get_output_params_table_rst(self, output_params_json) -> str:
+        """
+        FIXME TODO consolidate with generated result schema
+        """
+
+        output_params = json.loads(output_params_json)
+
+        output_rst = """
+    .. list-table:: Output Parameters
+       :header-rows: 1
+
+       * - Name
+         - Description
+         - Preferred Units
+         - Default Value Type"""
+
+        for param_name in output_params:
+            param = output_params[param_name]
+
+            def get_key(k):
+                if k in param and str(param[k]) != '':  # noqa
+                    return param[k]  # noqa
+                else:
+                    return ''
+
+            output_rst += f"""\n       * - {param['Name']}
+         - {get_key('ToolTipText')}
+         - {get_key('PreferredUnits')}
+         - {get_key('json_parameter_type')}"""
+
+        return output_rst
 
 
 def _get_logger(logger_name=None):

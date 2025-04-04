@@ -2,7 +2,7 @@
   "definitions": {},
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "HIP-RA-X Schema",
+  "title": "HIP-RA-X Request Schema",
   "required": [
     "Reservoir Temperature",
     "Rejection Temperature",

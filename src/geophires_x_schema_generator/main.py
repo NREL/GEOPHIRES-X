@@ -21,13 +21,19 @@ if __name__ == '__main__':
 
     build_dir.mkdir(exist_ok=True)
 
-    def build(json_file_name: str, generator: GeophiresXSchemaGenerator, rst_file_name: str):
-        build_path = Path(build_dir, json_file_name)
-        schema_json = generator.generate_json_schema()
+    def build(json_file_name_prefix: str, generator: GeophiresXSchemaGenerator, rst_file_name: str):
+        request_schema_json, result_schema_json = generator.generate_json_schema()
 
-        with open(build_path, 'w') as f:
-            f.write(json.dumps(schema_json, indent=2))
-            print(f'Wrote JSON schema file to {build_path}.')
+        request_build_path = Path(build_dir, f'{json_file_name_prefix}request.json')
+        with open(request_build_path, 'w') as f:
+            f.write(json.dumps(request_schema_json, indent=2))
+            print(f'Wrote request JSON schema file to {request_build_path}.')
+
+        if result_schema_json is not None:
+            result_build_path = Path(build_dir, f'{json_file_name_prefix}result.json')
+            with open(result_build_path, 'w') as f:
+                f.write(json.dumps(result_schema_json, indent=2))
+                print(f'Wrote result JSON schema file to {result_build_path}.')
 
         rst = generator.generate_parameters_reference_rst()
 
@@ -36,5 +42,5 @@ if __name__ == '__main__':
             f.write(rst)
             print(f'Wrote RST file to {build_path_rst}.')
 
-    build('geophires-request.json', GeophiresXSchemaGenerator(), 'parameters.rst')
-    build('hip-ra-x-request.json', HipRaXSchemaGenerator(), 'hip_ra_x_parameters.rst')
+    build('geophires-', GeophiresXSchemaGenerator(), 'parameters.rst')
+    build('hip-ra-x-', HipRaXSchemaGenerator(), 'hip_ra_x_parameters.rst')

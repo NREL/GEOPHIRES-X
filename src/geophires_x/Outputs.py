@@ -437,7 +437,7 @@ class Outputs:
                         f.write(f'            of which Heat Pump Cost:                    {model.economics.heatpumpcapex.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                         f.write(f'            of which Peaking Boiler Cost:               {model.economics.peakingboilercost.value:10.2f} ' + model.economics.peakingboilercost.CurrentUnits.value + NL)
-                    f.write(f'         Field gathering system costs:                  {model.economics.Cgath.value:10.2f} ' + model.economics.Cgath.CurrentUnits.value + NL)
+                    f.write(f'         {model.economics.Cgath.display_name}:                  {model.economics.Cgath.value:10.2f} {model.economics.Cgath.CurrentUnits.value}\n')
                     if model.surfaceplant.piping_length.value > 0:
                         f.write(f'         {model.economics.Cpiping.display_name}:                    {model.economics.Cpiping.value:10.2f} {model.economics.Cpiping.CurrentUnits.value}\n')
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
@@ -459,18 +459,18 @@ class Outputs:
                 f.write('                ***OPERATING AND MAINTENANCE COSTS (M$/yr)***\n')
                 f.write(NL)
                 if not model.economics.oamtotalfixed.Valid:
-                    f.write(f'         Wellfield maintenance costs:                   {model.economics.Coamwell.value:10.2f} ' + model.economics.Coamwell.CurrentUnits.value + NL)
-                    f.write(f'         Power plant maintenance costs:                 {model.economics.Coamplant.value:10.2f} ' + model.economics.Coamplant.CurrentUnits.value + NL)
-                    f.write(f'         Water costs:                                   {model.economics.Coamwater.value:10.2f} ' + model.economics.Coamwater.CurrentUnits.value + NL)
+                    f.write(f'         {model.economics.Coamwell.display_name}:                   {model.economics.Coamwell.value:10.2f} {model.economics.Coamwell.CurrentUnits.value}\n')
+                    f.write(f'         {model.economics.Coamplant.display_name}:                 {model.economics.Coamplant.value:10.2f} {model.economics.Coamplant.CurrentUnits.value}\n')
+                    f.write(f'         {model.economics.Coamwater.display_name}:                                   {model.economics.Coamwater.value:10.2f} {model.economics.Coamwater.CurrentUnits.value}\n')
                     if model.surfaceplant.plant_type.value in [PlantType.INDUSTRIAL, PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
-                        f.write(f'         Average Reservoir Pumping Cost:                {model.economics.averageannualpumpingcosts.value:10.2f} ' + model.economics.averageannualpumpingcosts.CurrentUnits.value + NL)
-                    if model.surfaceplant.plant_type.value ==  PlantType.ABSORPTION_CHILLER:
-                        f.write(f'         Absorption Chiller O&M Cost:                   {model.economics.chilleropex.value:10.2f} ' + model.economics.chilleropex.CurrentUnits.value + NL)
-                    if model.surfaceplant.plant_type.value ==  PlantType.HEAT_PUMP:
-                        f.write(f'         Average Heat Pump Electricity Cost:            {model.economics.averageannualheatpumpelectricitycost.value:10.2f} ' + model.economics.averageannualheatpumpelectricitycost.CurrentUnits.value + NL)
+                        f.write(f'         Average Reservoir Pumping Cost:                {model.economics.averageannualpumpingcosts.value:10.2f} {model.economics.averageannualpumpingcosts.CurrentUnits.value}\n7')
+                    if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
+                        f.write(f'         Absorption Chiller O&M Cost:                   {model.economics.chilleropex.value:10.2f} {model.economics.chilleropex.CurrentUnits.value}\n')
+                    if model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
+                        f.write(f'         Average Heat Pump Electricity Cost:            {model.economics.averageannualheatpumpelectricitycost.value:10.2f} {model.economics.averageannualheatpumpelectricitycost.CurrentUnits.value}\n')
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-                        f.write(f'         Annual District Heating O&M Cost:              {model.economics.dhdistrictoandmcost.value:10.2f} ' + model.economics.dhdistrictoandmcost.CurrentUnits.value + NL)
-                        f.write(f'         Average Annual Peaking Fuel Cost:              {model.economics.averageannualngcost.value:10.2f} ' + model.economics.averageannualngcost.CurrentUnits.value + NL)
+                        f.write(f'         Annual District Heating O&M Cost:              {model.economics.dhdistrictoandmcost.value:10.2f} {model.economics.dhdistrictoandmcost.CurrentUnits.value}\n')
+                        f.write(f'         Average Annual Peaking Fuel Cost:              {model.economics.averageannualngcost.value:10.2f} {model.economics.averageannualngcost.CurrentUnits.value}\n')
 
                     f.write(f'      Total operating and maintenance costs:            {(model.economics.Coam.value + model.economics.averageannualpumpingcosts.value+model.economics.averageannualheatpumpelectricitycost.value):10.2f} ' + model.economics.Coam.CurrentUnits.value + NL)
                 else:

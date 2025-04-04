@@ -1622,6 +1622,7 @@ class Economics:
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
+            display_name='Wellfield maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1634,12 +1635,14 @@ class Economics:
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
+            display_name='Power plant maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(
             Name="Field gathering system cost",
+            display_name='Field gathering system costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1653,6 +1656,7 @@ class Economics:
         )
         self.Coamwater = self.OutputParameterDict[self.Coamwater.Name] = OutputParameter(
             Name="O&M Make-up Water costs",
+            display_name='Water costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -1670,8 +1674,6 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-#        self.averageannualpumpingcosts = self.OutputParameterDict[
-#            self.averageannualpumpingcosts.Name] = OutputParameter(  #typo here!??!
         self.averageannualpumpingcosts = OutputParameter(
             Name="Average Annual Pumping Costs",
             UnitType=Units.CURRENCYFREQUENCY,

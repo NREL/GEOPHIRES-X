@@ -339,7 +339,11 @@
           "description": "",
           "units": "MUSD"
         },
-        "Field gathering system costs": {},
+        "Field gathering system costs": {
+          "type": "number",
+          "description": "Field gathering system cost",
+          "units": "MUSD"
+        },
         "Total surface equipment costs": {},
         "Exploration costs": {
           "type": "number",
@@ -369,9 +373,21 @@
     "OPERATING AND MAINTENANCE COSTS (M$/yr)": {
       "type": "object",
       "properties": {
-        "Wellfield maintenance costs": {},
-        "Power plant maintenance costs": {},
-        "Water costs": {},
+        "Wellfield maintenance costs": {
+          "type": "number",
+          "description": "O&M Wellfield cost",
+          "units": "MUSD/yr"
+        },
+        "Power plant maintenance costs": {
+          "type": "number",
+          "description": "O&M Surface Plant costs",
+          "units": "MUSD/yr"
+        },
+        "Water costs": {
+          "type": "number",
+          "description": "O&M Make-up Water costs",
+          "units": "MUSD/yr"
+        },
         "Average Reservoir Pumping Cost": {},
         "Absorption Chiller O&M Cost": {},
         "Average Heat Pump Electricity Cost": {},

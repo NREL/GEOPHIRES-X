@@ -472,13 +472,15 @@ class Reservoir:
         self.cpwater = self.OutputParameterDict[self.cpwater.Name] = floatParameter(
             "cpwater",
             value=0.0,
-            UnitType=Units.NONE
+            UnitType=Units.NONE,
+            ToolTipText='water heat capacity'
         )
 
         self.rhowater = self.OutputParameterDict[self.rhowater.Name] = floatParameter(
             "rhowater",
             value=0.0,
-            UnitType=Units.NONE
+            UnitType=Units.NONE,
+            ToolTipText='water density'
         )
 
         self.averagegradient = self.OutputParameterDict[self.averagegradient.Name] = floatParameter(

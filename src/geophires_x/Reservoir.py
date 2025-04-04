@@ -104,7 +104,7 @@ class Reservoir:
             CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradients 1 (50, 0, 0, 0 deg.C/km)",
-            ToolTipText="Geothermal gradients"
+            ToolTipText="Geothermal gradient(s)"
         )
 
         self.gradient1 = self.ParameterDict[self.gradient1.Name] = floatParameter(

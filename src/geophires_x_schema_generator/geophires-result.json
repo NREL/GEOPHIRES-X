@@ -70,8 +70,16 @@
           "description": "Project Net Present Value. NPV is calculated with cashflows lumped at the end of periods. See: Short W et al, 1995. \"A Manual for the Economic Evaluation of Energy Efficiency and Renewable Energy Technologies.\", p. 41. https://www.nrel.gov/docs/legosti/old/5173.pdf",
           "units": "MUSD"
         },
-        "Project IRR": {},
-        "Project VIR=PI=PIR": {},
+        "Project IRR": {
+          "type": "number",
+          "description": "Project Internal Rate of Return",
+          "units": "%"
+        },
+        "Project VIR=PI=PIR": {
+          "type": "number",
+          "description": "Project Value Investment Ratio",
+          "units": ""
+        },
         "Project MOIC": {
           "type": "number",
           "description": "Project Multiple of Invested Capital",

@@ -1820,12 +1820,14 @@ class Economics:
         )
         self.ProjectIRR = self.OutputParameterDict[self.ProjectIRR.Name] = OutputParameter(
             "Project Internal Rate of Return",
+            display_name='Project IRR',
             UnitType=Units.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
         )
         self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = OutputParameter(
             "Project Value Investment Ratio",
+            display_name='Project VIR=PI=PIR',
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH

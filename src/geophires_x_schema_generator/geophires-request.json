@@ -125,7 +125,7 @@
       "maximum": 4
     },
     "Gradients": {
-      "description": "Geothermal gradients",
+      "description": "Geothermal gradient(s)",
       "type": "array",
       "units": "degC/m",
       "category": "Reservoir",

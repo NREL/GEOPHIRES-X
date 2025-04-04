@@ -168,28 +168,22 @@ class GeophiresXSchemaGenerator:
                 if param_name in properties:
                     _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')
 
-                param = (
-                    {
-                        # 'categories': [],
-                    }
-                    if param_name not in properties
-                    else properties[param_name]
-                )
-
-                # param['categories'].append(category)
+                param = {} if param_name not in properties else properties[param_name]
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
                     param['type'] = output_param['json_parameter_type']
                     description = output_param['ToolTipText']
                     if 'output_parameter_name' in output_param:
-                        description = f'{output_param["output_parameter_name"]}. {description}'
+                        if description is not None and description != '':
+                            description = f'{output_param["output_parameter_name"]}. {description}'
+                        else:
+                            description = output_param['output_parameter_name']
                     param['description'] = description
                     param['units'] = (
                         output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
                     )
 
-                # properties[param_name] = param.copy()
                 cat_properties[param_name] = param.copy()
 
             properties[category] = {'type': 'object', 'properties': cat_properties}

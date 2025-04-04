@@ -12,7 +12,11 @@
         "End-Use": {},
         "Surface Application": {},
         "Average Net Electricity Production": {},
-        "Electricity breakeven price": {},
+        "Electricity breakeven price": {
+          "type": "number",
+          "description": "LCOE",
+          "units": "cents/kWh"
+        },
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
         "Direct-Use heat breakeven price (LCOH)": {},
@@ -37,7 +41,7 @@
         "Segment 4   Geothermal gradient": {},
         "LCOE": {
           "type": "number",
-          "description": "",
+          "description": "LCOE",
           "units": "cents/kWh"
         },
         "LCOH": {

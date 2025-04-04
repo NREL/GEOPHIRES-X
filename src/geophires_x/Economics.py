@@ -1582,6 +1582,7 @@ class Economics:
 
         self.LCOE = self.OutputParameterDict[self.LCOE.Name] = OutputParameter(
             Name="LCOE",
+            display_name='Electricity breakeven price',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH

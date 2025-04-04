@@ -283,6 +283,7 @@ Output Parameters
 
         def get_output_params_table(_category_params, category_name) -> str:
             category_display = category_name if category_name is not None else ''
+            category_display = category_display.replace(' (M$)', '').replace(' (M$/yr)', '')
             _output_rst = f"""
 {category_display}
 {'-' * len(category_display)}

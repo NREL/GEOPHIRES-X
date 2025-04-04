@@ -1601,6 +1601,7 @@ class Economics:
         )
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
+            display_name='Exploration costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1643,6 +1644,7 @@ class Economics:
         )
         self.Cpiping = self.OutputParameterDict[self.Cpiping.Name] = OutputParameter(
             Name="Transmission pipeline costs",
+            display_name='Transmission pipeline cost',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1655,6 +1657,7 @@ class Economics:
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
+            display_name='Total capital costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1847,6 +1850,7 @@ class Economics:
         )
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
+            display_name='Investment Tax Credit',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS

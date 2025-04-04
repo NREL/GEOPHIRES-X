@@ -349,10 +349,10 @@ class Outputs:
                         f.write('      Fracture separation calculated with reservoir volume and number of fractures as input\n')
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_ONLY:
                         f.write('      Reservoir volume provided as input\n')
-                    if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP,ReservoirVolume.FRAC_NUM_SEP]:
+                    if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP, ReservoirVolume.FRAC_NUM_SEP]:
                         f.write(f'      Number of fractures:                              {model.reserv.fracnumbcalc.value:10.2f}' + NL)
                         f.write(f'      Fracture separation:                              {model.reserv.fracsepcalc.value:10.2f} ' + model.reserv.fracsep.CurrentUnits.value + NL)
-                    f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} ' + model.reserv.resvol.CurrentUnits.value + NL)
+                    f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} {model.reserv.resvol.CurrentUnits.value}\n')
 
                     if model.wellbores.impedancemodelused.value:
                         # See note re: unit conversion:
@@ -361,7 +361,7 @@ class Outputs:
                     else:
                         if model.wellbores.overpressure_percentage.Provided:
                             # write the reservoir pressure as an average in the overpressure case
-                            f.write(f'      Average reservoir pressure:                       {model.wellbores.average_production_reservoir_pressure.value:10.2f} ' + model.wellbores.average_production_reservoir_pressure.CurrentUnits.value + NL)
+                            f.write(f'      {model.wellbores.average_production_reservoir_pressure.display_name}:                       {model.wellbores.average_production_reservoir_pressure.value:10.2f} {model.wellbores.average_production_reservoir_pressure.CurrentUnits.value}\n')
                         else:
                             # write the reservoir pressure as a single value
                             f.write(f'      Reservoir hydrostatic pressure:                       {model.wellbores.production_reservoir_pressure.value[0]:10.2f} ' + model.wellbores.production_reservoir_pressure.CurrentUnits.value + NL)
@@ -392,11 +392,11 @@ class Outputs:
                 f.write(f'      Minimum Production Temperature:                  {np.min(model.wellbores.ProducedTemperature.value):10.1f} ' + model.wellbores.ProducedTemperature.PreferredUnits.value + NL)
                 f.write(f'      Initial Production Temperature:                  {model.wellbores.ProducedTemperature.value[0]:10.1f} ' + model.wellbores.ProducedTemperature.PreferredUnits.value + NL)
                 if model.wellbores.IsAGS.value:
-                    f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.' + NL)
+                    f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.\n')
                 else:
                     f.write(f'      Average Reservoir Heat Extraction:                {np.average(model.surfaceplant.HeatExtracted.value):10.2f} ' + model.surfaceplant.HeatExtracted.PreferredUnits.value + NL)
                     if model.wellbores.rameyoptionprod.value:
-                        f.write('      Production Wellbore Heat Transmission Model = Ramey Model' + NL)
+                        f.write('      Production Wellbore Heat Transmission Model = Ramey Model\n')
                         f.write(f'      Average Production Well Temperature Drop:        {np.average(model.wellbores.ProdTempDrop.value):10.1f} ' + model.wellbores.ProdTempDrop.PreferredUnits.value + NL)
                     else:
                         f.write(f'      Wellbore Heat Transmission Model = Constant Temperature Drop:{model.wellbores.tempdropprod.value:10.1f} ' + model.wellbores.tempdropprod.PreferredUnits.value + NL)
@@ -416,13 +416,13 @@ class Outputs:
                 f.write('                          ***CAPITAL COSTS (M$)***\n')
                 f.write(NL)
                 if not model.economics.totalcapcost.Valid:
-                    f.write(f'         Drilling and completion costs:                 {model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
+                    f.write(f'         {model.economics.Cwell.display_name}:                 {model.economics.Cwell.value:10.2f} {model.economics.Cwell.CurrentUnits.value}\n')
                     if econ.cost_lateral_section.value > 0.0:
                         f.write(f'             Drilling and completion costs per vertical production well:   {econ.cost_one_production_well.value:10.2f} ' + econ.cost_one_production_well.CurrentUnits.value + NL)
                         f.write(f'             Drilling and completion costs per vertical injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)
                         f.write(f'             {econ.cost_per_lateral_section.Name}:       {econ.cost_per_lateral_section.value:10.2f} {econ.cost_lateral_section.CurrentUnits.value}\n')
-                    elif round(econ.cost_one_production_well.value, 4) != round(econ.cost_one_injection_well.value, 4) and \
-                            model.economics.cost_one_injection_well.value != -1:
+                    elif round(econ.cost_one_production_well.value, 4) != round(econ.cost_one_injection_well.value, 4) \
+                        and model.economics.cost_one_injection_well.value != -1:
                         f.write(f'             Drilling and completion costs per production well:   {econ.cost_one_production_well.value:10.2f} ' + econ.cost_one_production_well.CurrentUnits.value + NL)
                         f.write(f'             Drilling and completion costs per injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)
                     else:
@@ -437,18 +437,18 @@ class Outputs:
                         f.write(f'            of which Peaking Boiler Cost:               {model.economics.peakingboilercost.value:10.2f} ' + model.economics.peakingboilercost.CurrentUnits.value + NL)
                     f.write(f'         Field gathering system costs:                  {model.economics.Cgath.value:10.2f} ' + model.economics.Cgath.CurrentUnits.value + NL)
                     if model.surfaceplant.piping_length.value > 0:
-                        f.write(f'         Transmission pipeline cost:                    {model.economics.Cpiping.value:10.2f} ' + model.economics.Cpiping.CurrentUnits.value + NL)
+                        f.write(f'         {model.economics.Cpiping.display_name}:                    {model.economics.Cpiping.value:10.2f} {model.economics.Cpiping.CurrentUnits.value}\n')
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-                        f.write(f'         District Heating System Cost:                  {model.economics.dhdistrictcost.value:10.2f} ' + model.economics.dhdistrictcost.CurrentUnits.value + NL)
+                        f.write(f'         District Heating System Cost:                  {model.economics.dhdistrictcost.value:10.2f} {model.economics.dhdistrictcost.CurrentUnits.value}\n')
                     f.write(f'         Total surface equipment costs:                 {(model.economics.Cplant.value+model.economics.Cgath.value):10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
-                    f.write(f'         Exploration costs:                             {model.economics.Cexpl.value:10.2f} ' + model.economics.Cexpl.CurrentUnits.value + NL)
+                    f.write(f'         {model.economics.Cexpl.display_name}:                             {model.economics.Cexpl.value:10.2f} {model.economics.Cexpl.CurrentUnits.value}\n')
                 if model.economics.totalcapcost.Valid and model.wellbores.redrill.value > 0:
                     f.write(f'         Drilling and completion costs (for redrilling):{model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'      Drilling and completion costs per redrilled well: {(model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value)):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
                     f.write(f'         Stimulation costs (for redrilling):            {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
                 if model.economics.RITCValue.value:
-                    f.write(f'         Investment Tax Credit:                         {-1*model.economics.RITCValue.value:10.2f} ' + model.economics.RITCValue.CurrentUnits.value + NL)
-                f.write(f'      Total capital costs:                              {model.economics.CCap.value:10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
+                    f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
+                f.write(f'      {model.economics.CCap.display_name}:                              {model.economics.CCap.value:10.2f} {model.economics.CCap.CurrentUnits.value}\n')
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
 

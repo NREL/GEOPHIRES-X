@@ -458,6 +458,7 @@ class Reservoir:
 
         self.resvolcalc = self.OutputParameterDict[self.resvolcalc.Name] = floatParameter(
             "Calculated Reservoir Volume",
+            # display_name='Reservoir volume',
             value=self.resvol.value,
             UnitType=Units.VOLUME,
             PreferredUnits=VolumeUnit.METERS3,

@@ -209,7 +209,11 @@
         "Reservoir volume": {},
         "Reservoir impedance": {},
         "Reservoir hydrostatic pressure": {},
-        "Average reservoir pressure": {},
+        "Average reservoir pressure": {
+          "type": "number",
+          "description": "Average Reservoir Pressure",
+          "units": "kPa"
+        },
         "Plant outlet pressure": {},
         "Production wellhead pressure": {
           "type": "number",
@@ -297,7 +301,11 @@
         "of which Absorption Chiller Cost": {},
         "of which Heat Pump Cost": {},
         "of which Peaking Boiler Cost": {},
-        "Transmission pipeline cost": {},
+        "Transmission pipeline cost": {
+          "type": "number",
+          "description": "Transmission pipeline costs",
+          "units": "MUSD"
+        },
         "District Heating System Cost": {
           "type": "number",
           "description": "",
@@ -305,9 +313,21 @@
         },
         "Field gathering system costs": {},
         "Total surface equipment costs": {},
-        "Exploration costs": {},
-        "Investment Tax Credit": {},
-        "Total capital costs": {},
+        "Exploration costs": {
+          "type": "number",
+          "description": "Exploration cost",
+          "units": "MUSD"
+        },
+        "Investment Tax Credit": {
+          "type": "number",
+          "description": "Investment Tax Credit Value",
+          "units": "MUSD"
+        },
+        "Total capital costs": {
+          "type": "number",
+          "description": "Total Capital Cost",
+          "units": "MUSD"
+        },
         "Annualized capital costs": {},
         "Total CAPEX": {},
         "Drilling Cost": {},

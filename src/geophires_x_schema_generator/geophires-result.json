@@ -19,8 +19,16 @@
         },
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
-        "Direct-Use heat breakeven price (LCOH)": {},
-        "Direct-Use Cooling Breakeven Price (LCOC)": {},
+        "Direct-Use heat breakeven price (LCOH)": {
+          "type": "number",
+          "description": "LCOH",
+          "units": "USD/MMBTU"
+        },
+        "Direct-Use Cooling Breakeven Price (LCOC)": {
+          "type": "number",
+          "description": "LCOC",
+          "units": "USD/MMBTU"
+        },
         "Annual District Heating Demand": {},
         "Average Cooling Production": {},
         "Average Annual Geothermal Heat Production": {},
@@ -46,11 +54,15 @@
         },
         "LCOH": {
           "type": "number",
-          "description": "",
+          "description": "LCOH",
           "units": "USD/MMBTU"
         },
         "Lifetime Average Well Flow Rate": {},
-        "Total Avoided Carbon Emissions": {}
+        "Total Avoided Carbon Emissions": {
+          "type": "number",
+          "description": "Total Saved Carbon Production",
+          "units": "pound"
+        }
       }
     },
     "ECONOMIC PARAMETERS": {
@@ -202,10 +214,26 @@
         },
         "Well separation: fracture diameter": {},
         "Well separation: fracture height": {},
-        "Fracture width": {},
-        "Fracture area": {},
-        "Number of fractures": {},
-        "Fracture separation": {},
+        "Fracture width": {
+          "type": "number",
+          "description": "Calculated Fracture Width",
+          "units": "meter"
+        },
+        "Fracture area": {
+          "type": "number",
+          "description": "Calculated Fracture Area",
+          "units": "m**2"
+        },
+        "Number of fractures": {
+          "type": "number",
+          "description": "Calculated Number of Fractures",
+          "units": null
+        },
+        "Fracture separation": {
+          "type": "number",
+          "description": "Calculated Fracture Separation",
+          "units": "meter"
+        },
         "Reservoir volume": {},
         "Reservoir impedance": {},
         "Reservoir hydrostatic pressure": {},

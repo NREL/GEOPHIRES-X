@@ -187,12 +187,13 @@ class Outputs:
                 f.write(NL)
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
-                f.write('      End-Use Option: ' + str(model.surfaceplant.enduse_option.value.value) + NL)
+                f.write(f'      End-Use Option: {str(model.surfaceplant.enduse_option.value.value)}\n')
                 if model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
                     f.write('      Surface Application: ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]: # there is an electricity component
                     f.write(f'      Average Net Electricity Production:               {np.average(model.surfaceplant.NetElectricityProduced.value):10.2f} ' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + NL)
-                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:    # there is a direct-use component
+                if model.surfaceplant.enduse_option.value is not EndUseOptions.ELECTRICITY:
+                    # there is a direct-use component
                     f.write(f'      Average Direct-Use Heat Production:               {np.average(model.surfaceplant.HeatProduced.value):10.2f} '+ model.surfaceplant.HeatProduced.CurrentUnits.value + NL)
                 if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                     f.write(f'      Annual District Heating Demand:                   {np.average(model.surfaceplant.annual_heating_demand.value):10.2f} ' + model.surfaceplant.annual_heating_demand.CurrentUnits.value + NL)
@@ -204,10 +205,10 @@ class Outputs:
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                 elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT] and \
-                    model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
-                    f.write(f'      Direct-Use heat breakeven price (LCOH):            {model.economics.LCOH.value:10.2f} ' + model.economics.LCOH.CurrentUnits.value + NL)
+                        model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
+                    f.write(f'      {model.economics.LCOH.display_name}:            {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
                 elif model.surfaceplant.enduse_option.value in [EndUseOptions.HEAT] and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
-                    f.write(f'      Direct-Use Cooling Breakeven Price (LCOC):         {model.economics.LCOC.value:10.2f} ' + model.economics.LCOC.CurrentUnits.value + NL)
+                    f.write(f'      {model.economics.LCOC.display_name}:         {model.economics.LCOC.value:10.2f} {model.economics.LCOC.CurrentUnits.value}\n')
                 elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
@@ -215,7 +216,7 @@ class Outputs:
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
                                                               EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
-                    f.write(f'      Direct-Use heat breakeven price (LCOH):           {model.economics.LCOH.value:10.2f} ' + model.economics.LCOH.CurrentUnits.value + NL)
+                    f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
@@ -230,8 +231,9 @@ class Outputs:
                         f.write(f'      Segment {str(i):s}   Thickness:                         {round(model.reserv.layerthickness.value[i-1], 10)} {model.reserv.layerthickness.CurrentUnits.value}\n')
                     f.write(f'      Segment {str(i+1):s}   Geothermal gradient:                    {model.reserv.gradient.value[i]:10.4g} ' + model.reserv.gradient.CurrentUnits.value + NL)
                 if model.economics.DoCarbonCalculations.value:
-                    f.write(f'      Total Avoided Carbon Emissions:                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value:10.2f} '
-                            f'{model.economics.CarbonThatWouldHaveBeenProducedTotal.CurrentUnits.value}\n')
+                    f.write(f'      {model.economics.CarbonThatWouldHaveBeenProducedTotal.display_name}:'
+                            f'                       {model.economics.CarbonThatWouldHaveBeenProducedTotal.value:10.2f}'
+                            f' {model.economics.CarbonThatWouldHaveBeenProducedTotal.CurrentUnits.value}\n')
 
                 f.write(NL)
                 f.write(NL)
@@ -316,21 +318,21 @@ class Outputs:
                 f.write('                           ***RESERVOIR PARAMETERS***\n')
                 f.write(NL)
                 if model.wellbores.IsAGS.value:
-                    f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.' + NL)
+                    f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.\n')
                 else:
-                    f.write('      Reservoir Model = ' + str(model.reserv.resoption.value.value) + ' Model\n')
+                    f.write(f'      Reservoir Model = {str(model.reserv.resoption.value.value)} Model\n')
                     if model.reserv.resoption.value is ReservoirModel.SINGLE_FRACTURE:
                         f.write(f'      m/A Drawdown Parameter:                                 {model.reserv.drawdp.value:.5f} ' + model.reserv.drawdp.CurrentUnits.value + NL)
                     elif model.reserv.resoption.value is ReservoirModel.ANNUAL_PERCENTAGE:
                         f.write(f'      Annual Thermal Drawdown:                                {model.reserv.drawdp.value*100:.3f} ' + model.reserv.drawdp.CurrentUnits.value + NL)
-                    f.write(f'      Bottom-hole temperature:                          {model.reserv.Trock.value:10.2f} ' + model.reserv.Trock.CurrentUnits.value +  NL)
+                    f.write(f'      Bottom-hole temperature:                          {model.reserv.Trock.value:10.2f} {model.reserv.Trock.CurrentUnits.value}\n')
                     if model.reserv.resoption.value in [ReservoirModel.ANNUAL_PERCENTAGE, ReservoirModel.USER_PROVIDED_PROFILE, ReservoirModel.TOUGH2_SIMULATOR]:
                         f.write('      Warning: the reservoir dimensions and thermo-physical properties \n')
                         f.write('               listed below are default values if not provided by the user.   \n')
                         f.write('               They are only used for calculating remaining heat content.  \n')
 
                     if model.reserv.resoption.value in [ReservoirModel.MULTIPLE_PARALLEL_FRACTURES, ReservoirModel.LINEAR_HEAT_SWEEP]:
-                        f.write('      Fracture model = ' + model.reserv.fracshape.value.value + NL)
+                        f.write(f'      Fracture model = {model.reserv.fracshape.value.value}\n')
                         if model.reserv.fracshape.value == FractureShape.CIRCULAR_AREA:
                             f.write(f'      Well separation: fracture diameter:               {model.reserv.fracheightcalc.value:10.2f} ' + model.reserv.fracheight.CurrentUnits.value + NL)
                         elif model.reserv.fracshape.value == FractureShape.CIRCULAR_DIAMETER:
@@ -339,8 +341,8 @@ class Outputs:
                             f.write(f'      Well separation: fracture height:                 {model.reserv.fracheightcalc.value:10.2f} ' + model.reserv.fracheight.CurrentUnits.value + NL)
                         elif model.reserv.fracshape.value == FractureShape.RECTANGULAR:
                             f.write(f'      Well separation: fracture height:                 {model.reserv.fracheightcalc.value:10.2f} ' + model.reserv.fracheight.CurrentUnits.value + NL)
-                            f.write(f'      Fracture width:                                             {model.reserv.fracwidthcalc.value:10.2f} ' + model.reserv.fracwidth.CurrentUnits.value + NL)
-                        f.write(f'      Fracture area:                                    {model.reserv.fracareacalc.value:10.2f} ' + model.reserv.fracarea.CurrentUnits.value + NL)
+                            f.write(f'      {model.reserv.fracwidthcalc.display_name}:                                             {model.reserv.fracwidthcalc.value:10.2f} {model.reserv.fracwidth.CurrentUnits.value }\n')
+                        f.write(f'      {model.reserv.fracareacalc.display_name}:                                    {model.reserv.fracareacalc.value:10.2f} {model.reserv.fracarea.CurrentUnits.value}\n')
                     if model.reserv.resvoloption.value == ReservoirVolume.FRAC_NUM_SEP:
                         f.write('      Reservoir volume calculated with fracture separation and number of fractures as input\n')
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_FRAC_SEP:
@@ -350,8 +352,8 @@ class Outputs:
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_ONLY:
                         f.write('      Reservoir volume provided as input\n')
                     if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP, ReservoirVolume.FRAC_NUM_SEP]:
-                        f.write(f'      Number of fractures:                              {model.reserv.fracnumbcalc.value:10.2f}' + NL)
-                        f.write(f'      Fracture separation:                              {model.reserv.fracsepcalc.value:10.2f} ' + model.reserv.fracsep.CurrentUnits.value + NL)
+                        f.write(f'      {model.reserv.fracnumbcalc.display_name}:                              {model.reserv.fracnumbcalc.value:10.2f}\n')
+                        f.write(f'      {model.reserv.fracsepcalc.display_name}:                              {model.reserv.fracsepcalc.value:10.2f} {model.reserv.fracsep.CurrentUnits.value}\n')
                     f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} {model.reserv.resvol.CurrentUnits.value}\n')
 
                     if model.wellbores.impedancemodelused.value:
@@ -385,7 +387,7 @@ class Outputs:
 
                 f.write(NL)
                 f.write(NL)
-                f.write('                           ***RESERVOIR SIMULATION RESULTS***' + NL)
+                f.write('                           ***RESERVOIR SIMULATION RESULTS***\n')
                 f.write(NL)
                 f.write(f'      Maximum Production Temperature:                  {np.max(model.wellbores.ProducedTemperature.value):10.1f} ' + model.wellbores.ProducedTemperature.PreferredUnits.value + NL)
                 f.write(f'      Average Production Temperature:                  {np.average(model.wellbores.ProducedTemperature.value):10.1f} ' + model.wellbores.ProducedTemperature.PreferredUnits.value + NL)
@@ -751,7 +753,7 @@ class Outputs:
 
 
     @staticmethod
-    def _field_label(field_name:str, print_width_before_value: int) -> str:
+    def _field_label(field_name: str, print_width_before_value: int) -> str:
         return f'{field_name}:{" " * (print_width_before_value - len(field_name) - 1)}'
 
 

@@ -420,6 +420,7 @@ class Reservoir:
         # starts as a copy of the input value and only changes if needed.
         self.fracsepcalc = self.OutputParameterDict[self.fracsepcalc.Name] = OutputParameter(
             "Calculated Fracture Separation",
+            display_name='Fracture separation',
             value=self.fracsep.value,
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,
@@ -428,12 +429,14 @@ class Reservoir:
 
         self.fracnumbcalc = self.OutputParameterDict[self.fracnumbcalc.Name] = OutputParameter(
             "Calculated Number of Fractures",
+            display_name='Number of fractures',
             value=self.fracnumb.value,
             UnitType=Units.NONE
         )
 
         self.fracwidthcalc = self.OutputParameterDict[self.fracwidthcalc.Name] = OutputParameter(
             "Calculated Fracture Width",
+            display_name='Fracture width',
             value=self.fracwidth.value,
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,
@@ -450,6 +453,7 @@ class Reservoir:
 
         self.fracareacalc = self.OutputParameterDict[self.fracareacalc.Name] = OutputParameter(
             "Calculated Fracture Area",
+            display_name='Fracture area',
             value=self.fracarea.value,
             UnitType=Units.AREA,
             PreferredUnits=AreaUnit.METERS2,

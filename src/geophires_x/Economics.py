@@ -1575,6 +1575,7 @@ class Economics:
 
         self.LCOC = self.OutputParameterDict[self.LCOC.Name] = OutputParameter(
             Name="LCOC",
+            display_name='Direct-Use Cooling Breakeven Price (LCOC)',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
@@ -1589,12 +1590,13 @@ class Economics:
         )
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             Name="LCOH",
+            display_name='Direct-Use heat breakeven price (LCOH)',
             UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,  # $/MMBTU
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
-        )  # $/MMBTU
+        )
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs", # FIXME wrong name - should be Stimulation Costs
+            Name="O&M Surface Plant costs",  # FIXME wrong name - should be Stimulation Costs
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
@@ -1780,6 +1782,7 @@ class Economics:
         self.CarbonThatWouldHaveBeenProducedTotal = self.OutputParameterDict[
             self.CarbonThatWouldHaveBeenProducedTotal.Name] = OutputParameter(
             "Total Saved Carbon Production",
+            display_name='Total Avoided Carbon Emissions',
             UnitType=Units.MASS,
             PreferredUnits=MassUnit.LB,
             CurrentUnits=MassUnit.LB

@@ -253,6 +253,25 @@ class GeophiresXSchemaGenerator:
 
         output_rst = self.get_output_params_table_rst(output_params_json)
 
+        schema_ref_base_url = (
+            'https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/main/src/geophires_x_schema_generator/'
+        )
+        input_schema_ref_rst = ''
+        if self.get_input_schema_reference() is not None:
+            input_schema_ref_rst = (
+                f'Schema: '
+                f'`{self.get_input_schema_reference()} '
+                f'<{schema_ref_base_url}{self.get_input_schema_reference()}>`__'
+            )
+
+        output_schema_ref_rst = ''
+        if self.get_output_schema_reference() is not None:
+            output_schema_ref_rst = (
+                f'Schema: '
+                f'`{self.get_output_schema_reference()} '
+                f'<{schema_ref_base_url}{self.get_output_schema_reference()}>`__'
+            )
+
         rst = f"""{self.get_schema_title()} Parameters
 ==========
 
@@ -260,10 +279,12 @@ class GeophiresXSchemaGenerator:
 
 Input Parameters
 ################
+{input_schema_ref_rst}
 {input_rst}
 
-Output Parameters
+Outputs
 #################
+{output_schema_ref_rst}
 {output_rst}
 """
 
@@ -287,7 +308,7 @@ Output Parameters
             _output_rst = f"""
 {category_display}
 {'-' * len(category_display)}
-    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Parameters
+    .. list-table:: {category_display}{' ' if len(category_display) > 0 else ''}Outputs
        :header-rows: 1
 
        * - Name
@@ -308,6 +329,12 @@ Output Parameters
             output_rst += get_output_params_table(category_params, category)
 
         return output_rst
+
+    def get_input_schema_reference(self) -> str:
+        return 'geophires-request.json'
+
+    def get_output_schema_reference(self) -> str:
+        return 'geophires-result.json'
 
 
 def _get_key(param: dict, k: str, default_val='') -> Any:
@@ -358,7 +385,7 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
         output_params = json.loads(output_params_json)
 
         output_rst = """
-    .. list-table:: Output Parameters
+    .. list-table:: Outputs
        :header-rows: 1
 
        * - Name
@@ -381,6 +408,12 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
          - {get_key('json_parameter_type')}"""
 
         return output_rst
+
+    def get_input_schema_reference(self) -> str:
+        return 'hip-ra-x-request.json'
+
+    def get_output_schema_reference(self) -> str:
+        return None
 
 
 def _get_logger(logger_name=None):

@@ -159,6 +159,7 @@ class GeophiresXSchemaGenerator:
 
         # noinspection PyProtectedMember
         for category in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY:
+            cat_properties = {}
             # noinspection PyProtectedMember
             for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
                 param_name = field if isinstance(field, str) else field.field_name
@@ -168,13 +169,13 @@ class GeophiresXSchemaGenerator:
 
                 param = (
                     {
-                        'categories': [],
+                        # 'categories': [],
                     }
                     if param_name not in properties
                     else properties[param_name]
                 )
 
-                param['categories'].append(category)
+                # param['categories'].append(category)
 
                 if param_name in output_params:
                     output_param = output_params[param_name]
@@ -186,7 +187,10 @@ class GeophiresXSchemaGenerator:
                         output_param['CurrentUnits'] if isinstance(output_param['CurrentUnits'], str) else None
                     )
 
-                properties[param_name] = param.copy()
+                # properties[param_name] = param.copy()
+                cat_properties[param_name] = param.copy()
+
+            properties[category] = {'type': 'object', 'properties': cat_properties}
 
         result_schema = {
             'definitions': {},

@@ -1,5 +1,6 @@
 import json
 import unittest
+from typing import Any
 
 from geophires_x_schema_generator import GeophiresXSchemaGenerator
 from tests.base_test_case import BaseTestCase
@@ -19,11 +20,16 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
 
         print(f'Generated result schema: {json.dumps(result_schema, indent=2)}')
 
+        def get_prop(cat: str, name: str) -> dict[str, Any]:
+            return result_schema['properties'][cat]['properties'][name]
+
         self.assertIn(
-            'multiple of invested capital', result_schema['properties']['Project MOIC']['description'].lower()
+            'multiple of invested capital', get_prop('ECONOMIC PARAMETERS', 'Project MOIC')['description'].lower()
         )
 
-        self.assertIn('Wellfield cost. ', result_schema['properties']['Drilling and completion costs']['description'])
+        self.assertIn(
+            'Wellfield cost. ', get_prop('CAPITAL COSTS (M$)', 'Drilling and completion costs')['description']
+        )
 
 
 if __name__ == '__main__':

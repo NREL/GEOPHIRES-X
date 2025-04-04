@@ -1,6 +1,5 @@
 import json
 import unittest
-from typing import Any
 
 from geophires_x_schema_generator import GeophiresXSchemaGenerator
 from tests.base_test_case import BaseTestCase
@@ -20,7 +19,7 @@ class GeophiresXSchemaGeneratorTestCase(BaseTestCase):
 
         print(f'Generated result schema: {json.dumps(result_schema, indent=2)}')
 
-        def get_result_prop(cat: str, name: str) -> dict[str, Any]:
+        def get_result_prop(cat: str, name: str) -> dict:
             return result_schema['properties'][cat]['properties'][name]
 
         self.assertIn(

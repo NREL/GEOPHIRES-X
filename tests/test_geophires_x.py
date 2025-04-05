@@ -855,7 +855,7 @@ Print Output to Console, 1"""
 
         self.assertEqual(fg_cost, result.result['CAPITAL COSTS (M$)']['Field gathering system costs']['value'])
 
-    def test_temperature_limitations(self):
+    def test_ags_temperature_limitations(self):
         client = GeophiresXClient()
 
         with self.assertRaises(RuntimeError) as e:
@@ -864,6 +864,8 @@ Print Output to Console, 1"""
                     'Is AGS': True,
                     'Well Geometry Configuration': 1,
                     'Injection Temperature': 60,
+                    'Gradient 1': 60,
+                    'Reservoir Depth': 8,
                     'Cylindrical Reservoir Input Depth': 8,
                     'Economic Model': 3,
                 }
@@ -877,6 +879,7 @@ Print Output to Console, 1"""
                     'Is AGS': True,
                     'Closed-loop Configuration': 2,
                     'Gradient 1': 25,
+                    'Reservoir Depth': 3,
                     'Injection Temperature': 60,
                     'Economic Model': 4,
                 }
@@ -884,7 +887,16 @@ Print Output to Console, 1"""
             client.get_geophires_result(params)
         self.assertIn('failed to validate CLGS input value', str(e.exception))
 
+    def test_negative_electricity_production_raises_error(self):
+        client = GeophiresXClient()
         with self.assertRaises(RuntimeError) as e:
-            params = GeophiresInputParameters({'Power Plant Type': 2, 'Maximum Temperature': 600})
+            params = GeophiresInputParameters(
+                {
+                    'Reservoir Depth': 5,
+                    'Gradient 1': 112,
+                    'Power Plant Type': 2,
+                    'Maximum Temperature': 600,
+                }
+            )
             client.get_geophires_result(params)
-        self.assertIn('Check maximum temperature for power plant type', str(e.exception))
+        self.assertIn('Electricity production calculated as negative', str(e.exception))

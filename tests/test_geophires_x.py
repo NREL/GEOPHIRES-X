@@ -867,3 +867,49 @@ Print Output to Console, 1"""
 
         lcoh = result.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price (LCOH)']['value']
         self.assertTrue(10 < lcoh < 20)  # Sanity-check that value is non-zero and broadly within the expected range.
+
+    def test_ags_temperature_limitations(self):
+        client = GeophiresXClient()
+
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Is AGS': True,
+                    'Well Geometry Configuration': 1,
+                    'Injection Temperature': 60,
+                    'Gradient 1': 60,
+                    'Reservoir Depth': 8,
+                    'Cylindrical Reservoir Input Depth': 8,
+                    'Economic Model': 3,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn(' exceeds ', str(e.exception))
+
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Is AGS': True,
+                    'Closed-loop Configuration': 2,
+                    'Gradient 1': 25,
+                    'Reservoir Depth': 3,
+                    'Injection Temperature': 60,
+                    'Economic Model': 4,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn('failed to validate CLGS input value', str(e.exception))
+
+    def test_negative_electricity_production_raises_error(self):
+        client = GeophiresXClient()
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Reservoir Depth': 5,
+                    'Gradient 1': 112,
+                    'Power Plant Type': 2,
+                    'Maximum Temperature': 600,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn('Electricity production calculated as negative', str(e.exception))

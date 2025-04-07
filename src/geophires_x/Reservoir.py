@@ -104,7 +104,7 @@ class Reservoir:
             CurrentUnits=TemperatureGradientUnit.DEGREESCPERM,
             Required=True,
             ErrMessage="assume default geothermal gradients 1 (50, 0, 0, 0 deg.C/km)",
-            ToolTipText="Geothermal gradients"
+            ToolTipText="Geothermal gradient(s)"
         )
 
         self.gradient1 = self.ParameterDict[self.gradient1.Name] = floatParameter(
@@ -420,6 +420,7 @@ class Reservoir:
         # starts as a copy of the input value and only changes if needed.
         self.fracsepcalc = self.OutputParameterDict[self.fracsepcalc.Name] = OutputParameter(
             "Calculated Fracture Separation",
+            display_name='Fracture separation',
             value=self.fracsep.value,
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,
@@ -428,12 +429,14 @@ class Reservoir:
 
         self.fracnumbcalc = self.OutputParameterDict[self.fracnumbcalc.Name] = OutputParameter(
             "Calculated Number of Fractures",
+            display_name='Number of fractures',
             value=self.fracnumb.value,
             UnitType=Units.NONE
         )
 
         self.fracwidthcalc = self.OutputParameterDict[self.fracwidthcalc.Name] = OutputParameter(
             "Calculated Fracture Width",
+            display_name='Fracture width',
             value=self.fracwidth.value,
             UnitType=Units.LENGTH,
             PreferredUnits=LengthUnit.METERS,
@@ -450,6 +453,7 @@ class Reservoir:
 
         self.fracareacalc = self.OutputParameterDict[self.fracareacalc.Name] = OutputParameter(
             "Calculated Fracture Area",
+            display_name='Fracture area',
             value=self.fracarea.value,
             UnitType=Units.AREA,
             PreferredUnits=AreaUnit.METERS2,
@@ -458,6 +462,7 @@ class Reservoir:
 
         self.resvolcalc = self.OutputParameterDict[self.resvolcalc.Name] = floatParameter(
             "Calculated Reservoir Volume",
+            # display_name='Reservoir volume',
             value=self.resvol.value,
             UnitType=Units.VOLUME,
             PreferredUnits=VolumeUnit.METERS3,
@@ -467,13 +472,15 @@ class Reservoir:
         self.cpwater = self.OutputParameterDict[self.cpwater.Name] = floatParameter(
             "cpwater",
             value=0.0,
-            UnitType=Units.NONE
+            UnitType=Units.NONE,
+            ToolTipText='water heat capacity'
         )
 
         self.rhowater = self.OutputParameterDict[self.rhowater.Name] = floatParameter(
             "rhowater",
             value=0.0,
-            UnitType=Units.NONE
+            UnitType=Units.NONE,
+            ToolTipText='water density'
         )
 
         self.averagegradient = self.OutputParameterDict[self.averagegradient.Name] = floatParameter(

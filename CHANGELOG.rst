@@ -19,8 +19,6 @@ Akindipe, D. and Witter. E. 2025. "2025 Geothermal Drilling Cost Curves Update".
 Intermediate and ideal correlations retain existing values from GeoVision:
 DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f63/GeoVision-full-report-opt.pdf.
 
-3.8.12: Fixes investment tax credit (ITC) calculation per https://github.com/softwareengineerprogrammer/GEOPHIRES/pull/63
-
 3.7
 ^^^
 

@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.23
- Simulation Date: 2025-03-10
- Simulation Time:  10:42
- Calculation Time:      0.871 sec
+ GEOPHIRES Version: 3.8.9
+ Simulation Date: 2025-04-02
+ Simulation Time:  12:41
+ Calculation Time:      0.860 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                   404.31 MW
-      Electricity breakeven price:                            2.77 cents/kWh
+      Electricity breakeven price:                            3.76 cents/kWh
       Number of production wells:                            39
       Number of injection wells:                             39
       Flowrate per production well:                         120.0 kg/sec
@@ -27,10 +27,10 @@ Simulation Metadata
       Accrued financing during construction:                  5.00
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                        4580.36 MUSD
-      Project IRR:                                          43.75 %
-      Project VIR=PI=PIR:                                    5.27
-      Project MOIC:                                          6.30
+      Project NPV:                                        4550.28 MUSD
+      Project IRR:                                          39.26 %
+      Project VIR=PI=PIR:                                    3.97
+      Project MOIC:                                          4.91
       Project Payback Period:                                3.38 yr
       Estimated Jobs Created:                                 976
 
@@ -102,7 +102,7 @@ Simulation Metadata
          Total surface equipment costs:                     969.26 MUSD
          Exploration costs:                                  30.00 MUSD
          Investment Tax Credit:                            -459.83 MUSD
-      Total capital costs:                                 1072.95 MUSD
+      Total capital costs:                                 1532.78 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
@@ -193,8 +193,8 @@ Year            Electricity             |            Heat                  |    
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
 Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
-  0      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -1072.95     -1072.95
-  1     15.00          474.16  474.16     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     | 26.96     447.20     -625.75
+  0      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -1532.78     -1532.78
+  1     15.00          474.16  474.16     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     | 26.96     907.04     -625.75
   2     15.00          476.35  950.51     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     | 26.96     449.39     -176.36
   3     15.41          489.93  1440.44     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     | 26.96     462.97     286.61
   4     15.81          503.25  1943.69     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     | 26.96     476.29     762.90

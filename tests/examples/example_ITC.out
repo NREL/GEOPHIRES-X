@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.8.9
- Simulation Date: 2025-04-02
- Simulation Time:  12:41
- Calculation Time:      0.777 sec
+ GEOPHIRES Version: 3.8.4
+ Simulation Date: 2025-03-19
+ Simulation Time:  10:30
+ Calculation Time:      0.808 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                    18.84 MW
-      Electricity breakeven price:                            4.89 cents/kWh
+      Electricity breakeven price:                            3.21 cents/kWh
       Number of production wells:                             2
       Number of injection wells:                              2
       Flowrate per production well:                          55.0 kg/sec
@@ -27,10 +27,10 @@ Simulation Metadata
       Accrued financing during construction:                  0.00
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                           6.77 MUSD
-      Project IRR:                                           8.05 %
-      Project VIR=PI=PIR:                                    1.06
-      Project MOIC:                                          0.52
+      Project NPV:                                          10.31 MUSD
+      Project IRR:                                           8.82 %
+      Project VIR=PI=PIR:                                    1.19
+      Project MOIC:                                          0.72
       Project Payback Period:                               11.46 yr
       Estimated Jobs Created:                                 41
 
@@ -99,7 +99,7 @@ Simulation Metadata
          Total surface equipment costs:                      62.40 MUSD
          Exploration costs:                                   8.24 MUSD
          Investment Tax Credit:                             -54.20 MUSD
-      Total capital costs:                                  108.39 MUSD
+      Total capital costs:                                   54.20 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***
@@ -210,8 +210,8 @@ Year            Electricity             |            Heat                  |    
 Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow
 Start    (cents/kWh)(MUSD/yr) (MUSD)    |(cents/kWh) (MUSD/yr)    (MUSD)   |(cents/kWh) (MUSD/yr)    (MUSD)    |(USD/lb)    (MUSD/yr)    (MUSD)    |(MUSD/yr) (MUSD/yr)    (MUSD)
 ________________________________________________________________________________________________________________________________________________________________________________________
-  0      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -108.39     -108.39
-  1      5.50           8.02   8.02     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  2.95     59.26     -49.13
+  0      0.00           0.00   0.00     |    0.00     0.00         0.00    |    0.00     0.00         0.00     |    0.00     0.00         0.00     |  0.00     -54.20     -54.20
+  1      5.50           8.02   8.02     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  2.95      5.07     -49.13
   2      5.50           8.09  16.11     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  2.95      5.14     -43.99
   3      5.50           8.12  24.23     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  2.95      5.17     -38.82
   4      5.50           8.13  32.36     |    2.50     0.00         0.00    |    2.50     0.00         0.00     |    0.00     0.00         0.00     |  2.95      5.18     -33.64

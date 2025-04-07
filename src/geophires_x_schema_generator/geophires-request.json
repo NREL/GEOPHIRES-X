@@ -1644,7 +1644,7 @@
       "maximum": 1.0
     },
     "Investment Tax Credit Rate": {
-      "description": "Investment tax credit rate (see https://programs.dsireusa.org/system/program/detail/658)",
+      "description": "Investment tax credit rate (see docs)",
       "type": "number",
       "units": "",
       "category": "Economics",

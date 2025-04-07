@@ -610,8 +610,8 @@ Print Output to Console, 1"""
         def _npv(r: GeophiresXResult) -> dict:
             return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
-        self.assertEqual(4550.28, _npv(_get_result('Fervo_Project_Cape-3', False)))
-        self.assertEqual(4252.6, _npv(_get_result('Fervo_Project_Cape-3', True)))
+        self.assertEqual(4580.36, _npv(_get_result('Fervo_Project_Cape-3', False)))
+        self.assertEqual(4280.71, _npv(_get_result('Fervo_Project_Cape-3', True)))
 
         def _extended_economics_npv(r: GeophiresXResult) -> dict:
             return r.result['EXTENDED ECONOMICS']['Project NPV   (including AddOns)']['value']

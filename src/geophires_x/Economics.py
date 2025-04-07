@@ -479,10 +479,7 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
         NPVcap = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * CRF * discountvector)
         NPVfc = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * self.PTR.value * inflationvector * discountvector)
         NPVit = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * self.CCap.value * CRF - self.CCap.value / model.surfaceplant.plant_lifetime.value) * discountvector)
-
-        npv_itc_discount_factor = discountvector[model.surfaceplant.construction_years.value]
-        NPVitc = ((1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
-                  * npv_itc_discount_factor)
+        NPVitc = (1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
 
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
             NPVoandm = np.sum(self.Coam.value * inflationvector * discountvector)
@@ -505,8 +502,7 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
             NPVcap_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * CRF * discountvector)
             NPVfc_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * self.PTR.value * inflationvector * discountvector)
             NPVit_elec = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_elec * CRF - CCap_elec / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_elec = ((1 + self.inflrateconstruction.value) * CCap_elec * self.RITC.value / (1 - self.CTR.value)
-                           * npv_itc_discount_factor)
+            NPVitc_elec = (1 + self.inflrateconstruction.value) * CCap_elec * self.RITC.value / (1 - self.CTR.value)
             NPVoandm_elec = np.sum(Coam_elec * inflationvector * discountvector)
             NPVgrt_elec = self.GTR.value / (1 - self.GTR.value) * (NPVcap_elec + NPVoandm_elec + NPVfc_elec + NPVit_elec - NPVitc_elec)
 
@@ -516,8 +512,7 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
             NPVcap_heat = np.sum((1 + self.inflrateconstruction.value) * CCap_heat * CRF * discountvector)
             NPVfc_heat = np.sum((1 + self.inflrateconstruction.value) * (self.CCap.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * self.PTR.value * inflationvector * discountvector)
             NPVit_heat = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_heat * CRF - CCap_heat / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_heat = ((1 + self.inflrateconstruction.value) * CCap_heat * self.RITC.value / (1 - self.CTR.value)
-                           * npv_itc_discount_factor)
+            NPVitc_heat = (1 + self.inflrateconstruction.value) * CCap_heat * self.RITC.value / (1 - self.CTR.value)
             NPVoandm_heat = np.sum((self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * inflationvector * discountvector)
             NPVgrt_heat = self.GTR.value / (1 - self.GTR.value) * (NPVcap_heat + NPVoandm_heat + NPVfc_heat + NPVit_heat - NPVitc_heat)
 
@@ -979,8 +974,7 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default investment tax credit rate (0)",
-            ToolTipText="Investment tax credit rate "
-                        "(see https://programs.dsireusa.org/system/program/detail/658)"
+            ToolTipText="Investment tax credit rate (see docs)"
         )
         self.PTR = self.ParameterDict[self.PTR.Name] = floatParameter(
             "Property Tax Rate",
@@ -2707,6 +2701,11 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
+        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
+        if self.RITC.Provided:
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            self.CCap.value = self.CCap.value - self.RITCValue.value
+
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
@@ -2942,12 +2941,6 @@ class Economics:
         for i in range(model.surfaceplant.construction_years.value,
                        model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
             self.TotalRevenue.value[i] = self.TotalRevenue.value[i] - self.Coam.value
-
-
-        if self.RITC.Provided:
-            self.RITCValue.value = self.RITC.value * self.CCap.value
-            # ITC is credited year after construction
-            self.TotalRevenue.value[model.surfaceplant.construction_years.value] += self.RITCValue.value
 
         # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
         for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):

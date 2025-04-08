@@ -62,7 +62,7 @@ def compute_sam_financials(
     single_owner = Singleowner.from_existing(custom_gen)
 
     project_name = 'Generic_400_MWe'
-    project_dir = Path('sam_economics', project_name)
+    project_dir = Path(os.path.dirname(model.economics.MyPath), 'sam_economics', project_name)
     # noinspection SpellCheckingInspection
     file_names = [f'{project_name}_{module}' for module in ['custom_generation', 'grid', 'utilityrate5', 'singleowner']]
     modules = [custom_gen, grid, utility_rate, single_owner]

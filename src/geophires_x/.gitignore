@@ -134,3 +134,5 @@ Examples\Test2.json
 /Preliminary_Corpus Christi GRA_093019.xlsx
 /temperature.txt
 all_messages_conf.log
+
+!sam_economics/Generic_400_MWe/*.json

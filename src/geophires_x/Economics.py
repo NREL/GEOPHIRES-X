@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
+from geophires_x.EconomicsSam import compute_sam_financials
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -469,7 +470,8 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
                  econ.annualngcost.value) * discount_vector)) / np.sum(
                 model.surfaceplant.annual_heating_demand.value * discount_vector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-
+    elif econ.econmodel.value == EconomicModel.SINGLE_OWNER_PPA:
+        LCOE = compute_sam_financials(model)['LCOE']['value']
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)
@@ -590,7 +592,7 @@ class Economics:
         self.econmodel = self.ParameterDict[self.econmodel.Name] = intParameter(
             "Economic Model",
             DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST.int_value,
-            AllowableRange=[1, 2, 3, 4],
+            AllowableRange=[1, 2, 3, 4, 5],
             ValuesEnum=EconomicModel,
             Required=True,
             ErrMessage="assume default economic model (2)",

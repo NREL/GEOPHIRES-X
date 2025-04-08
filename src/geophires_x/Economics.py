@@ -2962,6 +2962,13 @@ class Economics:
                 self.discount_initial_year_cashflow.value
             )
 
+        if self.econmodel.value == EconomicModel.SINGLE_OWNER_PPA:
+            sam_economics = compute_sam_financials(model)
+            self.ProjectNPV.value = sam_economics['NPV']['value']
+            self.ProjectIRR.value = sam_economics['IRR']['value']
+            # FIXME WIP VIR + MOIC
+            self.ProjectVIR.value, self.ProjectMOIC.value = -1, -1
+
         # Calculate the project payback period
         self.ProjectPaybackPeriod.value = 0.0   # start by assuming the project never pays back
         for i in range(0, len(self.TotalCummRevenue.value), 1):

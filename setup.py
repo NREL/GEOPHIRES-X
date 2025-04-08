@@ -80,6 +80,7 @@ setup(
         'coolprop',
         'rich',
         'pylocker',
+        'nrel-pysam',
     ],
     extras_require={
         # eg:

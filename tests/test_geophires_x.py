@@ -913,3 +913,15 @@ Print Output to Console, 1"""
             )
             client.get_geophires_result(params)
         self.assertIn('Electricity production calculated as negative', str(e.exception))
+
+    def test_economic_model_single_owner_ppa_sam(self):
+        result = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={
+                    'Economic Model': 5,
+                },
+            )
+        )
+
+        self.assertGreater(result.result['SUMMARY OF RESULTS']['Electricity breakeven price']['value'], 6)

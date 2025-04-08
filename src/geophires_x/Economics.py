@@ -372,28 +372,30 @@ def CalculateFinancialPerformance(plantlifetime: int,
     return NPV, IRR, VIR, MOIC
 
 
-def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
+def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
     """
     CalculateLCOELCOH calculates the levelized cost of electricity and heat for the project.
+    :param econ: Economics object
+    :type econ: :class:`~geophires_x.Economics.Economics`
     :param model: The model object
     :type model: :class:`~geophires_x.Model.Model`
     :return: LCOE: The levelized cost of electricity and LCOH: The levelized cost of heat and LCOC: The levelized cost of cooling
     :rtype: tuple
     """
     LCOE = LCOH = LCOC = 0.0
-    CCap_elec = (self.CCap.value * self.CAPEX_heat_electricity_plant_ratio.value)
-    Coam_elec = (self.Coam.value * self.CAPEX_heat_electricity_plant_ratio.value)
-    CCap_heat = (self.CCap.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value))
-    Coam_heat = (self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value))
+    CCap_elec = (econ.CCap.value * econ.CAPEX_heat_electricity_plant_ratio.value)
+    Coam_elec = (econ.Coam.value * econ.CAPEX_heat_electricity_plant_ratio.value)
+    CCap_heat = (econ.CCap.value * (1.0 - econ.CAPEX_heat_electricity_plant_ratio.value))
+    Coam_heat = (econ.Coam.value * (1.0 - econ.CAPEX_heat_electricity_plant_ratio.value))
     # Calculate LCOE/LCOH/LCOC
-    if self.econmodel.value == EconomicModel.FCR:
+    if econ.econmodel.value == EconomicModel.FCR:
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
-            LCOE = (self.FCR.value * (1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value) / \
+            LCOE = (econ.FCR.value * (1 + econ.inflrateconstruction.value) * econ.CCap.value + econ.Coam.value) / \
                    np.average(model.surfaceplant.NetkWhProduced.value) * 1E8  # cents/kWh
         elif (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and
               model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):
-            LCOH = (self.FCR.value * (1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value +
-                    self.averageannualpumpingcosts.value) / np.average(
+            LCOH = (econ.FCR.value * (1 + econ.inflrateconstruction.value) * econ.CCap.value + econ.Coam.value +
+                    econ.averageannualpumpingcosts.value) / np.average(
                 model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
         # co-gen
@@ -403,39 +405,39 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
                                                         EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
-            LCOE = (self.FCR.value * (1 + self.inflrateconstruction.value) * CCap_elec + Coam_elec) /  np.average(model.surfaceplant.NetkWhProduced.value) * 1E8  # cents/kWh
-            LCOH = (self.FCR.value * (1 + self.inflrateconstruction.value) * CCap_heat + Coam_heat + self.averageannualpumpingcosts.value) / np.average(model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
+            LCOE = (econ.FCR.value * (1 + econ.inflrateconstruction.value) * CCap_elec + Coam_elec) / np.average(model.surfaceplant.NetkWhProduced.value) * 1E8  # cents/kWh
+            LCOH = (econ.FCR.value * (1 + econ.inflrateconstruction.value) * CCap_heat + Coam_heat + econ.averageannualpumpingcosts.value) / np.average(model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
-            LCOC = (self.FCR.value * (
-                    1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value) / np.average(
+            LCOC = (econ.FCR.value * (
+                1 + econ.inflrateconstruction.value) * econ.CCap.value + econ.Coam.value + econ.averageannualpumpingcosts.value) / np.average(
                 model.surfaceplant.cooling_kWh_Produced.value) * 1E8  # cents/kWh
             LCOC = LCOC * 2.931  # $/Million Btu
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
-            LCOH = (self.FCR.value * (
-                    1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualheatpumpelectricitycost.value) / np.average(
+            LCOH = (econ.FCR.value * (
+                1 + econ.inflrateconstruction.value) * econ.CCap.value + econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value) / np.average(
                 model.surfaceplant.HeatkWhProduced.value) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-            LCOH = (self.FCR.value * (
-                    1 + self.inflrateconstruction.value) * self.CCap.value + self.Coam.value + self.averageannualpumpingcosts.value + self.averageannualngcost.value) / model.surfaceplant.annual_heating_demand.value * 1E2  # cents/kWh
+            LCOH = (econ.FCR.value * (
+                1 + econ.inflrateconstruction.value) * econ.CCap.value + econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualngcost.value) / model.surfaceplant.annual_heating_demand.value * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-    elif self.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
-        discountvector = 1. / np.power(1 + self.discountrate.value,
+    elif econ.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
+        discount_vector = 1. / np.power(1 + econ.discountrate.value,
                                        np.linspace(0, model.surfaceplant.plant_lifetime.value - 1,
                                                    model.surfaceplant.plant_lifetime.value))
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
-            LCOE = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
-                self.Coam.value * discountvector)) / np.sum(
-                model.surfaceplant.NetkWhProduced.value * discountvector) * 1E8  # cents/kWh
+            LCOE = ((1 + econ.inflrateconstruction.value) * econ.CCap.value + np.sum(
+                econ.Coam.value * discount_vector)) / np.sum(
+                model.surfaceplant.NetkWhProduced.value * discount_vector) * 1E8  # cents/kWh
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and \
             model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
-            self.averageannualpumpingcosts.value = np.average(
+            econ.averageannualpumpingcosts.value = np.average(
                 model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
-            LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum((
-                                                                                         self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(
-                model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
+            LCOH = ((1 + econ.inflrateconstruction.value) * econ.CCap.value + np.sum((
+                                                                                         econ.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discount_vector)) / np.sum(
+                model.surfaceplant.HeatkWhProduced.value * discount_vector) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/MMBTU
 
         # co-gen
@@ -445,51 +447,54 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
                                                         EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
-            LCOE = ((1 + self.inflrateconstruction.value) * CCap_elec + np.sum(Coam_elec * discountvector)) / np.sum(model.surfaceplant.NetkWhProduced.value * discountvector) * 1E8  # cents/kWh
-            LCOH = ((1 + self.inflrateconstruction.value) * CCap_heat +
-                    np.sum((Coam_heat + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
+            LCOE = ((1 + econ.inflrateconstruction.value) * CCap_elec + np.sum(Coam_elec * discount_vector)) / np.sum(model.surfaceplant.NetkWhProduced.value * discount_vector) * 1E8  # cents/kWh
+            LCOH = ((1 + econ.inflrateconstruction.value) * CCap_heat +
+                    np.sum((Coam_heat + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discount_vector)) / np.sum(model.surfaceplant.HeatkWhProduced.value * discount_vector) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
-            LCOC = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum((
-                                                                                         self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(
-                model.surfaceplant.cooling_kWh_Produced.value * discountvector) * 1E8  # cents/kWh
+            LCOC = ((1 + econ.inflrateconstruction.value) * econ.CCap.value + np.sum((
+                                                                                         econ.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discount_vector)) / np.sum(
+                model.surfaceplant.cooling_kWh_Produced.value * discount_vector) * 1E8  # cents/kWh
             LCOC = LCOC * 2.931  # $/Million Btu
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
-            LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
-                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
-                 model.surfaceplant.heat_pump_electricity_kwh_used.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discountvector)) / np.sum(
-                model.surfaceplant.HeatkWhProduced.value * discountvector) * 1E8  # cents/kWh
+            LCOH = ((1 + econ.inflrateconstruction.value) * econ.CCap.value + np.sum(
+                (econ.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
+                 model.surfaceplant.heat_pump_electricity_kwh_used.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discount_vector)) / np.sum(
+                model.surfaceplant.HeatkWhProduced.value * discount_vector) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-            LCOH = ((1 + self.inflrateconstruction.value) * self.CCap.value + np.sum(
-                (self.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
-                 self.annualngcost.value) * discountvector)) / np.sum(
-                model.surfaceplant.annual_heating_demand.value * discountvector) * 1E2  # cents/kWh
+            LCOH = ((1 + econ.inflrateconstruction.value) * econ.CCap.value + np.sum(
+                (econ.Coam.value + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6 +
+                 econ.annualngcost.value) * discount_vector)) / np.sum(
+                model.surfaceplant.annual_heating_demand.value * discount_vector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
 
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)
-        iave = self.FIB.value * self.BIR.value * (1 - self.CTR.value) + (1 - self.FIB.value) * self.EIR.value
+        i_ave = econ.FIB.value * econ.BIR.value * (1 - econ.CTR.value) + (1 - econ.FIB.value) * econ.EIR.value
         # capital recovery factor
-        CRF = iave / (1 - np.power(1 + iave, -model.surfaceplant.plant_lifetime.value))
-        inflationvector = np.power(1 + self.RINFL.value, np.linspace(1, model.surfaceplant.plant_lifetime.value, model.surfaceplant.plant_lifetime.value))
-        discountvector = 1. / np.power(1 + iave, np.linspace(1, model.surfaceplant.plant_lifetime.value, model.surfaceplant.plant_lifetime.value))
-        NPVcap = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * CRF * discountvector)
-        NPVfc = np.sum((1 + self.inflrateconstruction.value) * self.CCap.value * self.PTR.value * inflationvector * discountvector)
-        NPVit = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * self.CCap.value * CRF - self.CCap.value / model.surfaceplant.plant_lifetime.value) * discountvector)
-        NPVitc = (1 + self.inflrateconstruction.value) * self.CCap.value * self.RITC.value / (1 - self.CTR.value)
+        CRF = i_ave / (1 - np.power(1 + i_ave, -model.surfaceplant.plant_lifetime.value))
+        inflation_vector = np.power(1 + econ.RINFL.value, np.linspace(1, model.surfaceplant.plant_lifetime.value, model.surfaceplant.plant_lifetime.value))
+        discount_vector = 1. / np.power(1 + i_ave, np.linspace(1, model.surfaceplant.plant_lifetime.value, model.surfaceplant.plant_lifetime.value))
+        NPV_cap = np.sum((1 + econ.inflrateconstruction.value) * econ.CCap.value * CRF * discount_vector)
+        NPV_fc = np.sum((1 + econ.inflrateconstruction.value) * econ.CCap.value * econ.PTR.value * inflation_vector * discount_vector)
+        NPV_it = np.sum(econ.CTR.value / (1 - econ.CTR.value) * ((1 + econ.inflrateconstruction.value) * econ.CCap.value * CRF - econ.CCap.value / model.surfaceplant.plant_lifetime.value) * discount_vector)
+
+        npv_itc_discount_factor = discount_vector[model.surfaceplant.construction_years.value]
+        NPV_itc = ((1 + econ.inflrateconstruction.value) * econ.CCap.value * econ.RITC.value / (1 - econ.CTR.value)
+                  * npv_itc_discount_factor)
 
         if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
-            NPVoandm = np.sum(self.Coam.value * inflationvector * discountvector)
-            NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
-            LCOE = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(model.surfaceplant.NetkWhProduced.value * inflationvector * discountvector) * 1E8
+            NPV_oandm = np.sum(econ.Coam.value * inflation_vector * discount_vector)
+            NPV_grt = econ.GTR.value / (1 - econ.GTR.value) * (NPV_cap + NPV_oandm + NPV_fc + NPV_it - NPV_itc)
+            LCOE = (NPV_cap + NPV_oandm + NPV_fc + NPV_it + NPV_grt - NPV_itc) / np.sum(model.surfaceplant.NetkWhProduced.value * inflation_vector * discount_vector) * 1E8
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
-            NPVoandm = np.sum((self.Coam.value + PumpingCosts) * inflationvector * discountvector)
-            NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
-            LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
+            NPV_oandm = np.sum((econ.Coam.value + PumpingCosts) * inflation_vector * discount_vector)
+            NPV_grt = econ.GTR.value / (1 - econ.GTR.value) * (NPV_cap + NPV_oandm + NPV_fc + NPV_it - NPV_itc)
+            LCOH = (NPV_cap + NPV_oandm + NPV_fc + NPV_it + NPV_grt - NPV_itc) / np.sum(model.surfaceplant.HeatkWhProduced.value * inflation_vector * discount_vector) * 1E8
             LCOH = LCOH * 2.931  # $/MMBTU
         # co-gen
         elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
@@ -499,51 +504,53 @@ def CalculateLCOELCOHLCOC(self, model: Model) -> tuple:
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
                                                         EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
 
-            NPVcap_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * CRF * discountvector)
-            NPVfc_elec = np.sum((1 + self.inflrateconstruction.value) * CCap_elec * self.PTR.value * inflationvector * discountvector)
-            NPVit_elec = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_elec * CRF - CCap_elec / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_elec = (1 + self.inflrateconstruction.value) * CCap_elec * self.RITC.value / (1 - self.CTR.value)
-            NPVoandm_elec = np.sum(Coam_elec * inflationvector * discountvector)
-            NPVgrt_elec = self.GTR.value / (1 - self.GTR.value) * (NPVcap_elec + NPVoandm_elec + NPVfc_elec + NPVit_elec - NPVitc_elec)
+            NPVcap_elec = np.sum((1 + econ.inflrateconstruction.value) * CCap_elec * CRF * discount_vector)
+            NPVfc_elec = np.sum((1 + econ.inflrateconstruction.value) * CCap_elec * econ.PTR.value * inflation_vector * discount_vector)
+            NPVit_elec = np.sum(econ.CTR.value / (1 - econ.CTR.value) * ((1 + econ.inflrateconstruction.value) * CCap_elec * CRF - CCap_elec / model.surfaceplant.plant_lifetime.value) * discount_vector)
+            NPVitc_elec = ((1 + econ.inflrateconstruction.value) * CCap_elec * econ.RITC.value / (1 - econ.CTR.value)
+                           * npv_itc_discount_factor)
+            NPVoandm_elec = np.sum(Coam_elec * inflation_vector * discount_vector)
+            NPVgrt_elec = econ.GTR.value / (1 - econ.GTR.value) * (NPVcap_elec + NPVoandm_elec + NPVfc_elec + NPVit_elec - NPVitc_elec)
 
             LCOE = ((NPVcap_elec + NPVoandm_elec + NPVfc_elec + NPVit_elec + NPVgrt_elec - NPVitc_elec) /
-                    np.sum(model.surfaceplant.NetkWhProduced.value * inflationvector * discountvector) * 1E8)
+                    np.sum(model.surfaceplant.NetkWhProduced.value * inflation_vector * discount_vector) * 1E8)
 
-            NPVcap_heat = np.sum((1 + self.inflrateconstruction.value) * CCap_heat * CRF * discountvector)
-            NPVfc_heat = np.sum((1 + self.inflrateconstruction.value) * (self.CCap.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * self.PTR.value * inflationvector * discountvector)
-            NPVit_heat = np.sum(self.CTR.value / (1 - self.CTR.value) * ((1 + self.inflrateconstruction.value) * CCap_heat * CRF - CCap_heat / model.surfaceplant.plant_lifetime.value) * discountvector)
-            NPVitc_heat = (1 + self.inflrateconstruction.value) * CCap_heat * self.RITC.value / (1 - self.CTR.value)
-            NPVoandm_heat = np.sum((self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)) * inflationvector * discountvector)
-            NPVgrt_heat = self.GTR.value / (1 - self.GTR.value) * (NPVcap_heat + NPVoandm_heat + NPVfc_heat + NPVit_heat - NPVitc_heat)
+            NPVcap_heat = np.sum((1 + econ.inflrateconstruction.value) * CCap_heat * CRF * discount_vector)
+            NPVfc_heat = np.sum((1 + econ.inflrateconstruction.value) * (econ.CCap.value * (1.0 - econ.CAPEX_heat_electricity_plant_ratio.value)) * econ.PTR.value * inflation_vector * discount_vector)
+            NPVit_heat = np.sum(econ.CTR.value / (1 - econ.CTR.value) * ((1 + econ.inflrateconstruction.value) * CCap_heat * CRF - CCap_heat / model.surfaceplant.plant_lifetime.value) * discount_vector)
+            NPVitc_heat = ((1 + econ.inflrateconstruction.value) * CCap_heat * econ.RITC.value / (1 - econ.CTR.value)
+                           * npv_itc_discount_factor)
+            NPVoandm_heat = np.sum((econ.Coam.value * (1.0 - econ.CAPEX_heat_electricity_plant_ratio.value)) * inflation_vector * discount_vector)
+            NPVgrt_heat = econ.GTR.value / (1 - econ.GTR.value) * (NPVcap_heat + NPVoandm_heat + NPVfc_heat + NPVit_heat - NPVitc_heat)
 
             LCOH = ((NPVcap_heat + NPVoandm_heat + NPVfc_heat + NPVit_heat + NPVgrt_heat - NPVitc_heat) /
-                    np.sum(model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8)
+                    np.sum(model.surfaceplant.HeatkWhProduced.value * inflation_vector * discount_vector) * 1E8)
             LCOH = LCOH * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
-            NPVoandm = np.sum((self.Coam.value + PumpingCosts) * inflationvector * discountvector)
-            NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
-            LCOC = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(
-                model.surfaceplant.cooling_kWh_Produced.value * inflationvector * discountvector) * 1E8
+            NPV_oandm = np.sum((econ.Coam.value + PumpingCosts) * inflation_vector * discount_vector)
+            NPV_grt = econ.GTR.value / (1 - econ.GTR.value) * (NPV_cap + NPV_oandm + NPV_fc + NPV_it - NPV_itc)
+            LCOC = (NPV_cap + NPV_oandm + NPV_fc + NPV_it + NPV_grt - NPV_itc) / np.sum(
+                model.surfaceplant.cooling_kWh_Produced.value * inflation_vector * discount_vector) * 1E8
             LCOC = LCOC * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
             HeatPumpElecCosts = model.surfaceplant.heat_pump_electricity_kwh_used.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
-            NPVoandm = np.sum((self.Coam.value + PumpingCosts + HeatPumpElecCosts) * inflationvector * discountvector)
-            NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
-            LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(
-                model.surfaceplant.HeatkWhProduced.value * inflationvector * discountvector) * 1E8
+            NPV_oandm = np.sum((econ.Coam.value + PumpingCosts + HeatPumpElecCosts) * inflation_vector * discount_vector)
+            NPV_grt = econ.GTR.value / (1 - econ.GTR.value) * (NPV_cap + NPV_oandm + NPV_fc + NPV_it - NPV_itc)
+            LCOH = (NPV_cap + NPV_oandm + NPV_fc + NPV_it + NPV_grt - NPV_itc) / np.sum(
+                model.surfaceplant.HeatkWhProduced.value * inflation_vector * discount_vector) * 1E8
             LCOH = LCOH * 2.931  # $/MMBTU
 
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
             PumpingCosts = model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6
-            NPVoandm = np.sum(
-                (self.Coam.value + PumpingCosts + self.annualngcost.value) * inflationvector * discountvector)
-            NPVgrt = self.GTR.value / (1 - self.GTR.value) * (NPVcap + NPVoandm + NPVfc + NPVit - NPVitc)
-            LCOH = (NPVcap + NPVoandm + NPVfc + NPVit + NPVgrt - NPVitc) / np.sum(
-                model.surfaceplant.annual_heating_demand.value * inflationvector * discountvector) * 1E2
+            NPV_oandm = np.sum(
+                (econ.Coam.value + PumpingCosts + econ.annualngcost.value) * inflation_vector * discount_vector)
+            NPV_grt = econ.GTR.value / (1 - econ.GTR.value) * (NPV_cap + NPV_oandm + NPV_fc + NPV_it - NPV_itc)
+            LCOH = (NPV_cap + NPV_oandm + NPV_fc + NPV_it + NPV_grt - NPV_itc) / np.sum(
+                model.surfaceplant.annual_heating_demand.value * inflation_vector * discount_vector) * 1E2
             LCOH = LCOH * 2.931  # $/MMBTU
 
     return LCOE, LCOH, LCOC
@@ -974,7 +981,8 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default investment tax credit rate (0)",
-            ToolTipText="Investment tax credit rate (see docs)"
+            ToolTipText="Investment tax credit rate "
+                        "(see https://programs.dsireusa.org/system/program/detail/658)"
         )
         self.PTR = self.ParameterDict[self.PTR.Name] = floatParameter(
             "Property Tax Rate",
@@ -2701,11 +2709,6 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
-        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        if self.RITC.Provided:
-            self.RITCValue.value = self.RITC.value * self.CCap.value
-            self.CCap.value = self.CCap.value - self.RITCValue.value
-
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
@@ -2941,6 +2944,12 @@ class Economics:
         for i in range(model.surfaceplant.construction_years.value,
                        model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
             self.TotalRevenue.value[i] = self.TotalRevenue.value[i] - self.Coam.value
+
+
+        if self.RITC.Provided:
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            # ITC is credited year after construction
+            self.TotalRevenue.value[model.surfaceplant.construction_years.value] += self.RITCValue.value
 
         # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
         for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):

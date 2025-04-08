@@ -580,3 +580,15 @@ class GeophiresXClientTestCase(BaseTestCase):
         )
 
         self.assertEqual([30, 68860.68, 2253170.17, 15306577.89, 500842063.38, 222.28], sdacgt_profile[30])
+
+    def test_parse_economic_model(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/example3.out'))
+        em = result.result['ECONOMIC PARAMETERS']['Economic Model']
+        self.assertEqual(em, 'BICYCLE')
+
+        # Test backwards compatibility with previous versions of GEOPHIRES that included an extra space before the
+        # equal sign.
+        result_legacy_em = GeophiresXResult(self._get_test_file_path('examples/example3.out'))
+        result_legacy_em._lines = ['   Economic Model  = BICYCLE']
+        em_legacy = result_legacy_em._get_equal_sign_delimited_field('Economic Model')
+        self.assertEqual(em_legacy, 'BICYCLE')

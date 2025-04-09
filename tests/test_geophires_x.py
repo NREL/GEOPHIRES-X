@@ -919,10 +919,7 @@ Print Output to Console, 1"""
             return GeophiresXClient().get_geophires_result(
                 GeophiresInputParameters(
                     from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
-                    params={
-                        'Economic Model': 5,
-                    }
-                    | _params,
+                    params={'Economic Model': 5, **_params},
                 )
             )
 

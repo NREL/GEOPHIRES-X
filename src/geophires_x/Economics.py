@@ -2769,94 +2769,7 @@ class Economics:
         if self.DoSDACGTCalculations.value:
             model.sdacgteconomics.Calculate(model)
 
-        # Calculate cashflow and cumulative cash flow
-        total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
-        self.ElecRevenue.value = [0.0] * total_duration
-        self.ElecCummRevenue.value = [0.0] * total_duration
-        self.HeatRevenue.value = [0.0] * total_duration
-        self.HeatCummRevenue.value = [0.0] * total_duration
-        self.CoolingRevenue.value = [0.0] * total_duration
-        self.CoolingCummRevenue.value = [0.0] * total_duration
-        self.CarbonRevenue.value = [0.0] * total_duration
-        self.CarbonCummCashFlow.value = [0.0] * total_duration
-        self.TotalRevenue.value = [0.0] * total_duration
-        self.TotalCummRevenue.value = [0.0] * total_duration
-        self.CarbonThatWouldHaveBeenProducedTotal.value = 0.0
-
-        # Based on the style of the project, calculate the revenue & cumulative revenue
-        if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
-            self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
-                model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
-            self.TotalRevenue.value = self.ElecRevenue.value.copy()
-            #self.TotalCummRevenue.value = self.ElecCummRevenue.value
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
-            self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
-                model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
-            self.TotalRevenue.value = self.HeatRevenue.value.copy()
-            #self.TotalCummRevenue.value = self.HeatCummRevenue.value
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]:
-            self.CoolingRevenue.value, self.CoolingCummRevenue.value = CalculateRevenue(
-                model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                model.surfaceplant.cooling_kWh_Produced.value, self.CoolingPrice.value)
-            self.TotalRevenue.value = self.CoolingRevenue.value.copy()
-            #self.TotalCummRevenue.value = self.CoolingCummRevenue.value
-        elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
-                                                        EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
-                                                        EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
-                                                        EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
-                                                        EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
-                                                        EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:  # co-gen
-            # else:
-            self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
-                model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
-            self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
-                model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
-
-            for i in range(0, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
-                self.TotalRevenue.value[i] = self.ElecRevenue.value[i] + self.HeatRevenue.value[i]
-                #if i > 0:
-                #    self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i - 1] + self.TotalRevenue.value[i]
-
-        if self.DoCarbonCalculations.value:
-            self.CarbonRevenue.value, self.CarbonCummCashFlow.value, self.CarbonThatWouldHaveBeenProducedAnnually.value, \
-             self.CarbonThatWouldHaveBeenProducedTotal.value = CalculateCarbonRevenue(model,
-                  model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
-                  self.CarbonPrice.value, self.GridCO2Intensity.value, self.NaturalGasCO2Intensity.value,
-                  model.surfaceplant.NetkWhProduced.value, model.surfaceplant.HeatkWhProduced.value)
-            for i in range(model.surfaceplant.construction_years.value, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
-                self.TotalRevenue.value[i] = self.TotalRevenue.value[i] + self.CarbonRevenue.value[i]
-                #self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i] + self.CarbonCummCashFlow.value[i]
-
-        # for the sake of display, insert zeros at the beginning of the pricing arrays
-        for i in range(0, model.surfaceplant.construction_years.value, 1):
-            self.ElecPrice.value.insert(0, 0.0)
-            self.HeatPrice.value.insert(0, 0.0)
-            self.CoolingPrice.value.insert(0, 0.0)
-            self.CarbonPrice.value.insert(0, 0.0)
-
-        # Insert the cost of construction into the front of the array that will be used to calculate NPV
-        # the convention is that the upfront CAPEX is negative
-        # This is the same for all projects
-        ProjectCAPEXPerConstructionYear = self.CCap.value / model.surfaceplant.construction_years.value
-        for i in range(0, model.surfaceplant.construction_years.value, 1):
-            self.TotalRevenue.value[i] = -1.0 * ProjectCAPEXPerConstructionYear
-            self.TotalCummRevenue.value[i] = -1.0 * ProjectCAPEXPerConstructionYear
-#        self.TotalRevenue.value, self.TotalCummRevenue.value = CalculateTotalRevenue(
-#            model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value, self.CCap.value,
-#                self.Coam.value, self.TotalRevenue.value, self.TotalCummRevenue.value)
-
-        # Do a one-time calculation that accounts for OPEX - no OPEX in the first year.
-        for i in range(model.surfaceplant.construction_years.value,
-                       model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
-            self.TotalRevenue.value[i] = self.TotalRevenue.value[i] - self.Coam.value
-
-        # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
-        for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
-            self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i-1] + self.TotalRevenue.value[i]
+        self.calculate_cashflow(model)
 
         # Calculate more financial values using numpy financials
         self.ProjectNPV.value, self.ProjectIRR.value, self.ProjectVIR.value, self.ProjectMOIC.value = \
@@ -2898,6 +2811,99 @@ class Economics:
 
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+
+    def calculate_cashflow(self, model: Model) -> None:
+            """
+            Calculate cashflow and cumulative cash flow
+            """
+            total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
+            self.ElecRevenue.value = [0.0] * total_duration
+            self.ElecCummRevenue.value = [0.0] * total_duration
+            self.HeatRevenue.value = [0.0] * total_duration
+            self.HeatCummRevenue.value = [0.0] * total_duration
+            self.CoolingRevenue.value = [0.0] * total_duration
+            self.CoolingCummRevenue.value = [0.0] * total_duration
+            self.CarbonRevenue.value = [0.0] * total_duration
+            self.CarbonCummCashFlow.value = [0.0] * total_duration
+            self.TotalRevenue.value = [0.0] * total_duration
+            self.TotalCummRevenue.value = [0.0] * total_duration
+            self.CarbonThatWouldHaveBeenProducedTotal.value = 0.0
+
+            # Based on the style of the project, calculate the revenue & cumulative revenue
+            if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:
+                self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
+                    model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                    model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
+                self.TotalRevenue.value = self.ElecRevenue.value.copy()
+                #self.TotalCummRevenue.value = self.ElecCummRevenue.value
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER]:
+                self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
+                    model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                    model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
+                self.TotalRevenue.value = self.HeatRevenue.value.copy()
+                #self.TotalCummRevenue.value = self.HeatCummRevenue.value
+            elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER]:
+                self.CoolingRevenue.value, self.CoolingCummRevenue.value = CalculateRevenue(
+                    model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                    model.surfaceplant.cooling_kWh_Produced.value, self.CoolingPrice.value)
+                self.TotalRevenue.value = self.CoolingRevenue.value.copy()
+                #self.TotalCummRevenue.value = self.CoolingCummRevenue.value
+            elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
+                                                            EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
+                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY,
+                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
+                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT,
+                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:  # co-gen
+                # else:
+                self.ElecRevenue.value, self.ElecCummRevenue.value = CalculateRevenue(
+                    model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                    model.surfaceplant.NetkWhProduced.value, self.ElecPrice.value)
+                self.HeatRevenue.value, self.HeatCummRevenue.value = CalculateRevenue(
+                    model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                    model.surfaceplant.HeatkWhProduced.value, self.HeatPrice.value)
+
+                for i in range(0, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
+                    self.TotalRevenue.value[i] = self.ElecRevenue.value[i] + self.HeatRevenue.value[i]
+                    #if i > 0:
+                    #    self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i - 1] + self.TotalRevenue.value[i]
+
+            if self.DoCarbonCalculations.value:
+                self.CarbonRevenue.value, self.CarbonCummCashFlow.value, self.CarbonThatWouldHaveBeenProducedAnnually.value, \
+                 self.CarbonThatWouldHaveBeenProducedTotal.value = CalculateCarbonRevenue(model,
+                      model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value,
+                      self.CarbonPrice.value, self.GridCO2Intensity.value, self.NaturalGasCO2Intensity.value,
+                      model.surfaceplant.NetkWhProduced.value, model.surfaceplant.HeatkWhProduced.value)
+                for i in range(model.surfaceplant.construction_years.value, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
+                    self.TotalRevenue.value[i] = self.TotalRevenue.value[i] + self.CarbonRevenue.value[i]
+                    #self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i] + self.CarbonCummCashFlow.value[i]
+
+            # for the sake of display, insert zeros at the beginning of the pricing arrays
+            for i in range(0, model.surfaceplant.construction_years.value, 1):
+                self.ElecPrice.value.insert(0, 0.0)
+                self.HeatPrice.value.insert(0, 0.0)
+                self.CoolingPrice.value.insert(0, 0.0)
+                self.CarbonPrice.value.insert(0, 0.0)
+
+            # Insert the cost of construction into the front of the array that will be used to calculate NPV
+            # the convention is that the upfront CAPEX is negative
+            # This is the same for all projects
+            ProjectCAPEXPerConstructionYear = self.CCap.value / model.surfaceplant.construction_years.value
+            for i in range(0, model.surfaceplant.construction_years.value, 1):
+                self.TotalRevenue.value[i] = -1.0 * ProjectCAPEXPerConstructionYear
+                self.TotalCummRevenue.value[i] = -1.0 * ProjectCAPEXPerConstructionYear
+    #        self.TotalRevenue.value, self.TotalCummRevenue.value = CalculateTotalRevenue(
+    #            model.surfaceplant.plant_lifetime.value, model.surfaceplant.construction_years.value, self.CCap.value,
+    #                self.Coam.value, self.TotalRevenue.value, self.TotalCummRevenue.value)
+
+            # Do a one-time calculation that accounts for OPEX - no OPEX in the first year.
+            for i in range(model.surfaceplant.construction_years.value,
+                           model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
+                self.TotalRevenue.value[i] = self.TotalRevenue.value[i] - self.Coam.value
+
+            # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
+            for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
+                self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i-1] + self.TotalRevenue.value[i]
 
     def _calculate_derived_outputs(self, model: Model) -> None:
         """

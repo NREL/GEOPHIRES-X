@@ -1936,7 +1936,16 @@ class Economics:
 
                     # handle special cases
                     if ParameterToModify.Name == "Economic Model":
-                        self.econmodel.value = EconomicModel.from_input_string(ParameterReadIn.sValue)
+                        em: EconomicModel = EconomicModel.from_input_string(ParameterReadIn.sValue)
+
+                        if (em == EconomicModel.SAM_SINGLE_OWNER_PPA
+                                and model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY):
+                            raise RuntimeError(f'Invalid End-Use Option ({em.name}) for '
+                                                   f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} economic model. '
+                                                   f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} only supports '
+                                                   f'{EndUseOptions.ELECTRICITY.name} End-Use Option.')
+
+                        self.econmodel.value = em
 
                     elif ParameterToModify.Name == "Well Drilling Cost Correlation":
                         ParameterToModify.value = WellDrillingCostCorrelation.from_input_string(ParameterReadIn.sValue)

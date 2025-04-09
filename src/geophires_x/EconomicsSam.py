@@ -55,7 +55,7 @@ def get_single_owner_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
-def compute_sam_financials(
+def calculate_sam_economics(
     model: Model
 ) -> dict[str, dict[str, Any]]:
     custom_gen = CustomGeneration.new()
@@ -69,7 +69,7 @@ def compute_sam_financials(
     file_names = [f'{project_name}_{module}' for module in ['custom_generation', 'grid', 'utilityrate5', 'singleowner']]
     modules = [custom_gen, grid, utility_rate, single_owner]
 
-    for module_file, module in zip(file_names, modules, strict=True):
+    for module_file, module in zip(file_names, modules):
         with open(Path(project_dir, f'{module_file}.json'), encoding='utf-8') as file:
             data = json.load(file)
             # loop through each key-value pair

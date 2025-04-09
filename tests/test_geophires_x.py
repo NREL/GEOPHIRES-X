@@ -936,3 +936,6 @@ Print Output to Console, 1"""
         npvs = [_npv(_get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 2)]
         for i in range(len(npvs) - 1):
             self.assertLess(npvs[i], npvs[i + 1])
+
+        with self.assertRaises(RuntimeError):
+            _get_result({'End-Use Option': 2})

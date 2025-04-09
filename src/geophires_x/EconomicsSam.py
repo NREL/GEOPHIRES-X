@@ -105,7 +105,7 @@ def get_average_net_generation_MW(model: Model) -> float:
     return np.average(model.surfaceplant.NetElectricityProduced.value)
 
 
-def sig_figs(val: float | None, num_sig_figs: int) -> float | None:
+def sig_figs(val: float, num_sig_figs: int) -> float:
     if val is None:
         return None
 

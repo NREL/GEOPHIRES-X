@@ -470,7 +470,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
                  econ.annualngcost.value) * discount_vector)) / np.sum(
                 model.surfaceplant.annual_heating_demand.value * discount_vector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
-    elif econ.econmodel.value == EconomicModel.SINGLE_OWNER_PPA:
+    elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
         LCOE = compute_sam_financials(model)['LCOE']['value']
     else:
         # must be BICYCLE
@@ -2962,7 +2962,7 @@ class Economics:
                 self.discount_initial_year_cashflow.value
             )
 
-        if self.econmodel.value == EconomicModel.SINGLE_OWNER_PPA:
+        if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             sam_economics = compute_sam_financials(model)
             self.ProjectNPV.value = sam_economics['NPV']['value']
             self.ProjectIRR.value = sam_economics['IRR']['value']

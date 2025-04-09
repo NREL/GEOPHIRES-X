@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,7 @@ import PySAM.Utilityrate5 as UtilityRate
 import geophires_x.Model as Model
 
 
+@lru_cache(maxsize=12)
 def calculate_sam_economics(
         model: Model
 ) -> dict[str, dict[str, Any]]:
@@ -59,11 +61,11 @@ def calculate_sam_economics(
         # ('Net Output', gt.Outputs.gross_output - gt.Outputs.pump_work, 'MW')
     ]
 
-    max_field_name_len = max(len(x[0]) for x in display_data)
+    # max_field_name_len = max(len(x[0]) for x in display_data)
 
     ret = {}
     for e in display_data:
-        field_display = e[0] + ':' + ' ' * (max_field_name_len - len(e[0]) - 1)
+        # field_display = e[0] + ':' + ' ' * (max_field_name_len - len(e[0]) - 1)
         # print(f'{field_display}\t{sig_figs(e[1], 5)} {e[2]}')
         ret[e[0]] = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
 
@@ -101,8 +103,28 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['ppa_price_input'] = [econ.ElecStartPrice.value]
 
+    # TODO interest rate
+    # TODO debt/equity ratio
+
     return ret
 
+
+@lru_cache(maxsize=12)
+def _get_revenue_and_cashflow_profile(model: Model):
+    """
+    ENERGY
+    Electricity Provided -> cf_energy_sales
+
+    REVENUE
+    Electricity Price -> cf_ppa_price
+    Electricity Revenue -> cf_energy_value
+
+    OPERATING EXPENSES
+    O&M fixed expense -> cf_om_fixed_expense
+
+    PROJECT RETURNS
+    Net Revenue -> cf_total_revenue
+    """
 
 def _get_average_net_generation_MW(model: Model) -> float:
     return np.average(model.surfaceplant.NetElectricityProduced.value)

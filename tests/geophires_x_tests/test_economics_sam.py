@@ -10,6 +10,7 @@ class EconomicsSamTestCase(BaseTestCase):
         return GeophiresXClient().get_geophires_result(
             GeophiresInputParameters(
                 from_file_path=self._get_test_file_path('generic-egs-case.txt'),
+                # from_file_path=self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt'), # FIXME TEMP
                 params={'Economic Model': 5, **_params},
             )
         )

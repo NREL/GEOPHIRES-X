@@ -87,8 +87,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret: dict[str, Any] = {}
 
-    itc = econ.CCap.value * econ.RITC.value
-    total_capex_musd = econ.CCap.value - itc
+    itc = econ.RITCValue.value
+    total_capex_musd = econ.CCap.value + itc
     ret['total_installed_cost'] = total_capex_musd * 1e6
 
     opex_musd = econ.Coam.value
@@ -123,6 +123,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
 @lru_cache(maxsize=12)
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
+    # noinspection PyUnusedLocal
     def _search_props(s: str) -> list[Any]:
         """
         Utility function to search output properties in IDE debugger
@@ -191,6 +192,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     profile.append(category_row('INVESTING ACTIVITIES'))
     # single_value_row('Total installed cost ($)', _soo) # FIXME WIP
+    single_value_row('Purchase of property ($)', _soo.purchase_of_property)
 
     return profile
 
@@ -203,6 +205,7 @@ def _sig_figs(val: float, num_sig_figs: int) -> float:
     """
     TODO move to utilities, probably
     """
+
     if val is None:
         return None
 

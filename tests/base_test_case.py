@@ -15,7 +15,7 @@ class BaseTestCase(unittest.TestCase):
             return f.readlines()
 
     def _list_test_files_dir(self, test_files_dir: str):
-        return os.listdir(self._get_test_file_path(test_files_dir))
+        return os.listdir(self._get_test_file_path(test_files_dir))  # noqa: PTH208
 
     def assertAlmostEqualWithinPercentage(self, expected, actual, msg=None, percent=5):
         if isinstance(expected, numbers.Real):

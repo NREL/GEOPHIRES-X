@@ -24,7 +24,7 @@ import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
 
-_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
+_SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
 
 @lru_cache(maxsize=12)
@@ -62,7 +62,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
         ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
         # ('Gross Output', gt.Outputs.gross_output, 'MW'),
         # ('Net Output', gt.Outputs.gross_output - gt.Outputs.pump_work, 'MW')
-        (_CASH_FLOW_PROFILE_KEY, cash_flow, None),
+        (_SAM_CASH_FLOW_PROFILE_KEY, cash_flow, None),
     ]
 
     # max_field_name_len = max(len(x[0]) for x in display_data)
@@ -74,7 +74,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
         # print(f'{field_display}\t{sig_figs(e[1], 5)} {e[2]}')
 
         as_val = e[1]
-        if key != _CASH_FLOW_PROFILE_KEY:
+        if key != _SAM_CASH_FLOW_PROFILE_KEY:
             as_val = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
 
         ret[key] = as_val

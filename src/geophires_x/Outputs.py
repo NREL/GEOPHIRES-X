@@ -4,10 +4,12 @@ import sys
 from pathlib import Path
 
 import numpy as np
+from tabulate import tabulate
 
 import geophires_x
 import geophires_x.Model as Model
 from geophires_x.Economics import Economics
+from geophires_x.EconomicsSam import _SAM_CASH_FLOW_PROFILE_KEY
 from geophires_x.OutputsRich import print_outputs_rich
 from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, strParameter, boolParameter, \
     OutputParameter, ReadParameter
@@ -736,7 +738,10 @@ class Outputs:
                             model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
                             model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
                         f.write(NL)
-                    f.write(NL)\
+                    f.write(NL)
+
+                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    f.write(self.get_sam_cash_flow_profile_output(model))
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -751,9 +756,27 @@ class Outputs:
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
+    # noinspection PyMethodMayBeStatic
+    def get_sam_cash_flow_profile_output(self, model):
+        ret = '\n'
+        ret += '                            ***************************\n'
+        ret += '                            *  SAM CASH FLOW PROFILE  *\n'
+        ret += '                            ***************************\n'
+
+        ret += tabulate(
+            model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY],
+            # tablefmt='pretty',
+            # tablefmt='psql',
+            # tablefmt='simple_grid',
+            #tablefmt='fancy_grid',
+            tablefmt='tsv',
+            floatfmt='.2f',
+            # headers='keys'
+        )
+
+        return ret
 
     @staticmethod
     def _field_label(field_name: str, print_width_before_value: int) -> str:
         return f'{field_name}:{" " * (print_width_before_value - len(field_name) - 1)}'
-
 

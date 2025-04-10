@@ -122,19 +122,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 @lru_cache(maxsize=12)
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
     """
-    ENERGY
-    Electricity Provided -> cf_energy_sales
-
-    REVENUE
-    Electricity Price -> cf_ppa_price
-    Electricity Revenue -> cf_energy_value
-
-    OPERATING EXPENSES
-    O&M fixed expense -> cf_om_fixed_expense
-
-    PROJECT RETURNS
-    Net Revenue -> cf_total_revenue
+    Expression to search for properties in debugger:
+    [(f, getattr(_soo, f)) for f in dir(_soo) if 'cf_revenue' in f]
     """
+
+    _soo = single_owner.Outputs
 
     profile = []
     total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
@@ -142,30 +134,38 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     row_1 = [None] + years
     profile.append(row_1)
 
-    def _blank_row() -> None:
+    def blank_row() -> None:
         profile.append([None] * (len(years) + 1))
 
-    def _category_row(cat_name:str) -> list[Any]:
+    def category_row(cat_name:str) -> list[Any]:
         return [cat_name] + [None] * len(years)
 
-    def _data_row(row_name: str, output_data) -> list[Any]:
+    def data_row(row_name: str, output_data) -> list[Any]:
         return [row_name] + [round(d, 2) for d in output_data] # TODO revisit this to audit for precision concerns
 
-    profile.append(_category_row('ENERGY'))
-    profile.append(_data_row('Electricity to grid (kWh)', single_owner.Outputs.cf_energy_sales))
-    _blank_row()
+    profile.append(category_row('ENERGY'))
+    profile.append(data_row('Electricity to grid (kWh)', _soo.cf_energy_sales))
+    profile.append(data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases))
+    profile.append(data_row('Electricity to grid net (kWh)', _soo.cf_energy_net))
+    blank_row()
 
-    profile.append(_category_row('REVENUE'))
-    profile.append(_data_row('PPA price (cents/kWh)', single_owner.Outputs.cf_ppa_price))
-    profile.append(_data_row('PPA revenue ($)', single_owner.Outputs.cf_energy_value))
-    _blank_row()
+    profile.append(category_row('REVENUE'))
+    profile.append(data_row('PPA price (cents/kWh)', _soo.cf_ppa_price))
+    profile.append(data_row('PPA revenue ($)', _soo.cf_energy_value))
+    profile.append(data_row('Salvage value ($)', _soo.cf_net_salvage_value))
+    profile.append(data_row('Total revenue ($)', _soo.cf_revenue_dispatch1))
 
-    profile.append(_category_row('OPERATING EXPENSES'))
-    profile.append(_data_row('O&M fixed expense ($)', single_owner.Outputs.cf_om_fixed_expense))
-    _blank_row()
+    blank_row()
 
-    profile.append(_data_row('EBITDA ($)', single_owner.Outputs.cf_ebitda))
-    # _blank_row()
+    profile.append(category_row('OPERATING EXPENSES'))
+    profile.append(data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense))
+    blank_row()
+
+    profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
+    blank_row()
+
+    profile.append(category_row('OPERATING ACTIVITIES'))
+    profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
 
     return profile
 

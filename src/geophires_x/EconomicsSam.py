@@ -191,7 +191,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     profile.append(data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities))
 
     profile.append(category_row('INVESTING ACTIVITIES'))
-    # single_value_row('Total installed cost ($)', _soo) # FIXME WIP
+    single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
     single_value_row('Purchase of property ($)', _soo.purchase_of_property)
 
     return profile

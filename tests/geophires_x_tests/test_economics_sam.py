@@ -55,6 +55,7 @@ class EconomicsSamTestCase(BaseTestCase):
             return next(r for r in cash_flow if r[0] == name)[1:]
 
         self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
+        self.assertLess(get_row('Total installed cost ($)')[0], 0)
 
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):

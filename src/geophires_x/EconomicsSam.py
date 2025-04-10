@@ -154,14 +154,26 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(cr)
         return cr
 
+    def designator_row(designator: str):
+        dsr = [designator] + [None] * len(years)
+        profile.append(dsr)
+
+    def get_data_adjust_func(row_name: str):
+        a = lambda x: x
+        if row_name.endswith('($)'):
+            a = lambda x: round(x)
+        return a
+
     def data_row(row_name: str, output_data) -> list[Any]:
-        dr = [row_name] + [round(d, 2) for d in output_data]  # TODO revisit this to audit for precision concerns
+        adjust = get_data_adjust_func(row_name)
+
+        dr = [row_name] + [adjust(d) for d in output_data]  # TODO revisit this to audit for precision concerns
         profile.append(dr)
         return dr
 
     def single_value_row(row_name: str, single_value: float) -> list[Any]:
         svr = (
-            [row_name] + [single_value] + [None] * (len(years) - 1)
+            [row_name] + [get_data_adjust_func(row_name)(single_value)] + [None] * (len(years) - 1)
         )  # TODO revisit this to audit for precision concerns
         profile.append(svr)
         return svr
@@ -198,6 +210,14 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
     single_value_row('Purchase of property ($)', _soo.purchase_of_property)
     data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
+
+    category_row('FINANCING ACTIVITIES')
+    single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
+    single_value_row('Size of debt ($)', _soo.size_of_debt)
+    designator_row('minus:')
+    data_row('Debt principal payment ($)', _soo.cf_debt_payment_principal)
+    designator_row('equals:')
+    data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
 
     return profile
 

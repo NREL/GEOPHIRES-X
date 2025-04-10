@@ -4,6 +4,8 @@ import os
 import sys
 from pathlib import Path
 
+from tabulate import tabulate
+
 from base_test_case import BaseTestCase
 
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
@@ -51,6 +53,19 @@ class EconomicsSamTestCase(BaseTestCase):
         sam_econ = calculate_sam_economics(m)
         cash_flow = sam_econ[_CASH_FLOW_PROFILE_KEY]
         self.assertIsNotNone(cash_flow)
+
+        print(
+            tabulate(
+                cash_flow,
+                # tablefmt='pretty',
+                # tablefmt='psql',
+                # tablefmt='simple_grid',
+                tablefmt='fancy_grid',
+                floatfmt='.2f',
+                # headers='keys'
+            )
+        )
+
         self.assertEqual(23, len(cash_flow[0]))
 
         def get_row(name: str) -> list[float]:

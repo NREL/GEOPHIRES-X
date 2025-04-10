@@ -52,22 +52,31 @@ def calculate_sam_economics(
     for module in modules:
         module.execute()
 
-    display_data = [
+    cash_flow = _calculate_cash_flow(model, single_owner)
+
+    data = [
         ('LCOE', single_owner.Outputs.lcoe_real, 'cents/kWh'),
         ('IRR', single_owner.Outputs.project_return_aftertax_irr, '%'),
         ('NPV', single_owner.Outputs.project_return_aftertax_npv * 1e-6, 'MUSD'),
         ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
         # ('Gross Output', gt.Outputs.gross_output, 'MW'),
         # ('Net Output', gt.Outputs.gross_output - gt.Outputs.pump_work, 'MW')
+        ('Cash Flow', cash_flow, None),
     ]
 
     # max_field_name_len = max(len(x[0]) for x in display_data)
 
     ret = {}
-    for e in display_data:
+    for e in data:
+        key = e[0]
         # field_display = e[0] + ':' + ' ' * (max_field_name_len - len(e[0]) - 1)
         # print(f'{field_display}\t{sig_figs(e[1], 5)} {e[2]}')
-        ret[e[0]] = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
+
+        as_val = e[1]
+        if key != 'Cash Flow':
+            as_val = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
+
+        ret[key] = as_val
 
     return ret
 
@@ -110,7 +119,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
 
 @lru_cache(maxsize=12)
-def _get_revenue_and_cashflow_profile(model: Model):
+def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
     """
     ENERGY
     Electricity Provided -> cf_energy_sales
@@ -126,6 +135,21 @@ def _get_revenue_and_cashflow_profile(model: Model):
     Net Revenue -> cf_total_revenue
     """
 
+    profile = []
+    total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
+    years = list(range(0, total_duration + 1))
+    row_1 = [None] + years
+    profile.append(row_1)
+
+    row_2 = ['ENERGY'] + [None] * len(years)
+    profile.append(row_2)
+
+    row_3 = ['Electricity to grid (kWh)'] + list(single_owner.Outputs.cf_energy_sales)
+    profile.append(row_3)
+
+    return profile
+
+
 def _get_average_net_generation_MW(model: Model) -> float:
     return np.average(model.surfaceplant.NetElectricityProduced.value)
 
@@ -134,4 +158,10 @@ def _sig_figs(val: float, num_sig_figs: int) -> float:
     if val is None:
         return None
 
-    return float('%s' % float(f'%.{num_sig_figs}g' % val))  # pylint: disable=consider-using-f-string
+    if isinstance(val, list) or isinstance(val, tuple):
+        return [_sig_figs(v, num_sig_figs) for v in val]
+
+    try:
+        return float('%s' % float(f'%.{num_sig_figs}g' % val))  # pylint: disable=consider-using-f-string
+    except TypeError:
+        raise RuntimeError

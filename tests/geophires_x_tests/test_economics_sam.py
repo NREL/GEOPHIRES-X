@@ -1,4 +1,13 @@
+import os
+import sys
+from pathlib import Path
+
 from base_test_case import BaseTestCase
+
+# ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
+from geophires_x.Model import Model
+
+from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -6,11 +15,14 @@ from geophires_x_client import GeophiresXResult
 
 class EconomicsSamTestCase(BaseTestCase):
 
+    def _egs_test_file_path(self) -> str:
+        return self._get_test_file_path('generic-egs-case.txt')
+        # return self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt')  # FIXME TEMP
+
     def _get_result(self, _params) -> GeophiresXResult:
         return GeophiresXClient().get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._get_test_file_path('generic-egs-case.txt'),
-                # from_file_path=self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt'), # FIXME TEMP
+                from_file_path=self._egs_test_file_path(),
                 params={'Economic Model': 5, **_params},
             )
         )
@@ -30,6 +42,33 @@ class EconomicsSamTestCase(BaseTestCase):
         for i in range(len(npvs) - 1):
             self.assertLess(npvs[i], npvs[i + 1])
 
+    def test_cashflow(self):
+        m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))
+        m.read_parameters()
+        m.Calculate()
+
+        sam_econ = calculate_sam_economics(m)
+
+        self.assertIsNotNone(sam_econ)
+
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
             self._get_result({'End-Use Option': 2})
+
+    @staticmethod
+    def _new_model(input_file: Path) -> Model:
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+
+        sys.argv = ['']
+
+        m = Model(enable_geophires_logging_config=False, input_file=input_file)
+
+        sys.argv = stash_sys_argv
+        os.chdir(stash_cwd)
+
+        return m
+
+    def test_sig_figs(self):
+        self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])
+        self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])

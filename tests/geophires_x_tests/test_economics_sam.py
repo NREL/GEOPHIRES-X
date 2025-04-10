@@ -52,6 +52,11 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertIsNotNone(cash_flow)
         self.assertEqual(23, len(cash_flow[0]))
 
+        def get_row(name: str) -> list[float]:
+            return next([r for r in cash_flow if r[0] == name])[1:]
+
+        self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
+
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
             self._get_result({'End-Use Option': 2})

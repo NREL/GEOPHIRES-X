@@ -121,10 +121,18 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
 @lru_cache(maxsize=12)
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
-    """
-    Expression to search for properties in debugger:
-    [(f, getattr(_soo, f)) for f in dir(_soo) if 'cf_revenue' in f]
-    """
+
+    def _search_props(s: str) -> list[Any]:
+        """
+        Utility function to search output properties in IDE debugger
+        """
+        def ga(_p):
+            # noinspection PyBroadException
+            try:
+                return getattr(_soo, _p)
+            except Exception:
+                return None
+        return [(p, ga(p)) for p in dir(_soo) if s in p]
 
     _soo = single_owner.Outputs
 
@@ -166,6 +174,8 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     profile.append(category_row('OPERATING ACTIVITIES'))
     profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
+    profile.append(data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest))
+    profile.append(data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities))
 
     return profile
 

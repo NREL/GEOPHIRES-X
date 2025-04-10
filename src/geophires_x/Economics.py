@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
-from geophires_x.EconomicsSam import calculate_sam_economics
+from geophires_x.EconomicsSam import calculate_sam_economics, _SAM_CASH_FLOW_PROFILE_KEY
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -472,7 +472,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
             LCOH = LCOH * 2.931  # $/Million Btu
     elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
         # FIXME TODO designate nominal (as opposed to real) in client result
-        LCOE = calculate_sam_economics(model)['LCOE (nominal)']['value']
+        LCOE = econ.sam_economics.value['LCOE (nominal)']['value']
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)
@@ -1858,6 +1858,14 @@ class Economics:
             PreferredUnits=TimeUnit.YEAR,
             CurrentUnits=TimeUnit.YEAR
         )
+
+        # FIXME TODO/WIP representation in schema...
+        self.sam_economics = self.OutputParameterDict[self.sam_economics.Name] = OutputParameter(
+            'SAM Economics',
+            UnitType=Units.NONE,
+            json_parameter_type='object',
+        )
+
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
             display_name='Investment Tax Credit',
@@ -2785,22 +2793,26 @@ class Economics:
             )
 
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-            sam_economics = calculate_sam_economics(model)
-            self.ProjectNPV.value = sam_economics['NPV']['value']
-            self.ProjectIRR.value = sam_economics['IRR']['value']
+            self.sam_economics.value = calculate_sam_economics(model)
+            self.ProjectNPV.value = self.sam_economics.value['NPV']['value']
+            self.ProjectIRR.value = self.sam_economics.value['IRR']['value']
             # FIXME WIP VIR + MOIC
             self.ProjectVIR.value, self.ProjectMOIC.value = -1, -1
 
         # Calculate the project payback period
-        self.ProjectPaybackPeriod.value = 0.0   # start by assuming the project never pays back
-        for i in range(0, len(self.TotalCummRevenue.value), 1):
+
+        if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+            self.ProjectPaybackPeriod.value = -1  # FIXME WIP
+        else:
+            self.ProjectPaybackPeriod.value = 0.0  # start by assuming the project never pays back
+            for i in range(0, len(self.TotalCummRevenue.value), 1):
                 # find out when the cumm cashflow goes from negative to positive
                 if self.TotalCummRevenue.value[i] > 0 >= self.TotalCummRevenue.value[i - 1]:
-                    # we just crossed the threshold into positive project cummcashflow, so we can calculate payback period
+                    # we just crossed the threshold into positive project cummcashflow,
+                    # so we can calculate payback period
                     dFullDiff = self.TotalCummRevenue.value[i] + math.fabs(self.TotalCummRevenue.value[(i - 1)])
                     dPerc = math.fabs(self.TotalCummRevenue.value[(i - 1)]) / dFullDiff
                     self.ProjectPaybackPeriod.value = i + dPerc
-
 
         # Calculate LCOE/LCOH
         self.LCOE.value, self.LCOH.value, self.LCOC.value = CalculateLCOELCOHLCOC(self, model)
@@ -2817,7 +2829,9 @@ class Economics:
     def calculate_cashflow(self, model: Model) -> None:
             """
             Calculate cashflow and cumulative cash flow
+            TODO/WIP adjust/skip for SAM economic model(s)
             """
+
             total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
             self.ElecRevenue.value = [0.0] * total_duration
             self.ElecCummRevenue.value = [0.0] * total_duration

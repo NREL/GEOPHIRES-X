@@ -11,7 +11,7 @@ from base_test_case import BaseTestCase
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
 
-from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _CASH_FLOW_PROFILE_KEY
+from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _SAM_CASH_FLOW_PROFILE_KEY
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -51,7 +51,7 @@ class EconomicsSamTestCase(BaseTestCase):
         m.Calculate()
 
         sam_econ = calculate_sam_economics(m)
-        cash_flow = sam_econ[_CASH_FLOW_PROFILE_KEY]
+        cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
         self.assertIsNotNone(cash_flow)
 
         print(

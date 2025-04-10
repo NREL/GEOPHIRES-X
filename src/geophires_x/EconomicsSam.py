@@ -9,6 +9,7 @@ from typing import Any
 from decimal import Decimal
 
 import numpy as np
+
 # noinspection PyPackageRequirements
 from PySAM import CustomGeneration
 
@@ -25,10 +26,9 @@ import geophires_x.Model as Model
 
 _CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
+
 @lru_cache(maxsize=12)
-def calculate_sam_economics(
-        model: Model
-) -> dict[str, dict[str, Any]]:
+def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
     custom_gen = CustomGeneration.new()
     grid = Grid.from_existing(custom_gen)
     utility_rate = UtilityRate.from_existing(custom_gen)
@@ -88,9 +88,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret: dict[str, Any] = {}
 
     itc = econ.CCap.value * econ.RITC.value
-    total_capex_musd = (
-            econ.CCap.value - itc
-    )
+    total_capex_musd = econ.CCap.value - itc
     ret['total_installed_cost'] = total_capex_musd * 1e6
 
     opex_musd = econ.Coam.value
@@ -121,17 +119,18 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
 @lru_cache(maxsize=12)
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
-
     def _search_props(s: str) -> list[Any]:
         """
         Utility function to search output properties in IDE debugger
         """
+
         def ga(_p):
             # noinspection PyBroadException
             try:
                 return getattr(_soo, _p)
             except Exception:
                 return None
+
         return [(p, ga(p)) for p in dir(_soo) if s in p]
 
     _soo = single_owner.Outputs
@@ -145,11 +144,11 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     def blank_row() -> None:
         profile.append([None] * (len(years) + 1))
 
-    def category_row(cat_name:str) -> list[Any]:
+    def category_row(cat_name: str) -> list[Any]:
         return [cat_name] + [None] * len(years)
 
     def data_row(row_name: str, output_data) -> list[Any]:
-        return [row_name] + [round(d, 2) for d in output_data] # TODO revisit this to audit for precision concerns
+        return [row_name] + [round(d, 2) for d in output_data]  # TODO revisit this to audit for precision concerns
 
     profile.append(category_row('ENERGY'))
     profile.append(data_row('Electricity to grid (kWh)', _soo.cf_energy_sales))
@@ -167,6 +166,8 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     profile.append(category_row('OPERATING EXPENSES'))
     profile.append(data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense))
+    profile.append(data_row('Property tax expense ($)', _soo.cf_property_tax_expense))
+    profile.append(data_row('Total operating expenses ($)', _soo.cf_operating_expenses))
     blank_row()
 
     profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))

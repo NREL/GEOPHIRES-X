@@ -60,6 +60,8 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertLess(tic, 0)
         self.assertAlmostEqual(get_row('Cash flow from investing activities ($)')[0], tic, places=2)
 
+        self.assertAlmostEqual(get_row('Cash flow from financing activities ($)')[0], -1.0 * tic, places=2)
+
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
             self._get_result({'End-Use Option': 2})

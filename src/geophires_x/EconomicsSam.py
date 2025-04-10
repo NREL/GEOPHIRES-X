@@ -150,10 +150,14 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append([None] * (len(years) + 1))
 
     def category_row(cat_name: str) -> list[Any]:
-        return [cat_name] + [None] * len(years)
+        cr = [cat_name] + [None] * len(years)
+        profile.append(cr)
+        return cr
 
     def data_row(row_name: str, output_data) -> list[Any]:
-        return [row_name] + [round(d, 2) for d in output_data]  # TODO revisit this to audit for precision concerns
+        dr = [row_name] + [round(d, 2) for d in output_data]  # TODO revisit this to audit for precision concerns
+        profile.append(dr)
+        return dr
 
     def single_value_row(row_name: str, single_value: float) -> list[Any]:
         svr = (
@@ -162,37 +166,38 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(svr)
         return svr
 
-    profile.append(category_row('ENERGY'))
-    profile.append(data_row('Electricity to grid (kWh)', _soo.cf_energy_sales))
-    profile.append(data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases))
-    profile.append(data_row('Electricity to grid net (kWh)', _soo.cf_energy_net))
+    category_row('ENERGY')
+    data_row('Electricity to grid (kWh)', _soo.cf_energy_sales)
+    data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases)
+    data_row('Electricity to grid net (kWh)', _soo.cf_energy_net)
     blank_row()
 
-    profile.append(category_row('REVENUE'))
-    profile.append(data_row('PPA price (cents/kWh)', _soo.cf_ppa_price))
-    profile.append(data_row('PPA revenue ($)', _soo.cf_energy_value))
-    profile.append(data_row('Salvage value ($)', _soo.cf_net_salvage_value))
-    profile.append(data_row('Total revenue ($)', _soo.cf_revenue_dispatch1))
+    category_row('REVENUE')
+    data_row('PPA price (cents/kWh)', _soo.cf_ppa_price)
+    data_row('PPA revenue ($)', _soo.cf_energy_value)
+    data_row('Salvage value ($)', _soo.cf_net_salvage_value)
+    data_row('Total revenue ($)', _soo.cf_revenue_dispatch1)
 
     blank_row()
 
-    profile.append(category_row('OPERATING EXPENSES'))
-    profile.append(data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense))
-    profile.append(data_row('Property tax expense ($)', _soo.cf_property_tax_expense))
-    profile.append(data_row('Total operating expenses ($)', _soo.cf_operating_expenses))
+    category_row('OPERATING EXPENSES')
+    data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense)
+    data_row('Property tax expense ($)', _soo.cf_property_tax_expense)
+    data_row('Total operating expenses ($)', _soo.cf_operating_expenses)
     blank_row()
 
     profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
     blank_row()
 
-    profile.append(category_row('OPERATING ACTIVITIES'))
-    profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
-    profile.append(data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest))
-    profile.append(data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities))
+    category_row('OPERATING ACTIVITIES')
+    data_row('EBITDA ($)', _soo.cf_ebitda)
+    data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest)
+    data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
 
-    profile.append(category_row('INVESTING ACTIVITIES'))
+    category_row('INVESTING ACTIVITIES')
     single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
     single_value_row('Purchase of property ($)', _soo.purchase_of_property)
+    data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
 
     return profile
 

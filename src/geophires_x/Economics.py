@@ -471,7 +471,8 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
                 model.surfaceplant.annual_heating_demand.value * discount_vector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
     elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-        LCOE = calculate_sam_economics(model)['LCOE']['value']
+        # FIXME TODO designate nominal (as opposed to real) in client result
+        LCOE = calculate_sam_economics(model)['LCOE (nominal)']['value']
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)

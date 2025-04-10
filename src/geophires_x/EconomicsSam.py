@@ -258,8 +258,8 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     blank_row()
 
-    data_row('After-tax cumulative IRR (%)', _soo.cf_project_return_aftertax_irr)  # FIXME WIP
-    data_row('After-tax cumulative NPV ($)', _soo.cf_project_return_aftertax_npv)  # FIXME WIP
+    data_row('After-tax cumulative IRR (%)', _soo.cf_project_return_aftertax_irr)
+    data_row('After-tax cumulative NPV ($)', _soo.cf_project_return_aftertax_npv)
 
     return profile
 

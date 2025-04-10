@@ -233,6 +233,16 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)
     blank_row()
 
+    category_row('After-tax Returns:')
+    data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)  # TODO config-ify repeated rows
+    data_row('Federal ITC total income ($)', _soo.cf_itc_fed)
+    data_row('Federal PTC income ($)', _soo.cf_ptc_fed)
+    data_row('Federal tax benefit (liability) ($)', _soo.cf_fedtax)
+    data_row('State ITC total income ($)', _soo.cf_itc_sta)
+    data_row('State PTC income ($)', _soo.cf_ptc_sta)
+    data_row('State tax benefit (liability) ($)', _soo.cf_statax)
+    data_row('Total after-tax returns ($)', _soo.cf_project_return_aftertax)
+
     return profile
 
 

@@ -142,7 +142,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     profile = []
     total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
-    years = list(range(0, total_duration + 1))
+    years = list(range(0, total_duration))
     row_1 = [None] + years
     profile.append(row_1)
 
@@ -182,6 +182,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Electricity to grid (kWh)', _soo.cf_energy_sales)
     data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases)
     data_row('Electricity to grid net (kWh)', _soo.cf_energy_net)
+
     blank_row()
 
     category_row('REVENUE')
@@ -189,6 +190,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('PPA revenue ($)', _soo.cf_energy_value)
     data_row('Salvage value ($)', _soo.cf_net_salvage_value)
     data_row('Total revenue ($)', _soo.cf_revenue_dispatch1)
+
     blank_row()
 
     # TODO Property tax net assessed value ($)
@@ -197,21 +199,25 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense)
     data_row('Property tax expense ($)', _soo.cf_property_tax_expense)
     data_row('Total operating expenses ($)', _soo.cf_operating_expenses)
+
     blank_row()
 
     data_row('EBITDA ($)', _soo.cf_ebitda)
+
     blank_row()
 
     category_row('OPERATING ACTIVITIES')
     data_row('EBITDA ($)', _soo.cf_ebitda)
     data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest)
     data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
+
     blank_row()
 
     category_row('INVESTING ACTIVITIES')
     single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
     single_value_row('Purchase of property ($)', _soo.purchase_of_property)
     data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
+
     blank_row()
 
     category_row('FINANCING ACTIVITIES')
@@ -221,6 +227,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Debt principal payment ($)', _soo.cf_debt_payment_principal)
     designator_row('equals:')
     data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
+
     blank_row()
 
     category_row('PROJECT RETURNS')
@@ -229,12 +236,14 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
     data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
     data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
+
     blank_row()
 
     category_row('Pre-tax Returns:')
     single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
     data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
     data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)
+
     blank_row()
 
     category_row('After-tax Returns:')
@@ -246,6 +255,11 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('State PTC income ($)', _soo.cf_ptc_sta)
     data_row('State tax benefit (liability) ($)', _soo.cf_statax)
     data_row('Total after-tax returns ($)', _soo.cf_project_return_aftertax)
+
+    blank_row()
+
+    data_row('After-tax cumulative IRR (%)', _soo.cf_project_return_aftertax_irr)  # FIXME WIP
+    data_row('After-tax cumulative NPV ($)', _soo.cf_project_return_aftertax_npv)  # FIXME WIP
 
     return profile
 

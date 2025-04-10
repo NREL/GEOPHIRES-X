@@ -45,7 +45,7 @@ class EconomicsSamTestCase(BaseTestCase):
         for i in range(len(npvs) - 1):
             self.assertLess(npvs[i], npvs[i + 1])
 
-    def test_cashflow(self):
+    def test_cash_flow(self):
         m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))
         m.read_parameters()
         m.Calculate()
@@ -66,7 +66,7 @@ class EconomicsSamTestCase(BaseTestCase):
             )
         )
 
-        self.assertEqual(23, len(cash_flow[0]))
+        self.assertEqual(22, len(cash_flow[0]))
 
         def get_row(name: str) -> list[float]:
             return next(r for r in cash_flow if r[0] == name)[1:]

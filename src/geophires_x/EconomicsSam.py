@@ -98,9 +98,13 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['system_capacity'] = average_net_generation_MW * 1e3
 
     geophires_ctr_tenths = Decimal(econ.CTR.value)
-    fed_rate_tenths = geophires_ctr_tenths * (Decimal(0.7))
-    state_rate_tenths = geophires_ctr_tenths - fed_rate_tenths
+    fed_ratio = 0.75
+    fed_rate_tenths = geophires_ctr_tenths * (Decimal(fed_ratio))
     ret['federal_tax_rate'] = [float(fed_rate_tenths * Decimal(100))]
+
+    # state_rate_tenths = geophires_ctr_tenths - fed_rate_tenths
+    state_ratio = 0.25
+    state_rate_tenths = geophires_ctr_tenths * (Decimal(state_ratio))
     ret['state_tax_rate'] = [float(state_rate_tenths * Decimal(100))]
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
@@ -150,6 +154,13 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     def data_row(row_name: str, output_data) -> list[Any]:
         return [row_name] + [round(d, 2) for d in output_data]  # TODO revisit this to audit for precision concerns
 
+    def single_value_row(row_name: str, single_value: float) -> list[Any]:
+        svr = (
+            [row_name] + [single_value] + [None] * (len(years) - 1)
+        )  # TODO revisit this to audit for precision concerns
+        profile.append(svr)
+        return svr
+
     profile.append(category_row('ENERGY'))
     profile.append(data_row('Electricity to grid (kWh)', _soo.cf_energy_sales))
     profile.append(data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases))
@@ -177,6 +188,9 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
     profile.append(data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest))
     profile.append(data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities))
+
+    profile.append(category_row('INVESTING ACTIVITIES'))
+    # single_value_row('Total installed cost ($)', _soo) # FIXME WIP
 
     return profile
 

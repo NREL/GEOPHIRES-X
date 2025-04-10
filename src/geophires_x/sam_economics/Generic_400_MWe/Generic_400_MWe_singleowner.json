@@ -204,7 +204,7 @@
 	"cp_capacity_payment_type" : 0,
 	"cp_capacity_payment_amount" : [ 0 ],
 	"cp_capacity_credit_percent" : [ 0 ],
-	"cp_system_nameplate" : 400,
+	"cp_system_nameplate" : 404.31157100000001,
 	"cp_battery_nameplate" : 0,
 	"grid_curtailment_price" : [ 0 ],
 	"grid_curtailment_price_esc" : 0,

@@ -1,7 +1,7 @@
 {
 	"spec_mode" : 0,
 	"derate" : 0,
-	"system_capacity" : 400000,
+	"system_capacity" : 404311.571,
 	"user_capacity_factor" : 90,
 	"heat_rate" : 10,
 	"conv_eff" : 34.118048447628794,

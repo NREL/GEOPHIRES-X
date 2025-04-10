@@ -7,7 +7,7 @@ from base_test_case import BaseTestCase
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
 
-from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs
+from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _CASH_FLOW_PROFILE_KEY
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -16,8 +16,8 @@ from geophires_x_client import GeophiresXResult
 class EconomicsSamTestCase(BaseTestCase):
 
     def _egs_test_file_path(self) -> str:
-        return self._get_test_file_path('generic-egs-case.txt')
-        # return self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt')  # FIXME TEMP
+        # return self._get_test_file_path('generic-egs-case.txt')
+        return self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt')  # FIXME TEMP
 
     def _get_result(self, _params) -> GeophiresXResult:
         return GeophiresXClient().get_geophires_result(
@@ -48,12 +48,17 @@ class EconomicsSamTestCase(BaseTestCase):
         m.Calculate()
 
         sam_econ = calculate_sam_economics(m)
-
-        self.assertIsNotNone(sam_econ)
+        cash_flow = sam_econ[_CASH_FLOW_PROFILE_KEY]
+        self.assertIsNotNone(cash_flow)
+        self.assertEqual(23, len(cash_flow[0]))
 
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
             self._get_result({'End-Use Option': 2})
+
+    def test_sig_figs(self):
+        self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])
+        self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])
 
     @staticmethod
     def _new_model(input_file: Path) -> Model:
@@ -68,7 +73,3 @@ class EconomicsSamTestCase(BaseTestCase):
         os.chdir(stash_cwd)
 
         return m
-
-    def test_sig_figs(self):
-        self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])
-        self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])

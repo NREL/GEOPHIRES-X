@@ -189,8 +189,9 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('PPA revenue ($)', _soo.cf_energy_value)
     data_row('Salvage value ($)', _soo.cf_net_salvage_value)
     data_row('Total revenue ($)', _soo.cf_revenue_dispatch1)
-
     blank_row()
+
+    # TODO Property tax net assessed value ($)
 
     category_row('OPERATING EXPENSES')
     data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense)
@@ -205,11 +206,13 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('EBITDA ($)', _soo.cf_ebitda)
     data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest)
     data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
+    blank_row()
 
     category_row('INVESTING ACTIVITIES')
     single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
     single_value_row('Purchase of property ($)', _soo.purchase_of_property)
     data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
+    blank_row()
 
     category_row('FINANCING ACTIVITIES')
     single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
@@ -218,6 +221,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Debt principal payment ($)', _soo.cf_debt_payment_principal)
     designator_row('equals:')
     data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
+    blank_row()
 
     category_row('PROJECT RETURNS')
     category_row('Pre-tax Cash Flow:')

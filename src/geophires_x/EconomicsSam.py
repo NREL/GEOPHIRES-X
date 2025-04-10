@@ -94,6 +94,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
 
+    # FIXME provide entire generation profile
     average_net_generation_MW = _get_average_net_generation_MW(model)
     ret['system_capacity'] = average_net_generation_MW * 1e3
 

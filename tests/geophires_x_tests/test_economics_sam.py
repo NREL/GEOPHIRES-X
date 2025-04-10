@@ -35,7 +35,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         base_result = self._get_result({})
         base_lcoe = _lcoe(base_result)
-        self.assertGreater(base_lcoe, 5)
+        self.assertGreater(base_lcoe, 6)
 
         npvs = [_npv(self._get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 4)]
         for i in range(len(npvs) - 1):

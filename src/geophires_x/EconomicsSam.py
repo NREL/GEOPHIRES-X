@@ -159,7 +159,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(dsr)
 
     def get_data_adjust_func(row_name: str):
-        a = lambda x: x
+        a = lambda x: round(x, 2)
         if row_name.endswith('($)'):
             a = lambda x: round(x)
         return a
@@ -198,7 +198,7 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     data_row('Total operating expenses ($)', _soo.cf_operating_expenses)
     blank_row()
 
-    profile.append(data_row('EBITDA ($)', _soo.cf_ebitda))
+    data_row('EBITDA ($)', _soo.cf_ebitda)
     blank_row()
 
     category_row('OPERATING ACTIVITIES')

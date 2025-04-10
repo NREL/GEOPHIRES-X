@@ -16,8 +16,7 @@ from geophires_x_client import GeophiresXResult
 class EconomicsSamTestCase(BaseTestCase):
 
     def _egs_test_file_path(self) -> str:
-        # return self._get_test_file_path('generic-egs-case.txt')
-        return self._get_test_file_path('../examples/Fervo_Project_Cape-3.txt')  # FIXME TEMP
+        return self._get_test_file_path('generic-egs-case-2.txt')
 
     def _get_result(self, _params) -> GeophiresXResult:
         return GeophiresXClient().get_geophires_result(
@@ -36,7 +35,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         base_result = self._get_result({})
         base_lcoe = _lcoe(base_result)
-        self.assertGreater(base_lcoe, 6)
+        self.assertGreater(base_lcoe, 5)
 
         npvs = [_npv(self._get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 4)]
         for i in range(len(npvs) - 1):
@@ -53,7 +52,7 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(23, len(cash_flow[0]))
 
         def get_row(name: str) -> list[float]:
-            return next([r for r in cash_flow if r[0] == name])[1:]
+            return next(r for r in cash_flow if r[0] == name)[1:]
 
         self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
 

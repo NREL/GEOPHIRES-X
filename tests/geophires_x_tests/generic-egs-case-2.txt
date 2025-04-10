@@ -43,7 +43,7 @@ Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production
 Exploration Capital Cost, 30
 Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
 Reservoir Stimulation Capital Cost, 234, -- 78 wells @ $3M/well
-Economic Model, 3
+Economic Model, 5, -- SAM Single Owner PPA
 Starting Electricity Sale Price, 0.15
 Ending Electricity Sale Price, 1.00
 Electricity Escalation Rate Per Year, 0.004053223

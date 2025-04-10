@@ -56,7 +56,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
     cash_flow = _calculate_cash_flow(model, single_owner)
 
     data = [
-        ('LCOE', single_owner.Outputs.lcoe_real, 'cents/kWh'),
+        ('LCOE (nominal)', single_owner.Outputs.lcoe_nom, 'cents/kWh'),
         ('IRR', single_owner.Outputs.project_return_aftertax_irr, '%'),
         ('NPV', single_owner.Outputs.project_return_aftertax_npv * 1e-6, 'MUSD'),
         ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
@@ -260,6 +260,24 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
 
     data_row('After-tax cumulative IRR (%)', _soo.cf_project_return_aftertax_irr)
     data_row('After-tax cumulative NPV ($)', _soo.cf_project_return_aftertax_npv)
+
+    blank_row()
+
+    category_row('AFTER-TAX LCOE AND PPA PRICE')
+    data_row('Annual costs ($)', _soo.cf_annual_costs)
+    data_row('PPA revenue ($)', _soo.cf_energy_value)  # TODO config-ify repeated
+    data_row('Electricity to grid (kWh)', _soo.cf_energy_sales)  # TODO config-ify repeated
+
+    blank_row()
+    single_value_row('Present value of annual costs ($)', _soo.npv_annual_costs)
+    single_value_row('Present value of annual energy nominal ($)', _soo.npv_energy_nom)  # TODO config-ify repeated
+    single_value_row('LCOE Levelized cost of energy nominal (cents/kWh)', _soo.lcoe_nom)
+
+    blank_row()
+
+    single_value_row('Present value of PPA revenue ($)', _soo.npv_ppa_revenue)
+    single_value_row('Present value of annual energy nominal ($)', _soo.npv_energy_nom)  # TODO config-ify repeated
+    single_value_row('LPPA Levelized PPA price nominal (cents/kWh)', _soo.lppa_nom)
 
     return profile
 

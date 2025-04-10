@@ -39,7 +39,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         base_result = self._get_result({})
         base_lcoe = _lcoe(base_result)
-        self.assertGreater(base_lcoe, 6)
+        self.assertGreater(base_lcoe, 7)
 
         npvs = [_npv(self._get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 4)]
         for i in range(len(npvs) - 1):
@@ -71,13 +71,20 @@ class EconomicsSamTestCase(BaseTestCase):
         def get_row(name: str) -> list[float]:
             return next(r for r in cash_flow if r[0] == name)[1:]
 
+        def get_single_value(name: str) -> list[float]:
+            return get_row(name)[0]
+
         self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
 
-        tic = get_row('Total installed cost ($)')[0]
+        tic = get_single_value('Total installed cost ($)')
         self.assertLess(tic, 0)
-        self.assertAlmostEqual(get_row('Cash flow from investing activities ($)')[0], tic, places=2)
+        self.assertAlmostEqual(get_single_value('Cash flow from investing activities ($)'), tic, places=2)
 
-        self.assertAlmostEqual(get_row('Cash flow from financing activities ($)')[0], -1.0 * tic, places=2)
+        self.assertAlmostEqual(get_single_value('Cash flow from financing activities ($)'), -1.0 * tic, places=2)
+
+        self.assertAlmostEqual(
+            m.economics.LCOE.value, get_single_value('LCOE Levelized cost of energy nominal (cents/kWh)'), places=2
+        )
 
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):

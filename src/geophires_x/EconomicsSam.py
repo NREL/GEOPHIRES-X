@@ -23,6 +23,7 @@ import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
 
+_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
 @lru_cache(maxsize=12)
 def calculate_sam_economics(
@@ -61,7 +62,7 @@ def calculate_sam_economics(
         ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
         # ('Gross Output', gt.Outputs.gross_output, 'MW'),
         # ('Net Output', gt.Outputs.gross_output - gt.Outputs.pump_work, 'MW')
-        ('Cash Flow', cash_flow, None),
+        (_CASH_FLOW_PROFILE_KEY, cash_flow, None),
     ]
 
     # max_field_name_len = max(len(x[0]) for x in display_data)
@@ -73,7 +74,7 @@ def calculate_sam_economics(
         # print(f'{field_display}\t{sig_figs(e[1], 5)} {e[2]}')
 
         as_val = e[1]
-        if key != 'Cash Flow':
+        if key != _CASH_FLOW_PROFILE_KEY:
             as_val = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
 
         ret[key] = as_val
@@ -141,11 +142,30 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     row_1 = [None] + years
     profile.append(row_1)
 
-    row_2 = ['ENERGY'] + [None] * len(years)
-    profile.append(row_2)
+    def _blank_row() -> None:
+        profile.append([None] * (len(years) + 1))
 
-    row_3 = ['Electricity to grid (kWh)'] + list(single_owner.Outputs.cf_energy_sales)
-    profile.append(row_3)
+    def _category_row(cat_name:str) -> list[Any]:
+        return [cat_name] + [None] * len(years)
+
+    def _data_row(row_name: str, output_data) -> list[Any]:
+        return [row_name] + [round(d, 2) for d in output_data] # TODO revisit this to audit for precision concerns
+
+    profile.append(_category_row('ENERGY'))
+    profile.append(_data_row('Electricity to grid (kWh)', single_owner.Outputs.cf_energy_sales))
+    _blank_row()
+
+    profile.append(_category_row('REVENUE'))
+    profile.append(_data_row('PPA price (cents/kWh)', single_owner.Outputs.cf_ppa_price))
+    profile.append(_data_row('PPA revenue ($)', single_owner.Outputs.cf_energy_value))
+    _blank_row()
+
+    profile.append(_category_row('OPERATING EXPENSES'))
+    profile.append(_data_row('O&M fixed expense ($)', single_owner.Outputs.cf_om_fixed_expense))
+    _blank_row()
+
+    profile.append(_data_row('EBITDA ($)', single_owner.Outputs.cf_ebitda))
+    # _blank_row()
 
     return profile
 
@@ -155,6 +175,9 @@ def _get_average_net_generation_MW(model: Model) -> float:
 
 
 def _sig_figs(val: float, num_sig_figs: int) -> float:
+    """
+    TODO move to utilities, probably
+    """
     if val is None:
         return None
 
@@ -164,4 +187,5 @@ def _sig_figs(val: float, num_sig_figs: int) -> float:
     try:
         return float('%s' % float(f'%.{num_sig_figs}g' % val))  # pylint: disable=consider-using-f-string
     except TypeError:
-        raise RuntimeError
+        # TODO warn
+        return val

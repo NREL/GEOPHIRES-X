@@ -1,10 +1,10 @@
 
 # GEOPHIRES
-* [GEOPHIRES v2.0 User Manual.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/GEOPHIRES%20v2.0%20User%20Manual.pdf)
-* [Beckers 2013 GEOPHIRES v1.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202013%20GEOPHIRES%20v1.pdf)
-* [Beckers 2016 Dissertation.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202016%20Dissertation.pdf)
-* [Beckers 2018 Introducing GEOPHIRES v2.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202018%20Introducing%20GEOPHIRES%20v2.pdf)
+* [GEOPHIRES v2.0 User Manual.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/GEOPHIRES%20v2.0%20User%20Manual.pdf) ![https://doi.org/10.1186/s40517-019-0119-6](https://zenodo.org/badge/doi/10.1186/s40517-019-0119-6.svg)
 * [Beckers 2019 GEOPHIRES v2.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202019%20GEOPHIRES%20v2.pdf)
+* [Beckers 2018 Introducing GEOPHIRES v2.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202018%20Introducing%20GEOPHIRES%20v2.pdf)
+* [Beckers 2016 Dissertation.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202016%20Dissertation.pdf)
+* [Beckers 2013 GEOPHIRES v1.pdf](https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202013%20GEOPHIRES%20v1.pdf)
 
 # Reference
 * [GeoVision report.pdf](https://github.com/NREL/GEOPHIRES-X/blob/ea5c67d43fe77c83a64208d8e2ab92a9abea3742/References/GeoVision%20report.pdf)

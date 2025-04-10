@@ -219,6 +219,20 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
     designator_row('equals:')
     data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
 
+    category_row('PROJECT RETURNS')
+    category_row('Pre-tax Cash Flow:')
+    data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
+    data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
+    data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
+    data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
+    blank_row()
+
+    category_row('Pre-tax Returns:')
+    single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
+    data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
+    data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)
+    blank_row()
+
     return profile
 
 

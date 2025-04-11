@@ -230,6 +230,9 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
             else:
                 data_row(row_label)
 
+    if all([it is None for it in profile[-1]]):
+        profile = profile[:-1]  # trim last line if blank
+
     return profile
 
 

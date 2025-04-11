@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import re
 from io import StringIO
 from pathlib import Path
@@ -756,12 +757,8 @@ class GeophiresXResult:
                         entry_val = int(float(entry_val))
 
                     if is_float(entry_val):
-                        # FIXME WIP
-                        import math
-
                         entry_val_float = float(entry_val)
                         if math.isnan(entry_val_float):
-                            # entry_val = 'NaN' # FIXME WIP
                             entry_val = math.nan
                         else:
                             entry_val = entry_val_float

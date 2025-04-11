@@ -140,6 +140,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # TODO interest rate
 
+    # 'Property Tax Rate'
+    ret['property_tax_rate'] = econ.PTR.quantity().to(convertible_unit('%')).magnitude
+
     return ret
 
 

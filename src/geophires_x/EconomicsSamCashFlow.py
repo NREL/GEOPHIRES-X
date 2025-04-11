@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import csv
+import logging
 import os
 import re
+import sys
 from functools import lru_cache
 from typing import Any
 
@@ -166,7 +168,21 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Present value of PPA revenue ($)': 'npv_ppa_revenue',
     'Present value of annual energy nominal ($)': 'npv_energy_nom',
     'LPPA Levelized PPA price nominal (cents/kWh)': 'lppa_nom',
+    'Curtailment payment revenue ($)': 'cf_curtailment_value',
 }
+
+
+def _get_logger():
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.DEBUG)
+    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+    _l = logging.getLogger(__name__)
+    _l.setLevel(logging.DEBUG)
+    _l.addHandler(sh)
+    return _l
+
+
+_log = _get_logger()
 
 
 def _get_single_owner_output(soo: Any, display_name: str) -> Any:
@@ -175,10 +191,9 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
     :type soo: `PySAM.Singleowner.Outputs`
     """
 
-    # noinspection PyUnusedLocal
     def _search_props(s: str) -> list[Any]:
         """
-        Utility function to search output properties in IDE debugger
+        Utility function to search output properties (useful in IDE debugger)
         """
 
         def ga(_p):
@@ -191,6 +206,23 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
         return [(p, ga(p)) for p in dir(soo) if s in p]
 
     if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
+        # noinspection PyBroadException
+        try:
+            ld = 'SAM Cash Flow Output property'
+            _log.warning(f'{ld} not found for "{display_name}"')
+            suggest = [(display_name, it[0]) for it in _search_props(display_name.lower().split(' ')[0])]
+            suggest = "\n\t".join([f"'{sg[0]}': '{sg[1]}'" for sg in suggest])
+            if len(suggest) > 0:
+                _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest}')
+            else:
+                _log.debug(f'No {ld } suggestions for "{display_name}" found')
+                # In IDE debugger, try:
+                # _search_props(display_name.lower().split(' ')[1])
+                # etc.
+
+        except Exception as e:
+            _log.debug(f'Encountered exception attempting to generate suggestions for {ld} for "{display_name}": {e}"')
+
         return None
 
     prop = _SINGLE_OWNER_OUTPUT_PROPERTIES[display_name]

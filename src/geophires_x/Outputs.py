@@ -251,7 +251,7 @@ class Outputs:
                 elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
 
-                if model.economics.econmodel.value in EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # TODO disambiguate interest rate for all economic models - see
                     #  535c02d4adbeeeca553b61e9b996fccf00016529
                     irfl = Outputs._field_label(econ.interest_rate.Name, 49)

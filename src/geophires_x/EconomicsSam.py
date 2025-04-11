@@ -138,7 +138,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = econ.FIB.quantity().to(convertible_unit('%')).magnitude
 
-    # TODO interest rate
+    # TODO/WIP interest rate
+    # ret['real_discount_rate']
 
     # 'Property Tax Rate'
     ret['property_tax_rate'] = econ.PTR.quantity().to(convertible_unit('%')).magnitude

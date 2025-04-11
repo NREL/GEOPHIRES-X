@@ -250,6 +250,13 @@ class Outputs:
 
                 elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
+
+                if model.economics.econmodel.value in EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    # TODO disambiguate interest rate for all economic models - see
+                    #  535c02d4adbeeeca553b61e9b996fccf00016529
+                    irfl = Outputs._field_label(econ.interest_rate.Name, 49)
+                    f.write(f'      {irfl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
+
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')

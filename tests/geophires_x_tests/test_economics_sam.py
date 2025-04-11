@@ -25,7 +25,7 @@ from geophires_x_client import GeophiresXResult
 class EconomicsSamTestCase(BaseTestCase):
 
     def _egs_test_file_path(self) -> str:
-        return self._get_test_file_path('generic-egs-case-2.txt')
+        return self._get_test_file_path('generic-egs-case-2_sam-single-owner-ppa.txt')
 
     def _get_result(self, _params) -> GeophiresXResult:
         return GeophiresXClient().get_geophires_result(
@@ -45,6 +45,10 @@ class EconomicsSamTestCase(BaseTestCase):
         base_result = self._get_result({})
         base_lcoe = _lcoe(base_result)
         self.assertGreater(base_lcoe, 7)
+
+        ir = base_result.result['ECONOMIC PARAMETERS']['Interest Rate']
+        self.assertEqual(ir['value'], 7.0)
+        self.assertEqual(ir['unit'], '%')
 
         npvs = [_npv(self._get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 4)]
         for i in range(len(npvs) - 1):

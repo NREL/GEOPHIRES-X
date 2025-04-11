@@ -23,7 +23,6 @@ from PySAM import Singleowner
 import PySAM.Utilityrate5 as UtilityRate
 from tabulate import tabulate
 
-import geophires_x.Model as Model
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.Parameter import Parameter
@@ -96,7 +95,14 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
     Note model must have already calculated economics for this to work (used in Outputs)
     """
 
-    _tabulate_kw_args = {'tablefmt': 'tsv', 'floatfmt': '.2f', 'intfmt': ',', **tabulate_kw_args}
+    # fmt:off
+    _tabulate_kw_args = {
+        'tablefmt': 'tsv',
+        'floatfmt': '.2f',
+        'intfmt': ',',
+        **tabulate_kw_args
+    }
+    # fmt:on
 
     return tabulate(model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY], **_tabulate_kw_args)
 

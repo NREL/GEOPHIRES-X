@@ -21,7 +21,11 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
     profile = []
     total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
-    years = list(range(0, total_duration))
+
+    # Prefix with 'Year ' partially as workaround for tabulate applying float formatting to ints, possibly related
+    # to https://github.com/astanin/python-tabulate/issues/18
+    years = [f'Year {y}' for y in list(range(0, total_duration))]
+
     row_1 = [None] + years
     profile.append(row_1)
 

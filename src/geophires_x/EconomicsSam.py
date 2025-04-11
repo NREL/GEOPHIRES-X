@@ -27,6 +27,7 @@ from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.Units import convertible_unit
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
+_GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT = 0.745
 
 
 @lru_cache(maxsize=12)
@@ -132,7 +133,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['ppa_price_input'] = [econ.ElecStartPrice.value]
     # Approximation of GEOPHIRES rate model into SAM's percent inflation model (TODO - could probably be improved)
-    ppa_escalation_rate_percent = round(econ.ElecEscalationRate.value / econ.ElecStartPrice.value * 0.745 * 100.0)
+    ppa_escalation_rate_percent = round(
+        econ.ElecEscalationRate.value
+        / econ.ElecStartPrice.value
+        * _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT
+        * 100.0
+    )
     ret['ppa_escalation'] = ppa_escalation_rate_percent
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)

@@ -23,6 +23,7 @@ from PySAM import Singleowner
 import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
+from geophires_x.EconomicsSamCashFlow import _get_single_owner_output
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
@@ -124,6 +125,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
 @lru_cache(maxsize=12)
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
+    log = model.logger
+
     # noinspection PyUnusedLocal
     def _search_props(s: str) -> list[Any]:
         """
@@ -160,19 +163,41 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(dsr)
 
     def get_data_adjust_func(row_name: str):
-        a = lambda x: round(x, 2)
+        def a(x):
+            return round(x, 2)
+
         if row_name.endswith('($)'):
-            a = lambda x: round(x)
+
+            def a(x):
+                return round(x)
+
         return a
 
-    def data_row(row_name: str, output_data) -> list[Any]:
+    def data_row(row_name: str, output_data: Any | None = None) -> list[Any]:
+        if output_data is None:
+            # TODO output_data should not be passed if present in _get_output
+            output_data = _get_single_owner_output(_soo, row_name)
+
+        if output_data is None:
+            log.error(f'No output data for {row_name}')
+            output_data = ['undefined'] * len(years)  # WIP
+
         adjust = get_data_adjust_func(row_name)
 
         dr = [row_name] + [adjust(d) for d in output_data]  # TODO revisit this to audit for precision concerns
         profile.append(dr)
         return dr
 
-    def single_value_row(row_name: str, single_value: float) -> list[Any]:
+    def single_value_row(row_name: str, single_value: float | None = None) -> list[Any]:
+
+        if single_value is None:
+            # TODO single_value should not be passed if present in _get_output
+            single_value = _get_single_owner_output(_soo, row_name)
+
+        if single_value is None:
+            log.error(f'No output data for {row_name}')
+            single_value = 'undefined'  # WIP
+
         svr = (
             [row_name] + [get_data_adjust_func(row_name)(single_value)] + [None] * (len(years) - 1)
         )  # TODO revisit this to audit for precision concerns
@@ -180,105 +205,110 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         return svr
 
     category_row('ENERGY')
-    data_row('Electricity to grid (kWh)', _soo.cf_energy_sales)
-    data_row('Electricity from grid (kWh)', _soo.cf_energy_purchases)
-    data_row('Electricity to grid net (kWh)', _soo.cf_energy_net)
+    data_row('Electricity to grid (kWh)')
+    data_row('Electricity from grid (kWh)')
+    data_row('Electricity to grid net (kWh)')
 
     blank_row()
 
     category_row('REVENUE')
-    data_row('PPA price (cents/kWh)', _soo.cf_ppa_price)
-    data_row('PPA revenue ($)', _soo.cf_energy_value)
-    data_row('Salvage value ($)', _soo.cf_net_salvage_value)
-    data_row('Total revenue ($)', _soo.cf_revenue_dispatch1)
+    data_row('PPA price (cents/kWh)')
+    data_row('PPA revenue ($)')
+    data_row('Salvage value ($)')
+    data_row('Total revenue ($)')
 
     blank_row()
 
     # TODO Property tax net assessed value ($)
 
     category_row('OPERATING EXPENSES')
-    data_row('O&M fixed expense ($)', _soo.cf_om_fixed_expense)
-    data_row('Property tax expense ($)', _soo.cf_property_tax_expense)
-    data_row('Total operating expenses ($)', _soo.cf_operating_expenses)
+    data_row('O&M fixed expense ($)')
+    data_row('Property tax expense ($)')
+    data_row('Total operating expenses ($)')
 
     blank_row()
 
-    data_row('EBITDA ($)', _soo.cf_ebitda)
+    data_row('EBITDA ($)')
 
     blank_row()
 
     category_row('OPERATING ACTIVITIES')
-    data_row('EBITDA ($)', _soo.cf_ebitda)
-    data_row('Debt interest payment ($)', _soo.cf_debt_payment_interest)
-    data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
+    data_row('EBITDA ($)')
+    data_row('Debt interest payment ($)')
+    data_row('Cash flow from operating activities ($)')
 
     blank_row()
 
     category_row('INVESTING ACTIVITIES')
-    single_value_row('Total installed cost ($)', -1.0 * _soo.cost_installed)
-    single_value_row('Purchase of property ($)', _soo.purchase_of_property)
-    data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
+    single_value_row('Total installed cost ($)')
+    single_value_row('Purchase of property ($)')
+    data_row('Cash flow from investing activities ($)')
 
     blank_row()
 
     category_row('FINANCING ACTIVITIES')
-    single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
-    single_value_row('Size of debt ($)', _soo.size_of_debt)
+    single_value_row('Issuance of equity ($)')
+    single_value_row('Size of debt ($)')
     designator_row('minus:')
-    data_row('Debt principal payment ($)', _soo.cf_debt_payment_principal)
+    data_row('Debt principal payment ($)')
     designator_row('equals:')
-    data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
+    data_row('Cash flow from financing activities ($)')
 
     blank_row()
 
     category_row('PROJECT RETURNS')
     category_row('Pre-tax Cash Flow:')
-    data_row('Cash flow from operating activities ($)', _soo.cf_project_operating_activities)
-    data_row('Cash flow from investing activities ($)', _soo.cf_project_investing_activities)
-    data_row('Cash flow from financing activities ($)', _soo.cf_project_financing_activities)
-    data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
+    data_row('Cash flow from operating activities ($)')
+    data_row('Cash flow from investing activities ($)')
+    data_row('Cash flow from financing activities ($)')
+    data_row('Total pre-tax cash flow ($)')
 
     blank_row()
 
     category_row('Pre-tax Returns:')
-    single_value_row('Issuance of equity ($)', _soo.issuance_of_equity)
-    data_row('Total pre-tax cash flow ($)', _soo.cf_pretax_cashflow)
-    data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)
+    single_value_row('Issuance of equity ($)')
+    data_row('Total pre-tax cash flow ($)')
+    data_row('Total pre-tax returns ($)')
 
     blank_row()
 
     category_row('After-tax Returns:')
-    data_row('Total pre-tax returns ($)', _soo.cf_project_return_pretax)  # TODO config-ify repeated rows
-    data_row('Federal ITC total income ($)', _soo.cf_itc_fed)
-    data_row('Federal PTC income ($)', _soo.cf_ptc_fed)
-    data_row('Federal tax benefit (liability) ($)', _soo.cf_fedtax)
-    data_row('State ITC total income ($)', _soo.cf_itc_sta)
-    data_row('State PTC income ($)', _soo.cf_ptc_sta)
-    data_row('State tax benefit (liability) ($)', _soo.cf_statax)
-    data_row('Total after-tax returns ($)', _soo.cf_project_return_aftertax)
+    data_row('Total pre-tax returns ($)')
+    data_row('Federal ITC total income ($)')
+    data_row('Federal PTC income ($)')
+    data_row('Federal tax benefit (liability) ($)')
+    data_row('State ITC total income ($)')
+    data_row('State PTC income ($)')
+    data_row('State tax benefit (liability) ($)')
+    data_row('Total after-tax returns ($)')
 
     blank_row()
 
-    data_row('After-tax cumulative IRR (%)', _soo.cf_project_return_aftertax_irr)
-    data_row('After-tax cumulative NPV ($)', _soo.cf_project_return_aftertax_npv)
+    data_row('After-tax cumulative IRR (%)')
+    data_row('After-tax cumulative NPV ($)')
 
     blank_row()
 
     category_row('AFTER-TAX LCOE AND PPA PRICE')
-    data_row('Annual costs ($)', _soo.cf_annual_costs)
-    data_row('PPA revenue ($)', _soo.cf_energy_value)  # TODO config-ify repeated
-    data_row('Electricity to grid (kWh)', _soo.cf_energy_sales)  # TODO config-ify repeated
+    data_row('Annual costs ($)')
+    data_row('PPA revenue ($)')
+    data_row('Electricity to grid (kWh)')
 
     blank_row()
-    single_value_row('Present value of annual costs ($)', _soo.npv_annual_costs)
-    single_value_row('Present value of annual energy nominal ($)', _soo.npv_energy_nom)  # TODO config-ify repeated
-    single_value_row('LCOE Levelized cost of energy nominal (cents/kWh)', _soo.lcoe_nom)
+    single_value_row('Present value of annual costs ($)')
+    single_value_row('Present value of annual energy nominal ($)')
+    single_value_row('LCOE Levelized cost of energy nominal (cents/kWh)')
 
     blank_row()
 
-    single_value_row('Present value of PPA revenue ($)', _soo.npv_ppa_revenue)
-    single_value_row('Present value of annual energy nominal ($)', _soo.npv_energy_nom)  # TODO config-ify repeated
-    single_value_row('LPPA Levelized PPA price nominal (cents/kWh)', _soo.lppa_nom)
+    single_value_row('Present value of PPA revenue ($)')
+    single_value_row('Present value of annual energy nominal ($)')
+    single_value_row('LPPA Levelized PPA price nominal (cents/kWh)')
+
+    blank_row()
+
+    category_row('PROJECT STATE INCOME TAXES')
+    data_row('EBITDA ($)')
 
     return profile
 

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import csv
 import json
 import os
-import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -25,7 +23,7 @@ from PySAM import Singleowner
 import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
-from geophires_x.EconomicsSamCashFlow import _get_single_owner_output
+from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
@@ -56,7 +54,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
     for module in modules:
         module.execute()
 
-    cash_flow = _calculate_cash_flow(model, single_owner)
+    cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
 
     data = [
         ('LCOE (nominal)', single_owner.Outputs.lcoe_nom, 'cents/kWh'),
@@ -123,117 +121,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # TODO debt/equity ratio
 
     return ret
-
-
-@lru_cache(maxsize=12)
-def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
-    log = model.logger
-
-    _soo = single_owner.Outputs
-
-    profile = []
-    total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
-    years = list(range(0, total_duration))
-    row_1 = [None] + years
-    profile.append(row_1)
-
-    def blank_row() -> None:
-        profile.append([None] * (len(years) + 1))
-
-    def category_row(cat_name: str) -> list[Any]:
-        cr = [cat_name] + [None] * len(years)
-        profile.append(cr)
-        return cr
-
-    def designator_row(designator: str):
-        dsr = [designator] + [None] * len(years)
-        profile.append(dsr)
-
-    def get_data_adjust_func(row_name: str):
-        def rnd(x):
-            return round(x, 2)
-
-        if row_name.endswith('($)'):
-
-            def rnd(x):
-                return round(x)
-
-        def adj(x_):
-            if isinstance(x_, str):
-                return x_
-            else:
-                return rnd(x_)
-
-        return adj
-
-    def data_row(row_name: str, output_data: Any | None = None) -> list[Any]:
-        if output_data is None:
-            # TODO output_data should not be passed if present in _get_output
-            output_data = _get_single_owner_output(_soo, row_name)
-
-        if output_data is None:
-            log.error(f'No output data for {row_name}')
-            output_data = ['undefined'] * len(years)  # WIP
-
-        adjust = get_data_adjust_func(row_name)
-
-        dr = [row_name] + [adjust(d) for d in output_data]  # TODO revisit this to audit for precision concerns
-        profile.append(dr)
-        return dr
-
-    def single_value_row(row_name: str, single_value: float | None = None) -> list[Any]:
-
-        if single_value is None:
-            # TODO single_value should not be passed if present in _get_output
-            single_value = _get_single_owner_output(_soo, row_name)
-
-        if single_value is None:
-            log.error(f'No output data for {row_name}')
-            single_value = 'undefined'  # WIP
-
-        svr = (
-            [row_name] + [get_data_adjust_func(row_name)(single_value)] + [None] * (len(years) - 1)
-        )  # TODO revisit this to audit for precision concerns
-        profile.append(svr)
-        return svr
-
-    with open(_get_file_path('sam_economics/sam-cash-flow-table.csv'), encoding='utf-8') as f:
-        cft_reader = csv.reader(f)
-
-        lines = []
-        for _line in cft_reader:
-            lines.append(_line)
-
-        lines = lines[1:]  # exclude header row
-
-        def is_only_commas(s: str) -> bool:
-            # TODO this is a silly way to test whether entries in row are None
-            return re.match(r'^,+$', s)
-
-        for line in lines:
-            if is_only_commas(','.join(line)):
-                blank_row()
-                continue
-
-            line_entries = line
-            row_label = line_entries[0]
-            if re.match(r'^([A-Z \(\)]+)$', row_label) or re.match(r'^([A-Za-z ]+\:)$', row_label):
-                category_row(row_label)
-                continue
-
-            if re.match(r'^[a-z]+:$', row_label):
-                designator_row(row_label)
-                continue
-
-            if is_only_commas(','.join(line_entries[2:])):
-                single_value_row(row_label)
-            else:
-                data_row(row_label)
-
-    if all([it is None for it in profile[-1]]):
-        profile = profile[:-1]  # trim last line if blank
-
-    return profile
 
 
 def _get_average_net_generation_MW(model: Model) -> float:

@@ -24,6 +24,7 @@ import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
+from geophires_x.Units import convertible_unit
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 
@@ -104,7 +105,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     fed_rate_tenths = geophires_ctr_tenths * (Decimal(fed_ratio))
     ret['federal_tax_rate'] = [float(fed_rate_tenths * Decimal(100))]
 
-    # state_rate_tenths = geophires_ctr_tenths - fed_rate_tenths
     state_ratio = 0.25
     state_rate_tenths = geophires_ctr_tenths * (Decimal(state_ratio))
     ret['state_tax_rate'] = [float(state_rate_tenths * Decimal(100))]
@@ -117,8 +117,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['ppa_price_input'] = [econ.ElecStartPrice.value]
 
+    # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
+    ret['debt_percent'] = econ.FIB.quantity().to(convertible_unit('%')).magnitude
+
+    # TODO inflation (econ.RINFL.value)
+
     # TODO interest rate
-    # TODO debt/equity ratio
 
     return ret
 

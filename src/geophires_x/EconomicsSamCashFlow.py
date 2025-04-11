@@ -228,6 +228,10 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
             _log.warning(f'{ld} not found for "{display_name}"')
 
             def show_suggestions(search_string: str):
+                if search_string is None or search_string == '':
+                    _log.debug(f'No {ld} suggestions for "{display_name}" found')
+                    return
+
                 suggest = [
                     (display_name, it[0], ga(it[0]))
                     for it in _search_props(search_string)
@@ -245,7 +249,8 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                         preview += ('...',)
                     return preview
 
-                suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
+                # suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
+                suggest_display = "\n\t".join([f"'{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 if len(suggest) > 0:
                     _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest_display}')
                 else:
@@ -255,7 +260,7 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                     # etc.
                 return suggest
 
-            show_suggestions(display_name.lower().split(' ')[0])
+            show_suggestions(next(it for it in display_name.lower().split(' ') if it.lower() != 'total'))
 
         except Exception as e:
             _log.debug(f'Encountered exception attempting to generate suggestions for {ld} for "{display_name}": {e}"')

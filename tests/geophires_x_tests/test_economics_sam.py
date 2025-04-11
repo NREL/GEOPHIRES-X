@@ -13,7 +13,12 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 
 # noinspection PyProtectedMember
-from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _SAM_CASH_FLOW_PROFILE_KEY
+from geophires_x.EconomicsSam import (
+    calculate_sam_economics,
+    _sig_figs,
+    _SAM_CASH_FLOW_PROFILE_KEY,
+    _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT,
+)
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile
@@ -50,7 +55,19 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(ir['value'], 7.0)
         self.assertEqual(ir['unit'], '%')
 
-        npvs = [_npv(self._get_result({'Starting Electricity Sale Price': x / 100.0})) for x in range(1, 20, 4)]
+        inflation = 0.02
+        rate_params = [
+            {
+                'Starting Electricity Sale Price': x / 100.0,
+                # Escalation rate must remain constant percent
+                'Electricity Escalation Rate Per Year': x
+                * inflation
+                / 100.0
+                / _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT,
+            }
+            for x in range(1, 20, 4)
+        ]
+        npvs = [_npv(self._get_result(rp)) for rp in rate_params]
         for i in range(len(npvs) - 1):
             self.assertLess(npvs[i], npvs[i + 1])
 

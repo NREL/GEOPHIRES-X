@@ -116,7 +116,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 # mapped.
                 continue
 
-            if re.match(r'^([A-Z \(\)\-\:]+)$', row_label) or re.match(r'^([A-Za-z \-]+\:)$', row_label):
+            if _is_category_row_label(row_label):
                 category_row(row_label)
                 continue
 
@@ -129,6 +129,10 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
         profile = profile[:-1]  # trim last line if blank
 
     return _clean_profile(profile)
+
+
+def _is_category_row_label(row_label: str) -> bool:
+    return re.match(r'^([A-Z \(\)\-\:]+)$', row_label) or re.match(r'^([A-Z][A-Za-z \-]+\:)$', row_label)
 
 
 def _clean_profile(profile: list[list[Any]]) -> list[list[Any]]:

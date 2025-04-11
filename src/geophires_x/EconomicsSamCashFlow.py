@@ -177,7 +177,7 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Electricity purchase ($)': 'cf_energy_purchases',
     'Insurance expense ($)': 'cf_insurance_expense',
     'Interest earned on reserves ($)': 'cf_reserve_interest',
-    'Debt closing costs ($)': 'cost_debt_upfront',
+    'Debt up-front fee ($)': 'cost_debt_upfront',
 }
 
 
@@ -200,17 +200,17 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
     :type soo: `PySAM.Singleowner.Outputs`
     """
 
+    def ga(_p):
+        # noinspection PyBroadException
+        try:
+            return getattr(soo, _p)
+        except Exception:
+            return None
+
     def _search_props(s: str) -> list[Any]:
         """
         Utility function to search output properties (useful in IDE debugger)
         """
-
-        def ga(_p):
-            # noinspection PyBroadException
-            try:
-                return getattr(soo, _p)
-            except Exception:
-                return None
 
         return [(p, ga(p)) for p in dir(soo) if s in p]
 
@@ -220,20 +220,21 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
             ld = 'SAM Cash Flow Output property'
             _log.warning(f'{ld} not found for "{display_name}"')
 
-            def show_suggestions(search_string: str) -> None:
+            def show_suggestions(search_string: str):
                 suggest = [
-                    (display_name, it[0], getattr(soo, it[0]))
+                    (display_name, it[0], ga(it[0]))
                     for it in _search_props(search_string)
                     if not it[0].startswith('__')
                 ]
-                suggest = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{sg[2]}" for sg in suggest])
+                suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{sg[2]}" for sg in suggest])
                 if len(suggest) > 0:
-                    _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest}')
+                    _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest_display}')
                 else:
                     _log.debug(f'No {ld} suggestions for "{display_name}" found')
                     # In IDE debugger, try:
                     # show_suggestions(display_name.lower().split(' ')[1])
                     # etc.
+                return suggest
 
             show_suggestions(display_name.lower().split(' ')[0])
 

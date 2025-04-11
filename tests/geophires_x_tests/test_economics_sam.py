@@ -12,6 +12,7 @@ from base_test_case import BaseTestCase
 from geophires_x.Model import Model
 
 from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _SAM_CASH_FLOW_PROFILE_KEY
+from geophires_x.EconomicsSamCashFlow import _clean_profile
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -89,6 +90,29 @@ class EconomicsSamTestCase(BaseTestCase):
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
             self._get_result({'End-Use Option': 2})
+
+    def test_clean_profile(self):
+        profile = [
+            ['foo', 1, 2, 3],
+            [None] * 4,
+            ['bar', 4, 5, 6],
+            [None] * 4,
+            [None] * 4,
+            ['baz', 7, 8, 9],
+        ]
+
+        clean = _clean_profile(profile)
+
+        self.assertListEqual(
+            clean,
+            [
+                ['foo', 1, 2, 3],
+                [None] * 4,
+                ['bar', 4, 5, 6],
+                [None] * 4,
+                ['baz', 7, 8, 9],
+            ],
+        )
 
     def test_sig_figs(self):
         self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])

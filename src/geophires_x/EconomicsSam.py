@@ -143,7 +143,3 @@ def _sig_figs(val: float, num_sig_figs: int) -> float:
     except TypeError:
         # TODO warn
         return val
-
-
-def _get_file_path(file_name) -> str:
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)

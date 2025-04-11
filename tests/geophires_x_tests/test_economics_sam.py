@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tabulate import tabulate
 
 from base_test_case import BaseTestCase
 
@@ -18,6 +17,7 @@ from geophires_x.EconomicsSam import (
     _sig_figs,
     _SAM_CASH_FLOW_PROFILE_KEY,
     _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT,
+    get_sam_cash_flow_profile_tabulated_output,
 )
 
 # noinspection PyProtectedMember
@@ -81,13 +81,13 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertIsNotNone(cash_flow)
 
         print(
-            tabulate(
-                cash_flow,
+            get_sam_cash_flow_profile_tabulated_output(
+                m,
+                # cash_flow,
                 # tablefmt='pretty',
                 # tablefmt='psql',
                 # tablefmt='simple_grid',
                 tablefmt='fancy_grid',
-                floatfmt='.2f',
                 # headers='keys'
             )
         )

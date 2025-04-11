@@ -9,7 +9,7 @@ from tabulate import tabulate
 import geophires_x
 import geophires_x.Model as Model
 from geophires_x.Economics import Economics
-from geophires_x.EconomicsSam import _SAM_CASH_FLOW_PROFILE_KEY
+from geophires_x.EconomicsSam import get_sam_cash_flow_profile_tabulated_output
 from geophires_x.OutputsRich import print_outputs_rich
 from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, strParameter, boolParameter, \
     OutputParameter, ReadParameter
@@ -770,16 +770,7 @@ class Outputs:
         ret += '                            *  SAM CASH FLOW PROFILE  *\n'
         ret += '                            ***************************\n'
 
-        ret += tabulate(
-            model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY],
-            # tablefmt='pretty',
-            # tablefmt='psql',
-            # tablefmt='simple_grid',
-            #tablefmt='fancy_grid',
-            tablefmt='tsv',
-            floatfmt='.2f',
-            # headers='keys'
-        )
+        ret += get_sam_cash_flow_profile_tabulated_output(model)
 
         return ret
 

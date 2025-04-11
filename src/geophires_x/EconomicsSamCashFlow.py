@@ -10,7 +10,7 @@ from typing import Any
 
 from PySAM import Singleowner
 
-from geophires_x import Model as Model
+import geophires_x.Model as Model
 
 
 @lru_cache(maxsize=12)

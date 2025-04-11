@@ -110,7 +110,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
             line_entries = line
             row_label = line_entries[0]
-            if re.match(r'^([A-Z \(\)]+)$', row_label) or re.match(r'^([A-Za-z ]+\:)$', row_label):
+            if re.match(r'^([A-Z \(\)\-]+)$', row_label) or re.match(r'^([A-Za-z \-]+\:)$', row_label):
                 category_row(row_label)
                 continue
 
@@ -127,6 +127,8 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
     if all([it is None for it in profile[-1]]):
         profile = profile[:-1]  # trim last line if blank
+
+    # TODO collapse consecutive blank rows
 
     return profile
 
@@ -185,6 +187,8 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Insurance expense ($)': 'cf_insurance_expense',
     'Interest earned on reserves ($)': 'cf_reserve_interest',
     'Debt up-front fee ($)': 'cost_debt_upfront',
+    'Debt balance ($)': 'cf_debt_balance',
+    'Debt total payment ($)': 'cf_debt_payment_total',
 }
 
 
@@ -252,7 +256,7 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                 # suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 suggest_display = "\n\t".join([f"'{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 if len(suggest) > 0:
-                    _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest_display}')
+                    _log.debug(f'{ld} suggestions for \n\'{display_name}\': \n\t{suggest_display}')
                 else:
                     _log.debug(f'No {ld} suggestions for "{display_name}" found')
                     # In IDE debugger, try:

@@ -132,7 +132,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         ptv_row = get_row('Property tax net assessed value ($)')
         pte_row = get_row('Property tax expense ($)')
-        self.assertIsNotNone(pte_row)  # FIXME WIP
+        self.assertIsNotNone(pte_row)
         self.assertAlmostEqual(ptv_row[1] * pt_rate, pte_row[1], places=0)  # Assumes 100% property tax basis
 
     def test_only_electricity_end_use_supported(self):

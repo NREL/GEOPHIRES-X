@@ -101,7 +101,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
         def is_only_commas(s: str) -> bool:
             # TODO this is a silly way to test whether entries in row are None
-            return re.match(r'^,+$', s)
+            return re.match(r'^,+$', s) is not None
 
         for line in lines:
             if is_only_commas(','.join(line)):
@@ -189,6 +189,9 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Debt up-front fee ($)': 'cost_debt_upfront',
     'Debt balance ($)': 'cf_debt_balance',
     'Debt total payment ($)': 'cf_debt_payment_total',
+    'Federal income tax rate (frac)': 'cf_federal_tax_frac',
+    'Cash available for debt service (CAFDS) ($)': 'cf_cash_for_ds',
+    'DSCR (pre-tax)': 'cf_pretax_dscr',
 }
 
 
@@ -264,7 +267,10 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                     # etc.
                 return suggest
 
-            show_suggestions(next(it for it in display_name.lower().split(' ') if it.lower() != 'total'))
+            try:
+                show_suggestions(next(it for it in display_name.lower().split(' ') if it.lower() != 'total'))
+            except StopIteration:
+                _log.debug(f'No {ld} suggestions for "{display_name}" found')
 
         except Exception as e:
             _log.debug(f'Encountered exception attempting to generate suggestions for {ld} for "{display_name}": {e}"')

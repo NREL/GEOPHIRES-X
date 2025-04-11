@@ -169,6 +169,15 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Present value of annual energy nominal ($)': 'npv_energy_nom',
     'LPPA Levelized PPA price nominal (cents/kWh)': 'lppa_nom',
     'Curtailment payment revenue ($)': 'cf_curtailment_value',
+    'Capacity payment revenue ($)': 'cf_capacity_payment',
+    'Property tax net assessed value ($)': 'cf_property_tax_assessed_value',
+    'O&M production-based expense ($)': 'cf_om_production_expense',
+    'O&M capacity-based expense ($)': 'cf_om_capacity_expense',
+    'Fuel expense ($)': 'cf_om_fuel_expense',
+    'Electricity purchase ($)': 'cf_energy_purchases',
+    'Insurance expense ($)': 'cf_insurance_expense',
+    'Interest earned on reserves ($)': 'cf_reserve_interest',
+    'Debt closing costs ($)': 'cost_debt_upfront',
 }
 
 
@@ -210,15 +219,23 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
         try:
             ld = 'SAM Cash Flow Output property'
             _log.warning(f'{ld} not found for "{display_name}"')
-            suggest = [(display_name, it[0]) for it in _search_props(display_name.lower().split(' ')[0])]
-            suggest = "\n\t".join([f"'{sg[0]}': '{sg[1]}'" for sg in suggest])
-            if len(suggest) > 0:
-                _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest}')
-            else:
-                _log.debug(f'No {ld } suggestions for "{display_name}" found')
-                # In IDE debugger, try:
-                # _search_props(display_name.lower().split(' ')[1])
-                # etc.
+
+            def show_suggestions(search_string: str) -> None:
+                suggest = [
+                    (display_name, it[0], getattr(soo, it[0]))
+                    for it in _search_props(search_string)
+                    if not it[0].startswith('__')
+                ]
+                suggest = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{sg[2]}" for sg in suggest])
+                if len(suggest) > 0:
+                    _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest}')
+                else:
+                    _log.debug(f'No {ld} suggestions for "{display_name}" found')
+                    # In IDE debugger, try:
+                    # show_suggestions(display_name.lower().split(' ')[1])
+                    # etc.
+
+            show_suggestions(display_name.lower().split(' ')[0])
 
         except Exception as e:
             _log.debug(f'Encountered exception attempting to generate suggestions for {ld} for "{display_name}": {e}"')

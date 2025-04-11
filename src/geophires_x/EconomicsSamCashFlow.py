@@ -61,7 +61,10 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
         if output_data is None:
             log.error(f'No output data for {row_name}')
-            output_data = ['undefined'] * len(years)  # WIP
+
+            # TODO/WIP - skip ambiguous mapping for now
+            # output_data = ['undefined'] * len(years)
+            return
 
         adjust = get_data_adjust_func(row_name)
 
@@ -70,14 +73,16 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
         return dr
 
     def single_value_row(row_name: str, single_value: float | None = None) -> list[Any]:
-
         if single_value is None:
             # TODO single_value should not be passed if present in _get_output
             single_value = _get_single_owner_output(_soo, row_name)
 
         if single_value is None:
             log.error(f'No output data for {row_name}')
-            single_value = 'undefined'  # WIP
+
+            # TODO/WIP - skip ambiguous mapping for now
+            # single_value = 'undefined'
+            return
 
         svr = (
             [row_name] + [get_data_adjust_func(row_name)(single_value)] + [None] * (len(years) - 1)
@@ -110,7 +115,9 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 continue
 
             if re.match(r'^[a-z]+:$', row_label):
-                designator_row(row_label)
+                # designator_row(row_label)
+                # TODO/WIP - skip designator rows because they may be incorrect until all output properties have been
+                # mapped.
                 continue
 
             if is_only_commas(','.join(line_entries[2:])):
@@ -226,7 +233,19 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                     for it in _search_props(search_string)
                     if not it[0].startswith('__')
                 ]
-                suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{sg[2]}" for sg in suggest])
+
+                def data_preview(sg_2):
+                    if not isinstance(sg_2, list) and not isinstance(sg_2, tuple):
+                        return sg_2
+
+                    idx = min(10, len(sg_2))
+                    idx = min(idx, len(sg_2))
+                    preview = tuple(sg_2[:idx])
+                    if idx < len(sg_2):
+                        preview += ('...',)
+                    return preview
+
+                suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 if len(suggest) > 0:
                     _log.debug(f'{ld} suggestions for "{display_name}":\n\t{suggest_display}')
                 else:

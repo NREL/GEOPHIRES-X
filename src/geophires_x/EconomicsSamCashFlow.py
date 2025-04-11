@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import sys
+import math
 from functools import lru_cache
 from typing import Any
 
@@ -54,6 +55,9 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
             if isinstance(x_, str):
                 return x_
             else:
+                if math.isnan(x_):
+                    return 'NaN'
+
                 return rnd(x_)
 
         return adj

@@ -621,3 +621,21 @@ def static_pressure_MPa(rho_kg_per_m3: float, depth_m: float) -> float:
 
     return pressure_mpa
 
+
+def is_int(o: Any) -> bool:
+    try:
+        float_n = float(o)
+        int_n = int(float_n)
+    except ValueError:
+        return False
+    else:
+        return float_n == int_n
+
+
+def is_float(o: Any) -> bool:
+    try:
+        float(o)
+    except ValueError:
+        return False
+    else:
+        return True

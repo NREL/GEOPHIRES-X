@@ -24,6 +24,7 @@ import PySAM.Utilityrate5 as UtilityRate
 
 import geophires_x.Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
+from geophires_x.Parameter import Parameter
 from geophires_x.Units import convertible_unit
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
@@ -103,6 +104,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret: dict[str, Any] = {}
 
+    def pct(econ_value: Parameter) -> float:
+        return econ_value.quantity().to(convertible_unit('%')).magnitude
+
     itc = econ.RITCValue.value
     total_capex_musd = econ.CCap.value + itc
     ret['total_installed_cost'] = total_capex_musd * 1e6
@@ -110,7 +114,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
-    ret['om_fixed_escal'] = -1.0 * econ.RINFL.quantity().to(convertible_unit('%')).magnitude
+    ret['om_fixed_escal'] = -1.0 * pct(econ.RINFL)
 
     # FIXME TODO provide entire generation profile
     average_net_generation_MW = _get_average_net_generation_MW(model)
@@ -142,13 +146,16 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['ppa_escalation'] = ppa_escalation_rate_percent
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
-    ret['debt_percent'] = econ.FIB.quantity().to(convertible_unit('%')).magnitude
-
-    # TODO/WIP interest rate
-    # ret['real_discount_rate']
+    ret['debt_percent'] = pct(econ.FIB)
 
     # 'Property Tax Rate'
-    ret['property_tax_rate'] = econ.PTR.quantity().to(convertible_unit('%')).magnitude
+    ret['property_tax_rate'] = pct(econ.PTR)
+
+    # Interest rate
+    ret['real_discount_rate'] = pct(econ.discountrate)
+    ret['term_int_rate'] = pct(econ.BIR)
+
+    # TODO 'Inflated Equity Interest Rate' (may not have equivalent in SAM...?)
 
     return ret
 

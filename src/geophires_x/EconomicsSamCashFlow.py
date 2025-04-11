@@ -198,6 +198,7 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Insurance expense ($)': 'cf_insurance_expense',
     'Interest earned on reserves ($)': 'cf_reserve_interest',
     'Debt up-front fee ($)': 'cost_debt_upfront',
+    'Debt closing costs ($)': 'cost_financing',
     'Debt balance ($)': 'cf_debt_balance',
     'Debt total payment ($)': 'cf_debt_payment_total',
     'Federal income tax rate (frac)': 'cf_federal_tax_frac',
@@ -207,6 +208,7 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
 
 
 def _get_logger():
+    # TODO disable debug output outside of dev environment
     sh = logging.StreamHandler(sys.stdout)
     sh.setLevel(logging.DEBUG)
     sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
@@ -239,6 +241,20 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
 
         return [(p, ga(p)) for p in dir(soo) if s in p]
 
+    def _search_prop_vals(v: Any) -> list[Any]:
+        """
+        Utility function to search output properties (useful in IDE debugger)
+        """
+
+        def val_match(ga_p: Any) -> bool:
+            # noinspection PyBroadException
+            try:
+                return v == ga_p or v == abs(ga_p) or abs(v) in [abs(x) for x in ga_p]
+            except Exception:
+                return False
+
+        return [(p, ga(p)) for p in dir(soo) if val_match(ga(p))]
+
     if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
         # noinspection PyBroadException
         try:
@@ -267,7 +283,6 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
                         preview += ('...',)
                     return preview
 
-                # suggest_display = "\n\t".join([f"'{sg[0]}': '{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 suggest_display = "\n\t".join([f"'{sg[1]}',\n\t\t{data_preview(sg[2])}" for sg in suggest])
                 if len(suggest) > 0:
                     _log.debug(f'{ld} suggestions for \n\'{display_name}\': \n\t{suggest_display}')

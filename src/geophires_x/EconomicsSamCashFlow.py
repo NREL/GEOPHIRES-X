@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import re
 from functools import lru_cache
 from typing import Any
@@ -8,7 +9,6 @@ from typing import Any
 from PySAM import Singleowner
 
 from geophires_x import Model as Model
-from geophires_x.EconomicsSam import _get_file_path
 
 
 @lru_cache(maxsize=12)
@@ -199,3 +199,7 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
         return prop(soo)
 
     return getattr(soo, prop)
+
+
+def _get_file_path(file_name) -> str:
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)

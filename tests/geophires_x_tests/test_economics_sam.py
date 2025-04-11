@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from tabulate import tabulate
 
@@ -11,7 +12,10 @@ from base_test_case import BaseTestCase
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
 
+# noinspection PyProtectedMember
 from geophires_x.EconomicsSam import calculate_sam_economics, _sig_figs, _SAM_CASH_FLOW_PROFILE_KEY
+
+# noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
@@ -70,10 +74,10 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(22, len(cash_flow[0]))
 
         def get_row(name: str) -> list[float]:
-            return next(r for r in cash_flow if r[0] == name)[1:]
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
 
         def get_single_value(name: str) -> list[float]:
-            return get_row(name)[0]
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)[0]
 
         self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
 
@@ -86,6 +90,29 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertAlmostEqual(
             m.economics.LCOE.value, get_single_value('LCOE Levelized cost of energy nominal (cents/kWh)'), places=2
         )
+
+    @staticmethod
+    def _get_cash_flow_row(cash_flow, name):
+        return next(r for r in cash_flow if r[0] == name)[1:]
+
+    def test_property_tax_rate(self):
+        pt_rate = 0.01
+        m: Model = EconomicsSamTestCase._new_model(
+            self._egs_test_file_path(), additional_params={'Property Tax Rate': pt_rate}
+        )
+        m.read_parameters()
+        m.Calculate()
+
+        sam_econ = calculate_sam_economics(m)
+        cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+
+        def get_row(name: str):
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        ptv_row = get_row('Property tax net assessed value ($)')
+        pte_row = get_row('Property tax expense ($)')
+        self.assertIsNotNone(pte_row)  # FIXME WIP
+        self.assertAlmostEqual(ptv_row[1] * pt_rate, pte_row[1], places=0)  # Assumes 100% property tax basis
 
     def test_only_electricity_end_use_supported(self):
         with self.assertRaises(RuntimeError):
@@ -119,7 +146,11 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])
 
     @staticmethod
-    def _new_model(input_file: Path) -> Model:
+    def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None) -> Model:
+        if additional_params is not None:
+            params = GeophiresInputParameters(from_file_path=input_file, params=additional_params)
+            input_file = params.as_file_path()
+
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
 

@@ -116,6 +116,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
     ret['ppa_price_input'] = [econ.ElecStartPrice.value]
+    # Approximation of GEOPHIRES rate model into SAM's percent inflation model (TODO - could probably be improved)
+    ppa_escalation_rate_percent = round(econ.ElecEscalationRate.value / econ.ElecStartPrice.value * 0.745 * 100.0)
+    ret['ppa_escalation'] = ppa_escalation_rate_percent
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = econ.FIB.quantity().to(convertible_unit('%')).magnitude

@@ -49,6 +49,9 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
                 if k != 'number_inputs':
                     module.value(k, v)
 
+    for k, v in _get_utility_rate_parameters(model).items():
+        single_owner.value(k, v)
+
     for k, v in _get_single_owner_parameters(model).items():
         single_owner.value(k, v)
 
@@ -84,6 +87,16 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
     return ret
 
 
+def _get_utility_rate_parameters(model: Model) -> dict[str, Any]:
+    econ = model.economics
+
+    ret: dict[str, Any] = {}
+
+    ret['inflation_rate'] = econ.RINFL.quantity().to(convertible_unit('%')).magnitude
+
+    return ret
+
+
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     econ = model.economics
 
@@ -95,8 +108,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
+    # GEOPHIRES assumes O&M fixed costs are not affected by inflation
+    ret['om_fixed_escal'] = -1.0 * econ.RINFL.quantity().to(convertible_unit('%')).magnitude
 
-    # FIXME provide entire generation profile
+    # FIXME TODO provide entire generation profile
     average_net_generation_MW = _get_average_net_generation_MW(model)
     ret['system_capacity'] = average_net_generation_MW * 1e3
 
@@ -122,8 +137,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = econ.FIB.quantity().to(convertible_unit('%')).magnitude
-
-    # TODO inflation (econ.RINFL.value)
 
     # TODO interest rate
 

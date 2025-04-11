@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import csv
 import json
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -127,21 +129,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
     log = model.logger
 
-    # noinspection PyUnusedLocal
-    def _search_props(s: str) -> list[Any]:
-        """
-        Utility function to search output properties in IDE debugger
-        """
-
-        def ga(_p):
-            # noinspection PyBroadException
-            try:
-                return getattr(_soo, _p)
-            except Exception:
-                return None
-
-        return [(p, ga(p)) for p in dir(_soo) if s in p]
-
     _soo = single_owner.Outputs
 
     profile = []
@@ -163,15 +150,21 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(dsr)
 
     def get_data_adjust_func(row_name: str):
-        def a(x):
+        def rnd(x):
             return round(x, 2)
 
         if row_name.endswith('($)'):
 
-            def a(x):
+            def rnd(x):
                 return round(x)
 
-        return a
+        def adj(x_):
+            if isinstance(x_, str):
+                return x_
+            else:
+                return rnd(x_)
+
+        return adj
 
     def data_row(row_name: str, output_data: Any | None = None) -> list[Any]:
         if output_data is None:
@@ -204,111 +197,147 @@ def _calculate_cash_flow(model: Model, single_owner: Singleowner) -> list[list[A
         profile.append(svr)
         return svr
 
-    category_row('ENERGY')
-    data_row('Electricity to grid (kWh)')
-    data_row('Electricity from grid (kWh)')
-    data_row('Electricity to grid net (kWh)')
+    with open(_get_file_path('sam_economics/sam-cash-flow-table.csv'), encoding='utf-8') as f:
+        cft_reader = csv.reader(f)
 
-    blank_row()
+        lines = []
+        # lines = f.readlines()[1:] # exclude header row
+        for _line in cft_reader:
+            lines.append(_line)
 
-    category_row('REVENUE')
-    data_row('PPA price (cents/kWh)')
-    data_row('PPA revenue ($)')
-    data_row('Salvage value ($)')
-    data_row('Total revenue ($)')
+        lines = lines[1:]  # exclude header row
 
-    blank_row()
+        def is_only_commas(s: str) -> bool:
+            return re.match(r'^,+$', s)
 
-    # TODO Property tax net assessed value ($)
+        for line in lines:
+            if is_only_commas(','.join(line)):
+                blank_row()
+                continue
 
-    category_row('OPERATING EXPENSES')
-    data_row('O&M fixed expense ($)')
-    data_row('Property tax expense ($)')
-    data_row('Total operating expenses ($)')
+            # line_entries = line.split(',')
+            line_entries = line
+            row_label = line_entries[0]
+            if re.match(r'^[A-Z ]+$', row_label):
+                # FIXME WIP handle 'Pre-tax Returns:'
+                category_row(row_label)
+                continue
 
-    blank_row()
+            if re.match(r'^[a-z]+:$', row_label):
+                designator_row(row_label)
+                continue
 
-    data_row('EBITDA ($)')
+            if is_only_commas(','.join(line_entries[2:])):
+                single_value_row(row_label)
+            else:
+                data_row(row_label)
 
-    blank_row()
-
-    category_row('OPERATING ACTIVITIES')
-    data_row('EBITDA ($)')
-    data_row('Debt interest payment ($)')
-    data_row('Cash flow from operating activities ($)')
-
-    blank_row()
-
-    category_row('INVESTING ACTIVITIES')
-    single_value_row('Total installed cost ($)')
-    single_value_row('Purchase of property ($)')
-    data_row('Cash flow from investing activities ($)')
-
-    blank_row()
-
-    category_row('FINANCING ACTIVITIES')
-    single_value_row('Issuance of equity ($)')
-    single_value_row('Size of debt ($)')
-    designator_row('minus:')
-    data_row('Debt principal payment ($)')
-    designator_row('equals:')
-    data_row('Cash flow from financing activities ($)')
-
-    blank_row()
-
-    category_row('PROJECT RETURNS')
-    category_row('Pre-tax Cash Flow:')
-    data_row('Cash flow from operating activities ($)')
-    data_row('Cash flow from investing activities ($)')
-    data_row('Cash flow from financing activities ($)')
-    data_row('Total pre-tax cash flow ($)')
-
-    blank_row()
-
-    category_row('Pre-tax Returns:')
-    single_value_row('Issuance of equity ($)')
-    data_row('Total pre-tax cash flow ($)')
-    data_row('Total pre-tax returns ($)')
-
-    blank_row()
-
-    category_row('After-tax Returns:')
-    data_row('Total pre-tax returns ($)')
-    data_row('Federal ITC total income ($)')
-    data_row('Federal PTC income ($)')
-    data_row('Federal tax benefit (liability) ($)')
-    data_row('State ITC total income ($)')
-    data_row('State PTC income ($)')
-    data_row('State tax benefit (liability) ($)')
-    data_row('Total after-tax returns ($)')
-
-    blank_row()
-
-    data_row('After-tax cumulative IRR (%)')
-    data_row('After-tax cumulative NPV ($)')
-
-    blank_row()
-
-    category_row('AFTER-TAX LCOE AND PPA PRICE')
-    data_row('Annual costs ($)')
-    data_row('PPA revenue ($)')
-    data_row('Electricity to grid (kWh)')
-
-    blank_row()
-    single_value_row('Present value of annual costs ($)')
-    single_value_row('Present value of annual energy nominal ($)')
-    single_value_row('LCOE Levelized cost of energy nominal (cents/kWh)')
-
-    blank_row()
-
-    single_value_row('Present value of PPA revenue ($)')
-    single_value_row('Present value of annual energy nominal ($)')
-    single_value_row('LPPA Levelized PPA price nominal (cents/kWh)')
-
-    blank_row()
-
-    category_row('PROJECT STATE INCOME TAXES')
-    data_row('EBITDA ($)')
+    # FIXME WIP remove
+    # category_row('ENERGY')
+    # data_row('Electricity to grid (kWh)')
+    # data_row('Electricity from grid (kWh)')
+    # data_row('Electricity to grid net (kWh)')
+    #
+    # blank_row()
+    #
+    # category_row('REVENUE')
+    # data_row('PPA price (cents/kWh)')
+    # data_row('PPA revenue ($)')
+    # data_row('Salvage value ($)')
+    # data_row('Total revenue ($)')
+    #
+    # blank_row()
+    #
+    # # TODO Property tax net assessed value ($)
+    #
+    # category_row('OPERATING EXPENSES')
+    # data_row('O&M fixed expense ($)')
+    # data_row('Property tax expense ($)')
+    # data_row('Total operating expenses ($)')
+    #
+    # blank_row()
+    #
+    # data_row('EBITDA ($)')
+    #
+    # blank_row()
+    #
+    # category_row('OPERATING ACTIVITIES')
+    # data_row('EBITDA ($)')
+    # data_row('Debt interest payment ($)')
+    # data_row('Cash flow from operating activities ($)')
+    #
+    # blank_row()
+    #
+    # category_row('INVESTING ACTIVITIES')
+    # single_value_row('Total installed cost ($)')
+    # single_value_row('Purchase of property ($)')
+    # data_row('Cash flow from investing activities ($)')
+    #
+    # blank_row()
+    #
+    # category_row('FINANCING ACTIVITIES')
+    # single_value_row('Issuance of equity ($)')
+    # single_value_row('Size of debt ($)')
+    # designator_row('minus:')
+    # data_row('Debt principal payment ($)')
+    # designator_row('equals:')
+    # data_row('Cash flow from financing activities ($)')
+    #
+    # blank_row()
+    #
+    # category_row('PROJECT RETURNS')
+    # category_row('Pre-tax Cash Flow:')
+    # data_row('Cash flow from operating activities ($)')
+    # data_row('Cash flow from investing activities ($)')
+    # data_row('Cash flow from financing activities ($)')
+    # data_row('Total pre-tax cash flow ($)')
+    #
+    # blank_row()
+    #
+    # category_row('Pre-tax Returns:')
+    # single_value_row('Issuance of equity ($)')
+    # data_row('Total pre-tax cash flow ($)')
+    # data_row('Total pre-tax returns ($)')
+    #
+    # blank_row()
+    #
+    # category_row('After-tax Returns:')
+    # data_row('Total pre-tax returns ($)')
+    # data_row('Federal ITC total income ($)')
+    # data_row('Federal PTC income ($)')
+    # data_row('Federal tax benefit (liability) ($)')
+    # data_row('State ITC total income ($)')
+    # data_row('State PTC income ($)')
+    # data_row('State tax benefit (liability) ($)')
+    # data_row('Total after-tax returns ($)')
+    #
+    # blank_row()
+    #
+    # data_row('After-tax cumulative IRR (%)')
+    # data_row('After-tax cumulative NPV ($)')
+    #
+    # blank_row()
+    #
+    # category_row('AFTER-TAX LCOE AND PPA PRICE')
+    # data_row('Annual costs ($)')
+    # data_row('PPA revenue ($)')
+    # data_row('Electricity to grid (kWh)')
+    #
+    # blank_row()
+    # single_value_row('Present value of annual costs ($)')
+    # single_value_row('Present value of annual energy nominal ($)')
+    # single_value_row('LCOE Levelized cost of energy nominal (cents/kWh)')
+    #
+    # blank_row()
+    #
+    # single_value_row('Present value of PPA revenue ($)')
+    # single_value_row('Present value of annual energy nominal ($)')
+    # single_value_row('LPPA Levelized PPA price nominal (cents/kWh)')
+    #
+    # blank_row()
+    #
+    # category_row('PROJECT STATE INCOME TAXES')
+    # data_row('EBITDA ($)')
 
     return profile
 
@@ -333,3 +362,7 @@ def _sig_figs(val: float, num_sig_figs: int) -> float:
     except TypeError:
         # TODO warn
         return val
+
+
+def _get_file_path(file_name) -> str:
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)

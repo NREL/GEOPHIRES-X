@@ -59,6 +59,21 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
     :type soo: `PySAM.Singleowner.Outputs`
     """
 
+    # noinspection PyUnusedLocal
+    def _search_props(s: str) -> list[Any]:
+        """
+        Utility function to search output properties in IDE debugger
+        """
+
+        def ga(_p):
+            # noinspection PyBroadException
+            try:
+                return getattr(soo, _p)
+            except Exception:
+                return None
+
+        return [(p, ga(p)) for p in dir(soo) if s in p]
+
     if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
         return None
 

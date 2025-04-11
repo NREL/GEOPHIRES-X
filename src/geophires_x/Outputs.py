@@ -253,7 +253,7 @@ class Outputs:
 
                 if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # TODO disambiguate interest rate for all economic models - see
-                    #  535c02d4adbeeeca553b61e9b996fccf00016529
+                    #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     irfl = Outputs._field_label(econ.interest_rate.Name, 49)
                     f.write(f'      {irfl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
 

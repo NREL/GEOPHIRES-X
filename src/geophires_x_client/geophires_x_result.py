@@ -6,7 +6,11 @@ import re
 from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
+from typing import Any
 from typing import ClassVar
+
+from geophires_x.GeoPHIRESUtils import is_float
+from geophires_x.GeoPHIRESUtils import is_int
 
 from .common import _get_logger
 from .geophires_input_parameters import EndUseOption
@@ -402,6 +406,10 @@ class GeophiresXResult:
         if sdacgt_profile is not None:
             self.result['S-DAC-GT PROFILE'] = sdacgt_profile
 
+        sam_cash_flow_profile = self._get_sam_cash_flow_profile()
+        if sam_cash_flow_profile is not None:
+            self.result['SAM CASH FLOW PROFILE'] = sam_cash_flow_profile
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -724,6 +732,46 @@ class GeophiresXResult:
             return profile
         except BaseException as e:
             self._logger.debug(f'Failed to get legacy {GeophiresXResult.CCUS_PROFILE_LEGACY_NAME}: {e}')
+            return None
+
+    def _get_sam_cash_flow_profile(self) -> list[Any]:
+        profile_name = 'SAM CASH FLOW PROFILE'
+
+        def _get_sam_cash_flow_profile_lines():
+            s1 = f'*  {profile_name}  *'
+            s2 = '-' * 50
+            return ''.join(self._lines).split(s1)[1].split(s2)[0].split(s2)[0]  # [5:]
+
+        try:
+            s1 = f'*  {profile_name}  *'
+            profile_text = ''.join(self._lines).split(s1)[1]
+            profile_text = re.split(r'^\s*-{20,}\s*$\n?', profile_text, flags=re.MULTILINE)[1]
+            rd = csv.reader(StringIO(profile_text), delimiter='\t', skipinitialspace=True)
+            profile_lines = []
+            for row in rd:
+                row_clean = []
+                for entry in row:
+                    entry_val = entry.rstrip()
+                    if is_int(entry_val):
+                        entry_val = int(float(entry_val))
+
+                    if is_float(entry_val):
+                        # FIXME WIP
+                        import math
+
+                        entry_val_float = float(entry_val)
+                        if math.isnan(entry_val_float):
+                            # entry_val = 'NaN' # FIXME WIP
+                            entry_val = math.nan
+                        else:
+                            entry_val = entry_val_float
+
+                    row_clean.append(entry_val)
+                profile_lines.append(row_clean)
+
+            return profile_lines
+        except BaseException as e:
+            self._logger.debug(f'Failed to get SAM cash flow profile: {e}')
             return None
 
     def _extract_addons_style_table_data(self, lines: list):

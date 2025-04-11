@@ -770,7 +770,22 @@ class Outputs:
         ret += '                            *  SAM CASH FLOW PROFILE  *\n'
         ret += '                            ***************************\n'
 
-        ret += get_sam_cash_flow_profile_tabulated_output(model)
+        cfp_o: str = get_sam_cash_flow_profile_tabulated_output(model)
+
+        # Ideally the separator line would be exactly the print width of the widest column, but the actual print width
+        # of tabs varies (at least according to https://stackoverflow.com/a/7643592). 4 spaces seems to be the minimum
+        # number that results in a separator line at least as wide as the table (narrower would be unsightly).
+        spaces_per_tab = 4
+
+        # The tabluate library has native separating line functionality (per https://pypi.org/project/tabulate/) but
+        # I wasn't able to get it to replicate the formatting as coded below.
+        separator_line = len(cfp_o.split('\n')[0].replace('\t',' ' * spaces_per_tab)) * '-'
+
+        ret += separator_line + '\n'
+        ret += cfp_o
+        ret += '\n' + separator_line
+
+        ret += '\n\n'
 
         return ret
 

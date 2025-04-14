@@ -8884,4 +8884,3 @@ class PySAM.Singleowner.Singleowner.Outputs
         Type:
 
             float
-

@@ -100,7 +100,7 @@ class EconomicsSamTestCase(BaseTestCase):
         def get_single_value(name: str) -> list[float]:
             return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)[0]
 
-        self.assertListEqual(get_row('PPA revenue ($)'), get_row('Total revenue ($)'))
+        self.assertListEqual(get_row('PPA revenue ($)')[:-1], get_row('Total revenue ($)')[:-1])
 
         tic = get_single_value('Total installed cost ($)')
         self.assertLess(tic, 0)

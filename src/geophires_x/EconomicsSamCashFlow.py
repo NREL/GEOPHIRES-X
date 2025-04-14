@@ -188,7 +188,7 @@ def _get_file_path(file_name) -> str:
 
 
 def _build_single_owner_output_properties():
-    with open(_get_file_path('sam_economics/single-owner-output-properties.json'), encoding='utf-8') as f:
+    with open(_get_file_path('sam_economics/sam-output-properties.json'), encoding='utf-8') as f:
         sop = json.load(f)
 
         sop = {**sop, **_SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL}

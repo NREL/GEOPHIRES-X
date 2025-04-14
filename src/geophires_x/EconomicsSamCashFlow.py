@@ -186,6 +186,12 @@ def _build_single_owner_output_properties():
 
         sop = {**sop, **_SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL}
 
+        with open(
+            _get_file_path('sam_economics/Generic_400_MWe/Generic_400_MWe_singleowner.json'), encoding='utf-8'
+        ) as gso:
+            reserves_interest_input_value = json.load(gso)['reserves_interest']
+            sop['Interest on reserves (%/year)'] = lambda _soo: reserves_interest_input_value
+
         return sop
 
 

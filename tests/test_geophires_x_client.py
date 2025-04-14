@@ -592,3 +592,13 @@ class GeophiresXClientTestCase(BaseTestCase):
         result_legacy_em._lines = ['   Economic Model  = BICYCLE']
         em_legacy = result_legacy_em._get_equal_sign_delimited_field('Economic Model')
         self.assertEqual(em_legacy, 'BICYCLE')
+
+    def test_parse_sam_cash_flow_profile(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/example_SAM-single-owner-PPA.out'))
+        em = result.result['ECONOMIC PARAMETERS']['Economic Model']
+        self.assertEqual(em, 'SAM Single Owner PPA')
+        self.assertIn('SAM CASH FLOW PROFILE', result.result)
+
+        cash_flow = result.result['SAM CASH FLOW PROFILE']
+        self.assertIsNotNone(cash_flow)
+        self.assertListEqual([''] + [f'Year {y}' for y in range(21)], cash_flow[0])

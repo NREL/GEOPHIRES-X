@@ -738,11 +738,6 @@ class GeophiresXResult:
     def _get_sam_cash_flow_profile(self) -> list[Any]:
         profile_name = 'SAM CASH FLOW PROFILE'
 
-        def _get_sam_cash_flow_profile_lines():
-            s1 = f'*  {profile_name}  *'
-            s2 = '-' * 50
-            return ''.join(self._lines).split(s1)[1].split(s2)[0].split(s2)[0]  # [5:]
-
         try:
             s1 = f'*  {profile_name}  *'
             profile_text = ''.join(self._lines).split(s1)[1]
@@ -767,12 +762,12 @@ class GeophiresXResult:
         if entry_display is None:
             return None
 
-        ed_san = entry_display.replace(',', '') if type(entry_display) is str else entry_display
+        ed_san = entry_display.strip().replace(',', '') if type(entry_display) is str else entry_display
         if is_float(ed_san):
             if not math.isnan(float(ed_san)):
-                return float(ed_san) if not is_int(ed_san) else int(ed_san)
+                return float(ed_san) if not is_int(ed_san) else int(float(ed_san))
 
-        return entry_display
+        return entry_display.strip()
 
     def _extract_addons_style_table_data(self, lines: list):
         """TODO consolidate with _get_data_from_profile_lines"""

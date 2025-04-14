@@ -3942,4 +3942,3 @@ class PySAM.Cashloan.Cashloan.Outputs
         Type:
 
             float
-

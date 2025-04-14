@@ -23,5 +23,6 @@ include How-to-extend-GEOPHIRES-X.md
 include geophires-logo.png
 
 prune References
+prune geophires_sam_economics
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

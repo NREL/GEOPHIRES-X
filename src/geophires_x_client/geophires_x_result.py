@@ -751,25 +751,28 @@ class GeophiresXResult:
             profile_lines = []
             for row in rd:
                 row_clean = []
-                for entry in row:
-                    entry_val = entry.rstrip()
-                    if is_int(entry_val):
-                        entry_val = int(float(entry_val))
-
-                    if is_float(entry_val):
-                        entry_val_float = float(entry_val)
-                        if math.isnan(entry_val_float):
-                            entry_val = math.nan
-                        else:
-                            entry_val = entry_val_float
-
-                    row_clean.append(entry_val)
+                for entry_display in row:
+                    row_clean.append(
+                        GeophiresXResult._get_sam_cash_flow_profile_entry_display_to_entry_val(entry_display)
+                    )
                 profile_lines.append(row_clean)
 
             return profile_lines
         except BaseException as e:
             self._logger.debug(f'Failed to get SAM cash flow profile: {e}')
             return None
+
+    @staticmethod
+    def _get_sam_cash_flow_profile_entry_display_to_entry_val(entry_display: str) -> Any:
+        if entry_display is None:
+            return None
+
+        ed_san = entry_display.replace(',', '') if type(entry_display) is str else entry_display
+        if is_float(ed_san):
+            if not math.isnan(float(ed_san)):
+                return float(ed_san) if not is_int(ed_san) else int(ed_san)
+
+        return entry_display
 
     def _extract_addons_style_table_data(self, lines: list):
         """TODO consolidate with _get_data_from_profile_lines"""

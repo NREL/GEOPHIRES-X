@@ -581,6 +581,8 @@ class GeophiresUtilsTestCase(BaseTestCase):
         self.assertFalse(is_int('Year 0'))
         self.assertFalse(is_float('Year 0'))
 
+        self.assertFalse(is_float(None))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 from base_test_case import BaseTestCase
 
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
@@ -87,7 +86,7 @@ class EconomicsSamTestCase(BaseTestCase):
                 # tablefmt='pretty',
                 # tablefmt='psql',
                 # tablefmt='simple_grid',
-                tablefmt='fancy_grid',
+                # tablefmt='fancy_grid',
                 # headers='keys'
             )
         )
@@ -114,7 +113,12 @@ class EconomicsSamTestCase(BaseTestCase):
 
     @staticmethod
     def _get_cash_flow_row(cash_flow, name):
-        return next(r for r in cash_flow if r[0] == name)[1:]
+
+        return next(
+            [GeophiresXResult._get_sam_cash_flow_profile_entry_display_to_entry_val(ed) for ed in r]
+            for r in cash_flow
+            if r[0] == name
+        )[1:]
 
     def test_property_tax_rate(self):
         pt_rate = 0.01

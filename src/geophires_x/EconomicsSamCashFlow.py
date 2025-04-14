@@ -126,7 +126,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 blank_row()
                 continue
 
-            if re.match(r'^[a-z]+:$', row_label):
+            if _is_designator_row_label(row_label):
                 # designator_row(row_label)
                 # TODO/WIP - skip designator rows because they may be incorrect until all output properties have been
                 # mapped.
@@ -149,6 +149,10 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
 def _is_category_row_label(row_label: str) -> bool:
     return re.match(r'^([A-Z \(\)\-\:]+)$', row_label) or re.match(r'^([A-Z][A-Za-z \-]+\:)$', row_label)
+
+
+def _is_designator_row_label(row_label: str) -> bool:
+    return row_label == 'plus PBI if not available for debt service:' or re.match(r'^[a-z]+:$', row_label) is not None
 
 
 def _clean_profile(profile: list[list[Any]]) -> list[list[Any]]:

@@ -21,7 +21,7 @@ from geophires_x.EconomicsSam import (
 )
 
 # noinspection PyProtectedMember
-from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label
+from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -165,6 +165,9 @@ class EconomicsSamTestCase(BaseTestCase):
     def test_is_category_row_label(self):
         self.assertTrue(_is_category_row_label('OPERATING ACTIVITIES'))
         self.assertFalse(_is_category_row_label('plus PBI if not available for debt service:'))
+
+    def test_is_designator_row_label(self):
+        self.assertTrue(_is_designator_row_label('plus PBI if not available for debt service:'))
 
     def test_sig_figs(self):
         self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])

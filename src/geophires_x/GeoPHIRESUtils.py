@@ -637,5 +637,7 @@ def is_float(o: Any) -> bool:
         float(o)
     except ValueError:
         return False
+    except TypeError:
+        return False
     else:
         return True

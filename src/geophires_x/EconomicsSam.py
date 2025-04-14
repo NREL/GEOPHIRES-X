@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from functools import lru_cache
+from math import isnan
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
+from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.Parameter import Parameter
 from geophires_x.Units import convertible_unit
 
@@ -98,13 +100,26 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
     # fmt:off
     _tabulate_kw_args = {
         'tablefmt': 'tsv',
-        'floatfmt': '.2f',
-        'intfmt': ',',
+        'floatfmt': ',.2f',
+        # 'floatfmt': ':,',
         **tabulate_kw_args
     }
+
     # fmt:on
 
-    return tabulate(model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY], **_tabulate_kw_args)
+    def get_entry_display(entry: Any) -> str:
+        if is_float(entry):
+            if not isnan(float(entry)):
+                entry_display = f'{entry:,.2f}' if not is_int(entry) else f'{entry:,}'
+                return entry_display
+        return entry
+
+    profile_display = model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY].copy()
+    for i in range(len(profile_display)):
+        for j in range(len(profile_display[i])):
+            profile_display[i][j] = get_entry_display(profile_display[i][j])
+
+    return tabulate(profile_display, **_tabulate_kw_args)
 
 
 def _get_utility_rate_parameters(model: Model) -> dict[str, Any]:
@@ -182,7 +197,7 @@ def _get_average_net_generation_MW(model: Model) -> float:
     return np.average(model.surfaceplant.NetElectricityProduced.value)
 
 
-def _sig_figs(val: float, num_sig_figs: int) -> float:
+def _sig_figs(val: float | list | tuple, num_sig_figs: int) -> float:
     """
     TODO move to utilities, probably
     """

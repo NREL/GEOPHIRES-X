@@ -118,6 +118,14 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
             line_entries = line
             row_label = line_entries[0]
+
+            # Some row labels have seemingly-erroneous extra spaces e.g.  `Reserves debt service disbursement  ($)`
+            row_label = re.sub(r'\s+', ' ', row_label)
+
+            if row_label == '':
+                blank_row()
+                continue
+
             if re.match(r'^[a-z]+:$', row_label):
                 # designator_row(row_label)
                 # TODO/WIP - skip designator rows because they may be incorrect until all output properties have been
@@ -335,6 +343,544 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Present value of non-fuel O&M expenses ($)': 'present_value_oandm_nonfuel',
     'WACC Weighted average cost of capital': 'wacc',
     'NTE Not to exceed Year 1 (cents/kWh)': 'year1_nte',
+    'Initial cost less cash incentives ($)': 'adjusted_installed_cost',  # Singleowner
+    'IRR at end of analysis period (%)': 'analysis_period_irr',  # Singleowner
+    'Reserves debt service disbursement ($)': 'cf_disbursement_debtservice',  # Singleowner
+    'Reserves major equipment 1 disbursement ($)': 'cf_disbursement_equip1',  # Singleowner
+    'Reserves major equipment 2 disbursement ($)': 'cf_disbursement_equip2',  # Singleowner
+    'Reserves major equipment 3 disbursement ($)': 'cf_disbursement_equip3',  # Singleowner
+    'Reserves working capital disbursement ($)': 'cf_disbursement_om',  # Singleowner
+    'Reserves receivables disbursement ($)': 'cf_disbursement_receivables',  # Singleowner
+    'Electricity curtailed (kWh)': 'cf_energy_curtailed',  # Singleowner
+    'Energy produced by year in April (kWh)': 'cf_energy_sales_apr',  # Singleowner
+    'Energy produced by year in August (kWh)': 'cf_energy_sales_aug',  # Singleowner
+    'Energy produced by year in December (kWh)': 'cf_energy_sales_dec',  # Singleowner
+    'Energy produced by year in TOD period 1 (kWh)': 'cf_energy_sales_dispatch1',  # Singleowner
+    'Energy produced by year in TOD period 2 (kWh)': 'cf_energy_sales_dispatch2',  # Singleowner
+    'Energy produced by year in TOD period 3 (kWh)': 'cf_energy_sales_dispatch3',  # Singleowner
+    'Energy produced by year in TOD period 4 (kWh)': 'cf_energy_sales_dispatch4',  # Singleowner
+    'Energy produced by year in TOD period 5 (kWh)': 'cf_energy_sales_dispatch5',  # Singleowner
+    'Energy produced by year in TOD period 6 (kWh)': 'cf_energy_sales_dispatch6',  # Singleowner
+    'Energy produced by year in TOD period 7 (kWh)': 'cf_energy_sales_dispatch7',  # Singleowner
+    'Energy produced by year in TOD period 8 (kWh)': 'cf_energy_sales_dispatch8',  # Singleowner
+    'Energy produced by year in TOD period 9 (kWh)': 'cf_energy_sales_dispatch9',  # Singleowner
+    'Energy produced by year in February (kWh)': 'cf_energy_sales_feb',  # Singleowner
+    'Energy produced by year in January (kWh)': 'cf_energy_sales_jan',  # Singleowner
+    'Energy produced by year in July (kWh)': 'cf_energy_sales_jul',  # Singleowner
+    'Energy produced by year in June (kWh)': 'cf_energy_sales_jun',  # Singleowner
+    'Energy produced by year in March (kWh)': 'cf_energy_sales_mar',  # Singleowner
+    'Energy produced by year in May (kWh)': 'cf_energy_sales_may',  # Singleowner
+    'Energy produced in Year 1 by month for TOD period 1 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD1',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 2 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD2',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 3 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD3',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 4 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD4',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 5 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD5',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 6 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD6',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 7 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD7',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 8 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD8',
+    # Singleowner
+    'Energy produced in Year 1 by month for TOD period 9 (kWh)': 'cf_energy_sales_monthly_firstyear_TOD9',
+    # Singleowner
+    'Energy produced by year in November (kWh)': 'cf_energy_sales_nov',  # Singleowner
+    'Energy produced by year in October (kWh)': 'cf_energy_sales_oct',  # Singleowner
+    'Energy produced by year in September (kWh)': 'cf_energy_sales_sep',  # Singleowner
+    'Electricity generated without storage (kWh)': 'cf_energy_without_battery',  # Singleowner
+    'Federal depreciation from custom ($)': 'cf_feddepr_custom',  # Singleowner
+    'Federal depreciation from 15-yr MACRS ($)': 'cf_feddepr_macrs_15',  # Singleowner
+    'Federal depreciation from 5-yr MACRS ($)': 'cf_feddepr_macrs_5',  # Singleowner
+    'Federal depreciation from major equipment 1 ($)': 'cf_feddepr_me1',  # Singleowner
+    'Federal depreciation from major equipment 2 ($)': 'cf_feddepr_me2',  # Singleowner
+    'Federal depreciation from major equipment 3 ($)': 'cf_feddepr_me3',  # Singleowner
+    'Federal depreciation from 15-yr straight line ($)': 'cf_feddepr_sl_15',  # Singleowner
+    'Federal depreciation from 20-yr straight line ($)': 'cf_feddepr_sl_20',  # Singleowner
+    'Federal depreciation from 39-yr straight line ($)': 'cf_feddepr_sl_39',  # Singleowner
+    'Federal depreciation from 5-yr straight line ($)': 'cf_feddepr_sl_5',  # Singleowner
+    'Total federal tax depreciation ($)': 'cf_feddepr_total',  # Singleowner
+    'Federal taxable income without incentives ($)': 'cf_fedtax_income_prior_incentives',  # Singleowner
+    'Federal taxable income ($)': 'cf_fedtax_income_with_incentives',  # Singleowner
+    'Federal taxable incentives ($)': 'cf_fedtax_taxable_incentives',  # Singleowner
+    'Reserves debt service funding ($)': 'cf_funding_debtservice',  # Singleowner
+    'Reserves major equipment 1 funding ($)': 'cf_funding_equip1',  # Singleowner
+    'Reserves major equipment 2 funding ($)': 'cf_funding_equip2',  # Singleowner
+    'Reserves major equipment 3 funding ($)': 'cf_funding_equip3',  # Singleowner
+    'Reserves working capital funding ($)': 'cf_funding_om',  # Singleowner
+    'Reserves receivables funding ($)': 'cf_funding_receivables',  # Singleowner
+    'Number of periods in cashflow': 'cf_length',  # Singleowner
+    'Reserve (increase)/decrease debt service ($)': 'cf_project_dsra',  # Singleowner
+    'Reserve capital spending major equipment 1 ($)': 'cf_project_me1cs',  # Singleowner
+    'Reserve (increase)/decrease major equipment 1 ($)': 'cf_project_me1ra',  # Singleowner
+    'Reserve capital spending major equipment 2 ($)': 'cf_project_me2cs',  # Singleowner
+    'Reserve (increase)/decrease major equipment 2 ($)': 'cf_project_me2ra',  # Singleowner
+    'Reserve capital spending major equipment 3 ($)': 'cf_project_me3cs',  # Singleowner
+    'Reserve (increase)/decrease major equipment 3 ($)': 'cf_project_me3ra',  # Singleowner
+    'Reserve capital spending major equipment total ($)': 'cf_project_mecs',  # Singleowner
+    'Reserve (increase)/decrease total reserve account ($)': 'cf_project_ra',  # Singleowner
+    'Reserve (increase)/decrease receivables ($)': 'cf_project_receivablesra',  # Singleowner
+    'Total after-tax cash returns ($)': 'cf_project_return_aftertax_cash',  # Singleowner
+    'After-tax project maximum IRR (%)': 'cf_project_return_aftertax_max_irr',  # Singleowner
+    'Pre-tax cumulative IRR (%)': 'cf_project_return_pretax_irr',  # Singleowner
+    'Pre-tax cumulative NPV ($)': 'cf_project_return_pretax_npv',  # Singleowner
+    'Reserve (increase)/decrease working capital ($)': 'cf_project_wcra',  # Singleowner
+    'Present value of CAFDS ($)': 'cf_pv_cash_for_ds',  # Singleowner
+    'Present value interest factor for CAFDS': 'cf_pv_interest_factor',  # Singleowner
+    'Recapitalization operating expense ($)': 'cf_recapitalization',  # Singleowner
+    'Reserves debt service balance ($)': 'cf_reserve_debtservice',  # Singleowner
+    'Reserves major equipment 1 balance ($)': 'cf_reserve_equip1',  # Singleowner
+    'Reserves major equipment 2 balance ($)': 'cf_reserve_equip2',  # Singleowner
+    'Reserves major equipment 3 balance ($)': 'cf_reserve_equip3',  # Singleowner
+    'Reserves working capital balance ($)': 'cf_reserve_om',  # Singleowner
+    'Reserves receivables balance ($)': 'cf_reserve_receivables',  # Singleowner
+    'Reserves total reserves balance ($)': 'cf_reserve_total',  # Singleowner
+    'PPA revenue by year for April ($)': 'cf_revenue_apr',  # Singleowner
+    'PPA revenue by year for August ($)': 'cf_revenue_aug',  # Singleowner
+    'PPA revenue by year for December ($)': 'cf_revenue_dec',  # Singleowner
+    'PPA revenue by year for TOD period 1 ($)': 'cf_revenue_dispatch1',  # Singleowner
+    'PPA revenue by year for TOD period 2 ($)': 'cf_revenue_dispatch2',  # Singleowner
+    'PPA revenue by year for TOD period 3 ($)': 'cf_revenue_dispatch3',  # Singleowner
+    'PPA revenue by year for TOD period 4 ($)': 'cf_revenue_dispatch4',  # Singleowner
+    'PPA revenue by year for TOD period 5 ($)': 'cf_revenue_dispatch5',  # Singleowner
+    'PPA revenue by year for TOD period 6 ($)': 'cf_revenue_dispatch6',  # Singleowner
+    'PPA revenue by year for TOD period 7 ($)': 'cf_revenue_dispatch7',  # Singleowner
+    'PPA revenue by year for TOD period 8 ($)': 'cf_revenue_dispatch8',  # Singleowner
+    'PPA revenue by year for TOD period 9 ($)': 'cf_revenue_dispatch9',  # Singleowner
+    'PPA revenue by year for February ($)': 'cf_revenue_feb',  # Singleowner
+    'PPA revenue by year for January ($)': 'cf_revenue_jan',  # Singleowner
+    'PPA revenue by year for July ($)': 'cf_revenue_jul',  # Singleowner
+    'PPA revenue by year for June ($)': 'cf_revenue_jun',  # Singleowner
+    'PPA revenue by year for March ($)': 'cf_revenue_mar',  # Singleowner
+    'PPA revenue by year for May ($)': 'cf_revenue_may',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 1 ($)': 'cf_revenue_monthly_firstyear_TOD1',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 2 ($)': 'cf_revenue_monthly_firstyear_TOD2',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 3 ($)': 'cf_revenue_monthly_firstyear_TOD3',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 4 ($)': 'cf_revenue_monthly_firstyear_TOD4',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 5 ($)': 'cf_revenue_monthly_firstyear_TOD5',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 6 ($)': 'cf_revenue_monthly_firstyear_TOD6',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 7 ($)': 'cf_revenue_monthly_firstyear_TOD7',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 8 ($)': 'cf_revenue_monthly_firstyear_TOD8',  # Singleowner
+    'PPA revenue in Year 1 by month for TOD period 9 ($)': 'cf_revenue_monthly_firstyear_TOD9',  # Singleowner
+    'PPA revenue by year for November ($)': 'cf_revenue_nov',  # Singleowner
+    'PPA revenue by year for October ($)': 'cf_revenue_oct',  # Singleowner
+    'PPA revenue by year for September ($)': 'cf_revenue_sep',  # Singleowner
+    'State depreciation from custom ($)': 'cf_stadepr_custom',  # Singleowner
+    'State depreciation from 15-yr MACRS ($)': 'cf_stadepr_macrs_15',  # Singleowner
+    'State depreciation from 5-yr MACRS ($)': 'cf_stadepr_macrs_5',  # Singleowner
+    'State depreciation from major equipment 1 ($)': 'cf_stadepr_me1',  # Singleowner
+    'State depreciation from major equipment 2 ($)': 'cf_stadepr_me2',  # Singleowner
+    'State depreciation from major equipment 3 ($)': 'cf_stadepr_me3',  # Singleowner
+    'State depreciation from 15-yr straight line ($)': 'cf_stadepr_sl_15',  # Singleowner
+    'State depreciation from 20-yr straight line ($)': 'cf_stadepr_sl_20',  # Singleowner
+    'State depreciation from 39-yr straight line ($)': 'cf_stadepr_sl_39',  # Singleowner
+    'State depreciation from 5-yr straight line ($)': 'cf_stadepr_sl_5',  # Singleowner
+    'Total state tax depreciation ($)': 'cf_stadepr_total',  # Singleowner
+    'State taxable income without incentives ($)': 'cf_statax_income_prior_incentives',  # Singleowner
+    'State taxable income ($)': 'cf_statax_income_with_incentives',  # Singleowner
+    'State taxable incentives ($)': 'cf_statax_taxable_incentives',  # Singleowner
+    'Thermal revenue ($)': 'cf_thermal_value',  # Singleowner
+    'Total financing cost ($)': 'cost_financing',  # Singleowner
+    'Net capital cost per watt ($/W)': 'cost_installedperwatt',  # Singleowner
+    'Debt percent (%)': 'debt_fraction',  # Singleowner
+    'Custom straight line depreciation federal and state allocation ($)': 'depr_alloc_custom',  # Singleowner
+    '15-yr MACRS depreciation federal and state allocation ($)': 'depr_alloc_macrs_15',  # Singleowner
+    '5-yr MACRS depreciation federal and state allocation ($)': 'depr_alloc_macrs_5',  # Singleowner
+    'Non-depreciable federal and state allocation ($)': 'depr_alloc_none',  # Singleowner
+    'Non-depreciable federal and state allocation (%)': 'depr_alloc_none_percent',  # Singleowner
+    '15-yr straight line depreciation federal and state allocation ($)': 'depr_alloc_sl_15',  # Singleowner
+    '20-yr straight line depreciation federal and state allocation ($)': 'depr_alloc_sl_20',  # Singleowner
+    '39-yr straight line depreciation federal and state allocation ($)': 'depr_alloc_sl_39',  # Singleowner
+    '5-yr straight line depreciation federal and state allocation ($)': 'depr_alloc_sl_5',  # Singleowner
+    'Total depreciation federal and state allocation ($)': 'depr_alloc_total',  # Singleowner
+    'Custom straight line federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_custom',
+    # Singleowner
+    '15-yr MACRS federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_macrs_15',  # Singleowner
+    '5-yr MACRS federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_macrs_5',  # Singleowner
+    '15-yr straight line federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_sl_15',
+    # Singleowner
+    '20-yr straight line federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_sl_20',
+    # Singleowner
+    '39-yr straight line federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_sl_39',
+    # Singleowner
+    '5-yr straight line federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_sl_5',
+    # Singleowner
+    'Total federal depreciation basis after ITC reduction ($)': 'depr_fedbas_after_itc_total',  # Singleowner
+    'Custom straight line federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_custom',  # Singleowner
+    '15-yr MACRS federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_macrs_15',  # Singleowner
+    '5-yr MACRS federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_macrs_5',  # Singleowner
+    '15-yr straight line federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_sl_15',  # Singleowner
+    '20-yr straight line federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_sl_20',  # Singleowner
+    '39-yr straight line federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_sl_39',  # Singleowner
+    '5-yr straight line federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_sl_5',  # Singleowner
+    'Total federal CBI reduction ($)': 'depr_fedbas_cbi_reduc_total',  # Singleowner
+    'Custom straight line federal depreciation basis ($)': 'depr_fedbas_custom',  # Singleowner
+    'Custom straight line federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_custom',
+    # Singleowner
+    '15-yr MACRS federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_macrs_15',  # Singleowner
+    '5-yr MACRS federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_macrs_5',  # Singleowner
+    '15-yr straight line federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_sl_15',
+    # Singleowner
+    '20-yr straight line federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_sl_20',
+    # Singleowner
+    '39-yr straight line federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_sl_39',
+    # Singleowner
+    '5-yr straight line federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_sl_5',  # Singleowner
+    'Total federal first year bonus depreciation ($)': 'depr_fedbas_first_year_bonus_total',  # Singleowner
+    'Custom straight line depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis from federal fixed amount ($)': 'depr_fedbas_fixed_amount_total',  # Singleowner
+    'Custom straight line federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_custom',  # Singleowner
+    '15-yr MACRS federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_macrs_15',  # Singleowner
+    '5-yr MACRS federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_macrs_5',  # Singleowner
+    '15-yr straight line federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_sl_15',  # Singleowner
+    '20-yr straight line federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_sl_20',  # Singleowner
+    '39-yr straight line federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_sl_39',  # Singleowner
+    '5-yr straight line federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_sl_5',  # Singleowner
+    'Total federal IBI reduction ($)': 'depr_fedbas_ibi_reduc_total',  # Singleowner
+    'Custom straight line federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_custom',
+    # Singleowner
+    '15-yr MACRS federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_macrs_15',  # Singleowner
+    '5-yr MACRS federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_macrs_5',  # Singleowner
+    '15-yr straight line federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_sl_15',  # Singleowner
+    '20-yr straight line federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_sl_20',  # Singleowner
+    '39-yr straight line federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_sl_39',  # Singleowner
+    '5-yr straight line federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_sl_5',  # Singleowner
+    'Total federal basis federal ITC reduction ($)': 'depr_fedbas_itc_fed_reduction_total',  # Singleowner
+    'Custom straight line federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_custom',  # Singleowner
+    '15-yr MACRS federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_macrs_15',  # Singleowner
+    '5-yr MACRS federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_macrs_5',  # Singleowner
+    '15-yr straight line federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_sl_15',  # Singleowner
+    '20-yr straight line federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_sl_20',  # Singleowner
+    '39-yr straight line federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_sl_39',  # Singleowner
+    '5-yr straight line federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_sl_5',  # Singleowner
+    'Total federal basis state ITC reduction ($)': 'depr_fedbas_itc_sta_reduction_total',  # Singleowner
+    '15-yr MACRS federal depreciation basis ($)': 'depr_fedbas_macrs_15',  # Singleowner
+    '5-yr MACRS federal depreciation basis ($)': 'depr_fedbas_macrs_5',  # Singleowner
+    'Custom straight line depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis from federal percentage ($)': 'depr_fedbas_percent_amount_total',  # Singleowner
+    'Custom straight line federal percent of total depreciable basis (%)': 'depr_fedbas_percent_custom',  # Singleowner
+    '15-yr MACRS federal percent of total depreciable basis (%)': 'depr_fedbas_percent_macrs_15',  # Singleowner
+    '5-yr MACRS federal percent of total depreciable basis (%)': 'depr_fedbas_percent_macrs_5',  # Singleowner
+    'Custom straight line federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_custom',  # Singleowner
+    '15-yr MACRS federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_macrs_15',  # Singleowner
+    '5-yr MACRS federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_macrs_5',  # Singleowner
+    '15-yr straight line federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_sl_15',  # Singleowner
+    '20-yr straight line federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_sl_20',  # Singleowner
+    '39-yr straight line federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_sl_39',  # Singleowner
+    '5-yr straight line federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_sl_5',  # Singleowner
+    'Total federal percent of qualifying costs (%)': 'depr_fedbas_percent_qual_total',  # Singleowner
+    '15-yr straight line federal percent of total depreciable basis (%)': 'depr_fedbas_percent_sl_15',  # Singleowner
+    '20-yr straight line federal percent of total depreciable basis (%)': 'depr_fedbas_percent_sl_20',  # Singleowner
+    '39-yr straight line federal percent of total depreciable basis (%)': 'depr_fedbas_percent_sl_39',  # Singleowner
+    '5-yr straight line federal percent of total depreciable basis (%)': 'depr_fedbas_percent_sl_5',  # Singleowner
+    'Total federal percent of total depreciable basis (%)': 'depr_fedbas_percent_total',  # Singleowner
+    'Custom straight line federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_custom',
+    # Singleowner
+    '15-yr MACRS federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_macrs_15',  # Singleowner
+    '5-yr MACRS federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_macrs_5',  # Singleowner
+    '15-yr straight line federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_sl_15',
+    # Singleowner
+    '20-yr straight line federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_sl_20',
+    # Singleowner
+    '39-yr straight line federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_sl_39',
+    # Singleowner
+    '5-yr straight line federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_sl_5',
+    # Singleowner
+    'Total federal depreciation basis prior ITC reduction ($)': 'depr_fedbas_prior_itc_total',  # Singleowner
+    '15-yr straight line federal depreciation basis ($)': 'depr_fedbas_sl_15',  # Singleowner
+    '20-yr straight line federal depreciation basis ($)': 'depr_fedbas_sl_20',  # Singleowner
+    '39-yr straight line federal depreciation basis ($)': 'depr_fedbas_sl_39',  # Singleowner
+    '5-yr straight line federal depreciation basis ($)': 'depr_fedbas_sl_5',  # Singleowner
+    'Total federal depreciation basis ($)': 'depr_fedbas_total',  # Singleowner
+    'Custom straight line state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_custom',
+    # Singleowner
+    '15-yr MACRS state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_macrs_15',  # Singleowner
+    '5-yr MACRS state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_macrs_5',  # Singleowner
+    '15-yr straight line state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_sl_15',
+    # Singleowner
+    '20-yr straight line state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_sl_20',
+    # Singleowner
+    '39-yr straight line state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_sl_39',
+    # Singleowner
+    '5-yr straight line state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_sl_5',  # Singleowner
+    'Total state depreciation basis after ITC reduction ($)': 'depr_stabas_after_itc_total',  # Singleowner
+    'Custom straight line state CBI reduction ($)': 'depr_stabas_cbi_reduc_custom',  # Singleowner
+    '15-yr MACRS state CBI reduction ($)': 'depr_stabas_cbi_reduc_macrs_15',  # Singleowner
+    '5-yr MACRS state CBI reduction ($)': 'depr_stabas_cbi_reduc_macrs_5',  # Singleowner
+    '15-yr straight line state CBI reduction ($)': 'depr_stabas_cbi_reduc_sl_15',  # Singleowner
+    '20-yr straight line state CBI reduction ($)': 'depr_stabas_cbi_reduc_sl_20',  # Singleowner
+    '39-yr straight line state CBI reduction ($)': 'depr_stabas_cbi_reduc_sl_39',  # Singleowner
+    '5-yr straight line state CBI reduction ($)': 'depr_stabas_cbi_reduc_sl_5',  # Singleowner
+    'Total state CBI reduction ($)': 'depr_stabas_cbi_reduc_total',  # Singleowner
+    'Custom straight line state depreciation basis ($)': 'depr_stabas_custom',  # Singleowner
+    'Custom straight line state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_custom',
+    # Singleowner
+    '15-yr MACRS state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_macrs_15',  # Singleowner
+    '5-yr MACRS state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_macrs_5',  # Singleowner
+    '15-yr straight line state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_sl_15',  # Singleowner
+    '20-yr straight line state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_sl_20',  # Singleowner
+    '39-yr straight line state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_sl_39',  # Singleowner
+    '5-yr straight line state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_sl_5',  # Singleowner
+    'Total state first year bonus depreciation ($)': 'depr_stabas_first_year_bonus_total',  # Singleowner
+    'Custom straight line depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_macrs_5',  # Singleowner
+    '15-yr straight line depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis from state fixed amount ($)': 'depr_stabas_fixed_amount_total',  # Singleowner
+    'Custom straight line state IBI reduction ($)': 'depr_stabas_ibi_reduc_custom',  # Singleowner
+    '15-yr MACRS state IBI reduction ($)': 'depr_stabas_ibi_reduc_macrs_15',  # Singleowner
+    '5-yr MACRS state IBI reduction ($)': 'depr_stabas_ibi_reduc_macrs_5',  # Singleowner
+    '15-yr straight line state IBI reduction ($)': 'depr_stabas_ibi_reduc_sl_15',  # Singleowner
+    '20-yr straight line state IBI reduction ($)': 'depr_stabas_ibi_reduc_sl_20',  # Singleowner
+    '39-yr straight line state IBI reduction ($)': 'depr_stabas_ibi_reduc_sl_39',  # Singleowner
+    '5-yr straight line state IBI reduction ($)': 'depr_stabas_ibi_reduc_sl_5',  # Singleowner
+    'Total state IBI reduction ($)': 'depr_stabas_ibi_reduc_total',  # Singleowner
+    'Custom straight line state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_custom',  # Singleowner
+    '15-yr MACRS state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_macrs_15',  # Singleowner
+    '5-yr MACRS state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_macrs_5',  # Singleowner
+    '15-yr straight line state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_sl_15',  # Singleowner
+    '20-yr straight line state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_sl_20',  # Singleowner
+    '39-yr straight line state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_sl_39',  # Singleowner
+    '5-yr straight line state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_sl_5',  # Singleowner
+    'Total state basis federal ITC reduction ($)': 'depr_stabas_itc_fed_reduction_total',  # Singleowner
+    'Custom straight line state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_custom',  # Singleowner
+    '15-yr MACRS state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_macrs_15',  # Singleowner
+    '5-yr MACRS state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_macrs_5',  # Singleowner
+    '15-yr straight line state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_sl_15',  # Singleowner
+    '20-yr straight line state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_sl_20',  # Singleowner
+    '39-yr straight line state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_sl_39',  # Singleowner
+    '5-yr straight line state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_sl_5',  # Singleowner
+    'Total state basis state ITC reduction ($)': 'depr_stabas_itc_sta_reduction_total',  # Singleowner
+    '15-yr MACRS state depreciation basis ($)': 'depr_stabas_macrs_15',  # Singleowner
+    '5-yr MACRS state depreciation basis ($)': 'depr_stabas_macrs_5',  # Singleowner
+    'Custom straight line depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_macrs_5',  # Singleowner
+    '15-yr straight line depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis from state percentage ($)': 'depr_stabas_percent_amount_total',  # Singleowner
+    'Custom straight line state percent of total depreciable basis (%)': 'depr_stabas_percent_custom',  # Singleowner
+    '15-yr MACRS state percent of total depreciable basis (%)': 'depr_stabas_percent_macrs_15',  # Singleowner
+    '5-yr MACRS state percent of total depreciable basis (%)': 'depr_stabas_percent_macrs_5',  # Singleowner
+    'Custom straight line state percent of qualifying costs (%)': 'depr_stabas_percent_qual_custom',  # Singleowner
+    '15-yr MACRS state percent of qualifying costs (%)': 'depr_stabas_percent_qual_macrs_15',  # Singleowner
+    '5-yr MACRS state percent of qualifying costs (%)': 'depr_stabas_percent_qual_macrs_5',  # Singleowner
+    '15-yr straight line state percent of qualifying costs (%)': 'depr_stabas_percent_qual_sl_15',  # Singleowner
+    '20-yr straight line state percent of qualifying costs (%)': 'depr_stabas_percent_qual_sl_20',  # Singleowner
+    '39-yr straight line state percent of qualifying costs (%)': 'depr_stabas_percent_qual_sl_39',  # Singleowner
+    '5-yr straight line state percent of qualifying costs (%)': 'depr_stabas_percent_qual_sl_5',  # Singleowner
+    'Total state percent of qualifying costs (%)': 'depr_stabas_percent_qual_total',  # Singleowner
+    '15-yr straight line state percent of total depreciable basis (%)': 'depr_stabas_percent_sl_15',  # Singleowner
+    '20-yr straight line state percent of total depreciable basis (%)': 'depr_stabas_percent_sl_20',  # Singleowner
+    '39-yr straight line state percent of total depreciable basis (%)': 'depr_stabas_percent_sl_39',  # Singleowner
+    '5-yr straight line state percent of total depreciable basis (%)': 'depr_stabas_percent_sl_5',  # Singleowner
+    'Total state percent of total depreciable basis (%)': 'depr_stabas_percent_total',  # Singleowner
+    'Custom straight line state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_custom',
+    # Singleowner
+    '15-yr MACRS state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_macrs_15',  # Singleowner
+    '5-yr MACRS state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_macrs_5',  # Singleowner
+    '15-yr straight line state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_sl_15',
+    # Singleowner
+    '20-yr straight line state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_sl_20',
+    # Singleowner
+    '39-yr straight line state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_sl_39',
+    # Singleowner
+    '5-yr straight line state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_sl_5',  # Singleowner
+    'Total state depreciation basis prior ITC reduction ($)': 'depr_stabas_prior_itc_total',  # Singleowner
+    '15-yr straight line state depreciation basis ($)': 'depr_stabas_sl_15',  # Singleowner
+    '20-yr straight line state depreciation basis ($)': 'depr_stabas_sl_20',  # Singleowner
+    '39-yr straight line state depreciation basis ($)': 'depr_stabas_sl_39',  # Singleowner
+    '5-yr straight line state depreciation basis ($)': 'depr_stabas_sl_5',  # Singleowner
+    'Total state depreciation basis ($)': 'depr_stabas_total',  # Singleowner
+    'Energy produced in Year 1 TOD period 1 (kWh)': 'firstyear_energy_dispatch1',  # Singleowner
+    'Energy produced in Year 1 TOD period 2 (kWh)': 'firstyear_energy_dispatch2',  # Singleowner
+    'Energy produced in Year 1 TOD period 3 (kWh)': 'firstyear_energy_dispatch3',  # Singleowner
+    'Energy produced in Year 1 TOD period 4 (kWh)': 'firstyear_energy_dispatch4',  # Singleowner
+    'Energy produced in Year 1 TOD period 5 (kWh)': 'firstyear_energy_dispatch5',  # Singleowner
+    'Energy produced in Year 1 TOD period 6 (kWh)': 'firstyear_energy_dispatch6',  # Singleowner
+    'Energy produced in Year 1 TOD period 7 (kWh)': 'firstyear_energy_dispatch7',  # Singleowner
+    'Energy produced in Year 1 TOD period 8 (kWh)': 'firstyear_energy_dispatch8',  # Singleowner
+    'Energy produced in Year 1 TOD period 9 (kWh)': 'firstyear_energy_dispatch9',  # Singleowner
+    'Power price in Year 1 TOD period 1 (cents/kWh)': 'firstyear_energy_price1',  # Singleowner
+    'Power price in Year 1 TOD period 2 (cents/kWh)': 'firstyear_energy_price2',  # Singleowner
+    'Power price in Year 1 TOD period 3 (cents/kWh)': 'firstyear_energy_price3',  # Singleowner
+    'Power price in Year 1 TOD period 4 (cents/kWh)': 'firstyear_energy_price4',  # Singleowner
+    'Power price in Year 1 TOD period 5 (cents/kWh)': 'firstyear_energy_price5',  # Singleowner
+    'Power price in Year 1 TOD period 6 (cents/kWh)': 'firstyear_energy_price6',  # Singleowner
+    'Power price in Year 1 TOD period 7 (cents/kWh)': 'firstyear_energy_price7',  # Singleowner
+    'Power price in Year 1 TOD period 8 (cents/kWh)': 'firstyear_energy_price8',  # Singleowner
+    'Power price in Year 1 TOD period 9 (cents/kWh)': 'firstyear_energy_price9',  # Singleowner
+    'PPA revenue in Year 1 TOD period 1 ($)': 'firstyear_revenue_dispatch1',  # Singleowner
+    'PPA revenue in Year 1 TOD period 2 ($)': 'firstyear_revenue_dispatch2',  # Singleowner
+    'PPA revenue in Year 1 TOD period 3 ($)': 'firstyear_revenue_dispatch3',  # Singleowner
+    'PPA revenue in Year 1 TOD period 4 ($)': 'firstyear_revenue_dispatch4',  # Singleowner
+    'PPA revenue in Year 1 TOD period 5 ($)': 'firstyear_revenue_dispatch5',  # Singleowner
+    'PPA revenue in Year 1 TOD period 6 ($)': 'firstyear_revenue_dispatch6',  # Singleowner
+    'PPA revenue in Year 1 TOD period 7 ($)': 'firstyear_revenue_dispatch7',  # Singleowner
+    'PPA revenue in Year 1 TOD period 8 ($)': 'firstyear_revenue_dispatch8',  # Singleowner
+    'PPA revenue in Year 1 TOD period 9 ($)': 'firstyear_revenue_dispatch9',  # Singleowner
+    'IRR in target year (%)': 'flip_actual_irr',  # Singleowner
+    'Year target IRR was achieved (year)': 'flip_actual_year',  # Singleowner
+    'IRR target (%)': 'flip_target_irr',  # Singleowner
+    'Target year to meet IRR': 'flip_target_year',  # Singleowner
+    'Custom straight line depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis disallowance from federal fixed amount ($)': 'itc_disallow_fed_fixed_total',
+    # Singleowner
+    'Custom straight line depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis disallowance from federal percentage ($)': 'itc_disallow_fed_percent_total',
+    # Singleowner
+    'Custom straight line depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis disallowance from state fixed amount ($)': 'itc_disallow_sta_fixed_total',
+    # Singleowner
+    'Custom straight line depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_custom',
+    # Singleowner
+    '15-yr MACRS depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_macrs_15',
+    # Singleowner
+    '5-yr MACRS depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_macrs_5',
+    # Singleowner
+    '15-yr straight line depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_sl_15',
+    # Singleowner
+    '20-yr straight line depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_sl_20',
+    # Singleowner
+    '39-yr straight line depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_sl_39',
+    # Singleowner
+    '5-yr straight line depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_sl_5',
+    # Singleowner
+    'Total depreciation ITC basis disallowance from state percentage ($)': 'itc_disallow_sta_percent_total',
+    # Singleowner
+    'Federal ITC fixed total ($)': 'itc_fed_fixed_total',  # Singleowner
+    'Federal ITC percent total ($)': 'itc_fed_percent_total',  # Singleowner
+    'Custom straight line depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_custom',  # Singleowner
+    '15-yr MACRS depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_macrs_15',  # Singleowner
+    '5-yr MACRS depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_macrs_5',  # Singleowner
+    '15-yr straight line depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_sl_15',  # Singleowner
+    '20-yr straight line depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_sl_20',  # Singleowner
+    '39-yr straight line depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_sl_39',  # Singleowner
+    '5-yr straight line depreciation federal ITC adj qualifying costs ($)': 'itc_fed_qual_sl_5',  # Singleowner
+    'Total federal ITC adj qualifying costs ($)': 'itc_fed_qual_total',  # Singleowner
+    'State ITC fixed total ($)': 'itc_sta_fixed_total',  # Singleowner
+    'State ITC percent total ($)': 'itc_sta_percent_total',  # Singleowner
+    'Custom straight line depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_custom',  # Singleowner
+    '15-yr MACRS depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_macrs_15',  # Singleowner
+    '5-yr MACRS depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_macrs_5',  # Singleowner
+    '15-yr straight line depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_sl_15',  # Singleowner
+    '20-yr straight line depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_sl_20',  # Singleowner
+    '39-yr straight line depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_sl_39',  # Singleowner
+    '5-yr straight line depreciation state ITC adj qualifying costs ($)': 'itc_sta_qual_sl_5',  # Singleowner
+    'Total state ITC adj qualifying costs ($)': 'itc_sta_qual_total',  # Singleowner
+    'LPPA Levelized PPA price real (cents/kWh)': 'lppa_real',  # Singleowner
+    'Minimum DSCR': 'min_dscr',  # Singleowner
+    'Present value of capacity payment revenue ($)': 'npv_capacity_revenue',  # Singleowner
+    'Present value of curtailment payment revenue ($)': 'npv_curtailment_revenue',  # Singleowner
+    'Present value of annual energy nominal (kWh)': 'npv_energy_nom',  # Singleowner
+    'Present value of annual energy real (kWh)': 'npv_energy_real',  # Singleowner
+    'Present value of federal PBI income ($)': 'npv_fed_pbi_income',  # Singleowner
+    'Present value of other PBI income ($)': 'npv_oth_pbi_income',  # Singleowner
+    'Present value of salvage value ($)': 'npv_salvage_value',  # Singleowner
+    'Present value of state PBI income ($)': 'npv_sta_pbi_income',  # Singleowner
+    'Present value of thermal value ($)': 'npv_thermal_value',  # Singleowner
+    'Present value of utility PBI income ($)': 'npv_uti_pbi_income',  # Singleowner
+    'PPA price in Year 1 (cents/kWh)': 'ppa',  # Singleowner
+    'PPA price escalation (%/year)': 'ppa_escalation',  # Singleowner
+    'TOD factors': 'ppa_multipliers',  # Singleowner
+    'PPA price in first year (cents/kWh)': 'ppa_price',  # Singleowner
+    'Depreciable basis prior to allocation ($)': 'pre_depr_alloc_basis',  # Singleowner
+    'ITC basis prior to qualification ($)': 'pre_itc_qual_basis',  # Singleowner
+    'Present value of fuel O&M ($)': 'present_value_fuel',  # Singleowner
+    'Present value of insurance and prop tax ($)': 'present_value_insandproptax',  # Singleowner
+    'Present value of O&M ($)': 'present_value_oandm',  # Singleowner
+    'Present value of non-fuel O&M ($)': 'present_value_oandm_nonfuel',  # Singleowner
+    'IRR Internal rate of return (%)': 'project_return_aftertax_irr',  # Singleowner
+    'Assessed value of property for tax purposes ($)': 'prop_tax_assessed_value',  # Singleowner
+    'Present value of CAFDS ($)': 'pv_cafds',  # Singleowner
+    'Electricity to grid (kW)': 'revenue_gen',  # Singleowner
+    'Net pre-tax cash salvage value ($)': 'salvage_value',  # Singleowner
+    'WACC Weighted average cost of capital ($)': 'wacc',  # Singleowner
 }
 
 
@@ -447,17 +993,16 @@ def _get_file_path(file_name) -> str:
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)
 
 
-def generate_mapping_from_cashloan_module_doc():
-
-    with open(_get_file_path('sam_economics/cashloan.html.txt'), encoding='utf-8') as f:
+def _generate_mapping_from_module_doc(module_name: str = 'Cashloan'):
+    with open(_get_file_path(f'sam_economics/{module_name}.html.txt'), encoding='utf-8') as f:
         # lines = f.readlines()
 
         txt = f.read()
         # lines = txt.split('PySAM.Cashloan.Cashloan.Outputs')[1].split('\n')
-        txt = txt.split('PySAM.Cashloan.Cashloan.Outputs')[1].split('Outputs_vals =')[2]
+        txt = txt.split(f'PySAM.{module_name}.{module_name}.Outputs')[1].split('Outputs_vals =')[2]
         lines = txt.split('\n')[2:]
 
-        _log.debug(f'Found {len(lines)} lines cashloan in module doc')
+        _log.debug(f'Found {len(lines)} lines {module_name} in module doc')
         for i in range(0, len(lines), 8):
             prop = lines[i].strip()[:-1]
             if prop == '':
@@ -465,8 +1010,9 @@ def generate_mapping_from_cashloan_module_doc():
             display_name = lines[i + 2].strip().replace('[', '(').replace(']', ')')
             # _log.debug(f'Property: {prop}')
             if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
-                print(f"\t'{display_name}': '{prop}',")
+                print(f"\t'{display_name}': '{prop}',  # {module_name}")
 
 
 if __name__ == '__main__':
-    generate_mapping_from_cashloan_module_doc()
+    _generate_mapping_from_module_doc('Cashloan')
+    _generate_mapping_from_module_doc('Singleowner')

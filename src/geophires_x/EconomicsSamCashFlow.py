@@ -170,10 +170,19 @@ def _clean_profile(profile: list[list[Any]]) -> list[list[Any]]:
     return profile_cleaned
 
 
+# fmt:off
 _SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL = {
     "Debt closing costs ($)": "cost_financing",
     'Total installed cost ($)': lambda _soo: -1.0 * _soo.cost_installed,
+
+    # TODO: present in https://nrel-pysam.readthedocs.io/en/main/modules/CbConstructionFinancing.html#outputs-group,
+    #   but unclear where it's accessible from the Singleowner module object
+    # 'Total construction financing cost ($)': 'construction_financing_cost'
+
+    # TODO: unclear what this is derived from
+    # 'Other financing cost ($)'
 }
+# fmt:on
 
 
 def _get_file_path(file_name) -> str:

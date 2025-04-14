@@ -684,51 +684,11 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                f.write(NL)
-                f.write(NL)
-                f.write('                             ********************************\n')
-                f.write('                             *  REVENUE & CASHFLOW PROFILE  *\n')
-                f.write('                             ********************************\n')
-                f.write(
-                    'Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project' + NL)
-                f.write(
-                    'Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow' + NL)
+                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    self.write_revenue_and_cashflow_profile_output(model, f)
 
-                def o(output_param: OutputParameter):
-                    # TODO generalize this and/or FIXME make it unnecessary
-                    if output_param.Name in econ.OutputParameterDict:
-                        return econ.OutputParameterDict[output_param.Name]
-                    else:
-                        return output_param
-
-                f.write('Start    ('
-                        + o(econ.ElecPrice).CurrentUnits.value +
-                        ')(' + o(econ.ElecRevenue).CurrentUnits.value +
-                        ') (' + o(econ.ElecCummRevenue).CurrentUnits.value +
-                        ')    |(' + o(econ.HeatPrice).CurrentUnits.value +
-                        ') (' + o(econ.HeatRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.HeatCummRevenue).CurrentUnits.value +
-                        ')   |(' + o(econ.CoolingPrice).CurrentUnits.value +
-                        ') (' + o(econ.CoolingRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.CoolingCummRevenue).CurrentUnits.value +
-                        ')    |(' + o(econ.CarbonPrice).CurrentUnits.value +
-                        ')    (' + o(econ.CarbonRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.CarbonCummCashFlow).CurrentUnits.value +
-                        ')    |(' + o(econ.Coam).CurrentUnits.value +
-                        ') (' + o(econ.TotalRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.TotalCummRevenue).CurrentUnits.value + ')\n')
-                f.write(
-                    '________________________________________________________________________________________________________________________________________________________________________________________' + NL)
-                # running years...
-                for ii in range(0, (
-                    model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value), 1):
-                    if ii < model.surfaceplant.construction_years.value:
-                        opex = 0.0   # zero out the OPEX during construction years
-                    else:
-                        opex = o(econ.Coam).value
-                    f.write(
-                        f'{ii:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
-                f.write(NL)
+                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    f.write(self.get_sam_cash_flow_profile_output(model))
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
                 if model.wellbores.overpressure_percentage.Provided:
@@ -738,17 +698,19 @@ class Outputs:
                     f.write('                            ***************************************\n')
                     f.write('  YEAR     PROD PUMP     INJECT PUMP     TOTAL PUMP\n')
                     f.write('             POWER          POWER           POWER\n')
-                    f.write('             (' + model.wellbores.PumpingPowerProd.CurrentUnits.value+')           (' + model.wellbores.PumpingPowerInj.CurrentUnits.value + ')            (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  \n')
+                    f.write(
+                        '             (' + model.wellbores.PumpingPowerProd.CurrentUnits.value + ')           (' + model.wellbores.PumpingPowerInj.CurrentUnits.value + ')            (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  \n')
                     for i in range(0, model.surfaceplant.plant_lifetime.value):
-                        f.write('  {0:2.0f}     {1:8.4f}        {2:8.4f}       {3:8.4f}'.format(i+1,
-                            model.wellbores.PumpingPowerProd.value[i*model.economics.timestepsperyear.value],
-                            model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
-                            model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
+                        f.write('  {0:2.0f}     {1:8.4f}        {2:8.4f}       {3:8.4f}'.format(i + 1,
+                                                                                                model.wellbores.PumpingPowerProd.value[
+                                                                                                    i * model.economics.timestepsperyear.value],
+                                                                                                model.wellbores.PumpingPowerInj.value[
+                                                                                                    i * model.economics.timestepsperyear.value],
+                                                                                                model.wellbores.PumpingPower.value[
+                                                                                                    i * model.economics.timestepsperyear.value]))
                         f.write(NL)
                     f.write(NL)
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    f.write(self.get_sam_cash_flow_profile_output(model))
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -762,6 +724,56 @@ class Outputs:
         print_outputs_rich(self.output_file, self.text_output_file, self.html_output_file, model)
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    # noinspection PyMethodMayBeStatic
+    def write_revenue_and_cashflow_profile_output(self, model, f):
+        econ: Economics = model.economics
+
+        f.write(NL)
+        f.write(NL)
+        f.write('                             ********************************\n')
+        f.write('                             *  REVENUE & CASHFLOW PROFILE  *\n')
+        f.write('                             ********************************\n')
+        f.write(
+            'Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project' + NL)
+        f.write(
+            'Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow' + NL)
+
+        def o(output_param: OutputParameter):
+            # TODO generalize this and/or FIXME make it unnecessary
+            if output_param.Name in econ.OutputParameterDict:
+                return econ.OutputParameterDict[output_param.Name]
+            else:
+                return output_param
+
+        f.write('Start    ('
+                + o(econ.ElecPrice).CurrentUnits.value +
+                ')(' + o(econ.ElecRevenue).CurrentUnits.value +
+                ') (' + o(econ.ElecCummRevenue).CurrentUnits.value +
+                ')    |(' + o(econ.HeatPrice).CurrentUnits.value +
+                ') (' + o(econ.HeatRevenue).CurrentUnits.value +
+                ')    (' + o(econ.HeatCummRevenue).CurrentUnits.value +
+                ')   |(' + o(econ.CoolingPrice).CurrentUnits.value +
+                ') (' + o(econ.CoolingRevenue).CurrentUnits.value +
+                ')    (' + o(econ.CoolingCummRevenue).CurrentUnits.value +
+                ')    |(' + o(econ.CarbonPrice).CurrentUnits.value +
+                ')    (' + o(econ.CarbonRevenue).CurrentUnits.value +
+                ')    (' + o(econ.CarbonCummCashFlow).CurrentUnits.value +
+                ')    |(' + o(econ.Coam).CurrentUnits.value +
+                ') (' + o(econ.TotalRevenue).CurrentUnits.value +
+                ')    (' + o(econ.TotalCummRevenue).CurrentUnits.value + ')\n')
+        f.write(
+            '________________________________________________________________________________________________________________________________________________________________________________________' + NL)
+        # running years...
+        for ii in range(0, (
+            model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value), 1):
+            if ii < model.surfaceplant.construction_years.value:
+                opex = 0.0  # zero out the OPEX during construction years
+            else:
+                opex = o(econ.Coam).value
+            f.write(
+                f'{ii:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
+        f.write(NL)
 
     # noinspection PyMethodMayBeStatic
     def get_sam_cash_flow_profile_output(self, model):

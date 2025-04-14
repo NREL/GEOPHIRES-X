@@ -128,7 +128,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 category_row(row_label)
                 continue
 
-            if is_only_commas(','.join(line_entries[2:])):
+            if is_only_commas(','.join(line_entries[3:])):
                 single_value_row(row_label)
             else:
                 data_row(row_label)
@@ -216,6 +216,125 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES = {
     'Federal income tax rate (frac)': 'cf_federal_tax_frac',
     'Cash available for debt service (CAFDS) ($)': 'cf_cash_for_ds',
     'DSCR (pre-tax)': 'cf_pretax_dscr',
+    'Net capital cost ($)': 'adjusted_installed_cost',
+    'Federal taxable CBI income ($)': 'cbi_fedtax_total',
+    'State taxable CBI income ($)': 'cbi_statax_total',
+    'Total CBI income ($)': 'cbi_total',
+    'Federal CBI income ($)': 'cbi_total_fed',
+    'Other CBI income ($)': 'cbi_total_oth',
+    'State CBI income ($)': 'cbi_total_sta',
+    'Utility CBI income ($)': 'cbi_total_uti',
+    'After-tax cash flow ($)': 'cf_after_tax_cash_flow',
+    'After-tax annual costs ($)': 'cf_after_tax_net_equity_cost_flow',
+    'Annual storage costs ($)': 'cf_annual_cost_lcos',
+    'Annual storage discharge (kWh)': 'cf_annual_discharge_lcos',
+    'Battery replacement cost ($)': 'cf_battery_replacement_cost',
+    'Battery replacement cost schedule ($)': 'cf_battery_replacement_cost_schedule',
+    'Annual cost to charge from grid ($)': 'cf_charging_cost_grid',
+    'Annual cost to charge from grid (monthly) ($)': 'cf_charging_cost_grid_month',
+    'Annual cost to charge from system ($)': 'cf_charging_cost_pv',
+    'Cumulative simple payback with expenses ($)': 'cf_cumulative_payback_with_expenses',
+    'Cumulative simple payback without expenses ($)': 'cf_cumulative_payback_without_expenses',
+    'Interest payment ($)': 'cf_debt_payment_interest',
+    'Principal payment ($)': 'cf_debt_payment_principal',
+    'Total P&I debt payment ($)': 'cf_debt_payment_total',
+    'Deductible expenses ($)': 'cf_deductible_expenses',
+    'Discounted costs ($)': 'cf_discounted_costs',
+    'Cumulative discounted payback ($)': 'cf_discounted_cumulative_payback',
+    'Discounted payback ($)': 'cf_discounted_payback',
+    'Discounted savings ($)': 'cf_discounted_savings',
+    'Effective income tax rate (frac)': 'cf_effective_tax_frac',
+    'Electricity net generation (kWh)': 'cf_energy_net',
+    'Electricity from grid to system (kWh)': 'cf_energy_purchases',
+    'Electricity generation (kWh)': 'cf_energy_sales',
+    'Value of electricity savings ($)': 'cf_energy_value',
+    'Electricity generated without the battery or curtailment (kWh)': 'cf_energy_without_battery',
+    'Federal depreciation schedule (%)': 'cf_fed_depr_sched',
+    'Federal depreciation ($)': 'cf_fed_depreciation',
+    'Federal incentive income less deductions ($)': 'cf_fed_incentive_income_less_deductions',
+    'Federal tax savings ($)': 'cf_fed_tax_savings',
+    'Federal taxable incentive income ($)': 'cf_fed_taxable_incentive_income',
+    'Federal taxable income less deductions ($)': 'cf_fed_taxable_income_less_deductions',
+    'Fuel cell replacement cost ($)': 'cf_fuelcell_replacement_cost',
+    'Fuel cell replacement cost schedule ($/kW)': 'cf_fuelcell_replacement_cost_schedule',
+    'Federal ITC amount income ($)': 'cf_itc_fed_amount',
+    'Federal ITC percent income ($)': 'cf_itc_fed_percent_amount',
+    'State ITC amount income ($)': 'cf_itc_sta_amount',
+    'State ITC percent income ($)': 'cf_itc_sta_percent_amount',
+    'Total ITC income ($)': 'cf_itc_total',
+    'Land lease expense ($)': 'cf_land_lease_expense',
+    'Number of periods in cash flow': 'cf_length',
+    'Net salvage value ($)': 'cf_net_salvage_value',
+    'NTE Not to exceed (cents/kWh)': 'cf_nte',
+    'Annual cost for battery capacity based maintenance ($)': 'cf_om_batt_capacity_expense',
+    'Annual fixed cost for battery maintenance ($)': 'cf_om_batt_fixed_expense',
+    'O&M battery capacity-based expense ($)': 'cf_om_capacity1_expense',
+    'O&M fuel cell capacity-based expense ($)': 'cf_om_capacity2_expense',
+    'O&M battery fixed expense ($)': 'cf_om_fixed1_expense',
+    'O&M fuel cell fixed expense ($)': 'cf_om_fixed2_expense',
+    'Feedstock biomass expense ($)': 'cf_om_opt_fuel_1_expense',
+    'Feedstock coal expense ($)': 'cf_om_opt_fuel_2_expense',
+    'O&M battery production-based expense ($)': 'cf_om_production1_expense',
+    'O&M fuel cell production-based expense ($)': 'cf_om_production2_expense',
+    'Total operating expense ($)': 'cf_operating_expenses',
+    'Parasitic load costs ($)': 'cf_parasitic_cost',
+    'Simple payback with expenses ($)': 'cf_payback_with_expenses',
+    'Simple payback without expenses ($)': 'cf_payback_without_expenses',
+    'Federal taxable PBI income ($)': 'cf_pbi_fedtax_total',
+    'State taxable PBI income ($)': 'cf_pbi_statax_total',
+    'Total PBI income ($)': 'cf_pbi_total',
+    'Federal PBI income ($)': 'cf_pbi_total_fed',
+    'Other PBI income ($)': 'cf_pbi_total_oth',
+    'State PBI income ($)': 'cf_pbi_total_sta',
+    'Utility PBI income ($)': 'cf_pbi_total_uti',
+    'Annual battery salvage value costs ($)': 'cf_salvage_cost_lcos',
+    'Total tax savings (federal and state) ($)': 'cf_sta_and_fed_tax_savings',
+    'State depreciation schedule (%)': 'cf_sta_depr_sched',
+    'State depreciation ($)': 'cf_sta_depreciation',
+    'State incentive income less deductions ($)': 'cf_sta_incentive_income_less_deductions',
+    'State tax savings ($)': 'cf_sta_tax_savings',
+    'State taxable incentive income ($)': 'cf_sta_taxable_incentive_income',
+    'State taxable income less deductions ($)': 'cf_sta_taxable_income_less_deductions',
+    'State income tax rate (frac)': 'cf_state_tax_frac',
+    'Value of thermal savings ($)': 'cf_thermal_value',
+    'Utility escalation rate': 'cf_util_escal_rate',
+    'Real estate value added ($)': 'cf_value_added',
+    'Discounted payback period (years)': 'discounted_payback',
+    'Effective tax rate (%)': 'effective_tax_rate',
+    'Equity ($)': 'first_cost',
+    'Federal taxable IBI income ($)': 'ibi_fedtax_total',
+    'State taxable IBI income ($)': 'ibi_statax_total',
+    'Total IBI income ($)': 'ibi_total',
+    'Federal IBI income ($)': 'ibi_total_fed',
+    'Other IBI income ($)': 'ibi_total_oth',
+    'State IBI income ($)': 'ibi_total_sta',
+    'Utility IBI income ($)': 'ibi_total_uti',
+    'IRR Internal rate of return ($)': 'irr',
+    'Total ITC income ($)': 'itc_total',
+    'Federal ITC income ($)': 'itc_total_fed',
+    'State ITC income ($)': 'itc_total_sta',
+    'LCOE Levelized cost of energy real (cents/kWh)': 'lcoe_real',
+    'Levelized federal PTC nominal (cents/kWh)': 'lcoptc_fed_nom',
+    'Levelized federal PTC real (cents/kWh)': 'lcoptc_fed_real',
+    'Levelized state PTC nominal (cents/kWh)': 'lcoptc_sta_nom',
+    'Levelized state PTC real (cents/kWh)': 'lcoptc_sta_real',
+    'LCOS Levelized cost of storage nominal (cents/kWh)': 'lcos_nom',
+    'LCOS Levelized cost of storage real (cents/kWh)': 'lcos_real',
+    'NTE Not to exceed nominal (cents/kWh)': 'lnte_nom',
+    'NTE Not to exceed real (cents/kWh)': 'lnte_real',
+    'Debt ($)': 'loan_amount',
+    'Nominal discount rate (%)': 'nominal_discount_rate',
+    'NPV Net present value ($)': 'npv',
+    'Present value of annual storage costs ($)': 'npv_annual_costs_lcos',
+    'Present value of annual stored energy (nominal) (kWh)': 'npv_energy_lcos_nom',
+    'Present value of annual stored energy (real) (kWh)': 'npv_energy_lcos_real',
+    'Payback period (years)': 'payback',
+    'Present value of fuel expenses ($)': 'present_value_fuel',
+    'Present value of insurance and property tax ($)': 'present_value_insandproptax',
+    'Present value of O&M expenses ($)': 'present_value_oandm',
+    'Present value of non-fuel O&M expenses ($)': 'present_value_oandm_nonfuel',
+    'WACC Weighted average cost of capital': 'wacc',
+    'NTE Not to exceed Year 1 (cents/kWh)': 'year1_nte',
 }
 
 
@@ -253,6 +372,7 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
 
         return [(p, ga(p)) for p in dir(soo) if s in p]
 
+    # noinspection PyUnusedLocal
     def _search_prop_vals(v: Any) -> list[Any]:
         """
         Utility function to search output properties (useful in IDE debugger)
@@ -325,3 +445,28 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
 
 def _get_file_path(file_name) -> str:
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)
+
+
+def generate_mapping_from_cashloan_module_doc():
+
+    with open(_get_file_path('sam_economics/cashloan.html.txt'), encoding='utf-8') as f:
+        # lines = f.readlines()
+
+        txt = f.read()
+        # lines = txt.split('PySAM.Cashloan.Cashloan.Outputs')[1].split('\n')
+        txt = txt.split('PySAM.Cashloan.Cashloan.Outputs')[1].split('Outputs_vals =')[2]
+        lines = txt.split('\n')[2:]
+
+        _log.debug(f'Found {len(lines)} lines cashloan in module doc')
+        for i in range(0, len(lines), 8):
+            prop = lines[i].strip()[:-1]
+            if prop == '':
+                continue
+            display_name = lines[i + 2].strip().replace('[', '(').replace(']', ')')
+            # _log.debug(f'Property: {prop}')
+            if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
+                print(f"\t'{display_name}': '{prop}',")
+
+
+if __name__ == '__main__':
+    generate_mapping_from_cashloan_module_doc()

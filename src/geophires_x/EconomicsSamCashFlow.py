@@ -129,9 +129,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 continue
 
             if _is_designator_row_label(row_label):
-                # designator_row(row_label)
-                # TODO/WIP - skip designator rows because they may be incorrect until all output properties have been
-                # mapped.
+                designator_row(row_label)
                 continue
 
             if _is_category_row_label(row_label):

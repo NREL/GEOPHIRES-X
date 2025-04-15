@@ -1,6 +1,6 @@
 {
 	"inflation_rate" : 2,
-	"degradation" : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+	"degradation" : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
 	"en_electricity_rates" : 0,
 	"rate_escalation" : [ 0 ],
 	"ur_metering_option" : 4,

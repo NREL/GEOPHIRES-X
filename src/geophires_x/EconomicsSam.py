@@ -54,6 +54,9 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
                 if k != 'number_inputs':
                     module.value(k, v)
 
+    for k, v in _get_custom_gen_parameters(model).items():
+        single_owner.value(k, v)
+
     for k, v in _get_utility_rate_parameters(model).items():
         single_owner.value(k, v)
 
@@ -120,6 +123,12 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
             profile_display[i][j] = get_entry_display(profile_display[i][j])
 
     return tabulate(profile_display, **_tabulate_kw_args)
+
+
+def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
+    ret: dict[str, Any] = {'analysis_period': model.surfaceplant.plant_lifetime.value}
+
+    return ret
 
 
 def _get_utility_rate_parameters(model: Model) -> dict[str, Any]:
@@ -195,6 +204,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Interest rate
     ret['real_discount_rate'] = pct(econ.discountrate)
+
+    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
     ret['term_int_rate'] = pct(econ.BIR)
 
     # TODO 'Inflated Equity Interest Rate' (may not have equivalent in SAM...?)

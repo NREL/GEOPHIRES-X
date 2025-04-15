@@ -2,6 +2,8 @@
 
 ## SAM Single-Owner PPA
 
+### Parameters
+
 | GEOPHIRES Parameter(s)                               | SAM Category                                           | SAM Input(s)                                                                     | SAM Module(s)                     | SAM Parameter Name(s)                                        | Comment                                                                                                                                                                                                          |
 |------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------------------------|-----------------------------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Max Net Electricity Production`                     | Generation Profile                                     | `Nameplate capacity`                                                             | `Singleowner`                     | `system_capacity`                                            |                                                                                                                                                                                                                  |
@@ -21,3 +23,8 @@
 | `Other Incentives` + `One-time Grants Etc`           | Incentives → Investment Based Incentive (IBI)          | `Other`  → `Amount ($)`                                                          | `Singleowner`                     | `ibi_oth_amount`                                             |                                                                                                                                                                                                                  |
 
 [Implementation in source code](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/274786e6799d32dad3f42a2a04297818b811f24c/src/geophires_x/EconomicsSam.py#L135-L195)
+
+### Limitations
+
+1. Only Electricity end-use is supported
+2. Only 1 construction year is supported

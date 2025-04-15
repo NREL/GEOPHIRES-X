@@ -105,6 +105,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
     def test_electricity_generation_profile(self):
         r = self._get_result({})
+        lifetime = r.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
 
         cash_flow = r.result['SAM CASH FLOW PROFILE']
 
@@ -114,12 +115,25 @@ class EconomicsSamTestCase(BaseTestCase):
         geophires_avg_net_gen_GWh = r.result['SURFACE EQUIPMENT SIMULATION RESULTS'][
             'Average Annual Net Electricity Generation'
         ]['value']
-        allowed_delta_percent = 15  # FIXME WIP investigate why this is so high
+
+        sam_gen_profile = get_row('Electricity to grid net (kWh)')
+
+        # Discrepancy is probably due to windowing and/or rounding effects
+        #   (TODO to investigate further when time permits)
+        allowed_delta_percent = 15
         self.assertAlmostEqualWithinPercentage(
             geophires_avg_net_gen_GWh,
-            np.average(get_row('Electricity to grid net (kWh)')) * 1e-6,
+            np.average(sam_gen_profile) * 1e-6,
             allowed_delta_percent,
         )
+
+        elec_idx = r.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'][0].index(
+            'ELECTRICITY PROVIDED (GWh/year)'
+        )
+        for i in range(lifetime):
+            geophires_elec = r.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'][1:][i][elec_idx]
+            sam_elec = sam_gen_profile[i + 1] * 1e-6
+            self.assertAlmostEqual(geophires_elec, sam_elec, places=0)
 
     def test_cash_flow(self):
         m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))

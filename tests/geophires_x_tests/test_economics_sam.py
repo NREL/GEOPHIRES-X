@@ -72,8 +72,6 @@ class EconomicsSamTestCase(BaseTestCase):
 
     def test_cash_flow(self):
         m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))
-        m.read_parameters()
-        m.Calculate()
 
         sam_econ = calculate_sam_economics(m)
         cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
@@ -120,13 +118,15 @@ class EconomicsSamTestCase(BaseTestCase):
             if r[0] == name
         )[1:]
 
+    def test_only_electricity_end_use_supported(self):
+        with self.assertRaises(RuntimeError):
+            self._get_result({'End-Use Option': 2})
+
     def test_property_tax_rate(self):
         pt_rate = 0.01
         m: Model = EconomicsSamTestCase._new_model(
             self._egs_test_file_path(), additional_params={'Property Tax Rate': pt_rate}
         )
-        m.read_parameters()
-        m.Calculate()
 
         sam_econ = calculate_sam_economics(m)
         cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
@@ -139,9 +139,25 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertIsNotNone(pte_row)
         self.assertAlmostEqual(ptv_row[1] * pt_rate, pte_row[1], places=0)  # Assumes 100% property tax basis
 
-    def test_only_electricity_end_use_supported(self):
-        with self.assertRaises(RuntimeError):
-            self._get_result({'End-Use Option': 2})
+    def test_incentives(self):
+        def assert_incentives(params, expected_ibi_usd):
+            m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
+
+            sam_econ = calculate_sam_economics(m)
+            cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+
+            def get_row(name: str):
+                return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+            other_ibi = get_row('Other IBI income ($)')[0]
+            total_ibi = get_row('Total IBI income ($)')[0]
+            self.assertEqual(expected_ibi_usd, other_ibi)
+            self.assertEqual(other_ibi, total_ibi)
+
+        assert_incentives({'One-time Grants Etc': 1}, 1_000_000)
+        assert_incentives({'Other Incentives': 2.5}, 2_500_000)
+
+        assert_incentives({'One-time Grants Etc': 100, 'Other Incentives': 0.1}, 100_100_000)
 
     def test_clean_profile(self):
         profile = [
@@ -178,7 +194,7 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])
 
     @staticmethod
-    def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None) -> Model:
+    def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:
             params = GeophiresInputParameters(from_file_path=input_file, params=additional_params)
             input_file = params.as_file_path()
@@ -192,5 +208,9 @@ class EconomicsSamTestCase(BaseTestCase):
 
         sys.argv = stash_sys_argv
         os.chdir(stash_cwd)
+
+        if read_and_calculate:
+            m.read_parameters()
+            m.Calculate()
 
         return m

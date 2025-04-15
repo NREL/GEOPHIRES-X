@@ -27,11 +27,40 @@ from tabulate import tabulate
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.GeoPHIRESUtils import is_float, is_int
+from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter
 from geophires_x.Units import convertible_unit
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
 _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT = 0.745
+
+
+def validate_read_parameters(model: Model):
+    def _inv_msg(param_name: str, invalid_value: Any, supported_description: str) -> str:
+        return (
+            f'Invalid {param_name} ({invalid_value}) for '
+            f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} economic model. '
+            f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} only supports '
+            f'{supported_description}.'
+        )
+
+    if model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY:
+        raise ValueError(
+            _inv_msg(
+                model.surfaceplant.enduse_option.Name,
+                model.surfaceplant.enduse_option.value.value,
+                f'{EndUseOptions.ELECTRICITY.name} End-Use Option',
+            )
+        )
+
+    if model.surfaceplant.construction_years.value != 1:
+        raise ValueError(
+            _inv_msg(
+                model.surfaceplant.construction_years.Name,
+                model.surfaceplant.construction_years.value,
+                f'{model.surfaceplant.construction_years.Name}  = 1',
+            )
+        )
 
 
 @lru_cache(maxsize=12)
@@ -126,7 +155,12 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
 
 
 def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
-    ret: dict[str, Any] = {'analysis_period': model.surfaceplant.plant_lifetime.value}
+    # fmt:off
+    ret: dict[str, Any] = {
+        # Project lifetime
+        'analysis_period': model.surfaceplant.plant_lifetime.value
+    }
+    # fmt:on
 
     return ret
 
@@ -164,9 +198,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * pct(econ.RINFL)
 
-    # TODO project lifetime
-
     # TODO construction years
+
+    # TODO 'Inflation Rate During Construction'
 
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
     ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3
@@ -205,6 +239,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Interest rate
     ret['real_discount_rate'] = pct(econ.discountrate)
 
+    # Project lifetime
     ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
     ret['term_int_rate'] = pct(econ.BIR)
 

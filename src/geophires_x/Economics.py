@@ -4,7 +4,8 @@ import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
-from geophires_x.EconomicsSam import calculate_sam_economics, _SAM_CASH_FLOW_PROFILE_KEY
+from geophires_x import EconomicsSam
+from geophires_x.EconomicsSam import calculate_sam_economics
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -1947,13 +1948,8 @@ class Economics:
                     if ParameterToModify.Name == "Economic Model":
                         em: EconomicModel = EconomicModel.from_input_string(ParameterReadIn.sValue)
 
-                        if (em == EconomicModel.SAM_SINGLE_OWNER_PPA
-                                and model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY):
-                            raise RuntimeError(f'Invalid End-Use Option '
-                                               f'({model.surfaceplant.enduse_option.value.value}) for '
-                                               f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} economic model. '
-                                               f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} only supports '
-                                               f'{EndUseOptions.ELECTRICITY.name} End-Use Option.')
+                        if em == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                            EconomicsSam.validate_read_parameters(model)
 
                         self.econmodel.value = em
 

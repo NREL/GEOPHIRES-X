@@ -150,10 +150,17 @@ class EconomicsSamTestCase(BaseTestCase):
         )[1:]
 
     def test_only_electricity_end_use_supported(self):
-        with self.assertRaises(RuntimeError) as re:
+        with self.assertRaises(RuntimeError) as e:
             self._get_result({'End-Use Option': 2})
 
-        self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(re.exception))
+        self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(e.exception))
+
+    def test_only_1_construction_year_supported(self):
+        with self.assertRaises(RuntimeError) as e:
+            self._get_result({'Construction Years': 2})
+
+        self.assertIn('Invalid Construction Years (2)', str(e.exception))
+        self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
 
     def test_property_tax_rate(self):
         pt_rate = 0.01

@@ -129,6 +129,11 @@ def _get_utility_rate_parameters(model: Model) -> dict[str, Any]:
 
     ret['inflation_rate'] = econ.RINFL.quantity().to(convertible_unit('%')).magnitude
 
+    max_net_kWh_produced = np.max(model.surfaceplant.NetkWhProduced.value)
+    ret['degradation'] = [
+        (max_net_kWh_produced - it) / max_net_kWh_produced * 100 for it in model.surfaceplant.NetkWhProduced.value
+    ]
+
     return ret
 
 
@@ -143,15 +148,20 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     itc = econ.RITCValue.value
     total_capex_musd = econ.CCap.value + itc
     ret['total_installed_cost'] = total_capex_musd * 1e6
+    # TODO break out indirect costs (instead of lumping all into direct cost)
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * pct(econ.RINFL)
 
-    # FIXME TODO provide entire generation profile
-    average_net_generation_MW = _get_average_net_generation_MW(model)
-    ret['system_capacity'] = average_net_generation_MW * 1e3
+    # TODO project lifetime
+
+    # TODO construction years
+
+    # Note generation profile is generated relative to the max in _get_utility_rate_parameters
+    ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3
+
     # TODO utilization factor = nominal capacity factor
 
     geophires_ctr_tenths = Decimal(econ.CTR.value)
@@ -192,6 +202,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     return ret
+
+
+def _get_max_net_generation_MW(model: Model) -> float:
+    return np.max(model.surfaceplant.NetElectricityProduced.value)
 
 
 def _get_average_net_generation_MW(model: Model) -> float:

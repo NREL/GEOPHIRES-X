@@ -7,7 +7,7 @@
 	"conv_eff" : 34.118048447628794,
 	"energy_output_array" : [ 0 ],
 	"system_use_lifetime_output" : 0,
-	"analysis_period" : 20,
+	"analysis_period" : 30,
 	"adjust_constant" : 0,
 	"adjust_en_timeindex" : 0,
 	"adjust_en_periods" : 0,

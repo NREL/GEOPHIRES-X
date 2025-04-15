@@ -69,6 +69,18 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertGreater(elec_net_kWh[16], elec_net_kWh[15])
         self.assertLess(elec_net_kWh[20], elec_net_kWh[16])
 
+    def test_plant_lifetime(self):
+        r = self._get_result({'Plant Lifetime': 30})
+
+        cash_flow = r.result['SAM CASH FLOW PROFILE']
+
+        def get_row(name: str) -> list[float]:
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        self.assertEqual(32, len(cash_flow[0]))
+        self.assertEqual('Year 30', cash_flow[0][-1])
+        self.assertEqual(31, len(get_row('Electricity to grid net (kWh)')))
+
     def test_npv(self):
         def _npv(r: GeophiresXResult) -> float:
             return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']

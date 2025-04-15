@@ -31,10 +31,13 @@ class EconomicsSamTestCase(BaseTestCase):
     def _egs_test_file_path(self) -> str:
         return self._get_test_file_path('generic-egs-case-2_sam-single-owner-ppa.txt')
 
-    def _get_result(self, _params) -> GeophiresXResult:
+    def _get_result(self, _params, file_path=None) -> GeophiresXResult:
+        if file_path is None:
+            file_path = self._egs_test_file_path()
+
         return GeophiresXClient().get_geophires_result(
             GeophiresInputParameters(
-                from_file_path=self._egs_test_file_path(),
+                from_file_path=file_path,
                 params={'Economic Model': 5, **_params},
             )
         )
@@ -50,6 +53,21 @@ class EconomicsSamTestCase(BaseTestCase):
         ir = base_result.result['ECONOMIC PARAMETERS']['Interest Rate']
         self.assertEqual(ir['value'], 7.0)
         self.assertEqual(ir['unit'], '%')
+
+    def test_drawdown(self):
+        r = self._get_result(
+            {'Plant Lifetime': 20, 'End-Use Option': 1}, file_path=self._get_test_file_path('../examples/example13.txt')
+        )
+
+        cash_flow = r.result['SAM CASH FLOW PROFILE']
+
+        def get_row(name: str) -> list[float]:
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        elec_net_kWh = get_row('Electricity to grid net (kWh)')
+        self.assertLess(elec_net_kWh[15], elec_net_kWh[14])
+        self.assertGreater(elec_net_kWh[16], elec_net_kWh[15])
+        self.assertLess(elec_net_kWh[20], elec_net_kWh[16])
 
     def test_npv(self):
         def _npv(r: GeophiresXResult) -> float:

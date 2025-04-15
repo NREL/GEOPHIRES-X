@@ -4,6 +4,8 @@
 
 ### Parameters
 
+.. FIXME doesn't render in RST!
+
 | GEOPHIRES Parameter(s)                               | SAM Category                                           | SAM Input(s)                                                                     | SAM Module(s)                     | SAM Parameter Name(s)                                        | Comment                                                                                                                                                                                                          |
 |------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------------------------|-----------------------------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Max Net Electricity Production`                     | Generation Profile                                     | `Nameplate capacity`                                                             | `Singleowner`                     | `system_capacity`                                            |                                                                                                                                                                                                                  |
@@ -28,3 +30,7 @@
 
 1. Only Electricity end-use is supported
 2. Only 1 construction year is supported
+3. The following economic outputs are not supported:
+   1. Project VIR=PI=PIR
+   2. Project MOIC
+   3. Project payback period

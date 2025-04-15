@@ -152,6 +152,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # FIXME TODO provide entire generation profile
     average_net_generation_MW = _get_average_net_generation_MW(model)
     ret['system_capacity'] = average_net_generation_MW * 1e3
+    # TODO utilization factor = nominal capacity factor
 
     geophires_ctr_tenths = Decimal(econ.CTR.value)
     fed_ratio = 0.75
@@ -165,6 +166,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_itc_tenths = Decimal(econ.RITC.value)
     ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
 
+    # 'Property Tax Rate'
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
@@ -180,9 +182,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = pct(econ.FIB)
-
-    # 'Property Tax Rate'
-    ret['property_tax_rate'] = pct(econ.PTR)
 
     # Interest rate
     ret['real_discount_rate'] = pct(econ.discountrate)

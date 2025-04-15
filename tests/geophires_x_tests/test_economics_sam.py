@@ -43,9 +43,6 @@ class EconomicsSamTestCase(BaseTestCase):
         def _lcoe(r: GeophiresXResult) -> float:
             return r.result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
 
-        def _npv(r: GeophiresXResult) -> float:
-            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
-
         base_result = self._get_result({})
         base_lcoe = _lcoe(base_result)
         self.assertGreater(base_lcoe, 7)
@@ -53,6 +50,10 @@ class EconomicsSamTestCase(BaseTestCase):
         ir = base_result.result['ECONOMIC PARAMETERS']['Interest Rate']
         self.assertEqual(ir['value'], 7.0)
         self.assertEqual(ir['unit'], '%')
+
+    def test_npv(self):
+        def _npv(r: GeophiresXResult) -> float:
+            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
         inflation = 0.02
         rate_params = [

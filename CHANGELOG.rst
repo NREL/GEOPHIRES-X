@@ -5,6 +5,15 @@ Changelog
 GEOPHIRES-X (2023-2025)
 ------------------------
 
+3.9
+^^^
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.2.0>`__
+
+.. TODO/WIP stub
+
+SAM Single-owner PPA Economic Model
+
+
 3.8
 ^^^
 

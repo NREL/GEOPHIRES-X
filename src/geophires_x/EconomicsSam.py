@@ -190,6 +190,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # TODO 'Inflated Equity Interest Rate' (may not have equivalent in SAM...?)
 
+    ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
+
     return ret
 
 

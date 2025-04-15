@@ -180,8 +180,6 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL = {
     # TODO: unclear what this is derived from
     # 'Other financing cost ($)'
 }
-
-
 # fmt:on
 
 

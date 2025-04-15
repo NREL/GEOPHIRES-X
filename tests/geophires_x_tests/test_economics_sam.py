@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from base_test_case import BaseTestCase
 
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
@@ -100,6 +102,24 @@ class EconomicsSamTestCase(BaseTestCase):
         npvs = [_npv(self._get_result(rp)) for rp in rate_params]
         for i in range(len(npvs) - 1):
             self.assertLess(npvs[i], npvs[i + 1])
+
+    def test_electricity_generation_profile(self):
+        r = self._get_result({})
+
+        cash_flow = r.result['SAM CASH FLOW PROFILE']
+
+        def get_row(name: str) -> list[float]:
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        geophires_avg_net_gen_GWh = r.result['SURFACE EQUIPMENT SIMULATION RESULTS'][
+            'Average Annual Net Electricity Generation'
+        ]['value']
+        allowed_delta_percent = 15  # FIXME WIP investigate why this is so high
+        self.assertAlmostEqualWithinPercentage(
+            geophires_avg_net_gen_GWh,
+            np.average(get_row('Electricity to grid net (kWh)')) * 1e-6,
+            allowed_delta_percent,
+        )
 
     def test_cash_flow(self):
         m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))

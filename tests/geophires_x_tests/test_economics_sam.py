@@ -120,8 +120,10 @@ class EconomicsSamTestCase(BaseTestCase):
         )[1:]
 
     def test_only_electricity_end_use_supported(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(RuntimeError) as re:
             self._get_result({'End-Use Option': 2})
+
+        self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(re.exception))
 
     def test_property_tax_rate(self):
         pt_rate = 0.01

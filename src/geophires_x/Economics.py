@@ -1949,10 +1949,11 @@ class Economics:
 
                         if (em == EconomicModel.SAM_SINGLE_OWNER_PPA
                                 and model.surfaceplant.enduse_option.value != EndUseOptions.ELECTRICITY):
-                            raise RuntimeError(f'Invalid End-Use Option ({em.name}) for '
-                                                   f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} economic model. '
-                                                   f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} only supports '
-                                                   f'{EndUseOptions.ELECTRICITY.name} End-Use Option.')
+                            raise RuntimeError(f'Invalid End-Use Option '
+                                               f'({model.surfaceplant.enduse_option.value.value}) for '
+                                               f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} economic model. '
+                                               f'{EconomicModel.SAM_SINGLE_OWNER_PPA.name} only supports '
+                                               f'{EndUseOptions.ELECTRICITY.name} End-Use Option.')
 
                         self.econmodel.value = em
 

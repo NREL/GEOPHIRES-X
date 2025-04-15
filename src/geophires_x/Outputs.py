@@ -266,15 +266,19 @@ class Outputs:
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
-                f.write(f'      {model.economics.ProjectIRR.display_name}:                                     {model.economics.ProjectIRR.value:10.2f} {model.economics.ProjectIRR.PreferredUnits.value}\n')
-                f.write(f'      {model.economics.ProjectVIR.display_name}:                              {model.economics.ProjectVIR.value:10.2f}\n')
-                f.write(f'      {model.economics.ProjectMOIC.Name}:                                    {model.economics.ProjectMOIC.value:10.2f}\n')
+                f.write(f'      {econ.ProjectIRR.display_name}:                                     {econ.ProjectIRR.value:10.2f} {econ.ProjectIRR.PreferredUnits.value}\n')
 
-                payback_period_val = model.economics.ProjectPaybackPeriod.value
-                project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \
-                    if payback_period_val > 0.0 else 'N/A'
-                project_payback_period_label = Outputs._field_label(model.economics.ProjectPaybackPeriod.Name, 56)
-                f.write(f'      {project_payback_period_label}{project_payback_period_display}\n')
+                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)
+
+                    f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
+                    f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
+
+                    payback_period_val = model.economics.ProjectPaybackPeriod.value
+                    project_payback_period_display = f'{payback_period_val:10.2f} {econ.ProjectPaybackPeriod.PreferredUnits.value}' \
+                        if payback_period_val > 0.0 else 'N/A'
+                    project_payback_period_label = Outputs._field_label(model.economics.ProjectPaybackPeriod.display_name, 56)
+                    f.write(f'      {project_payback_period_label}{project_payback_period_display}\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,

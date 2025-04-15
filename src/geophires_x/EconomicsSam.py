@@ -102,18 +102,12 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
         ('IRR', single_owner.Outputs.project_return_aftertax_irr, '%'),
         ('NPV', single_owner.Outputs.project_return_aftertax_npv * 1e-6, 'MUSD'),
         ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
-        # ('Gross Output', gt.Outputs.gross_output, 'MW'),
-        # ('Net Output', gt.Outputs.gross_output - gt.Outputs.pump_work, 'MW')
         (_SAM_CASH_FLOW_PROFILE_KEY, cash_flow, None),
     ]
-
-    # max_field_name_len = max(len(x[0]) for x in display_data)
 
     ret = {}
     for e in data:
         key = e[0]
-        # field_display = e[0] + ':' + ' ' * (max_field_name_len - len(e[0]) - 1)
-        # print(f'{field_display}\t{sig_figs(e[1], 5)} {e[2]}')
 
         as_val = e[1]
         if key != _SAM_CASH_FLOW_PROFILE_KEY:
@@ -133,10 +127,8 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
     _tabulate_kw_args = {
         'tablefmt': 'tsv',
         'floatfmt': ',.2f',
-        # 'floatfmt': ':,',
         **tabulate_kw_args
     }
-
     # fmt:on
 
     def get_entry_display(entry: Any) -> str:

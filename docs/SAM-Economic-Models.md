@@ -1,13 +1,26 @@
 # SAM Economic Models
 
+SAM Economic Models leverage [NREL's SAM Financial Models](https://sam.nrel.gov/financial-models.html)
+by transforming GEOPHIRES parameters into SAM parameters and running SAM with [PySAM](https://github.com/NREL/pysam).
+
 ## SAM Single-Owner PPA
+
+SAM Financial Model: [Power Purchase Agreement (PPA): Single owner](https://sam.nrel.gov/financial-models/utility-scale-ppa)
 
 ### Parameters
 
-.. RST Comment: Comment entries of ".. N/A" render as blank in the final RST, by design.
-..   This entry value is required because m2r2 (https://pypi.org/project/m2r2/) seems to choke and bail on rendering
-..   the entire table when blank comment entries are blank. Make sure to check this doesn't happen when making changes
-..   to this file by running `tox -e docs` and opening `dist/docs/SAM-Economic-Models.html` in your browser!
+The following table describes how GEOPHIRES parameters are transformed into SAM parameters, as implemented in
+[EconomicsSam.py](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/274786e6799d32dad3f42a2a04297818b811f24c/src/geophires_x/EconomicsSam.py#L135-L195).
+(Note that the source code implementation determines actual behavior in the case of any discrepancies.)
+
+.. <RST_Comment>
+.. Comment entries of ".. N/A" render as blank in the final RST, by design.
+.. This entry value is required because m2r2 (https://pypi.org/project/m2r2/) seems to choke and bail on rendering
+.. the entire table when blank comment entries are blank. Make sure to check this doesn't happen when making changes
+.. to this file by running `tox -e docs` and opening `dist/docs/SAM-Economic-Models.html` in your browser!
+..
+.. TODO: Generate this programmatically (like schema generator) to prevent drift between code and documentation.
+.. </RST_Comment>
 
 | GEOPHIRES Parameter(s)                               | SAM Category                                           | SAM Input(s)                                                                     | SAM Module(s)                     | SAM Parameter Name(s)                                        | Comment                                                                                                                                                                                                          |
 |------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------------------------|-----------------------------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -18,16 +31,14 @@
 | `Plant Lifetime`                                     | Financial Parameters → Analysis Parameters             | `Analysis period`                                                                | `CustomGeneration`, `Singleowner` | `CustomGeneration.analysis_period`, `Singleowner.term_tenor` | .. N/A                                                                                                                                                                                                           |
 | `Inflation Rate`                                     | Financial Parameters → Analysis Parameters             | `Inflation rate`                                                                 | `Utilityrate5`                    | `inflation_rate`                                             | .. N/A                                                                                                                                                                                                           |
 | `Discount Rate`                                      | Financial Parameters → Analysis Parameters             | `Real discount rate`                                                             | `Singleowner`                     | `real_discount_rate`                                         | .. N/A                                                                                                                                                                                                           |
-| `Combined Income Tax Rate`                           | Financial Parameters → Project Tax and Insurance Rates | `Federal income tax rate` (75% of CTR) and `State income tax rate` (25%  of CTR) | `Singleowner`                     | `federal_tax_rate`,  `state_tax_rate`                        | GEOPHIRES does have separate parameters for federal and state income tax so the rates are split from the combined rate based on the ratio of SAM's default values of 21% and 7%, respectively.                   |
+| `Combined Income Tax Rate`                           | Financial Parameters → Project Tax and Insurance Rates | `Federal income tax rate` (75% of CTR) and `State income tax rate` (25%  of CTR) | `Singleowner`                     | `federal_tax_rate`,  `state_tax_rate`                        | GEOPHIRES does not have separate parameters for federal and state income tax so the rates are split from the combined rate based on the ratio of SAM's default values of 21% and 7%, respectively.               |
 | `Property Tax Rate`                                  | Financial Parameters                                   | `Property tax rate`                                                              | `Singleowner`                     | `property_tax_rate`                                          | .. N/A                                                                                                                                                                                                           |
 | `Fraction of Investment in Bonds`                    | Financial Parameters → Project Term Debt               | `Debt percent`                                                                   | `Singleowner`                     | `debt_percent`                                               | .. N/A                                                                                                                                                                                                           |
-| `Inflated Bond Interest Rate`                        | Financial Parameters → Project Term Debt               | `Annual interest rate`                                                           | `Singleowner`                     | `debt_percent`                                               | .. N/A                                                                                                                                                                                                           |
+| `Inflated Bond Interest Rate`                        | Financial Parameters → Project Term Debt               | `Annual interest rate`                                                           | `Singleowner`                     | `term_int_rate`                                              | .. N/A                                                                                                                                                                                                           |
 | `Starting Electricity Sale Price`                    | Revenue                                                | `PPA price`                                                                      | `Singleowner`                     | `ppa_price_input`                                            | .. N/A                                                                                                                                                                                                           |
 | `Electricity Escalation Rate Per Year` × 0.745       | Revenue                                                | `PPA price escalation`                                                           | `Singleowner`                     | `ppa_escalation`                                             | Approximates GEOPHIRES escalation rate into escalation percentage (does not exactly match GEOPHIRES amount-based pricing model)                                                                                  |
 | `Investment Tax Credit Rate`                         | Incentives → Investment Tax Credit (ITC)               | `Federal` → `Percentage (%)`                                                     | `Singleowner`                     | `itc_fed_percent`                                            | .. N/A                                                                                                                                                                                                           |
 | `Other Incentives` + `One-time Grants Etc`           | Incentives → Investment Based Incentive (IBI)          | `Other`  → `Amount ($)`                                                          | `Singleowner`                     | `ibi_oth_amount`                                             | .. N/A                                                                                                                                                                                                           |
-
-[Implementation in source code](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/274786e6799d32dad3f42a2a04297818b811f24c/src/geophires_x/EconomicsSam.py#L135-L195)
 
 ### Limitations
 

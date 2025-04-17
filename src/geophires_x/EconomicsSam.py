@@ -245,6 +245,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
+    ret['user_capacity_factor'] = model.surfaceplant.utilization_factor.value
+
     return ret
 
 

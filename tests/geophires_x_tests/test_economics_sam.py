@@ -175,10 +175,16 @@ class EconomicsSamTestCase(BaseTestCase):
     @staticmethod
     def _get_cash_flow_row(cash_flow, name):
 
+        def r_0(r):
+            if r is not None and len(r) > 0:
+                return r[0]
+
+            return None
+
         return next(
             [GeophiresXResult._get_sam_cash_flow_profile_entry_display_to_entry_val(ed) for ed in r]
             for r in cash_flow
-            if r[0] == name
+            if r_0(r) == name
         )[1:]
 
     def test_only_electricity_end_use_supported(self):
@@ -257,6 +263,20 @@ class EconomicsSamTestCase(BaseTestCase):
         assert_incentives({'Other Incentives': 2.5}, 2_500_000)
 
         assert_incentives({'One-time Grants Etc': 100, 'Other Incentives': 0.1}, 100_100_000)
+
+    def test_inflation_rate_during_construction(self):
+        infl_rate = 0.05
+        r_no_infl = self._get_result({'Inflation Rate During Construction': 0})
+        r_infl = self._get_result({'Inflation Rate During Construction': infl_rate})
+
+        cash_flow_no_infl = r_no_infl.result['SAM CASH FLOW PROFILE']
+        cash_flow_infl = r_infl.result['SAM CASH FLOW PROFILE']
+
+        tic = 'Total installed cost ($)'
+        tic_no_infl = EconomicsSamTestCase._get_cash_flow_row(cash_flow_no_infl, tic)[0]
+        tic_infl = EconomicsSamTestCase._get_cash_flow_row(cash_flow_infl, tic)[0]
+
+        self.assertAlmostEqual(tic_no_infl * (1 + infl_rate), tic_infl, places=0)
 
     def test_ptc(self):
         def assert_ptc(params, expected_ptc_usd_per_kWh):

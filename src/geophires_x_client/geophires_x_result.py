@@ -740,7 +740,11 @@ class GeophiresXResult:
 
         try:
             s1 = f'*  {profile_name}  *'
-            profile_text = ''.join(self._lines).split(s1)[1]
+            _lines_joined = ''.join(self._lines)
+            if s1 not in _lines_joined:
+                return None
+
+            profile_text = _lines_joined.split(s1)[1]
             profile_text = re.split(r'^\s*-{20,}\s*$\n?', profile_text, flags=re.MULTILINE)[1]
             rd = csv.reader(StringIO(profile_text), delimiter='\t', skipinitialspace=True)
             profile_lines = []

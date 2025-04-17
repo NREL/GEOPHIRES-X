@@ -233,6 +233,91 @@ class EconomicsSamTestCase(BaseTestCase):
 
         assert_incentives({'One-time Grants Etc': 100, 'Other Incentives': 0.1}, 100_100_000)
 
+    def test_ptc(self):
+        def assert_ptc(params, expected_ptc_usd_per_kWh):
+            m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
+
+            sam_econ = calculate_sam_economics(m)
+            cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+
+            def get_row(name: str):
+                return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+            ptc_vals = get_row('Federal PTC income ($)')
+            self.assertListEqual(expected_ptc_usd_per_kWh, ptc_vals)
+
+        assert_ptc({}, [0] * 21)
+
+        base_expected = [
+            0,
+            126448529,
+            127032114,
+            127215832,
+            127324867,
+            127401377,
+            127459785,
+            127506731,
+            127545802,
+            127579151,
+            127608165,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
+
+        assert_ptc({'Production Tax Credit Electricity': 0.04}, base_expected)
+
+        inflation_rate = 0.03
+
+        # Ideally this would be calculated from first principles here in the test (approximately: base_expected *
+        # an inflation vector with correct offset for PTC escalation year = 2), but this is fine for now.
+        inflation_expected = [
+            0,
+            126448529,
+            130207917,
+            133576624,
+            140057354,
+            143326549,
+            146578753,
+            153008077,
+            156243607,
+            162663417,
+            165890615,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
+
+        assert_ptc(
+            {
+                'Production Tax Credit Electricity': 0.04,
+                'Production Tax Credit Inflation Adjusted': True,
+                'Inflation Rate': inflation_rate,
+            },
+            inflation_expected,
+        )
+
+        shortened_term_duration_yr = 9
+        shortened_term_expected = base_expected.copy()
+        shortened_term_expected[shortened_term_duration_yr + 1] = 0
+        assert_ptc(
+            {'Production Tax Credit Electricity': 0.04, 'Production Tax Credit Duration': 9}, shortened_term_expected
+        )
+
     def test_clean_profile(self):
         profile = [
             ['foo', 1, 2, 3],

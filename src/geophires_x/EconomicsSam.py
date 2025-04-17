@@ -211,6 +211,13 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_itc_tenths = Decimal(econ.RITC.value)
     ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
 
+    if econ.PTCElec.Provided:
+        ret['ptc_fed_amount'] = [econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude]
+        ret['ptc_fed_term'] = econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
+
+        if econ.PTCInflationAdjusted.value:
+            ret['ptc_fed_escal'] = pct(econ.RINFL)
+
     # 'Property Tax Rate'
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))

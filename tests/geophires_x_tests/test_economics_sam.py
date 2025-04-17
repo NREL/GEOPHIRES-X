@@ -116,13 +116,13 @@ class EconomicsSamTestCase(BaseTestCase):
 
         sam_gen_profile = get_row('Electricity to grid net (kWh)')
 
-        # Discrepancy is probably due to windowing and/or rounding effects
-        #   (TODO to investigate further when time permits)
-        allowed_delta_percent = 15
+        # Discrepancy is probably due to windowing and/or rounding effects,
+        #  may merit further investigation when time permits.
+        allowed_delta_percent = 5
         self.assertAlmostEqualWithinPercentage(
             geophires_avg_net_gen_GWh,
             np.average(sam_gen_profile) * 1e-6,
-            allowed_delta_percent,
+            percent=allowed_delta_percent,
         )
 
         elec_idx = r.result['HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE'][0].index(
@@ -342,6 +342,22 @@ class EconomicsSamTestCase(BaseTestCase):
         assert_ptc(
             {'Production Tax Credit Electricity': 0.04, 'Production Tax Credit Duration': 9}, shortened_term_expected
         )
+
+    def test_capacity_factor(self):
+        r_90 = self._get_result({'Utilization Factor': 0.9})
+        cash_flow_90 = r_90.result['SAM CASH FLOW PROFILE']
+
+        r_20 = self._get_result({'Utilization Factor': 0.2})
+        cash_flow_20 = r_20.result['SAM CASH FLOW PROFILE']
+
+        etg = 'Electricity to grid (kWh)'
+
+        etg_90 = EconomicsSamTestCase._get_cash_flow_row(cash_flow_90, etg)
+        etg_20 = EconomicsSamTestCase._get_cash_flow_row(cash_flow_20, etg)
+
+        etg_20_expected = [(etg_90_entry / 0.9) * 0.2 for etg_90_entry in etg_90]
+
+        self.assertListAlmostEqual(etg_20_expected, etg_20, percent=1)
 
     def test_clean_profile(self):
         profile = [

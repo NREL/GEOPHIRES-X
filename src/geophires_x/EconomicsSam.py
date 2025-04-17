@@ -84,7 +84,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
                     module.value(k, v)
 
     for k, v in _get_custom_gen_parameters(model).items():
-        single_owner.value(k, v)
+        custom_gen.value(k, v)
 
     for k, v in _get_utility_rate_parameters(model).items():
         single_owner.value(k, v)
@@ -151,7 +151,8 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
     # fmt:off
     ret: dict[str, Any] = {
         # Project lifetime
-        'analysis_period': model.surfaceplant.plant_lifetime.value
+        'analysis_period': model.surfaceplant.plant_lifetime.value,
+        'user_capacity_factor': _pct(model.surfaceplant.utilization_factor),
     }
     # fmt:on
 
@@ -178,8 +179,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret: dict[str, Any] = {}
 
-    def pct(econ_value: Parameter) -> float:
-        return econ_value.quantity().to(convertible_unit('%')).magnitude
+    ret['analysis_period'] = model.surfaceplant.plant_lifetime.value
 
     itc = econ.RITCValue.value
     total_capex_musd = econ.CCap.value + itc
@@ -189,7 +189,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
-    ret['om_fixed_escal'] = -1.0 * pct(econ.RINFL)
+    ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
     # TODO construction years
 
@@ -197,8 +197,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
     ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3
-
-    # TODO utilization factor = nominal capacity factor
 
     geophires_ctr_tenths = Decimal(econ.CTR.value)
     fed_ratio = 0.75
@@ -217,7 +215,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         ret['ptc_fed_term'] = econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
 
         if econ.PTCInflationAdjusted.value:
-            ret['ptc_fed_escal'] = pct(econ.RINFL)
+            ret['ptc_fed_escal'] = _pct(econ.RINFL)
 
     # 'Property Tax Rate'
     geophires_ptr_tenths = Decimal(econ.PTR.value)
@@ -232,20 +230,24 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     )
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
-    ret['debt_percent'] = pct(econ.FIB)
+    ret['debt_percent'] = _pct(econ.FIB)
 
     # Interest rate
-    ret['real_discount_rate'] = pct(econ.discountrate)
+    ret['real_discount_rate'] = _pct(econ.discountrate)
 
     # Project lifetime
     ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
-    ret['term_int_rate'] = pct(econ.BIR)
+    ret['term_int_rate'] = _pct(econ.BIR)
 
     # TODO 'Inflated Equity Interest Rate' (may not have equivalent in SAM...?)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     return ret
+
+
+def _pct(econ_value: Parameter) -> float:
+    return econ_value.quantity().to(convertible_unit('%')).magnitude
 
 
 def _ppa_pricing_model(

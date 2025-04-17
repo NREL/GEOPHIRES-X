@@ -441,7 +441,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
                 model.surfaceplant.annual_heating_demand.value * discount_vector) * 1E2  # cents/kWh
             LCOH = LCOH * 2.931  # $/Million Btu
     elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-        # FIXME TODO designate nominal (as opposed to real) in client result
+        # Designated as nominal (as opposed to real) in parameter tooltip text
         LCOE = econ.sam_economics.value['LCOE (nominal)']['value']
     else:
         # must be BICYCLE
@@ -1561,7 +1561,8 @@ class Economics:
             display_name='Electricity breakeven price',
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.CENTSSPERKWH,
-            CurrentUnits=EnergyCostUnit.CENTSSPERKWH
+            CurrentUnits=EnergyCostUnit.CENTSSPERKWH,
+            ToolTipText="For SAM economic models, this is the nominal LCOE value (as opposed to real)."
         )
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             Name="LCOH",

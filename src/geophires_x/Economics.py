@@ -1,11 +1,11 @@
 import math
-import os
 import sys
 import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics
+from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -162,37 +162,6 @@ def BuildPTCModel(plantlifetime: int, duration: int, ptc_price: float,
         Price[year] = ptc_price
         if ptc_inflation_adjusted and year > 0:
             Price[year] = Price[year-1] * (1 + inflation_rate)
-    return Price
-
-
-def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
-                      EscalationStartYear: int, EscalationRate: float, PTCAddition: list) -> list:
-    """
-    BuildPricingModel builds the price model array for the project lifetime.  It is used to calculate the revenue
-    stream for the project.
-    :param plantlifetime: The lifetime of the project in years
-    :type plantlifetime: int
-    :param StartPrice: The price in the first year of the project in $/kWh
-    :type StartPrice: float
-    :param EndPrice: The price in the last year of the project in $/kWh
-    :type EndPrice: float
-    :param EscalationStartYear: The year the price escalation starts in years (not including construction years) in years
-    :type EscalationStartYear: int
-    :param EscalationRate: The rate of price escalation in $/kWh/year
-    :type EscalationRate: float
-    :param PTCAddition: The PTC addition array for the project in $/kWh
-    :type PTCAddition: list
-    :return: Price: The price model array for the project in $/kWh
-    :rtype: list
-    """
-    Price = [0.0] * plantlifetime
-    for i in range(0, plantlifetime, 1):
-        Price[i] = StartPrice
-        if i >= EscalationStartYear:
-            Price[i] = Price[i] + ((i - EscalationStartYear) * EscalationRate)
-        if Price[i] > EndPrice:
-            Price[i] = EndPrice
-        Price[i] = Price[i] + PTCAddition[i]
     return Price
 
 
@@ -2761,13 +2730,13 @@ class Economics:
                                                  self.HeatEscalationStart.value, self.HeatEscalationRate.value,
                                                  self.PTCHeatPrice)
         self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                 self.CoolingStartPrice.value, self.CoolingEndPrice.value,
-                                                 self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
-                                                 self.PTCCoolingPrice)
+                                                    self.CoolingStartPrice.value, self.CoolingEndPrice.value,
+                                                    self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
+                                                    self.PTCCoolingPrice)
         self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                 self.CarbonStartPrice.value, self.CarbonEndPrice.value,
-                                                 self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
-                                                 self.PTCCarbonPrice)
+                                                   self.CarbonStartPrice.value, self.CarbonEndPrice.value,
+                                                   self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
+                                                   self.PTCCarbonPrice)
 
         # do the additional economic calculations first, if needed, so the summaries below work.
         if self.DoAddOnCalculations.value:

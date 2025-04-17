@@ -1,8 +1,8 @@
 import sys, math
 import numpy as np
 import geophires_x.Model as Model
-from .Economics import Economics, calculate_cost_of_one_vertical_well, BuildPTCModel, BuildPricingModel, \
-    CalculateRevenue, CalculateFinancialPerformance, CalculateLCOELCOHLCOC
+from .Economics import Economics, calculate_cost_of_one_vertical_well, BuildPTCModel, CalculateRevenue, CalculateFinancialPerformance, CalculateLCOELCOHLCOC
+from .EconomicsUtils import BuildPricingModel
 from .OptionList import Configuration, WellDrillingCostCorrelation, PlantType
 from geophires_x.Parameter import floatParameter
 from geophires_x.Units import *

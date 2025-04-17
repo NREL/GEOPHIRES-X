@@ -87,7 +87,7 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
         custom_gen.value(k, v)
 
     for k, v in _get_utility_rate_parameters(model).items():
-        single_owner.value(k, v)
+        utility_rate.value(k, v)
 
     for k, v in _get_single_owner_parameters(model).items():
         single_owner.value(k, v)

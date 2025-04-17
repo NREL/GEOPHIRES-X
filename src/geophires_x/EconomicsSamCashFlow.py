@@ -172,13 +172,6 @@ def _clean_profile(profile: list[list[Any]]) -> list[list[Any]]:
 _SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL = {
     "Debt closing costs ($)": "cost_financing",
     'Total installed cost ($)': lambda _soo: -1.0 * _soo.cost_installed,
-
-    # TODO: present in https://nrel-pysam.readthedocs.io/en/main/modules/CbConstructionFinancing.html#outputs-group,
-    #   but unclear where it's accessible from the Singleowner module object
-    # 'Total construction financing cost ($)': 'construction_financing_cost'
-
-    # TODO: unclear what this is derived from
-    # 'Other financing cost ($)'
 }
 # fmt:on
 
@@ -203,6 +196,17 @@ def _build_single_owner_output_properties():
 
 
 _SINGLE_OWNER_OUTPUT_PROPERTIES = _build_single_owner_output_properties()
+
+# fmt:off
+_SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP = [
+    # Calculated by SAM UI in Financial Parameters -> Construction Financing and added to total installed cost.
+    # GEOPHIRES does not model construction financing this way (yet), so we skip for now.
+    'Total construction financing cost ($)',
+
+    # TODO: unclear what this is derived from
+    'Other financing cost ($)'
+]
+# fmt:on
 
 
 def _get_logger():
@@ -255,6 +259,9 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
         return [(p, ga(p)) for p in dir(soo) if val_match(ga(p))]
 
     if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
+        if display_name in _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP:
+            return None
+
         # noinspection PyBroadException
         try:
             ld = 'SAM Cash Flow Output property'

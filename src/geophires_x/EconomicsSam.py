@@ -26,13 +26,13 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
+from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter
 from geophires_x.Units import convertible_unit
 
 _SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
-_GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT = 0.745
 
 
 def validate_read_parameters(model: Model):
@@ -129,6 +129,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
         'floatfmt': ',.2f',
         **tabulate_kw_args
     }
+
     # fmt:on
 
     def get_entry_display(entry: Any) -> str:
@@ -222,15 +223,13 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
-    ret['ppa_price_input'] = [econ.ElecStartPrice.value]
-    # Approximation of GEOPHIRES rate model into SAM's percent inflation model (TODO - could probably be improved)
-    ppa_escalation_rate_percent = round(
-        econ.ElecEscalationRate.value
-        / econ.ElecStartPrice.value
-        * _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT
-        * 100.0
+    ret['ppa_price_input'] = _ppa_pricing_model(
+        model.surfaceplant.plant_lifetime.value,
+        econ.ElecStartPrice.value,
+        econ.ElecEndPrice.value,
+        econ.ElecEscalationStart.value,
+        econ.ElecEscalationRate.value,
     )
-    ret['ppa_escalation'] = ppa_escalation_rate_percent
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = pct(econ.FIB)
@@ -247,6 +246,17 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     return ret
+
+
+def _ppa_pricing_model(
+    plant_lifetime: int, start_price: float, end_price: float, escalation_start_year: int, escalation_rate: float
+) -> list:
+    # See relevant comment in geophires_x.EconomicsUtils.BuildPricingModel re:
+    # https://github.com/NREL/GEOPHIRES-X/issues/340?title=Price+Escalation+Start+Year+seemingly+off+by+1.
+    # We use the same utility method here for the sake of consistency despite technical incorrectness.
+    return BuildPricingModel(
+        plant_lifetime, start_price, end_price, escalation_start_year, escalation_rate, [0] * plant_lifetime
+    )
 
 
 def _get_max_net_generation_MW(model: Model) -> float:

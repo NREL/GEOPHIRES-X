@@ -17,8 +17,8 @@ from geophires_x.EconomicsSam import (
     calculate_sam_economics,
     _sig_figs,
     _SAM_CASH_FLOW_PROFILE_KEY,
-    _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT,
     get_sam_cash_flow_profile_tabulated_output,
+    _ppa_pricing_model,
 )
 
 # noinspection PyProtectedMember
@@ -87,15 +87,13 @@ class EconomicsSamTestCase(BaseTestCase):
         def _npv(r: GeophiresXResult) -> float:
             return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
+        _pricing_conversion_constant = 0.745
         inflation = 0.02
         rate_params = [
             {
                 'Starting Electricity Sale Price': x / 100.0,
                 # Escalation rate must remain constant percent
-                'Electricity Escalation Rate Per Year': x
-                * inflation
-                / 100.0
-                / _GEOPHIRES_TO_SAM_PRICING_MODEL_RATE_CONVERSION_CONSTANT,
+                'Electricity Escalation Rate Per Year': x * inflation / 100.0 / _pricing_conversion_constant,
             }
             for x in range(1, 20, 4)
         ]
@@ -195,6 +193,33 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertIn('Invalid Construction Years (2)', str(e.exception))
         self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
+
+    def test_ppa_pricing_model(self):
+        self.assertListEqual(
+            [
+                0.15,
+                0.15,
+                0.154053223,
+                0.15810644599999998,
+                0.162159669,
+                0.166212892,
+                0.170266115,
+                0.174319338,
+                0.17837256099999999,
+                0.18242578399999998,
+                0.186479007,
+                0.19053223,
+                0.194585453,
+                0.198638676,
+                0.202691899,
+                0.206745122,
+                0.210798345,
+                0.214851568,
+                0.218904791,
+                0.22295801399999998,
+            ],
+            _ppa_pricing_model(20, 0.15, 1.00, 1, 0.004053223),
+        )
 
     def test_property_tax_rate(self):
         pt_rate = 0.01

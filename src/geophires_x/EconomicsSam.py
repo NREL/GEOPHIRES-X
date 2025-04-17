@@ -181,9 +181,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['analysis_period'] = model.surfaceplant.plant_lifetime.value
 
-    itc = econ.RITCValue.value
-    total_capex_musd = econ.CCap.value + itc
-    ret['total_installed_cost'] = total_capex_musd * 1e6
+    itc = econ.RITCValue.quantity()
+    total_capex = econ.CCap.quantity() + itc
+    # ret['total_installed_cost'] = total_capex_musd * 1e6
+
+    # 'Inflation Rate During Construction'
+    construction_additional_cost = econ.inflrateconstruction.value * total_capex
+
+    ret['total_installed_cost'] = (total_capex + construction_additional_cost).to('USD').magnitude
+
     # TODO break out indirect costs (instead of lumping all into direct cost)
 
     opex_musd = econ.Coam.value
@@ -192,8 +198,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
     # TODO construction years
-
-    # TODO 'Inflation Rate During Construction'
 
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
     ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3

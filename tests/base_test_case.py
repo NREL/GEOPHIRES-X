@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 import numbers
 import os.path

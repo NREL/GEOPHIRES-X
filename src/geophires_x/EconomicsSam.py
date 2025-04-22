@@ -135,7 +135,11 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
     def get_entry_display(entry: Any) -> str:
         if is_float(entry):
             if not isnan(float(entry)):
-                entry_display = f'{entry:,.2f}' if not is_int(entry) else f'{entry:,}'
+                if not is_int(entry):
+                    # skip cents for large presumed-to-be-dollar amounts >$1M
+                    entry_display = f'{entry:,.2f}' if entry < 1e6 else f'{entry:,.0f}'
+                else:
+                    entry_display = f'{entry:,}'
                 return entry_display
         return entry
 

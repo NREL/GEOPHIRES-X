@@ -458,7 +458,7 @@ class GeophiresXResult:
                         v_u = ValueUnit(value_unit)
                         csv_entries.append([category, field_display, '', v_u.value_display, v_u.unit_display])
             else:
-                if category not in (
+                if category in (
                     'POWER GENERATION PROFILE',
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
                     'EXTENDED ECONOMIC PROFILE',
@@ -467,25 +467,49 @@ class GeophiresXResult:
                     GeophiresXResult.CCUS_PROFILE_LEGACY_NAME,
                     'S-DAC-GT PROFILE',
                 ):
-                    raise RuntimeError('unexpected category')
 
-                for i in range(len(fields[0][1:])):
-                    field_profile = fields[0][i + 1]
-                    unit_split = field_profile.split(' (')
-                    field_display = unit_split[0]
-                    unit_display = ''
-                    if len(unit_split) > 1:
-                        unit_display = unit_split[1].replace(')', '')
-                    for j in range(len(fields[1:])):
-                        year_entry = fields[j + 1]
-                        year = year_entry[0]
-                        profile_year_val = year_entry[i + 1]
-                        csv_entries.append([category, field_display, year, profile_year_val, unit_display])
+                    for i in range(len(fields[0][1:])):
+                        field_profile = fields[0][i + 1]
+                        name_unit_split = field_profile.split(' (')
+                        field_display = name_unit_split[0]
+                        unit_display = ''
+                        if len(name_unit_split) > 1:
+                            unit_display = name_unit_split[1].replace(')', '')
+                        for j in range(len(fields[1:])):
+                            year_entry = fields[j + 1]
+                            year = year_entry[0]
+                            profile_year_val = year_entry[i + 1]
+                            csv_entries.append([category, field_display, year, profile_year_val, unit_display])
+                elif category == 'SAM CASH FLOW PROFILE':
+                    for row_num in range(len(fields) - 1):
+                        row_idx = row_num + 1
+                        row_data = fields[row_idx]
+                        if len(row_data) > 1:
+                            name_unit_split = GeophiresXResult._get_sam_cash_flow_row_name_unit_split(
+                                fields[row_idx][0]
+                            )
+                            row_name = name_unit_split[0]
+                            unit_display = name_unit_split[1]
+                            for year in range(len(row_data) - 1):
+                                row_datapoint = row_data[year + 1]
+                                csv_entries.append([category, row_name, year, row_datapoint, unit_display])
+
+                else:
+                    raise RuntimeError(f'Unexpected category: {category}')
 
         for csv_entry in csv_entries:
             w.writerow(csv_entry)
 
         return f.getvalue()
+
+    @staticmethod
+    def _get_sam_cash_flow_row_name_unit_split(first_entry_in_row) -> list[str]:
+        name_unit_split = [it[::-1] for it in first_entry_in_row[::-1].split('( ', maxsplit=1)][::-1]
+        if len(name_unit_split) < 2:
+            name_unit_split.append('')
+
+        name_unit_split[1] = name_unit_split[1].replace(')', '')
+        return name_unit_split
 
     @property
     def json_output_file_path(self) -> Path:

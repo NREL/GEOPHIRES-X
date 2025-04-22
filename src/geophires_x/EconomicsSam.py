@@ -136,7 +136,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
         if is_float(entry):
             if not isnan(float(entry)):
                 if not is_int(entry):
-                    # skip cents for large presumed-to-be-dollar amounts >$1M
+                    # skip decimals for large numbers like SAM does
                     entry_display = f'{entry:,.2f}' if entry < 1e6 else f'{entry:,.0f}'
                 else:
                     entry_display = f'{entry:,}'

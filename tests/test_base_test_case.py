@@ -31,14 +31,11 @@ class TestBaseTestCase(BaseTestCase):
 
             self.assertIn(str(msg_type_error), '(you may have meant to pass percent=10)')
 
-        def assertHasLogRecordWithMessage(logs_, message):
-            assert message in [record.message for record in logs_.records]
-
         with self.assertLogs(level='INFO') as logs:
             with self.assertRaises(AssertionError):
                 self.assertAlmostEqualWithinPercentage([1, 2, 3], [1.1, 2.2, 3.3], percent=10.5)
 
-            assertHasLogRecordWithMessage(
+            self.assertHasLogRecordWithMessage(
                 logs,
                 'Got 2 lists, you probably meant to call:\n\t'
                 'self.assertListAlmostEqual([1, 2, 3], [1.1, 2.2, 3.3], msg=None, percent=10.5)',

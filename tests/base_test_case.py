@@ -5,6 +5,7 @@ import numbers
 import os.path
 import unittest
 
+# noinspection PyProtectedMember
 from geophires_x_client import _get_logger
 
 
@@ -96,3 +97,7 @@ class BaseTestCase(unittest.TestCase):
                 f1_lines = f1_o.readlines()
                 f2_lines = f2_o.readlines()
                 self.assertListEqual(f1_lines, f2_lines, msg=f'{expected}, {actual}')
+
+    # noinspection PyPep8Naming,PyMethodMayBeStatic
+    def assertHasLogRecordWithMessage(self, logs_, message):
+        assert message in [record.message for record in logs_.records]

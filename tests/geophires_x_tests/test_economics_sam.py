@@ -379,7 +379,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertListAlmostEqual(etg_20_expected, etg_20, percent=1)
 
-    def test_provided_gtr_ignored_with_warning(self):
+    def test_unsupported_econ_params_ignored_with_warning(self):
         with self.assertLogs(level='INFO') as logs:
             gtr_provided_result = self._get_result({'Gross Revenue Tax Rate': 0.5})
 
@@ -392,7 +392,20 @@ class EconomicsSamTestCase(BaseTestCase):
         def _npv(r: GeophiresXResult) -> float:
             return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
-        self.assertEqual(_npv(self._get_result({})), _npv(gtr_provided_result))  # Check GTR is ignored in calculations
+        default_result = self._get_result({})
+
+        self.assertEqual(_npv(default_result), _npv(gtr_provided_result))  # Check GTR is ignored in calculations
+
+        with self.assertLogs(level='INFO') as logs:
+            eir_provided_result = self._get_result({'Inflated Equity Interest Rate': 0.25})
+
+            self.assertHasLogRecordWithMessage(
+                logs,
+                'Inflated Equity Interest Rate provided value (0.25) will be ignored. '
+                '(SAM Economics does not support Inflated Equity Interest Rate.)',
+            )
+
+        self.assertEqual(_npv(default_result), _npv(eir_provided_result))  # Check EIR is ignored in calculations
 
     def test_clean_profile(self):
         profile = [

@@ -99,11 +99,11 @@ def validate_read_parameters(model: Model):
             f'are determined from {model.economics.CTR.Name} and {model.economics.PTR.Name}.)'
         )
 
-
-class _Quantity(HasQuantity):
-    def __init__(self, value: Any, units: str) -> None:
-        self.value = value
-        self.units = units
+    eir: floatParameter = model.economics.EIR
+    if eir.Provided:
+        model.logger.warning(
+            f'{eir.Name} provided value ({eir.value}) will be ignored. (SAM Economics does not support {eir.Name}.)'
+        )
 
 
 @lru_cache(maxsize=12)

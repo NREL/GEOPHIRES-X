@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from dataclasses import dataclass, field
 from functools import lru_cache
 from math import isnan
 from pathlib import Path
@@ -22,6 +23,7 @@ from PySAM import Singleowner
 
 # noinspection PyPackageRequirements
 import PySAM.Utilityrate5 as UtilityRate
+from pint.facets.plain import PlainQuantity
 from tabulate import tabulate
 
 from geophires_x import Model as Model
@@ -29,10 +31,38 @@ from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
-from geophires_x.Parameter import Parameter
-from geophires_x.Units import convertible_unit
+from geophires_x.Parameter import Parameter, HasQuantity, OutputParameter
+from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, PercentUnit
 
-_SAM_CASH_FLOW_PROFILE_KEY = 'Cash Flow'
+
+@dataclass
+class SamEconomics:
+    sam_cash_flow_profile: list[list[Any]]
+
+    lcoe_nominal: OutputParameter = field(
+        default_factory=lambda: OutputParameter(
+            UnitType=Units.ENERGYCOST,
+            CurrentUnits=EnergyCostUnit.CENTSSPERKWH,
+        )
+    )
+    capex: OutputParameter = field(
+        default_factory=lambda: OutputParameter(
+            UnitType=Units.CURRENCY,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+        )
+    )
+    project_npv: OutputParameter = field(
+        default_factory=lambda: OutputParameter(
+            UnitType=Units.CURRENCY,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+        )
+    )
+    project_irr: OutputParameter = field(
+        default_factory=lambda: OutputParameter(
+            UnitType=Units.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+        )
+    )
 
 
 def validate_read_parameters(model: Model):
@@ -63,8 +93,14 @@ def validate_read_parameters(model: Model):
         )
 
 
+class _Quantity(HasQuantity):
+    def __init__(self, value: Any, units: str) -> None:
+        self.value = value
+        self.units = units
+
+
 @lru_cache(maxsize=12)
-def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
+def calculate_sam_economics(model: Model) -> SamEconomics:
     custom_gen = CustomGeneration.new()
     grid = Grid.from_existing(custom_gen)
     utility_rate = UtilityRate.from_existing(custom_gen)
@@ -97,25 +133,16 @@ def calculate_sam_economics(model: Model) -> dict[str, dict[str, Any]]:
 
     cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
 
-    data = [
-        ('LCOE (nominal)', single_owner.Outputs.lcoe_nom, 'cents/kWh'),
-        ('IRR', single_owner.Outputs.project_return_aftertax_irr, '%'),
-        ('NPV', single_owner.Outputs.project_return_aftertax_npv * 1e-6, 'MUSD'),
-        ('CAPEX', single_owner.Outputs.adjusted_installed_cost * 1e-6, 'MUSD'),
-        (_SAM_CASH_FLOW_PROFILE_KEY, cash_flow, None),
-    ]
+    def sf(_v: float) -> float:
+        return _sig_figs(_v, 5)
 
-    ret = {}
-    for e in data:
-        key = e[0]
+    sam_economics: SamEconomics = SamEconomics(sam_cash_flow_profile=cash_flow)
+    sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
+    sam_economics.project_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
+    sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
+    sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
-        as_val = e[1]
-        if key != _SAM_CASH_FLOW_PROFILE_KEY:
-            as_val = {'value': _sig_figs(e[1], 5), 'unit': e[2]}
-
-        ret[key] = as_val
-
-    return ret
+    return sam_economics
 
 
 def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args) -> str:
@@ -143,7 +170,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
                 return entry_display
         return entry
 
-    profile_display = model.economics.sam_economics.value[_SAM_CASH_FLOW_PROFILE_KEY].copy()
+    profile_display = model.economics.sam_economics.sam_cash_flow_profile.copy()
     for i in range(len(profile_display)):
         for j in range(len(profile_display[i])):
             profile_display[i][j] = get_entry_display(profile_display[i][j])

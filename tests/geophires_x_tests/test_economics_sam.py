@@ -16,7 +16,6 @@ from geophires_x.Model import Model
 from geophires_x.EconomicsSam import (
     calculate_sam_economics,
     _sig_figs,
-    _SAM_CASH_FLOW_PROFILE_KEY,
     get_sam_cash_flow_profile_tabulated_output,
     _ppa_pricing_model,
 )
@@ -137,7 +136,7 @@ class EconomicsSamTestCase(BaseTestCase):
         m: Model = EconomicsSamTestCase._new_model(Path(self._egs_test_file_path()))
 
         sam_econ = calculate_sam_economics(m)
-        cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+        cash_flow = sam_econ.sam_cash_flow_profile
         self.assertIsNotNone(cash_flow)
 
         print(
@@ -234,7 +233,7 @@ class EconomicsSamTestCase(BaseTestCase):
         )
 
         sam_econ = calculate_sam_economics(m)
-        cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+        cash_flow = sam_econ.sam_cash_flow_profile
 
         def get_row(name: str):
             return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
@@ -249,7 +248,7 @@ class EconomicsSamTestCase(BaseTestCase):
             m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
 
             sam_econ = calculate_sam_economics(m)
-            cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+            cash_flow = sam_econ.sam_cash_flow_profile
 
             def get_row(name: str):
                 return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
@@ -283,7 +282,7 @@ class EconomicsSamTestCase(BaseTestCase):
             m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
 
             sam_econ = calculate_sam_economics(m)
-            cash_flow = sam_econ[_SAM_CASH_FLOW_PROFILE_KEY]
+            cash_flow = sam_econ.sam_cash_flow_profile
 
             def get_row(name: str):
                 return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)

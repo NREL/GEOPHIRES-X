@@ -4,7 +4,7 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
-from geophires_x.EconomicsSam import calculate_sam_economics
+from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomics
 from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -442,7 +442,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
             LCOH = LCOH * 2.931  # $/Million Btu
     elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
         # Designated as nominal (as opposed to real) in parameter tooltip text
-        LCOE = econ.sam_economics.value['LCOE (nominal)']['value']
+        LCOE = econ.sam_economics.lcoe_nominal.quantity().to(convertible_unit(econ.LCOE.CurrentUnits.value)).magnitude
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)
@@ -1518,6 +1518,9 @@ class Economics:
         self.annualheatincome = 0.0
         self.InputFile = ""
         self.Cplantcorrelation = 0.0
+
+        self.sam_economics: SamEconomics = None
+
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
@@ -1829,14 +1832,6 @@ class Economics:
             PreferredUnits=TimeUnit.YEAR,
             CurrentUnits=TimeUnit.YEAR
         )
-
-        # FIXME TODO/WIP representation in schema...
-        self.sam_economics = self.OutputParameterDict[self.sam_economics.Name] = OutputParameter(
-            'SAM Economics',
-            UnitType=Units.NONE,
-            json_parameter_type='object',
-        )
-
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
             display_name='Investment Tax Credit',
@@ -2760,9 +2755,9 @@ class Economics:
             )
 
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-            self.sam_economics.value = calculate_sam_economics(model)
-            self.ProjectNPV.value = self.sam_economics.value['NPV']['value']
-            self.ProjectIRR.value = self.sam_economics.value['IRR']['value']
+            self.sam_economics = calculate_sam_economics(model)
+            self.ProjectNPV.value = self.sam_economics.project_npv.quantity().to(convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
+            self.ProjectIRR.value = self.sam_economics.project_irr.quantity().to(convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
             # FIXME WIP VIR + MOIC
             self.ProjectVIR.value, self.ProjectMOIC.value = -1, -1
 

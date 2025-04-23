@@ -1911,12 +1911,7 @@ class Economics:
 
                     # handle special cases
                     if ParameterToModify.Name == "Economic Model":
-                        em: EconomicModel = EconomicModel.from_input_string(ParameterReadIn.sValue)
-
-                        if em == EconomicModel.SAM_SINGLE_OWNER_PPA:
-                            EconomicsSam.validate_read_parameters(model)
-
-                        self.econmodel.value = em
+                        self.econmodel.value = EconomicModel.from_input_string(ParameterReadIn.sValue)
 
                     elif ParameterToModify.Name == "Well Drilling Cost Correlation":
                         ParameterToModify.value = WellDrillingCostCorrelation.from_input_string(ParameterReadIn.sValue)
@@ -2122,11 +2117,15 @@ class Economics:
                                                      " range 0-10. GEOPHIRES will assume default surface plant O&M cost correlation with" +
                                                      " adjustment factor = 1.")
                                 ParameterToModify.value = 1.0
+
             if self.HeatStartPrice.value > self.HeatEndPrice.value:
                 s = f'{self.HeatStartPrice.Name} ({self.HeatStartPrice.quantity()}) cannot be ' \
                     f'greater than {self.HeatEndPrice.Name} ({self.HeatEndPrice.quantity()}).  ' \
                     f'GEOPHIRES will assume {self.HeatStartPrice.Name} is equal to {self.HeatEndPrice.Name}.'
                 model.logger.warning(s)
+
+            if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                EconomicsSam.validate_read_parameters(model)
         else:
             model.logger.info("No parameters read because no content provided")
 
@@ -2756,8 +2755,10 @@ class Economics:
 
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics = calculate_sam_economics(model)
-            self.ProjectNPV.value = self.sam_economics.project_npv.quantity().to(convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
-            self.ProjectIRR.value = self.sam_economics.project_irr.quantity().to(convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
+            self.ProjectNPV.value = self.sam_economics.project_npv.quantity().to(
+                convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
+            self.ProjectIRR.value = self.sam_economics.project_irr.quantity().to(
+                convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
             # FIXME WIP VIR + MOIC
             self.ProjectVIR.value, self.ProjectMOIC.value = -1, -1
 

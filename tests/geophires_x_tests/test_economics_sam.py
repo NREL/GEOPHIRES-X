@@ -379,6 +379,21 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertListAlmostEqual(etg_20_expected, etg_20, percent=1)
 
+    def test_provided_gtr_ignored_with_warning(self):
+        with self.assertLogs(level='INFO') as logs:
+            gtr_provided_result = self._get_result({'Gross Revenue Tax Rate': 0.5})
+
+        self.assertHasLogRecordWithMessage(
+            logs,
+            'Gross Revenue Tax Rate provided value (0.5) will be ignored. '
+            '(SAM Economics tax rates are determined from Combined Income Tax Rate and Property Tax Rate.)',
+        )
+
+        def _npv(r: GeophiresXResult) -> float:
+            return r.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+        self.assertEqual(_npv(self._get_result({})), _npv(gtr_provided_result))  # Check GTR is ignored in calculations
+
     def test_clean_profile(self):
         profile = [
             ['foo', 1, 2, 3],

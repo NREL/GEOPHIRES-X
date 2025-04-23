@@ -31,7 +31,7 @@ from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
-from geophires_x.Parameter import Parameter, HasQuantity, OutputParameter
+from geophires_x.Parameter import Parameter, HasQuantity, OutputParameter, floatParameter
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, PercentUnit
 
 
@@ -90,6 +90,13 @@ def validate_read_parameters(model: Model):
                 model.surfaceplant.construction_years.value,
                 f'{model.surfaceplant.construction_years.Name}  = 1',
             )
+        )
+
+    gtr: floatParameter = model.economics.GTR
+    if gtr.Provided:
+        model.logger.warning(
+            f'{gtr.Name} provided value ({gtr.value}) will be ignored. (SAM Economics tax rates '
+            f'are determined from {model.economics.CTR.Name} and {model.economics.PTR.Name}.)'
         )
 
 

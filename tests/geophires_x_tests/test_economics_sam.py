@@ -18,6 +18,7 @@ from geophires_x.EconomicsSam import (
     _sig_figs,
     get_sam_cash_flow_profile_tabulated_output,
     _ppa_pricing_model,
+    _get_fed_and_state_tax_rates,
 )
 
 # noinspection PyProtectedMember
@@ -411,6 +412,12 @@ class EconomicsSamTestCase(BaseTestCase):
     def test_sig_figs(self):
         self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])
         self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])
+
+    def test_get_fed_and_state_tax_rates(self):
+        self.assertEqual(([21], [7]), _get_fed_and_state_tax_rates(0.28))
+        self.assertEqual(([21], [0]), _get_fed_and_state_tax_rates(0.21))
+        self.assertEqual(([21], [9]), _get_fed_and_state_tax_rates(0.3))
+        self.assertEqual(([10], [0]), _get_fed_and_state_tax_rates(0.1))
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

@@ -233,14 +233,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
     ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3
 
-    geophires_ctr_tenths = Decimal(econ.CTR.value)
-    fed_ratio = 0.75
-    fed_rate_tenths = geophires_ctr_tenths * (Decimal(fed_ratio))
-    ret['federal_tax_rate'] = [float(fed_rate_tenths * Decimal(100))]
-
-    state_ratio = 0.25
-    state_rate_tenths = geophires_ctr_tenths * (Decimal(state_ratio))
-    ret['state_tax_rate'] = [float(state_rate_tenths * Decimal(100))]
+    # geophires_ctr_tenths = Decimal(econ.CTR.value)
+    # max_fed_rate_tenths = 0.21
+    # fed_rate_tenths = min(geophires_ctr_tenths, max_fed_rate_tenths)
+    # ret['federal_tax_rate'] = [float(fed_rate_tenths * Decimal(100))]
+    #
+    # state_ratio = 0.25
+    # state_rate_tenths = max(0, geophires_ctr_tenths - fed_rate_tenths)
+    # ret['state_tax_rate'] = [float(state_rate_tenths * Decimal(100))]
+    ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
     ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
@@ -279,6 +280,19 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     return ret
+
+
+def _get_fed_and_state_tax_rates(geophires_ctr_tenths: float) -> tuple[list[float]]:
+    geophires_ctr_tenths = Decimal(geophires_ctr_tenths)
+    max_fed_rate_tenths = Decimal(0.21)
+    fed_rate_tenths = min(geophires_ctr_tenths, max_fed_rate_tenths)
+
+    state_rate_tenths = max(0, geophires_ctr_tenths - fed_rate_tenths)
+
+    def ret_val(val_tenths: Decimal) -> list[float]:
+        return [round(float(val_tenths * Decimal(100)), 2)]
+
+    return ret_val(fed_rate_tenths), ret_val(state_rate_tenths)
 
 
 def _pct(econ_value: Parameter) -> float:

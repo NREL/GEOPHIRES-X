@@ -70,11 +70,12 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
             output_data = _get_single_owner_output(_soo, row_name)
 
         if output_data is None:
-            log.error(f'No output data for {row_name}')
+            if row_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP:
+                log.warning(f'No output data for {row_name}')
 
-            # TODO/WIP - skip ambiguous mapping for now
+            # Skip ambiguous mapping (for now)
             # output_data = ['undefined'] * len(years)
-            return
+            return None
 
         adjust = get_data_adjust_func(row_name)
 
@@ -88,11 +89,12 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
             single_value = _get_single_owner_output(_soo, row_name)
 
         if single_value is None:
-            log.error(f'No output data for {row_name}')
+            if row_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP:
+                log.warning(f'No output data for {row_name}')
 
-            # TODO/WIP - skip ambiguous mapping for now
+            # Skip ambiguous mapping (for now)
             # single_value = 'undefined'
-            return
+            return None
 
         svr = (
             [row_name] + [get_data_adjust_func(row_name)(single_value)] + [None] * (len(years) - 1)

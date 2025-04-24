@@ -243,7 +243,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
-    ret['system_capacity'] = _get_max_total_generation_MW(model) * 1e3
+    ret['system_capacity'] = _get_max_total_generation_kW(model)
 
     ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
@@ -312,8 +312,8 @@ def _ppa_pricing_model(
     )
 
 
-def _get_max_total_generation_MW(model: Model) -> float:
-    return np.max(model.surfaceplant.ElectricityProduced.quantity().to(convertible_unit('MW')).magnitude)
+def _get_max_total_generation_kW(model: Model) -> float:
+    return np.max(model.surfaceplant.ElectricityProduced.quantity().to(convertible_unit('kW')).magnitude)
 
 
 def _sig_figs(val: float | list | tuple, num_sig_figs: int) -> float:

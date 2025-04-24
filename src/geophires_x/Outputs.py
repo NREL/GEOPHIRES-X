@@ -3,8 +3,8 @@ import time
 import sys
 from pathlib import Path
 
+# noinspection PyPackageRequirements
 import numpy as np
-from tabulate import tabulate
 
 import geophires_x
 import geophires_x.Model as Model

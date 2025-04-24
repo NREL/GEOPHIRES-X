@@ -49,7 +49,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
         if row_name.endswith('($)'):
 
-            def rnd(x):
+            def rnd(x):  # Note this is a redefinition/reassignment of rnd - SAM doesn't show cents
                 return round(x)
 
         def adj(x_):
@@ -65,7 +65,6 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
     def data_row(row_name: str, output_data: Any | None = None) -> list[Any]:
         if output_data is None:
-            # TODO output_data should not be passed if present in _get_output
             output_data = _get_single_owner_output(_soo, row_name)
 
         if output_data is None:
@@ -84,7 +83,6 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
     def single_value_row(row_name: str, single_value: float | None = None) -> list[Any]:
         if single_value is None:
-            # TODO single_value should not be passed if present in _get_output
             single_value = _get_single_owner_output(_soo, row_name)
 
         if single_value is None:

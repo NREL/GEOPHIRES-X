@@ -2795,7 +2795,9 @@ class Economics:
     def calculate_cashflow(self, model: Model) -> None:
             """
             Calculate cashflow and cumulative cash flow
-            TODO/WIP adjust/skip for SAM economic model(s)
+
+            Note that these calculations are irrelevant and ignored for SAM economic models, except for
+            carbon calculations.
             """
 
             total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value

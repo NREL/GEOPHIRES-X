@@ -13,7 +13,6 @@ from typing import Any
 from PySAM import Singleowner
 
 import geophires_x.Model as Model
-from geophires_x.GeoPHIRESUtils import json_dumpse
 
 
 @lru_cache(maxsize=12)
@@ -173,8 +172,28 @@ def _clean_profile(profile: list[list[Any]]) -> list[list[Any]]:
 _SINGLE_OWNER_OUTPUT_PROPERTIES_ADDITIONAL = {
     "Debt closing costs ($)": "cost_financing",
     'Total installed cost ($)': lambda _soo: -1.0 * _soo.cost_installed,
-}
-# fmt:on
+}  # fmt:on
+
+
+def _get_logger():
+    level = logging.INFO if not _enable_geophires_dev_debugging() else logging.DEBUG
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(level)
+    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+    _l = logging.getLogger(__name__)
+    _l.setLevel(level)
+    _l.addHandler(sh)
+    return _l
+
+
+def _enable_geophires_dev_debugging() -> bool:
+    def _get_env_var_boolean(env_var: str) -> bool:
+        return os.getenv(env_var, 'False').lower() in ('true', '1', 't')
+
+    return _get_env_var_boolean('ENABLE_GEOPHIRES_DEV_DEBUGGING')
+
+
+_log = _get_logger()
 
 
 def _get_file_path(file_name) -> str:
@@ -206,22 +225,7 @@ _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP = [
 
     # TODO: unclear what this is derived from
     'Other financing cost ($)'
-]
-# fmt:on
-
-
-def _get_logger():
-    # TODO disable debug output outside of dev environment
-    sh = logging.StreamHandler(sys.stdout)
-    sh.setLevel(logging.DEBUG)
-    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
-    _l = logging.getLogger(__name__)
-    _l.setLevel(logging.DEBUG)
-    _l.addHandler(sh)
-    return _l
-
-
-_log = _get_logger()
+]  # fmt:on
 
 
 def _get_single_owner_output(soo: Any, display_name: str) -> Any:
@@ -230,6 +234,26 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
     :type soo: `PySAM.Singleowner.Outputs`
     """
 
+    if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
+        if display_name in _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP:
+            return None
+
+        ld = 'SAM Cash Flow Output property'
+        _log.warning(f'{ld} not found for "{display_name}"')
+        if _enable_geophires_dev_debugging():
+            _show_unknown_single_owner_output_suggestions(soo, display_name, ld)
+
+        return None
+
+    prop = _SINGLE_OWNER_OUTPUT_PROPERTIES[display_name]
+
+    if callable(prop):
+        return prop(soo)
+
+    return getattr(soo, prop)
+
+
+def _show_unknown_single_owner_output_suggestions(soo: Any, display_name: str, ld: str) -> None:
     def ga(_p):
         # noinspection PyBroadException
         try:
@@ -259,14 +283,9 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
 
         return [(p, ga(p)) for p in dir(soo) if val_match(ga(p))]
 
-    if display_name not in _SINGLE_OWNER_OUTPUT_PROPERTIES:
-        if display_name in _SINGLE_OWNER_OUTPUT_PROPERTIES_TO_SKIP:
-            return None
-
         # noinspection PyBroadException
         try:
-            ld = 'SAM Cash Flow Output property'
-            _log.warning(f'{ld} not found for "{display_name}"')
+            # _log.warning(f'{ld} not found for "{display_name}"')
 
             def show_suggestions(search_string: str):
                 if search_string is None or search_string == '':
@@ -307,12 +326,3 @@ def _get_single_owner_output(soo: Any, display_name: str) -> Any:
 
         except Exception as e:
             _log.debug(f'Encountered exception attempting to generate suggestions for {ld} for "{display_name}": {e}"')
-
-        return None
-
-    prop = _SINGLE_OWNER_OUTPUT_PROPERTIES[display_name]
-
-    if callable(prop):
-        return prop(soo)
-
-    return getattr(soo, prop)

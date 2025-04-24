@@ -215,6 +215,14 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
 
 
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
+    """
+    TODO:
+        - Construction years
+        - Break out indirect costs (instead of lumping all into direct cost):
+            https://github.com/NREL/GEOPHIRES-X/issues/383
+        - Inflated Equity Interest Rate: doesn't appear to have equivalent in SAM, but should probably be supported
+            in some form.
+    """
     econ = model.economics
 
     ret: dict[str, Any] = {}
@@ -223,33 +231,20 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
-    # ret['total_installed_cost'] = total_capex_musd * 1e6
 
     # 'Inflation Rate During Construction'
     construction_additional_cost = econ.inflrateconstruction.value * total_capex
 
     ret['total_installed_cost'] = (total_capex + construction_additional_cost).to('USD').magnitude
 
-    # TODO break out indirect costs (instead of lumping all into direct cost)
-
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
-    # TODO construction years
-
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
     ret['system_capacity'] = _get_max_total_generation_MW(model) * 1e3
 
-    # geophires_ctr_tenths = Decimal(econ.CTR.value)
-    # max_fed_rate_tenths = 0.21
-    # fed_rate_tenths = min(geophires_ctr_tenths, max_fed_rate_tenths)
-    # ret['federal_tax_rate'] = [float(fed_rate_tenths * Decimal(100))]
-    #
-    # state_ratio = 0.25
-    # state_rate_tenths = max(0, geophires_ctr_tenths - fed_rate_tenths)
-    # ret['state_tax_rate'] = [float(state_rate_tenths * Decimal(100))]
     ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
@@ -283,8 +278,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Project lifetime
     ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
     ret['term_int_rate'] = _pct(econ.BIR)
-
-    # TODO 'Inflated Equity Interest Rate' (may not have equivalent in SAM...?)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
@@ -321,10 +314,6 @@ def _ppa_pricing_model(
 
 def _get_max_total_generation_MW(model: Model) -> float:
     return np.max(model.surfaceplant.ElectricityProduced.quantity().to(convertible_unit('MW')).magnitude)
-
-
-def _get_average_net_generation_MW(model: Model) -> float:
-    return np.average(model.surfaceplant.NetElectricityProduced.value)
 
 
 def _sig_figs(val: float | list | tuple, num_sig_figs: int) -> float:

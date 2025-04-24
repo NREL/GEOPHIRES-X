@@ -407,6 +407,22 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertEqual(_npv(default_result), _npv(eir_provided_result))  # Check EIR is ignored in calculations
 
+    def test_carbon_calculations(self):
+        r = self._get_result(
+            {
+                'Do Carbon Price Calculations': True,
+                'Starting Carbon Credit Value': 0.015,
+                'Ending Carbon Credit Value': 0.1,
+                'Carbon Escalation Start Year': 5,
+                'Carbon Escalation Rate Per Year': 0.01,
+                'Units:Total Saved Carbon Production': 'kilotonne',
+            }
+        )
+
+        ace = r.result['SUMMARY OF RESULTS']['Total Avoided Carbon Emissions']
+        self.assertEqual('kilotonne', ace['unit'])
+        self.assertAlmostEqualWithinPercentage(27159, ace['value'], percent=20)
+
     def test_clean_profile(self):
         profile = [
             ['foo', 1, 2, 3],

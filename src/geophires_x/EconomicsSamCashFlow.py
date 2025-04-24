@@ -111,12 +111,11 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
         lines = lines[1:]  # exclude header row
 
-        def is_only_commas(s: str) -> bool:
-            # TODO this is a silly way to test whether entries in row are None
-            return re.match(r'^,+$', s) is not None
+        def is_empty_line(_entries: list[Any]) -> bool:
+            return all(it in ['', None] for it in _entries)
 
         for line in lines:
-            if is_only_commas(','.join(line)):
+            if is_empty_line(line):
                 blank_row()
                 continue
 
@@ -138,7 +137,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 category_row(row_label)
                 continue
 
-            if is_only_commas(','.join(line_entries[3:])):
+            if is_empty_line(line_entries[3:]):
                 single_value_row(row_label)
             else:
                 data_row(row_label)

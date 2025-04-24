@@ -23,7 +23,6 @@ from PySAM import Singleowner
 
 # noinspection PyPackageRequirements
 import PySAM.Utilityrate5 as UtilityRate
-from pint.facets.plain import PlainQuantity
 from tabulate import tabulate
 
 from geophires_x import Model as Model
@@ -31,7 +30,7 @@ from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
 from geophires_x.EconomicsUtils import BuildPricingModel
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
-from geophires_x.Parameter import Parameter, HasQuantity, OutputParameter, floatParameter
+from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, PercentUnit
 
 
@@ -225,6 +224,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     """
     econ = model.economics
 
+    # noinspection PyDictCreation
     ret: dict[str, Any] = {}
 
     ret['analysis_period'] = model.surfaceplant.plant_lifetime.value

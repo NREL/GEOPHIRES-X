@@ -197,17 +197,19 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
-def _get_utility_rate_parameters(model: Model) -> dict[str, Any]:
-    econ = model.economics
+def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
+    econ = m.economics
 
     ret: dict[str, Any] = {}
 
     ret['inflation_rate'] = econ.RINFL.quantity().to(convertible_unit('%')).magnitude
 
-    max_net_kWh_produced = np.max(model.surfaceplant.NetkWhProduced.value)
-    ret['degradation'] = [
-        (max_net_kWh_produced - it) / max_net_kWh_produced * 100 for it in model.surfaceplant.NetkWhProduced.value
+    max_total_kWh_produced = np.max(m.surfaceplant.TotalkWhProduced.value)
+    degradation_total = [
+        (max_total_kWh_produced - it) / max_total_kWh_produced * 100 for it in m.surfaceplant.NetkWhProduced.value
     ]
+
+    ret['degradation'] = degradation_total
 
     return ret
 
@@ -238,7 +240,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # TODO construction years
 
     # Note generation profile is generated relative to the max in _get_utility_rate_parameters
-    ret['system_capacity'] = _get_max_net_generation_MW(model) * 1e3
+    ret['system_capacity'] = _get_max_total_generation_MW(model) * 1e3
 
     # geophires_ctr_tenths = Decimal(econ.CTR.value)
     # max_fed_rate_tenths = 0.21
@@ -317,8 +319,8 @@ def _ppa_pricing_model(
     )
 
 
-def _get_max_net_generation_MW(model: Model) -> float:
-    return np.max(model.surfaceplant.NetElectricityProduced.value)
+def _get_max_total_generation_MW(model: Model) -> float:
+    return np.max(model.surfaceplant.ElectricityProduced.quantity().to(convertible_unit('MW')).magnitude)
 
 
 def _get_average_net_generation_MW(model: Model) -> float:

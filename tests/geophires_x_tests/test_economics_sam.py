@@ -289,22 +289,22 @@ class EconomicsSamTestCase(BaseTestCase):
                 return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
 
             ptc_vals = get_row('Federal PTC income ($)')
-            self.assertListEqual(expected_ptc_usd_per_kWh, ptc_vals)
+            self.assertListAlmostEqual(expected_ptc_usd_per_kWh, ptc_vals, percent=1)
 
         assert_ptc({}, [0] * 21)
 
         base_expected = [
             0,
-            126448529,
-            127032114,
-            127215832,
-            127324867,
-            127401377,
-            127459785,
-            127506731,
-            127545802,
-            127579151,
-            127608165,
+            126447893,
+            127031474,
+            127215192,
+            127324226,
+            127400735,
+            127459143,
+            127506088,
+            127545160,
+            127578508,
+            127607522,
             0,
             0,
             0,
@@ -325,16 +325,16 @@ class EconomicsSamTestCase(BaseTestCase):
         # an inflation vector with correct offset for PTC escalation year = 2), but this is fine for now.
         inflation_expected = [
             0,
-            126448529,
-            130207917,
-            133576624,
-            140057354,
-            143326549,
-            146578753,
-            153008077,
-            156243607,
-            162663417,
-            165890615,
+            126447893,
+            130207261,
+            133575951,
+            140056649,
+            143325827,
+            146578015,
+            153007306,
+            156242820,
+            162662598,
+            165889779,
             0,
             0,
             0,

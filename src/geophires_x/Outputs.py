@@ -257,7 +257,7 @@ class Outputs:
                     irfl = Outputs._field_label(econ.interest_rate.Name, 49)
                     f.write(f'      {irfl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
 
-                # FIXME TODO unit is missing
+                # FIXME TODO unit is missing https://github.com/NREL/GEOPHIRES-X/issues/382
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')
 
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')

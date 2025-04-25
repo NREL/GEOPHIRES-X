@@ -5,8 +5,11 @@ import numpy as np
 import pandas as pd
 from scipy.special import erf, erfc, jv, yv, exp1
 from scipy.interpolate import interp1d
+from scipy.integrate import trapezoid
 import scipy.io as sio
 import matplotlib.pyplot as plt
+
+import CoolProp.CoolProp as CP
 
 import geophires_x.Model as Model
 from .CylindricalReservoir import CylindricalReservoir
@@ -14,7 +17,6 @@ from .OptionList import FlowrateModel, InjectionTemperatureModel, Configuration
 from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, strParameter, boolParameter
 from .Reservoir import Reservoir
 from .Units import *
-import sys
 from functools import lru_cache
 
 
@@ -458,28 +460,30 @@ class SBTReservoir(CylindricalReservoir):
         eps_annulus = Dh_annulus * piperoughness  # Relative roughness annulus [-]
         eps_centerpipe = 2 * radiuscenterpipe * piperoughness  # Relative roughness inner pipe [-]
 
+        # These variables are set but never used, and sio.loadmat is causing a "No such file" error.
+        # (see https://github.com/NREL/GEOPHIRES-X/issues/373)
         # Variable fluid properties logic
-        if variablefluidproperties == 0:
-            Pvector = [1, 1e9]
-            Tvector = [1, 1e4]
-            density = np.full((2, 2), rho_f)
-            heatcapacity = np.full((2, 2), cp_f)
-            thermalconductivity = np.full((2, 2), k_f)
-            viscosity = np.full((2, 2), mu_f)
-            thermalexpansion = np.zeros((2, 2))
-        else:
-            print('Loading fluid properties ...')
-            if fluid == 1:
-                # Load properties for water from pre-generated CoolProp data
-                properties = sio.loadmat('properties_H2O_HT_v3.mat')
-                print('Fluid properties for water loaded successfully')
-            elif fluid == 2:
-                # Load properties for CO2 from pre-generated CoolProp data
-                properties = sio.loadmat('properties_CO2.mat')
-                print('Fluid properties for CO2 loaded successfully')
-            else:
-                print('No valid fluid selected')
-                exit()
+        #if variablefluidproperties == 0:
+        #    Pvector = [1, 1e9]
+        #    Tvector = [1, 1e4]
+        #    density = np.full((2, 2), rho_f)
+        #    heatcapacity = np.full((2, 2), cp_f)
+        #    thermalconductivity = np.full((2, 2), k_f)
+        #    viscosity = np.full((2, 2), mu_f)
+        #    thermalexpansion = np.zeros((2, 2))
+        #else:
+        #    print('Loading fluid properties ...')
+        #    if fluid == 1:
+        #        # Load properties for water from pre-generated CoolProp data
+        #        properties = sio.loadmat('properties_H2O_HT_v3.mat')
+        #        print('Fluid properties for water loaded successfully')
+        #    elif fluid == 2:
+        #        # Load properties for CO2 from pre-generated CoolProp data
+        #        properties = sio.loadmat('properties_CO2.mat')
+        #        print('Fluid properties for CO2 loaded successfully')
+        #    else:
+        #        print('No valid fluid selected')
+        #        exit()
 
         # Length of each segment [m]
         Deltaz = np.sqrt(np.diff(x) ** 2 + np.diff(y) ** 2 + np.diff(z) ** 2)
@@ -648,6 +652,7 @@ class SBTReservoir(CylindricalReservoir):
         # MIR Nreg = N - Nboiler
         Nreg = 1 + N - Nboiler
         self.krock.value_vector = np.full(N, self.krock.value)
+        k_m_vector = np.zeros(N)
         k_m_vector[Nreg:] = k_m_boiler
         alpha_m_vector = k_m_vector / self.rhorock.value / self.cprock.value
 

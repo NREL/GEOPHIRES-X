@@ -1072,6 +1072,7 @@ class WellBores:
         )
         self.average_production_reservoir_pressure = self.OutputParameterDict[self.average_production_reservoir_pressure.Name] = OutputParameter(
             Name="Average Reservoir Pressure",
+            display_name='Average reservoir pressure',
             UnitType=Units.PRESSURE,
             PreferredUnits=PressureUnit.KPASCAL,
             CurrentUnits=PressureUnit.KPASCAL

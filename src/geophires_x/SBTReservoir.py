@@ -380,6 +380,8 @@ class SBTReservoir(CylindricalReservoir):
         """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
+        raise NotImplementedError('SBT with coaxial configuration is not implemented at this time.')
+
         # Clear all equivalent: Initialize variables and import necessary libraries
 
         # SBT v2 for co-axial heat exchanger with high-temperature capability
@@ -649,8 +651,8 @@ class SBTReservoir(CylindricalReservoir):
         # MIR N = len(x) - 1
         N = len(x) - 1
         Nboiler = len(boilerelements)
-        # MIR Nreg = N - Nboiler
-        Nreg = 1 + N - Nboiler
+        Nreg = N - Nboiler
+        #Nreg = 1 + N - Nboiler
         self.krock.value_vector = np.full(N, self.krock.value)
         k_m_vector = np.zeros(N)
         k_m_vector[Nreg:] = k_m_boiler
@@ -667,15 +669,15 @@ class SBTReservoir(CylindricalReservoir):
         SoverLSorted = SMatrixSorted / (np.ones((N, 1)) * Deltaz)
         mindexNPCP = np.argmax(np.min(SoverLSorted, axis=1) < LimitSoverL)
 
-        # MIR midpointsx = 0.5 * x[1:] + 0.5 * x[:-1]
-        # MIR midpointsy = 0.5 * y[1:] + 0.5 * y[:-1]
-        # MIR midpointsz = 0.5 * z[1:] + 0.5 * z[:-1]
-        midpointsx = 0.5 * x + 0.5 * x
-        midpointsy = 0.5 * y + 0.5 * y
-        midpointsz = 0.5 * z + 0.5 * z
+        midpointsx = 0.5 * x[1:] + 0.5 * x[:-1]
+        midpointsy = 0.5 * y[1:] + 0.5 * y[:-1]
+        midpointsz = 0.5 * z[1:] + 0.5 * z[:-1]
+        #midpointsx = 0.5 * x + 0.5 * x
+        #midpointsy = 0.5 * y + 0.5 * y
+        #midpointsz = 0.5 * z + 0.5 * z
         verticalchange = np.diff(z)
         # MIR
-        verticalchange = np.append(verticalchange, verticalchange[-1])
+        #verticalchange = np.append(verticalchange, verticalchange[-1])
 
         if initialtemperatureprofile == 0:
             BBinitial = Tsurf - GeoGradient * midpointsz
@@ -683,8 +685,10 @@ class SBTReservoir(CylindricalReservoir):
             Tfluiddownnodes = Tsurf - GeoGradient * z
         elif initialtemperatureprofile == 1:
             BBinitial = np.interp(midpointsz, initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
-            Tfluidupnodes = np.interp(z, initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
-            Tfluiddownnodes = np.interp(z, initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
+            #Tfluidupnodes = np.interp(z, initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
+            #Tfluiddownnodes = np.interp(z, initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
+            Tfluidupnodes = np.interp(z[:-1], initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
+            Tfluiddownnodes = np.interp(z[:-1], initialtemperaturedata[:, 0], initialtemperaturedata[:, 1])
 
         # MIR Tfluiddownmidpoints = 0.5 * Tfluiddownnodes[1:] + 0.5 * Tfluiddownnodes[:-1]
         # MIR Tfluidupmidpoints = 0.5 * Tfluidupnodes[1:] + 0.5 * Tfluidupnodes[:-1]
@@ -811,26 +815,38 @@ class SBTReservoir(CylindricalReservoir):
         self.Tresoutput.value[0] = Tsurf
         Poutput[0] = Pin * 1e5
 
-        Tfluidupnodesstore = np.zeros((N + 1, len(times)))
-        Tfluiddownnodesstore = np.zeros((N + 1, len(times)))
-        # MIR Tfluidupmidpointsstore = np.zeros((N, len(times)))
-        Tfluidupmidpointsstore = np.zeros((N + 1, len(times)))
-        # MIR Tfluiddownmidpointsstore = np.zeros((N, len(times)))
-        Tfluiddownmidpointsstore = np.zeros((N + 1, len(times)))
-        Pfluidupnodesstore = np.zeros((N + 1, len(times)))
-        Pfluiddownnodesstore = np.zeros((N + 1, len(times)))
-        # MIR Pfluidupmidpointsstore = np.zeros((N, len(times)))
-        # MIR Pfluiddownmidpointsstore = np.zeros((N, len(times)))
-        Pfluidupmidpointsstore = np.zeros((N + 1, len(times)))
-        Pfluiddownmidpointsstore = np.zeros((N + 1, len(times)))
-        Qfluidupnodesstore = np.zeros((N + 1, len(times)))
-        Qfluiddownnodesstore = np.zeros((N + 1, len(times)))
-        Phasefluidupnodesstore = np.zeros((N + 1, len(times)))
-        Phasefluiddownnodesstore = np.zeros((N + 1, len(times)))
-        Hfluidupnodesstore = np.zeros((N + 1, len(times)))
-        Hfluiddownnodesstore = np.zeros((N + 1, len(times)))
+        #Tfluidupnodesstore = np.zeros((N + 1, len(times)))
+        #Tfluiddownnodesstore = np.zeros((N + 1, len(times)))
+        Tfluidupnodesstore = np.zeros((N, len(times)))
+        Tfluiddownnodesstore = np.zeros((N, len(times)))
+        Tfluidupmidpointsstore = np.zeros((N, len(times)))
+        #Tfluidupmidpointsstore = np.zeros((N + 1, len(times)))
+        Tfluiddownmidpointsstore = np.zeros((N, len(times)))
+        #Tfluiddownmidpointsstore = np.zeros((N + 1, len(times)))
+        #Pfluidupnodesstore = np.zeros((N + 1, len(times)))
+        #Pfluiddownnodesstore = np.zeros((N + 1, len(times)))
+        Pfluidupnodesstore = np.zeros((N, len(times)))
+        Pfluiddownnodesstore = np.zeros((N, len(times)))
+        Pfluidupmidpointsstore = np.zeros((N, len(times)))
+        Pfluiddownmidpointsstore = np.zeros((N, len(times)))
+        #Pfluidupmidpointsstore = np.zeros((N + 1, len(times)))
+        #Pfluiddownmidpointsstore = np.zeros((N + 1, len(times)))
+        #Qfluidupnodesstore = np.zeros((N + 1, len(times)))
+        #Qfluiddownnodesstore = np.zeros((N + 1, len(times)))
+        #Phasefluidupnodesstore = np.zeros((N + 1, len(times)))
+        #Phasefluiddownnodesstore = np.zeros((N + 1, len(times)))
+        #Hfluidupnodesstore = np.zeros((N + 1, len(times)))
+        #Hfluiddownnodesstore = np.zeros((N + 1, len(times)))
+        Qfluidupnodesstore = np.zeros((N, len(times)))
+        Qfluiddownnodesstore = np.zeros((N, len(times)))
+        Phasefluidupnodesstore = np.zeros((N, len(times)))
+        Phasefluiddownnodesstore = np.zeros((N, len(times)))
+        Hfluidupnodesstore = np.zeros((N, len(times)))
+        Hfluiddownnodesstore = np.zeros((N, len(times)))
         Qinterexchangestore = np.zeros((N, len(times)))
         QinterexchangeUp = np.zeros(N)
+        velocityfluiddownmidpointsstore = np.zeros((N, len(times)))
+        heatcapacityfluidupmidpointsstore = np.zeros((N, len(times)))
 
         # Store initial values
         Tfluidupnodesstore[:, 0] = Tfluidupnodes
@@ -846,6 +862,8 @@ class SBTReservoir(CylindricalReservoir):
         Phasefluidupnodesstore[:, 0] = Phasefluidupnodes
         Phasefluiddownnodesstore[:, 0] = Phasefluiddownnodes
         Qinterexchangestore[:, 0] = np.zeros(N)
+        velocityfluiddownmidpointsstore[:, 0] = velocityfluiddownmidpoints
+        heatcapacityfluidupmidpointsstore[:, 0] = heatcapacityfluidupmidpoints
 
         print('Pre-processing completed successfully. Starting simulation ...')
 
@@ -942,7 +960,8 @@ class SBTReservoir(CylindricalReservoir):
             else:
                 maxindextoconsider = np.where(maxspacingtest > 1)[0][-1]
 
-            if mindexNPCP < maxindextoconsider + 1:
+            #if mindexNPCP < maxindextoconsider + 1:
+            if mindexNPCP < maxindextoconsider:
                 indicestocalculate = SortedIndices[:, mindexNPCP + 1:maxindextoconsider + 1]
                 NPCP[range(N), indicestocalculate] = Deltaz[indicestocalculate] / (
                         4 * np.pi * k_m_vector[indicestocalculate] * SMatrix[range(N), indicestocalculate]) * erfc(
@@ -1027,17 +1046,26 @@ class SBTReservoir(CylindricalReservoir):
 
             Q[:, i] = BB
 
-            R[0:N] = Vvector * Tfluiddownmidpointsstore[:, i - 1] / Deltat
-            R[0:N] += Q[:, i]
-            R[N:2 * N] = Vvector * Tfluidupmidpointsstore[:, i - 1] / Deltat
-            R[N:2 * N] += Q[:, i]
+            #R[0:N] = Vvector * Tfluiddownmidpointsstore[:, i - 1] / Deltat
+            #R[0:N] += Q[:, i]
+            #R[N:2 * N] = Vvector * Tfluidupmidpointsstore[:, i - 1] / Deltat
+            #R[N:2 * N] += Q[:, i]
+            R[0:N, 0] = Vvector * Tfluiddownmidpointsstore[:, i - 1] / Deltat
+            R[0:N, 0] += Q[:, i]
+            R[N:2 * N, 0] = Vvector * Tfluidupmidpointsstore[:, i - 1] / Deltat
+            R[N:2 * N, 0] += Q[:, i]
 
-            R[2 * N:3 * N] = Pfluidupmidpointsstore[:, i - 1] - Pfluiddownmidpointsstore[:,
+            #R[2 * N:3 * N] = Pfluidupmidpointsstore[:, i - 1] - Pfluiddownmidpointsstore[:,
+            #                                                    i - 1] + velocityfluiddownmidpointsstore[:,
+            #                                                             i - 1] * Pfluiddownmidpointsstore[:,
+            #                                                                      i - 1] * Deltat
+            R[2 * N:3 * N, 0] = Pfluidupmidpointsstore[:, i - 1] - Pfluiddownmidpointsstore[:,
                                                                 i - 1] + velocityfluiddownmidpointsstore[:,
                                                                          i - 1] * Pfluiddownmidpointsstore[:,
                                                                                   i - 1] * Deltat
 
-            R[3 * N:4 * N] = heatcapacityfluidupmidpointsstore[:, i - 1] * Tfluidupmidpointsstore[:, i - 1]
+            #R[3 * N:4 * N] = heatcapacityfluidupmidpointsstore[:, i - 1] * Tfluidupmidpointsstore[:, i - 1]
+            R[3 * N:4 * N, 0] = heatcapacityfluidupmidpointsstore[:, i - 1] * Tfluidupmidpointsstore[:, i - 1]
 
             try:
                 solutions = np.linalg.solve(L, R)
@@ -1045,22 +1073,26 @@ class SBTReservoir(CylindricalReservoir):
                 print(f'Simulation terminated prematurely due to linear algebra error at time step {i}.')
                 break
 
-            BB = solutions[0:N]
+            #BB = solutions[0:N]
+            BB = solutions[0:N, 0]
             Tfluidupmidpointsstore[:, i] = BB
             Tfluidupmidpoints = BB
             Tfluidupmidpoints = Tfluidupmidpoints
 
-            BB = solutions[N:2 * N]
+            #BB = solutions[N:2 * N]
+            BB = solutions[N:2 * N, 0]
             Tfluiddownmidpointsstore[:, i] = BB
             Tfluiddownmidpoints = BB
             Tfluiddownmidpoints = Tfluiddownmidpoints
 
-            BB = solutions[2 * N:3 * N]
+            #BB = solutions[2 * N:3 * N]
+            BB = solutions[2 * N:3 * N, 0]
             Pfluidupmidpointsstore[:, i] = BB
             Pfluidupmidpoints = BB
             Pfluidupmidpoints = Pfluidupmidpoints
 
-            BB = solutions[3 * N:4 * N]
+            #BB = solutions[3 * N:4 * N]
+            BB = solutions[3 * N:4 * N, 0]
             Pfluiddownmidpointsstore[:, i] = BB
             Pfluiddownmidpoints = BB
             Pfluiddownmidpoints = Pfluiddownmidpoints

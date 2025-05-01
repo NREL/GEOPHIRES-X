@@ -913,3 +913,15 @@ Print Output to Console, 1"""
             )
             client.get_geophires_result(params)
         self.assertIn('Electricity production calculated as negative', str(e.exception))
+
+    def test_sbt_coaxial_raises_error(self):
+        client = GeophiresXClient()
+        with self.assertRaises(RuntimeError) as e:
+            params = GeophiresInputParameters(
+                {
+                    'Reservoir Model': 8,
+                    'Well Geometry Configuration': 2,
+                }
+            )
+            client.get_geophires_result(params)
+        self.assertIn('SBT with coaxial configuration is not implemented', str(e.exception))

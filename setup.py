@@ -77,7 +77,10 @@ setup(
         'h5py==3.10.0',  # TODO resolve apparent h5py==3.11.0 build compatibility issues on some platforms
         'scipy',
         'iapws',
-        'coolprop',
+        'coolprop; python_version > "3.8"',
+        # coolprop > 6.7.0 fails on Python 3.8, see
+        # https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/14599234458/job/40952924048?pr=69#step:5:302
+        'coolprop==6.7.0; python_version == "3.8"',
         'rich',
         'pylocker',
     ],

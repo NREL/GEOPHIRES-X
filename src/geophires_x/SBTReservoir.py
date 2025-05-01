@@ -150,7 +150,7 @@ def generate_wireframe_model(lateral_endpoint_depth: float, number_of_laterals: 
 
         az, el = 71.5676, 10.4739
         ax.view_init(az, el)
-        plt.show()
+        show_plot(block=False)
 
     return xinj, yinj, zinj, xprod, yprod, zprod, xlat, ylat, zlat
 

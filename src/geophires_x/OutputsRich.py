@@ -17,6 +17,7 @@ from geophires_x import Model as Model
 from geophires_x.Economics import Economics
 
 from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, InsertImagesIntoHTML
+from geophires_x.MatplotlibUtils import plt_subplots
 from geophires_x.OptionList import EndUseOptions, PlantType, EconomicModel, ReservoirModel, FractureShape, \
     ReservoirVolume
 
@@ -1258,7 +1259,7 @@ def Plot_Twin_Graph(title: str, html_path: str, x: pd.array, y1: pd.array, y2: p
     COLOR_TEMPERATURE = "#69b3a2"
     COLOR_PRICE = "#3399e6"
 
-    fig, ax1 = plt.subplots(figsize=(40, 4))
+    fig, ax1 = plt_subplots(figsize=(40, 4))
 
     ax1.plot(x, y1, label=UpgradeSymbologyOfUnits(y1_label), color=COLOR_PRICE, lw=3)
     ax1.set_xlabel(UpgradeSymbologyOfUnits(x_label), color = COLOR_PRICE, fontsize=14)
@@ -1305,7 +1306,7 @@ def Plot_Single_Graph(title: str, html_path: str, x: pd.array, y: pd.array, x_la
     COLOR_PRICE = "#3399e6"
 
 #    plt.plot(x, y, color=COLOR_PRICE)
-    fig, ax = plt.subplots(figsize=(40, 4))
+    fig, ax = plt_subplots(figsize=(40, 4))
     ax.plot(x, y, label=UpgradeSymbologyOfUnits(y_label), color=COLOR_PRICE)
     ax.set_xlabel(UpgradeSymbologyOfUnits(x_label), color = COLOR_PRICE, fontsize=14)
     ax.set_ylabel(UpgradeSymbologyOfUnits(y_label), color=COLOR_PRICE, fontsize=14)

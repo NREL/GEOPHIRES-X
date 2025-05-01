@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import sys
 from enum import Enum
 from os.path import exists
@@ -15,7 +14,6 @@ import scipy
 from pint.facets.plain import PlainQuantity
 from scipy.interpolate import interp1d
 import numpy as np
-import matplotlib.pyplot as plt
 
 import CoolProp.CoolProp as CP
 
@@ -645,19 +643,3 @@ def is_float(o: Any) -> bool:
         return True
 
 
-def show_plot(**kw_args):
-    """
-    Workaround for intermittent Windows GitHub Actions failures - see https://github.com/NREL/GEOPHIRES-X/issues/365
-    """
-    try:
-        plt.show(**kw_args)
-    except Exception as e:
-        # Can't import TclError directly since Python is not configured for Tk on all systems
-        is_tcl_error = e.__class__.__name__ == 'TclError'
-
-        is_windows_on_github_actions = os.name == 'nt' and 'TOXPYTHON' in os.environ
-        if is_tcl_error and is_windows_on_github_actions:
-            _logger.warning(f'Ignoring TclError when attempting to show plot '
-                            f'since we appear to be running on Windows in GitHub Actions ({str(e)})')
-        else:
-            raise e

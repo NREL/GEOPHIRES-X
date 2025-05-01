@@ -119,10 +119,6 @@ jobs:
     - name: test
       env:
         TOXPYTHON: '${{ matrix.toxpython }}'
-
-        # Prevent intermittent GitHub Actions Windows failures per https://github.com/NREL/GEOPHIRES-X/issues/365
-        MPLBACKEND: 'Agg'
-
       run: >
         tox -e ${{ matrix.tox_env }} -v
 

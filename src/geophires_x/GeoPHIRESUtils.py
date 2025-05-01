@@ -9,7 +9,6 @@ import dataclasses
 import json
 import numbers
 from functools import lru_cache
-from tkinter import TclError
 from typing import Optional, Any
 
 import scipy

@@ -299,7 +299,8 @@ well drilling, surface plant, etc.) are either provided by the user or calculate
 correlations.
 
 For more information on the theoretical basis for GEOPHIRES see
-`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
+`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__
+and `GEOPHIRES reference materials <References/references.md#geophires>`__.
 
 Parameters
 ----------

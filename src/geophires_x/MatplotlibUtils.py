@@ -36,10 +36,11 @@ def plt_subplots(**kw_args) -> Any:
 
 def _handle_tcl_error_on_windows_github_actions(e) -> None:
     # Can't import TclError directly since Python is not configured for Tk on all systems
-    is_tcl_error = e.__class__.__name__ == 'TclError'
+    tcl_error_name = 'TclError'
+    is_tcl_error = e.__class__.__name__ == tcl_error_name
 
-    if os.name == 'nt' and 'TOXPYTHON' in os.environ:
-        _logger.warning(f'Ignoring TclError when attempting to show plot '
+    if is_tcl_error and os.name == 'nt' and 'TOXPYTHON' in os.environ:
+        _logger.warning(f'Ignoring {tcl_error_name} when attempting to show plot '
                         f'since we appear to be running on Windows in GitHub Actions ({str(e)})')
     else:
         raise e

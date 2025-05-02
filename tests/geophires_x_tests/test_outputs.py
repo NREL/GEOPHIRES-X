@@ -29,13 +29,16 @@ class OutputsTestCase(BaseTestCase):
                 html_content = f.read()
                 self.assertIn('***CASE REPORT***', html_content)
                 # TODO expand test to assert more about output HTML
-        except TypeError as te:
-            if os.name == 'nt' and 'TOXPYTHON' in os.environ:
-                # https://github.com/NREL/GEOPHIRES-X/issues/365
+        except RuntimeError as e:
+            # https://github.com/NREL/GEOPHIRES-X/issues/365
+            has_expected_error_msg = 'cannot unpack non-iterable NoneType object' in str(e)
+            if has_expected_error_msg and os.name == 'nt' and 'TOXPYTHON' in os.environ:
                 _log.warning(
-                    f'Ignoring TypeError while testing HTML output file '
-                    f'since we appear to be running on Windows in GitHub Actions ({te!s})'
+                    f'Ignoring error while testing HTML output file '
+                    f'since we appear to be running on Windows in GitHub Actions ({e!s})'
                 )
+            else:
+                raise e
 
     def test_relative_output_file_path(self):
         input_file = GeophiresInputParameters({'HTML Output File': 'foo.html'}).as_file_path()

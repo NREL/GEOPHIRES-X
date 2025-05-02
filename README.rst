@@ -288,11 +288,14 @@ direct-use heat (e.g. for industrial processing heating or residential space hea
 (3) co-generation of heat and electricity. The co-generation option considers bottoming
 cycle, topping cycle, and parallel cycle.
 
-GEOPHIRES has 4 economic models to calculate the levelized cost of heat or
+GEOPHIRES has 5 economic models to calculate the levelized cost of heat or
 electricity: (1) fixed charge rate (FCR) model;
 (2) standard discounting levelized cost model;
 (3) BICYCLE model;
-(4) CLGS.
+(4) CLGS;
+(5) SAM Single-owner PPA.
+
+.. TODO link to SAM Economic Model docs
 
 The capital and O&M costs for the different geothermal system components (exploration,
 well drilling, surface plant, etc.) are either provided by the user or calculated with built-in

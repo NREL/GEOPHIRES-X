@@ -532,8 +532,13 @@ class GeophiresXResult:
         return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
     def _get_equal_sign_delimited_field(self, field_name):
-        metadata_marker = f'  {field_name} = '
-        matching_lines = set(filter(lambda line: metadata_marker in line, self._lines))
+        metadata_markers = (
+            f'  {field_name} = ',
+            # Previous versions of GEOPHIRES erroneously included an extra space after the field name so we include
+            # the pattern for it for backwards compatibility with existing .out files.
+            f'  {field_name}  = ',
+        )
+        matching_lines = set(filter(lambda line: any(m in line for m in metadata_markers), self._lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Equal sign-delimited field not found: {field_name}')
@@ -541,10 +546,17 @@ class GeophiresXResult:
 
         if len(matching_lines) > 1:
             self._logger.warning(
-                f'Found multiple ({len(matching_lines)}) entries for equal sign-delimited field: {field_name}\n\t{matching_lines}'
+                f'Found multiple ({len(matching_lines)}) entries for equal sign-delimited field: '
+                f'{field_name}\n\t{matching_lines}'
             )
 
-        return matching_lines.pop().split(metadata_marker)[1].replace('\n', '')
+        matching_line = matching_lines.pop()
+        for marker in metadata_markers:
+            if marker in matching_line:
+                return matching_line.split(marker)[1].replace('\n', '')
+
+        self._logger.error(f'Unexpected error extracting equal sign-delimited field {field_name}')  # Shouldn't happen
+        return None
 
     @property
     def power_generation_profile(self):

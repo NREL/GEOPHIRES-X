@@ -29,6 +29,7 @@ from rich.table import Table
 from geophires_monte_carlo.common import _get_logger
 from geophires_x.GeoPHIRESUtils import InsertImagesIntoHTML
 from geophires_x.GeoPHIRESUtils import render_default
+from geophires_x.MatplotlibUtils import plt_subplot
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -519,7 +520,7 @@ def main(command_line_args=None):
         for i in range(len(inputs)):
             input = inputs[i][0]
             plt.figure(figsize=(8, 6))
-            ax = plt.subplot()
+            ax = plt_subplot()
             ax.set_title(input)
             ax.set_xlabel('Random Values')
             ax.set_ylabel('Probability')
@@ -553,7 +554,7 @@ def main(command_line_args=None):
                 annotations += display
 
             plt.figure(figsize=(8, 6))
-            ax = plt.subplot()
+            ax = plt_subplot()
             ax.set_title(output)
             ax.set_xlabel('Output units')
             ax.set_ylabel('Probability')

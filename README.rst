@@ -56,9 +56,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.8.10.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.8.14.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.8.10...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.8.14...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -299,7 +299,7 @@ well drilling, surface plant, etc.) are either provided by the user or calculate
 correlations.
 
 For more information on the theoretical basis for GEOPHIRES see
-`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__.
+`GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/GEOPHIRES%20v2.0%20User%20Manual.pdf>`__.
 
 Parameters
 ----------
@@ -499,7 +499,7 @@ Extending GEOPHIRES-X
 Additional Documentation
 ------------------------
 
-Additional materials can be found in `/References </References>`__.
+Additional materials can be found in `/References </References/references.md>`__.
 
 
 Development

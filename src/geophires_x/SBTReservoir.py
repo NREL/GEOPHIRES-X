@@ -13,6 +13,7 @@ import CoolProp.CoolProp as CP
 
 import geophires_x.Model as Model
 from .CylindricalReservoir import CylindricalReservoir
+from .MatplotlibUtils import plt_show
 from .OptionList import FlowrateModel, InjectionTemperatureModel, Configuration
 from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, strParameter, boolParameter
 from .Reservoir import Reservoir
@@ -150,7 +151,7 @@ def generate_wireframe_model(lateral_endpoint_depth: float, number_of_laterals: 
 
         az, el = 71.5676, 10.4739
         ax.view_init(az, el)
-        plt.show()
+        plt_show(block=False)
 
     return xinj, yinj, zinj, xprod, yprod, zprod, xlat, ylat, zlat
 

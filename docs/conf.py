@@ -23,8 +23,8 @@ version = release = '3.9.5'
 pygments_style = 'trac'
 templates_path = ['./templates']
 extlinks = {
-    'issue': ('https://github.com/NREL/python-geophires-x/issues/%s', '#'),
-    'pr': ('https://github.com/NREL/python-geophires-x/pull/%s', 'PR #'),
+    'issue': ('https://github.com/NREL/GEOPHIRES-X/issues/%s', '#'),
+    'pr': ('https://github.com/NREL/GEOPHIRES-X/pull/%s', 'PR #'),
 }
 
 # html_theme = 'alabaster' # alternative possible theme
@@ -32,7 +32,7 @@ extlinks = {
 html_theme = 'sphinx_py3doc_enhanced_theme'
 html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
 html_theme_options = {
-    'githuburl': 'https://github.com/NREL/python-geophires-x/',
+    'githuburl': 'https://github.com/NREL/GEOPHIRES-X/',
 }
 
 html_use_smartypants = True

@@ -1,4 +1,4 @@
-# Example: SAM Single-owner PPA Economic Model
+# Example: SAM Single Owner PPA Economic Model
 # This example is adapted from Fervo_Project_Cape-3, allowing for comparison between BICYCLE and SAM economic models.
 # See "SAM Economic Models" in GEOPHIRES documentation for details on how GEOPHIRES parameters and outputs are transformed and passed
 # to the SAM financial model.

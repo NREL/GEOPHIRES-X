@@ -465,7 +465,7 @@ Example-specific web interface deeplinks are listed in the Link column.
    * - SAM Single Owner PPA
      - `example_SAM-single-owner-PPA.txt <tests/examples/example_SAM-single-owner-PPA.txt>`__
      - `.out <tests/examples/example_SAM-single-owner-PPA.out>`__
-     - .. FIXME TODO once SAM econ model in web interface: `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA>`__
 
 .. raw:: html
 

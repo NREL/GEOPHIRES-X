@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import pprint
 from dataclasses import dataclass, field
 from functools import lru_cache
 from math import isnan
@@ -125,13 +126,23 @@ def calculate_sam_economics(model: Model) -> SamEconomics:
                 if k != 'number_inputs':
                     module.value(k, v)
 
-    for k, v in _get_custom_gen_parameters(model).items():
+    def _log_params(module_name, params) -> None:
+        msg = f'SAM Economics {module_name} parameters: {pprint.pformat(params)}'
+        model.logger.info(msg)
+
+    custom_gen_params: dict[str, Any] = _get_custom_gen_parameters(model)
+    _log_params('Custom Generation', custom_gen_params)
+    for k, v in custom_gen_params.items():
         custom_gen.value(k, v)
 
-    for k, v in _get_utility_rate_parameters(model).items():
+    utility_rate_params: dict[str, Any] = _get_utility_rate_parameters(model)
+    _log_params('Utility Rate', utility_rate_params)
+    for k, v in utility_rate_params.items():
         utility_rate.value(k, v)
 
-    for k, v in _get_single_owner_parameters(model).items():
+    single_owner_params: dict[str, Any] = _get_single_owner_parameters(model)
+    _log_params('Single Owner', single_owner_params)
+    for k, v in single_owner_params.items():
         single_owner.value(k, v)
 
     for module in modules:

@@ -126,24 +126,23 @@ def calculate_sam_economics(model: Model) -> SamEconomics:
                 if k != 'number_inputs':
                     module.value(k, v)
 
-    def _log_params(module_name, params) -> None:
-        msg = f'SAM Economics {module_name} parameters: {pprint.pformat(params)}'
-        model.logger.info(msg)
+    module_param_mappings = [
+        ('Custom Generation', _get_custom_gen_parameters, custom_gen),
+        ('Utility Rate', _get_utility_rate_parameters, utility_rate),
+        ('Single Owner', _get_single_owner_parameters, single_owner),
+    ]
 
-    custom_gen_params: dict[str, Any] = _get_custom_gen_parameters(model)
-    _log_params('Custom Generation', custom_gen_params)
-    for k, v in custom_gen_params.items():
-        custom_gen.value(k, v)
+    mapping_result: list[list[Any]] = [['SAM Module', 'Parameter', 'Value']]
+    for mapping in module_param_mappings:
+        module_name = mapping[0]
+        module_params: dict[str, Any] = mapping[1](model)
+        for k, v in module_params.items():
+            mapping[2].value(k, v)
+            mapping_result.append([module_name, k, v])
 
-    utility_rate_params: dict[str, Any] = _get_utility_rate_parameters(model)
-    _log_params('Utility Rate', utility_rate_params)
-    for k, v in utility_rate_params.items():
-        utility_rate.value(k, v)
-
-    single_owner_params: dict[str, Any] = _get_single_owner_parameters(model)
-    _log_params('Single Owner', single_owner_params)
-    for k, v in single_owner_params.items():
-        single_owner.value(k, v)
+    mapping_tabulated = tabulate(mapping_result, **{'floatfmt': ',.2f'})
+    mapping_msg = f'SAM Economics Parameter Mapping:\n{mapping_tabulated}'
+    model.logger.info(mapping_msg)
 
     for module in modules:
         module.execute()

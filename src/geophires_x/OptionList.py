@@ -89,6 +89,7 @@ class EconomicModel(GeophiresInputEnum):
     STANDARDIZED_LEVELIZED_COST = 2, "Standard Levelized Cost"
     BICYCLE = 3, "BICYCLE"
     CLGS = 4, "Simple (CLGS)"
+    SAM_SINGLE_OWNER_PPA = 5, "SAM Single Owner PPA"
 
     @staticmethod
     def from_int(int_val):

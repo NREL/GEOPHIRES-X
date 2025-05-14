@@ -1,5 +1,8 @@
 """
 Workarounds for intermittent Windows GitHub Actions failures - see https://github.com/NREL/GEOPHIRES-X/issues/365
+
+TODO fix the actual Tcl/Tk installation issue (perhaps using suggestions from i.e.
+https://stackoverflow.com/questions/29320039/trying-to-use-tkinter-throws-tcl-error-cant-find-a-usable-init-tcl)
 """
 
 from __future__ import annotations
@@ -30,6 +33,13 @@ def plt_subplot() -> Any:
 def plt_subplots(**kw_args) -> Any:
     try:
         return plt.subplots(**kw_args)
+    except Exception as e:
+        _handle_tcl_error_on_windows_github_actions(e)
+
+
+def plt_figure(*args, **kw_args) -> Any:
+    try:
+        return plt.figure(*args, **kw_args)
     except Exception as e:
         _handle_tcl_error_on_windows_github_actions(e)
 

@@ -118,3 +118,7 @@ python -mgeophires_monte_carlo GEOPHIRESv3.py GEOPHIRES-example1.txt MC_GEOPHIRE
 ## Documentation
 
 See [module documentation](reference/geophires_monte_carlo.html)
+
+## Web Interface
+
+Monte Carlo is available in the web interface at [gtp.scientificwebservices.com/monte-carlo](https://gtp.scientificwebservices.com/monte-carlo)

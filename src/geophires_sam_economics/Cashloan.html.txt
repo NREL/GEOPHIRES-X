@@ -1,0 +1,3944 @@
+Cashloan
+
+Cashloan
+
+PySAM.Cashloan.default(config) → Cashloan
+
+    Load defaults for the configuration config. Available configurations are:
+
+            “CustomGenerationBatteryCommercial”
+
+            “CustomGenerationBatteryResidential”
+
+            “CustomGenerationProfileCommercial”
+
+            “CustomGenerationProfileResidential”
+
+            “DSLFCommercial”
+
+            “EmpiricalTroughCommercial”
+
+            “FlatPlatePVCommercial”
+
+            “FlatPlatePVResidential”
+
+            “FuelCellCommercial”
+
+            “GenericCSPSystemCommercial”
+
+            “PVBatteryCommercial”
+
+            “PVBatteryResidential”
+
+            “PVWattsBatteryCommercial”
+
+            “PVWattsBatteryResidential”
+
+            “PVWattsCommercial”
+
+            “PVWattsResidential”
+
+            “PhysicalTroughCommercial”
+
+            “SolarWaterHeatingCommercial”
+
+            “SolarWaterHeatingResidential”
+
+            “StandaloneBatteryCommercial”
+
+            “StandaloneBatteryResidential”
+
+            “WindPowerCommercial”
+
+            “WindPowerResidential”
+
+    Note
+
+    Some inputs do not have default values and may be assigned a value from the variable’s Required attribute. See variable attribute descriptions below.
+
+PySAM.Cashloan.from_existing(data, optional config) → Cashloan
+
+    Share data with an existing PySAM class. If optional config is a valid configuration name, load the module’s defaults for that configuration.
+
+PySAM.Cashloan.new() → Cashloan
+
+PySAM.Cashloan.wrap(ssc_data_t) → Cashloan
+
+    Load data from a PySSC object.
+
+    Warning
+
+    Do not call PySSC.data_free on the ssc_data_t provided to wrap()
+
+Cashloan is a wrapper for the SSC compute module cmod_cashloan.cpp
+Interdependent Variables
+
+The variables listed below are interdependent with other variables. If you change the value of one of these variables, you may need to change values of other variables. The SAM user interface manages these interdependent variables, but in PySAM, it is up to you change the value of all interdependent variables so they are consistent. See Interdependent Variables for examples and details.
+
+        battery_per_kWh
+
+        battery_total_cost_lcos
+
+        om_batt_nameplate
+
+        total_installed_cost
+
+Functions
+
+class PySAM.Cashloan.Cashloan
+
+    This class contains all the variable information for running a simulation. Variables are grouped together in the subclasses as properties. If property assignments are the wrong type, an error is thrown.
+
+    assign(dict) → None
+
+        Assign attributes from nested dictionary, except for Outputs
+
+        nested_dict = { 'Financial Parameters': { var: val, ...}, ...}
+
+    execute(int verbosity) → None
+
+        Execute simulation with verbosity level 0 (default) or 1
+
+    export() → dict
+
+        Export attributes into nested dictionary
+
+    get_data_ptr() → Pointer
+
+        Get ssc_data_t pointer
+
+    replace(dict) → None
+
+        Replace attributes from nested dictionary, except for Outputs. Unassigns all values in each Group then assigns from the input dict.
+
+        nested_dict = { 'Financial Parameters': { var: val, ...}, ...}
+
+    unassign(name) → None
+
+        Unassign a value in any of the variable groups.
+
+    value(name, optional value) → None | float | dict | sequence | str
+
+        Get or set by name a value in any of the variable groups.
+
+FinancialParameters Group
+
+class PySAM.Cashloan.Cashloan.FinancialParameters
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        FinancialParameters_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        FinancialParameters_vals = { var: val, ...}
+
+    analysis_period
+
+        Analyis period [years]
+
+        Constraints: INTEGER,MIN=0,MAX=50
+
+        Required: False. Automatically set to 30 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    debt_fraction
+
+        Debt percentage [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    federal_tax_rate
+
+        Federal income tax rate [%]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    inflation_rate
+
+        Inflation rate [%]
+
+        Constraints: MIN=-99
+
+        Required: True
+
+        Type:
+
+            float
+
+    insurance_rate
+
+        Insurance rate [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    loan_rate
+
+        Loan rate [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    loan_term
+
+        Loan term [years]
+
+        Constraints: INTEGER,MIN=0,MAX=50
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    market
+
+        Residential or Commercial Market [0/1]
+
+        Options: 0=residential,1=comm.
+
+        Constraints: INTEGER,MIN=0,MAX=1
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    mortgage
+
+        Use mortgage style loan (res. only) [0/1]
+
+        Options: 0=standard loan,1=mortgage
+
+        Constraints: INTEGER,MIN=0,MAX=1
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    prop_tax_assessed_decline
+
+        Assessed value annual decline [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 5 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    prop_tax_cost_assessed_percent
+
+        Percent of pre-financing costs assessed [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 95 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    property_tax_rate
+
+        Property tax rate [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    real_discount_rate
+
+        Real discount rate [%]
+
+        Constraints: MIN=-99
+
+        Required: True
+
+        Type:
+
+            float
+
+    salvage_percentage
+
+        Salvage value percentage [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    state_tax_rate
+
+        State income tax rate [%]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    system_capacity
+
+        System nameplate capacity [kW]
+
+        Constraints: POSITIVE
+
+        Required: True
+
+        The value of the following variables depends on system_capacity:
+
+                battery_total_cost_lcos
+
+                total_installed_cost
+
+        Type:
+
+            float
+
+    system_heat_rate
+
+        System heat rate [MMBTus/MWh]
+
+        Constraints: MIN=0
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+SystemCosts Group
+
+class PySAM.Cashloan.Cashloan.SystemCosts
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        SystemCosts_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        SystemCosts_vals = { var: val, ...}
+
+    add_om_num_types
+
+        Number of O and M types
+
+        Info: battery,fuelcell
+
+        Constraints: INTEGER,MIN=0,MAX=2
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    annual_fuel_usage
+
+        Fuel usage (yr 1) [kWht]
+
+        Info: custom_generation,fuelcell,tcslinearfresnel,tcstroughempirical,tcsgenericsolar,fresnelphysical
+
+        Constraints: MIN=0
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    annual_fuel_usage_lifetime
+
+        Fuel usage (lifetime) [kWht]
+
+        Info: custom_generation,fuelcell,tcslinearfresnel,tcstroughempirical,tcsgenericsolar,fresnelphysical
+
+        Type:
+
+            sequence
+
+    om_batt_capacity_cost
+
+        Battery capacity-based System Costs amount [$/kWcap]
+
+        Info: battery
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_batt_fixed_cost
+
+        Battery fixed System Costs annual amount [$/year]
+
+        Info: battery
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_batt_nameplate
+
+        Battery capacity for System Costs values [kW]
+
+        Info: battery
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_batt_replacement_cost
+
+        Replacement cost 1 [$/kWh]
+
+        Info: battery
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_batt_variable_cost
+
+        Battery production-based System Costs amount [$/MWh]
+
+        Info: battery
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_capacity
+
+        Capacity-based O&M amount [$/kWcap]
+
+        Info: !battery,!fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_capacity_escal
+
+        Capacity-based O&M escalation [%/year]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_fixed
+
+        Fixed O&M annual amount [$/year]
+
+        Info: !battery,!fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_fixed_escal
+
+        Fixed O&M escalation [%/year]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_fuel_cost
+
+        Fuel cost [$/MMBtu]
+
+        Info: custom_generation,fuelcell,tcslinearfresnel,tcstroughempirical,tcsgenericsolar,fresnelphysical
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_fuel_cost_escal
+
+        Fuel cost escalation [%/year]
+
+        Info: custom_generation,fuelcell,tcslinearfresnel,tcstroughempirical,tcsgenericsolar,fresnelphysical
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_fuelcell_capacity_cost
+
+        Fuel cell capacity-based System Costs amount [$/kWcap]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_fuelcell_fixed_cost
+
+        Fuel cell fixed System Costs annual amount [$/year]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_fuelcell_nameplate
+
+        Fuel cell capacity for System Costs values [kW]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_fuelcell_replacement_cost
+
+        Replacement cost 2 [$/kW]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_fuelcell_variable_cost
+
+        Fuel cell production-based System Costs amount [$/MWh]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_opt_fuel_1_cost
+
+        Biomass feedstock cost [$/unit]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_opt_fuel_1_cost_escal
+
+        Biomass feedstock cost escalation [%/year]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_opt_fuel_1_usage
+
+        Biomass feedstock usage [unit]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_opt_fuel_2_cost
+
+        Coal feedstock cost [$/unit]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_opt_fuel_2_cost_escal
+
+        Coal feedstock cost escalation [%/year]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_opt_fuel_2_usage
+
+        Coal feedstock usage [unit]
+
+        Info: biomass
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_production
+
+        Production-based O&M amount [$/MWh]
+
+        Info: !battery,!fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_production1_values
+
+        Battery production for System Costs values [kWh]
+
+        Info: battery
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_production2_values
+
+        Fuel cell production for System Costs values [kWh]
+
+        Info: fuelcell
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_production_escal
+
+        Production-based O&M escalation [%/year]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_replacement_cost_escal
+
+        Replacement cost escalation [%/year]
+
+        Info: battery,fuelcell
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    total_installed_cost
+
+        Total installed cost [$]
+
+        Constraints: MIN=0
+
+        Required: True
+
+        The value of total_installed_cost depends on the following variables:
+
+                battery_per_kWh
+
+        Type:
+
+            float
+
+LandLease Group
+
+class PySAM.Cashloan.Cashloan.LandLease
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        LandLease_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        LandLease_vals = { var: val, ...}
+
+    land_area
+
+        Total land area [acres]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    om_land_lease
+
+        Land lease cost [$/acre]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    om_land_lease_escal
+
+        Land lease cost escalation [%/yr]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+Depreciation Group
+
+class PySAM.Cashloan.Cashloan.Depreciation
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        Depreciation_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        Depreciation_vals = { var: val, ...}
+
+    depr_fed_custom
+
+        Federal custom depreciation [%/year]
+
+        Required: Required if depr_fed_type=3
+
+        Type:
+
+            sequence
+
+    depr_fed_sl_years
+
+        Federal depreciation straight-line Years [years]
+
+        Constraints: INTEGER,POSITIVE
+
+        Required: Required if depr_fed_type=2
+
+        Type:
+
+            float
+
+    depr_fed_type
+
+        Federal depreciation type
+
+        Options: 0=none,1=macrs_half_year,2=sl,3=custom
+
+        Constraints: INTEGER,MIN=0,MAX=3
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    depr_sta_custom
+
+        State custom depreciation [%/year]
+
+        Required: Required if depr_sta_type=3
+
+        Type:
+
+            sequence
+
+    depr_sta_sl_years
+
+        State depreciation straight-line years [years]
+
+        Constraints: INTEGER,POSITIVE
+
+        Required: Required if depr_sta_type=2
+
+        Type:
+
+            float
+
+    depr_sta_type
+
+        State depreciation type
+
+        Options: 0=none,1=macrs_half_year,2=sl,3=custom
+
+        Constraints: INTEGER,MIN=0,MAX=3
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+TaxCreditIncentives Group
+
+class PySAM.Cashloan.Cashloan.TaxCreditIncentives
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        TaxCreditIncentives_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        TaxCreditIncentives_vals = { var: val, ...}
+
+    itc_fed_amount
+
+        Federal amount-based ITC amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    itc_fed_amount_deprbas_fed
+
+        Federal amount-based ITC reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_fed_amount_deprbas_sta
+
+        Federal amount-based ITC reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_fed_percent
+
+        Federal percentage-based ITC percent [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    itc_fed_percent_deprbas_fed
+
+        Federal percentage-based ITC reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_fed_percent_deprbas_sta
+
+        Federal percentage-based ITC reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_fed_percent_maxvalue
+
+        Federal percentage-based ITC maximum value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    itc_sta_amount
+
+        State amount-based ITC amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    itc_sta_amount_deprbas_fed
+
+        State amount-based ITC reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_sta_amount_deprbas_sta
+
+        State amount-based ITC reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_sta_percent
+
+        State percentage-based ITC percent [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    itc_sta_percent_deprbas_fed
+
+        State percentage-based ITC reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_sta_percent_deprbas_sta
+
+        State percentage-based ITC reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    itc_sta_percent_maxvalue
+
+        State percentage-based ITC maximum Value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    ptc_fed_amount
+
+        Federal PTC amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    ptc_fed_escal
+
+        Federal PTC escalation [%/year]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ptc_fed_term
+
+        Federal PTC term [years]
+
+        Required: False. Automatically set to 10 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ptc_sta_amount
+
+        State PTC amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    ptc_sta_escal
+
+        State PTC escalation [%/year]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ptc_sta_term
+
+        State PTC term [years]
+
+        Required: False. Automatically set to 10 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+PaymentIncentives Group
+
+class PySAM.Cashloan.Cashloan.PaymentIncentives
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        PaymentIncentives_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        PaymentIncentives_vals = { var: val, ...}
+
+    cbi_fed_amount
+
+        Federal CBI amount [$/Watt]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_fed_deprbas_fed
+
+        Federal CBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_fed_deprbas_sta
+
+        Federal CBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_fed_maxvalue
+
+        Federal CBI maximum [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_fed_tax_fed
+
+        Federal CBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_fed_tax_sta
+
+        Federal CBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_amount
+
+        Other CBI amount [$/Watt]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_deprbas_fed
+
+        Other CBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_deprbas_sta
+
+        Other CBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_maxvalue
+
+        Other CBI maximum [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_tax_fed
+
+        Other CBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_oth_tax_sta
+
+        Other CBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_amount
+
+        State CBI amount [$/Watt]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_deprbas_fed
+
+        State CBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_deprbas_sta
+
+        State CBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_maxvalue
+
+        State CBI maximum [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_tax_fed
+
+        State CBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_sta_tax_sta
+
+        State CBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_amount
+
+        Utility CBI amount [$/Watt]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_deprbas_fed
+
+        Utility CBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_deprbas_sta
+
+        Utility CBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_maxvalue
+
+        Utility CBI maximum [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_tax_fed
+
+        Utility CBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    cbi_uti_tax_sta
+
+        Utility CBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_amount
+
+        Federal amount-based IBI amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_amount_deprbas_fed
+
+        Federal amount-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_amount_deprbas_sta
+
+        Federal amount-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_amount_tax_fed
+
+        Federal amount-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_amount_tax_sta
+
+        Federal amount-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent
+
+        Federal percentage-based IBI percent [%]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent_deprbas_fed
+
+        Federal percentage-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent_deprbas_sta
+
+        Federal percentage-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent_maxvalue
+
+        Federal percentage-based IBI maximum value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent_tax_fed
+
+        Federal percentage-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_fed_percent_tax_sta
+
+        Federal percentage-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_amount
+
+        Other amount-based IBI amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_amount_deprbas_fed
+
+        Other amount-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_amount_deprbas_sta
+
+        Other amount-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_amount_tax_fed
+
+        Other amount-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_amount_tax_sta
+
+        Other amount-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent
+
+        Other percentage-based IBI percent [%]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent_deprbas_fed
+
+        Other percentage-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent_deprbas_sta
+
+        Other percentage-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent_maxvalue
+
+        Other percentage-based IBI maximum value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent_tax_fed
+
+        Other percentage-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_oth_percent_tax_sta
+
+        Other percentage-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_amount
+
+        State amount-based IBI amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_amount_deprbas_fed
+
+        State amount-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_amount_deprbas_sta
+
+        State amount-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_amount_tax_fed
+
+        State amount-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_amount_tax_sta
+
+        State amount-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent
+
+        State percentage-based IBI percent [%]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent_deprbas_fed
+
+        State percentage-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent_deprbas_sta
+
+        State percentage-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent_maxvalue
+
+        State percentage-based IBI maximum value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent_tax_fed
+
+        State percentage-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_sta_percent_tax_sta
+
+        State percentage-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_amount
+
+        Utility amount-based IBI amount [$]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_amount_deprbas_fed
+
+        Utility amount-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_amount_deprbas_sta
+
+        Utility amount-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_amount_tax_fed
+
+        Utility amount-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_amount_tax_sta
+
+        Utility amount-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent
+
+        Utility percentage-based IBI percent [%]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent_deprbas_fed
+
+        Utility percentage-based IBI reduces federal depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent_deprbas_sta
+
+        Utility percentage-based IBI reduces state depreciation basis [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent_maxvalue
+
+        Utility percentage-based IBI maximum value [$]
+
+        Required: False. Automatically set to 1e99 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent_tax_fed
+
+        Utility percentage-based IBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    ibi_uti_percent_tax_sta
+
+        Utility percentage-based IBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_fed_amount
+
+        Federal PBI amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    pbi_fed_escal
+
+        Federal PBI escalation [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_fed_tax_fed
+
+        Federal PBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_fed_tax_sta
+
+        Federal PBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_fed_term
+
+        Federal PBI term [years]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_oth_amount
+
+        Other PBI amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    pbi_oth_escal
+
+        Other PBI escalation [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_oth_tax_fed
+
+        Other PBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_oth_tax_sta
+
+        Other PBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_oth_term
+
+        Other PBI term [years]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_sta_amount
+
+        State PBI amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    pbi_sta_escal
+
+        State PBI escalation [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_sta_tax_fed
+
+        State PBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_sta_tax_sta
+
+        State PBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_sta_term
+
+        State PBI term [years]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_uti_amount
+
+        Utility PBI amount [$/kWh]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            sequence
+
+    pbi_uti_escal
+
+        Utility PBI escalation [%]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_uti_tax_fed
+
+        Utility PBI federal taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_uti_tax_sta
+
+        Utility PBI state taxable [0/1]
+
+        Constraints: BOOLEAN
+
+        Required: False. Automatically set to 1 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    pbi_uti_term
+
+        Utility PBI term [years]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+BatterySystem Group
+
+class PySAM.Cashloan.Cashloan.BatterySystem
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        BatterySystem_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        BatterySystem_vals = { var: val, ...}
+
+    batt_bank_replacement
+
+        Battery bank replacements per year [number/year]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    batt_computed_bank_capacity
+
+        Battery bank capacity [kWh]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        The value of the following variables depends on batt_computed_bank_capacity:
+
+                battery_total_cost_lcos
+
+                om_batt_nameplate
+
+                total_installed_cost
+
+        Type:
+
+            float
+
+    batt_replacement_option
+
+        Enable battery replacement? [0=none,1=capacity based,2=user schedule]
+
+        Constraints: INTEGER,MIN=0,MAX=2
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    batt_replacement_schedule_percent
+
+        Percentage of battery capacity to replace in each year [%]
+
+        Options: length <= analysis_period
+
+        Type:
+
+            sequence
+
+    battery_per_kWh
+
+        Battery cost [$/kWh]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        The value of the following variables depends on battery_per_kWh:
+
+                battery_total_cost_lcos
+
+                total_installed_cost
+
+        Type:
+
+            float
+
+    en_batt
+
+        Enable battery storage model [0/1]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    en_standalone_batt
+
+        Enable standalone battery storage model [0/1]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    en_wave_batt
+
+        Enable standalone battery storage model [0/1]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+FuelCell Group
+
+class PySAM.Cashloan.Cashloan.FuelCell
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        FuelCell_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        FuelCell_vals = { var: val, ...}
+
+    annual_fuel_usage_lifetime
+
+        Annual Fuel Usage (lifetime) [kWht]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    en_fuelcell
+
+        Enable fuel cell storage model [0/1]
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    fuelcell_annual_energy_discharged
+
+        Fuel cell annual energy discharged [kWh]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    fuelcell_computed_bank_capacity
+
+        Fuel cell capacity [kWh]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    fuelcell_per_kWh
+
+        Fuel cell cost [$/kWh]
+
+        Required: False. Automatically set to 0.0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    fuelcell_replacement
+
+        Fuel cell replacements per year [number/year]
+
+        Type:
+
+            sequence
+
+    fuelcell_replacement_option
+
+        Enable fuel cell replacement? [0=none,1=capacity based,2=user schedule]
+
+        Constraints: INTEGER,MIN=0,MAX=2
+
+        Type:
+
+            float
+
+    fuelcell_replacement_schedule
+
+        Fuel cell replacements per year (user specified) [number/year]
+
+        Type:
+
+            sequence
+
+ChargesByMonth Group
+
+class PySAM.Cashloan.Cashloan.ChargesByMonth
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        ChargesByMonth_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        ChargesByMonth_vals = { var: val, ...}
+
+    charge_w_sys_dc_tou_ym
+
+        Demand charge with system (TOU) [$]
+
+        Required: True
+
+        Type:
+
+            sequence[sequence]
+
+    charge_w_sys_ec_ym
+
+        Energy charge with system [$]
+
+        Type:
+
+            sequence[sequence]
+
+    charge_w_sys_fixed_ym
+
+        Fixed monthly charge with system [$]
+
+        Required: True
+
+        Type:
+
+            sequence[sequence]
+
+    net_billing_credits_ym
+
+        Net billing credit [$]
+
+        Required: True
+
+        Type:
+
+            sequence[sequence]
+
+    nm_dollars_applied_ym
+
+        Net metering credit [$]
+
+        Required: True
+
+        Type:
+
+            sequence[sequence]
+
+    true_up_credits_ym
+
+        Net annual true-up payments [$]
+
+        Type:
+
+            sequence[sequence]
+
+    utility_bill_w_sys
+
+        Electricity bill for system [$]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+Battery Group
+
+class PySAM.Cashloan.Cashloan.Battery
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        Battery_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        Battery_vals = { var: val, ...}
+
+    batt_capacity_percent
+
+        Battery relative capacity to nameplate [%]
+
+        Type:
+
+            sequence
+
+    monthly_batt_to_grid
+
+        Energy to grid from battery [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    monthly_grid_to_batt
+
+        Energy to battery from grid [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    monthly_grid_to_load
+
+        Energy to load from grid [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+TimeSeries Group
+
+class PySAM.Cashloan.Cashloan.TimeSeries
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        TimeSeries_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        TimeSeries_vals = { var: val, ...}
+
+    year1_hourly_dc_with_system
+
+        Demand charge with system (year 1 hourly) [$]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    year1_hourly_e_fromgrid
+
+        Electricity from grid (year 1 hourly) [kWh]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    year1_hourly_ec_with_system
+
+        Energy charge with system (year 1 hourly) [$]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+SystemOutput Group
+
+class PySAM.Cashloan.Cashloan.SystemOutput
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        SystemOutput_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        SystemOutput_vals = { var: val, ...}
+
+    annual_energy_value
+
+        Energy value [$]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    annual_thermal_value
+
+        Energy value [$]
+
+        Type:
+
+            sequence
+
+    degradation
+
+        Annual degradation [%]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    gen
+
+        Power generated by renewable resource [kW]
+
+        Required: True
+
+        Type:
+
+            sequence
+
+    gen_purchases
+
+        Electricity from grid to system [kW]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+Lifetime Group
+
+class PySAM.Cashloan.Cashloan.Lifetime
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        Lifetime_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        Lifetime_vals = { var: val, ...}
+
+    system_use_lifetime_output
+
+        Lifetime hourly system outputs [0/1]
+
+        Options: 0=hourly first year,1=hourly lifetime
+
+        Constraints: INTEGER,MIN=0
+
+        Required: True
+
+        Type:
+
+            float
+
+LCOS Group
+
+class PySAM.Cashloan.Cashloan.LCOS
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        LCOS_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        LCOS_vals = { var: val, ...}
+
+    batt_annual_charge_energy
+
+        Battery annual energy charged [kWh]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    batt_annual_charge_from_system
+
+        Battery annual energy charged from system [kWh]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    batt_annual_discharge_energy
+
+        Battery annual energy discharged [kWh]
+
+        INOUT: This variable is both an input and an output to the compute module.
+
+        Type:
+
+            sequence
+
+    batt_capacity_percent
+
+        Battery relative capacity to nameplate [%]
+
+        Type:
+
+            sequence
+
+    batt_salvage_percentage
+
+        Net pre-tax cash battery salvage value [%]
+
+        Constraints: MIN=0,MAX=100
+
+        Required: False. Automatically set to 0 if not assigned explicitly or loaded from defaults.
+
+        Type:
+
+            float
+
+    battery_total_cost_lcos
+
+        Battery total investment cost [$]
+
+        The value of battery_total_cost_lcos depends on the following variables:
+
+                battery_per_kWh
+
+        Type:
+
+            float
+
+    charge_w_sys_ec_ym
+
+        Energy charge with system [$]
+
+        Type:
+
+            sequence[sequence]
+
+    grid_to_batt
+
+        Electricity to grid from battery [kW]
+
+        Type:
+
+            sequence
+
+    monthly_batt_to_grid
+
+        Energy to grid from battery [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    monthly_grid_to_batt
+
+        Energy to battery from grid [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    monthly_grid_to_load
+
+        Energy to load from grid [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    monthly_system_to_grid
+
+        Energy to grid from system [kWh]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    true_up_credits_ym
+
+        Net annual true-up payments [$]
+
+        Type:
+
+            sequence[sequence]
+
+    year1_monthly_ec_charge_gross_with_system
+
+        Energy charge with system before credits [$/mo]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+    year1_monthly_ec_charge_with_system
+
+        Energy charge with system [$]
+
+        Type:
+
+            sequence
+
+    year1_monthly_electricity_to_grid
+
+        Electricity to/from grid [kWh/mo]
+
+        Constraints: LENGTH=12
+
+        Type:
+
+            sequence
+
+ElectricityRates Group
+
+class PySAM.Cashloan.Cashloan.ElectricityRates
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        ElectricityRates_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        ElectricityRates_vals = { var: val, ...}
+
+    rate_escalation
+
+        Annual electricity rate escalation [%/year]
+
+        Type:
+
+            sequence
+
+Outputs Group
+
+class PySAM.Cashloan.Cashloan.Outputs
+
+    assign(dict) → None
+
+        Assign attributes from dictionary, overwriting but not removing values.
+
+        Outputs_vals = { var: val, ...}
+
+    export() → dict
+
+        Export attributes into dictionary.
+
+    replace(dict) → None
+
+        Replace attributes from dictionary, unassigning values not present in input dict.
+
+        Outputs_vals = { var: val, ...}
+
+    adjusted_installed_cost
+
+        Net capital cost [$]
+
+        Type:
+
+            float
+
+    cbi_fedtax_total
+
+        Federal taxable CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_statax_total
+
+        State taxable CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_total
+
+        Total CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_total_fed
+
+        Federal CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_total_oth
+
+        Other CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_total_sta
+
+        State CBI income [$]
+
+        Type:
+
+            float
+
+    cbi_total_uti
+
+        Utility CBI income [$]
+
+        Type:
+
+            float
+
+    cf_after_tax_cash_flow
+
+        After-tax cash flow [$]
+
+        Type:
+
+            sequence
+
+    cf_after_tax_net_equity_cost_flow
+
+        After-tax annual costs [$]
+
+        Type:
+
+            sequence
+
+    cf_annual_cost_lcos
+
+        Annual storage costs [$]
+
+        Type:
+
+            sequence
+
+    cf_annual_discharge_lcos
+
+        Annual storage discharge [kWh]
+
+        Type:
+
+            sequence
+
+    cf_battery_replacement_cost
+
+        Battery replacement cost [$]
+
+        Type:
+
+            sequence
+
+    cf_battery_replacement_cost_schedule
+
+        Battery replacement cost schedule [$]
+
+        Type:
+
+            sequence
+
+    cf_charging_cost_grid
+
+        Annual cost to charge from grid [$]
+
+        Type:
+
+            sequence
+
+    cf_charging_cost_grid_month
+
+        Annual cost to charge from grid (monthly) [$]
+
+        Type:
+
+            sequence
+
+    cf_charging_cost_pv
+
+        Annual cost to charge from system [$]
+
+        Type:
+
+            sequence
+
+    cf_cumulative_payback_with_expenses
+
+        Cumulative simple payback with expenses [$]
+
+        Type:
+
+            sequence
+
+    cf_cumulative_payback_without_expenses
+
+        Cumulative simple payback without expenses [$]
+
+        Type:
+
+            sequence
+
+    cf_debt_balance
+
+        Debt balance [$]
+
+        Type:
+
+            sequence
+
+    cf_debt_payment_interest
+
+        Interest payment [$]
+
+        Type:
+
+            sequence
+
+    cf_debt_payment_principal
+
+        Principal payment [$]
+
+        Type:
+
+            sequence
+
+    cf_debt_payment_total
+
+        Total P&I debt payment [$]
+
+        Type:
+
+            sequence
+
+    cf_deductible_expenses
+
+        Deductible expenses [$]
+
+        Type:
+
+            sequence
+
+    cf_discounted_costs
+
+        Discounted costs [$]
+
+        Type:
+
+            sequence
+
+    cf_discounted_cumulative_payback
+
+        Cumulative discounted payback [$]
+
+        Type:
+
+            sequence
+
+    cf_discounted_payback
+
+        Discounted payback [$]
+
+        Type:
+
+            sequence
+
+    cf_discounted_savings
+
+        Discounted savings [$]
+
+        Type:
+
+            sequence
+
+    cf_effective_tax_frac
+
+        Effective income tax rate [frac]
+
+        Type:
+
+            sequence
+
+    cf_energy_net
+
+        Electricity net generation [kWh]
+
+        Type:
+
+            sequence
+
+    cf_energy_purchases
+
+        Electricity from grid to system [kWh]
+
+        Type:
+
+            sequence
+
+    cf_energy_sales
+
+        Electricity generation [kWh]
+
+        Type:
+
+            sequence
+
+    cf_energy_value
+
+        Value of electricity savings [$]
+
+        Type:
+
+            sequence
+
+    cf_energy_without_battery
+
+        Electricity generated without the battery or curtailment [kWh]
+
+        Type:
+
+            sequence
+
+    cf_fed_depr_sched
+
+        Federal depreciation schedule [%]
+
+        Type:
+
+            sequence
+
+    cf_fed_depreciation
+
+        Federal depreciation [$]
+
+        Type:
+
+            sequence
+
+    cf_fed_incentive_income_less_deductions
+
+        Federal incentive income less deductions [$]
+
+        Type:
+
+            sequence
+
+    cf_fed_tax_savings
+
+        Federal tax savings [$]
+
+        Type:
+
+            sequence
+
+    cf_fed_taxable_incentive_income
+
+        Federal taxable incentive income [$]
+
+        Type:
+
+            sequence
+
+    cf_fed_taxable_income_less_deductions
+
+        Federal taxable income less deductions [$]
+
+        Type:
+
+            sequence
+
+    cf_federal_tax_frac
+
+        Federal income tax rate [frac]
+
+        Type:
+
+            sequence
+
+    cf_fuelcell_replacement_cost
+
+        Fuel cell replacement cost [$]
+
+        Type:
+
+            sequence
+
+    cf_fuelcell_replacement_cost_schedule
+
+        Fuel cell replacement cost schedule [$/kW]
+
+        Type:
+
+            sequence
+
+    cf_insurance_expense
+
+        Insurance expense [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_fed
+
+        Federal ITC total income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_fed_amount
+
+        Federal ITC amount income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_fed_percent_amount
+
+        Federal ITC percent income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_sta
+
+        State ITC total income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_sta_amount
+
+        State ITC amount income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_sta_percent_amount
+
+        State ITC percent income [$]
+
+        Type:
+
+            sequence
+
+    cf_itc_total
+
+        Total ITC income [$]
+
+        Type:
+
+            sequence
+
+    cf_land_lease_expense
+
+        Land lease expense [$]
+
+        Type:
+
+            sequence
+
+    cf_length
+
+        Number of periods in cash flow
+
+        Type:
+
+            float
+
+    cf_net_salvage_value
+
+        Net salvage value [$]
+
+        Type:
+
+            sequence
+
+    cf_nte
+
+        NTE Not to exceed [cents/kWh]
+
+        Type:
+
+            sequence
+
+    cf_om_batt_capacity_expense
+
+        Annual cost for battery capacity based maintenance [$]
+
+        Type:
+
+            sequence
+
+    cf_om_batt_fixed_expense
+
+        Annual fixed cost for battery maintenance [$]
+
+        Type:
+
+            sequence
+
+    cf_om_capacity1_expense
+
+        O&M battery capacity-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_capacity2_expense
+
+        O&M fuel cell capacity-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_capacity_expense
+
+        O&M capacity-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_fixed1_expense
+
+        O&M battery fixed expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_fixed2_expense
+
+        O&M fuel cell fixed expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_fixed_expense
+
+        O&M fixed expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_fuel_expense
+
+        Fuel expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_opt_fuel_1_expense
+
+        Feedstock biomass expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_opt_fuel_2_expense
+
+        Feedstock coal expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_production1_expense
+
+        O&M battery production-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_production2_expense
+
+        O&M fuel cell production-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_om_production_expense
+
+        O&M production-based expense [$]
+
+        Type:
+
+            sequence
+
+    cf_operating_expenses
+
+        Total operating expense [$]
+
+        Type:
+
+            sequence
+
+    cf_parasitic_cost
+
+        Parasitic load costs [$]
+
+        Type:
+
+            sequence
+
+    cf_payback_with_expenses
+
+        Simple payback with expenses [$]
+
+        Type:
+
+            sequence
+
+    cf_payback_without_expenses
+
+        Simple payback without expenses [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_fedtax_total
+
+        Federal taxable PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_statax_total
+
+        State taxable PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_total
+
+        Total PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_total_fed
+
+        Federal PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_total_oth
+
+        Other PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_total_sta
+
+        State PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_pbi_total_uti
+
+        Utility PBI income [$]
+
+        Type:
+
+            sequence
+
+    cf_property_tax_assessed_value
+
+        Property tax net assessed value [$]
+
+        Type:
+
+            sequence
+
+    cf_property_tax_expense
+
+        Property tax expense [$]
+
+        Type:
+
+            sequence
+
+    cf_ptc_fed
+
+        Federal PTC income [$]
+
+        Type:
+
+            sequence
+
+    cf_ptc_sta
+
+        State PTC income [$]
+
+        Type:
+
+            sequence
+
+    cf_salvage_cost_lcos
+
+        Annual battery salvage value costs [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_and_fed_tax_savings
+
+        Total tax savings (federal and state) [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_depr_sched
+
+        State depreciation schedule [%]
+
+        Type:
+
+            sequence
+
+    cf_sta_depreciation
+
+        State depreciation [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_incentive_income_less_deductions
+
+        State incentive income less deductions [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_tax_savings
+
+        State tax savings [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_taxable_incentive_income
+
+        State taxable incentive income [$]
+
+        Type:
+
+            sequence
+
+    cf_sta_taxable_income_less_deductions
+
+        State taxable income less deductions [$]
+
+        Type:
+
+            sequence
+
+    cf_state_tax_frac
+
+        State income tax rate [frac]
+
+        Type:
+
+            sequence
+
+    cf_thermal_value
+
+        Value of thermal savings [$]
+
+        Type:
+
+            sequence
+
+    cf_util_escal_rate
+
+        Utility escalation rate
+
+        Type:
+
+            sequence
+
+    cf_utility_bill
+
+        Electricity purchase [$]
+
+        Type:
+
+            sequence
+
+    cf_value_added
+
+        Real estate value added [$]
+
+        Type:
+
+            sequence
+
+    discounted_payback
+
+        Discounted payback period [years]
+
+        Type:
+
+            float
+
+    effective_tax_rate
+
+        Effective tax rate [%]
+
+        Type:
+
+            float
+
+    first_cost
+
+        Equity [$]
+
+        Type:
+
+            float
+
+    ibi_fedtax_total
+
+        Federal taxable IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_statax_total
+
+        State taxable IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_total
+
+        Total IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_total_fed
+
+        Federal IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_total_oth
+
+        Other IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_total_sta
+
+        State IBI income [$]
+
+        Type:
+
+            float
+
+    ibi_total_uti
+
+        Utility IBI income [$]
+
+        Type:
+
+            float
+
+    irr
+
+        IRR Internal rate of return [$]
+
+        Type:
+
+            float
+
+    itc_total
+
+        Total ITC income [$]
+
+        Type:
+
+            float
+
+    itc_total_fed
+
+        Federal ITC income [$]
+
+        Type:
+
+            float
+
+    itc_total_sta
+
+        State ITC income [$]
+
+        Type:
+
+            float
+
+    lcoe_nom
+
+        LCOE Levelized cost of energy nominal [cents/kWh]
+
+        Type:
+
+            float
+
+    lcoe_real
+
+        LCOE Levelized cost of energy real [cents/kWh]
+
+        Type:
+
+            float
+
+    lcoptc_fed_nom
+
+        Levelized federal PTC nominal [cents/kWh]
+
+        Type:
+
+            float
+
+    lcoptc_fed_real
+
+        Levelized federal PTC real [cents/kWh]
+
+        Type:
+
+            float
+
+    lcoptc_sta_nom
+
+        Levelized state PTC nominal [cents/kWh]
+
+        Type:
+
+            float
+
+    lcoptc_sta_real
+
+        Levelized state PTC real [cents/kWh]
+
+        Type:
+
+            float
+
+    lcos_nom
+
+        LCOS Levelized cost of storage nominal [cents/kWh]
+
+        Type:
+
+            float
+
+    lcos_real
+
+        LCOS Levelized cost of storage real [cents/kWh]
+
+        Type:
+
+            float
+
+    lnte_nom
+
+        NTE Not to exceed nominal [cents/kWh]
+
+        Type:
+
+            float
+
+    lnte_real
+
+        NTE Not to exceed real [cents/kWh]
+
+        Type:
+
+            float
+
+    loan_amount
+
+        Debt [$]
+
+        Type:
+
+            float
+
+    nominal_discount_rate
+
+        Nominal discount rate [%]
+
+        Type:
+
+            float
+
+    npv
+
+        NPV Net present value [$]
+
+        Type:
+
+            float
+
+    npv_annual_costs_lcos
+
+        Present value of annual storage costs [$]
+
+        Type:
+
+            float
+
+    npv_energy_lcos_nom
+
+        Present value of annual stored energy (nominal) [kWh]
+
+        Type:
+
+            float
+
+    npv_energy_lcos_real
+
+        Present value of annual stored energy (real) [kWh]
+
+        Type:
+
+            float
+
+    payback
+
+        Payback period [years]
+
+        Type:
+
+            float
+
+    present_value_fuel
+
+        Present value of fuel expenses [$]
+
+        Type:
+
+            float
+
+    present_value_insandproptax
+
+        Present value of insurance and property tax [$]
+
+        Type:
+
+            float
+
+    present_value_oandm
+
+        Present value of O&M expenses [$]
+
+        Type:
+
+            float
+
+    present_value_oandm_nonfuel
+
+        Present value of non-fuel O&M expenses [$]
+
+        Type:
+
+            float
+
+    total_cost
+
+        Total installed cost [$]
+
+        Type:
+
+            float
+
+    wacc
+
+        WACC Weighted average cost of capital
+
+        Type:
+
+            float
+
+    year1_nte
+
+        NTE Not to exceed Year 1 [cents/kWh]
+
+        Type:
+
+            float

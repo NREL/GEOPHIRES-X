@@ -67,9 +67,9 @@ class GeophiresXResult:
             'ECONOMIC PARAMETERS': [
                 _EqualSignDelimitedField('Economic Model'),
                 'Interest Rate',  # %
-                'WACC',
                 'Real Discount Rate',
                 'Nominal Discount Rate',
+                'WACC',
                 'Accrued financing during construction',
                 'Project lifetime',
                 'Capacity factor',

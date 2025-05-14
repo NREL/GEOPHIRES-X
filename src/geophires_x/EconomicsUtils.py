@@ -40,7 +40,14 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
 def wacc_output_parameter() -> OutputParameter:
     return OutputParameter(
         Name='WACC',
-        ToolTipText='Weighted Average Cost of Capital',
+        ToolTipText='Weighted Average Cost of Capital displayed for SAM Economic Models. '
+                    'It is calculated according to the following formula, defined in SAM Help documentation: '
+                    'WACC = [ Nominal Discount Rate ÷ 100 × (1 - Debt Percent ÷ 100) '
+                    '+ Debt Percent ÷ 100 × Loan Rate ÷ 100 ×  (1 - Effective Tax Rate ÷ 100 ) ] × 100; '
+                    'Effective Tax Rate = [ Federal Tax Rate ÷ 100 × ( 1 - State Tax Rate ÷ 100 ) '
+                    '+ State Tax Rate ÷ 100 ] × 100; '
+                    'Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) × ( 1 + Inflation Rate ÷ 100 ) - 1 ] '
+                    '× 100. ',
         UnitType=Units.PERCENT,
         CurrentUnits=PercentUnit.PERCENT,
         PreferredUnits=PercentUnit.PERCENT,

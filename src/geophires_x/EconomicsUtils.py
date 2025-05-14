@@ -68,9 +68,7 @@ def wacc_output_parameter() -> OutputParameter:
                     'WACC = [ Nominal Discount Rate ÷ 100 × (1 - Debt Percent ÷ 100) '
                     '+ Debt Percent ÷ 100 × Loan Rate ÷ 100 ×  (1 - Effective Tax Rate ÷ 100 ) ] × 100; '
                     'Effective Tax Rate = [ Federal Tax Rate ÷ 100 × ( 1 - State Tax Rate ÷ 100 ) '
-                    '+ State Tax Rate ÷ 100 ] × 100; '
-                    'Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) × ( 1 + Inflation Rate ÷ 100 ) - 1 ] '
-                    '× 100. ',
+                    '+ State Tax Rate ÷ 100 ] × 100; ',
         UnitType=Units.PERCENT,
         CurrentUnits=PercentUnit.PERCENT,
         PreferredUnits=PercentUnit.PERCENT,

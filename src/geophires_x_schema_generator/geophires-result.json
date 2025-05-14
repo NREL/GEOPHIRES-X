@@ -86,7 +86,7 @@
         },
         "WACC": {
           "type": "number",
-          "description": "Weighted Average Cost of Capital displayed for SAM Economic Models. It is calculated per https://samrepo.nrelcloud.org/help/fin_commercial.html?q=wacc: WACC = [ Nominal Discount Rate \u00f7 100 \u00d7 (1 - Debt Percent \u00f7 100) + Debt Percent \u00f7 100 \u00d7 Loan Rate \u00f7 100 \u00d7  (1 - Effective Tax Rate \u00f7 100 ) ] \u00d7 100; Effective Tax Rate = [ Federal Tax Rate \u00f7 100 \u00d7 ( 1 - State Tax Rate \u00f7 100 ) + State Tax Rate \u00f7 100 ] \u00d7 100; Nominal Discount Rate = [ ( 1 + Real Discount Rate \u00f7 100 ) \u00d7 ( 1 + Inflation Rate \u00f7 100 ) - 1 ] \u00d7 100. ",
+          "description": "Weighted Average Cost of Capital displayed for SAM Economic Models. It is calculated per https://samrepo.nrelcloud.org/help/fin_commercial.html?q=wacc: WACC = [ Nominal Discount Rate \u00f7 100 \u00d7 (1 - Debt Percent \u00f7 100) + Debt Percent \u00f7 100 \u00d7 Loan Rate \u00f7 100 \u00d7  (1 - Effective Tax Rate \u00f7 100 ) ] \u00d7 100; Effective Tax Rate = [ Federal Tax Rate \u00f7 100 \u00d7 ( 1 - State Tax Rate \u00f7 100 ) + State Tax Rate \u00f7 100 ] \u00d7 100; ",
           "units": "%"
         },
         "Accrued financing during construction": {},

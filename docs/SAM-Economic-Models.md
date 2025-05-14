@@ -1,11 +1,12 @@
 # SAM Economic Models
 
-SAM Economic Models leverage [NREL's SAM Financial Models](https://sam.nrel.gov/financial-models.html)
-by transforming GEOPHIRES parameters into SAM parameters and running SAM with [PySAM](https://github.com/NREL/pysam).
+GEOPHIRES SAM Economic Models leverage [NREL's SAM Financial Models](https://sam.nrel.gov/financial-models.html)
+by transforming GEOPHIRES parameters into SAM parameters and running the corresponding SAM model
+with [PySAM](https://github.com/NREL/pysam).
 
-## SAM Single-Owner PPA
+## SAM Single Owner PPA
 
-SAM Financial
+Corresponding SAM Financial
 Model: [Power Purchase Agreement (PPA): Single owner](https://sam.nrel.gov/financial-models/utility-scale-ppa)
 
 ### Parameters
@@ -13,15 +14,6 @@ Model: [Power Purchase Agreement (PPA): Single owner](https://sam.nrel.gov/finan
 The following table describes how GEOPHIRES parameters are transformed into SAM parameters, as implemented in
 [EconomicsSam.py](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/274786e6799d32dad3f42a2a04297818b811f24c/src/geophires_x/EconomicsSam.py#L135-L195).
 (Note that the source code implementation determines actual behavior in the case of any discrepancies.)
-
-.. <RST_Comment>
-.. Comment entries of ".. N/A" render as blank in the final RST, by design.
-.. This entry value is required because m2r2 (https://pypi.org/project/m2r2/) seems to choke and bail on rendering
-.. the entire table when blank comment entries are blank. Make sure to check this doesn't happen when making changes
-.. to this file by running `tox -e docs` and opening `dist/docs/SAM-Economic-Models.html` in your browser!
-..
-.. TODO: Generate this programmatically (like schema generator) to prevent drift between code and documentation.
-.. </RST_Comment>
 
 | GEOPHIRES Parameter(s)                                                                                                                          | SAM Category                                           | SAM Input(s)                                                                                                 | SAM Module(s)                     | SAM Parameter Name(s)                                        | Comment                                                                                                                                                                                                                                                                                                                   |
 |-------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------|--------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -44,11 +36,20 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 | `Production Tax Credit Inflation Adjusted`, `Inflation Rate`                                                                                    | Incentives → Production Tax Credit (PTC)               | `Federal` → `Escalation (%/yr)`                                                                              | `Singleowner`                     | `ptc_fed_escal`                                              | If `Production Tax Credit Inflation Adjusted` = True, GEOPHIRES set's SAM's PTC escalation rate to the inflation rate. SAM applies the escalation rate to years 2 and later of the project cash flow. Note that this produces escalation rates that are similar to inflation-adjusted equivalents, but not exactly equal. |
 | `Other Incentives` + `One-time Grants Etc`                                                                                                      | Incentives → Investment Based Incentive (IBI)          | `Other`  → `Amount ($)`                                                                                      | `Singleowner`                     | `ibi_oth_amount`                                             | .. N/A                                                                                                                                                                                                                                                                                                                    |
 
+.. <RST_Comment>
+.. Comment entries of ".. N/A" render as blank in the final RST, by design.
+.. This entry value is required because m2r2 (https://pypi.org/project/m2r2/) seems to choke and bail on rendering
+.. the entire table when blank comment entries are blank. Make sure to check this doesn't happen when making changes
+.. to this file by running `tox -e docs` and opening `dist/docs/SAM-Economic-Models.html` in your browser!
+..
+.. TODO: Generate this programmatically (like schema generator) to prevent drift between code and documentation.
+.. </RST_Comment>
+
 ### Limitations
 
 1. Only Electricity end-use is supported
 2. Only 1 construction year is supported
-3. The following economic outputs are not supported:
+3. The following economic outputs are not calculated:
     1. Project VIR=PI=PIR
     2. Project MOIC
-    3. Project payback period
+    3. Project Payback Period

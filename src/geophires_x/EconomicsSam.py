@@ -27,7 +27,7 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
-from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter
+from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
@@ -62,6 +62,8 @@ class SamEconomicsCalculations:
             CurrentUnits=PercentUnit.PERCENT,
         )
     )
+
+    nominal_discount_rate: OutputParameter = field(default_factory=nominal_discount_rate_parameter)
 
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
 
@@ -159,27 +161,32 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
-    sam_economics.wacc.value = _calculate_wacc(model, single_owner)
+    sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
+        model, single_owner
+    )
 
     return sam_economics
 
 
-def _calculate_wacc(model: Model, single_owner: Singleowner) -> float:
+def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:
     """
     Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
+
+    :return: tuple of Nominal Discount Rate (%), WACC (%)
     """
 
     econ = model.economics
-    nominal_discount_rate = ((1 + econ.discountrate.value) * (1 + econ.RINFL.value) - 1) * 100
+    nominal_discount_rate_pct = ((1 + econ.discountrate.value) * (1 + econ.RINFL.value) - 1) * 100
     fed_tax_rate = max(single_owner.Outputs.cf_federal_tax_frac)
     state_tax_rate = max(single_owner.Outputs.cf_state_tax_frac)
     effective_tax_rate = (fed_tax_rate * (1 - state_tax_rate) + state_tax_rate) * 100
     debt_fraction = single_owner.Outputs.debt_fraction / 100
-    wacc = (
-        nominal_discount_rate / 100 * (1 - debt_fraction)
+    wacc_pct = (
+        nominal_discount_rate_pct / 100 * (1 - debt_fraction)
         + debt_fraction * econ.BIR.value * (1 - effective_tax_rate / 100)
     ) * 100
-    return wacc
+
+    return nominal_discount_rate_pct, wacc_pct
 
 
 def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args) -> str:

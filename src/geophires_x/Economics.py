@@ -5,7 +5,7 @@ import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
-from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter
+from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -1775,6 +1775,9 @@ class Economics:
             CurrentUnits=PercentUnit.PERCENT
         )
 
+        self.nominal_discount_rate = self.OutputParameterDict[self.nominal_discount_rate.Name] = (
+            nominal_discount_rate_parameter())
+
         self.wacc = self.OutputParameterDict[self.wacc.Name] = wacc_output_parameter()
 
         # TODO this is displayed as "Project Net Revenue" in Revenue & Cashflow Profile which is probably not an
@@ -2758,6 +2761,8 @@ class Economics:
         non_calculated_output_placeholder_val = -1
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics_calculations = calculate_sam_economics(model)
+            self.wacc.value = self.sam_economics_calculations.wacc.value
+            self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
             self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
                 convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
             self.ProjectIRR.value = self.sam_economics_calculations.project_irr.quantity().to(

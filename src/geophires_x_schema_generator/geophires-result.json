@@ -14,7 +14,7 @@
         "Average Net Electricity Production": {},
         "Electricity breakeven price": {
           "type": "number",
-          "description": "LCOE",
+          "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
         "Average Direct-Use Heat Production": {},
@@ -49,7 +49,7 @@
         "Segment 4   Geothermal gradient": {},
         "LCOE": {
           "type": "number",
-          "description": "LCOE",
+          "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
         "LCOH": {
@@ -72,6 +72,11 @@
         "Interest Rate": {
           "type": "number",
           "description": "",
+          "units": "%"
+        },
+        "WACC": {
+          "type": "number",
+          "description": "Weighted Average Cost of Capital",
           "units": "%"
         },
         "Accrued financing during construction": {},

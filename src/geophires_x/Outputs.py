@@ -254,8 +254,12 @@ class Outputs:
                 if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # TODO disambiguate interest rate for all economic models - see
                     #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
-                    irfl = Outputs._field_label(econ.interest_rate.Name, 49)
-                    f.write(f'      {irfl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
+                    ir_fl = Outputs._field_label(econ.interest_rate.Name, 49)
+                    f.write(f'      {ir_fl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
+
+                    wacc = econ.sam_economics_calculations.wacc
+                    wacc_fl = Outputs._field_label(wacc.Name, 49)
+                    f.write(f'      {wacc_fl}{wacc.value:10.2f} {wacc.CurrentUnits.value}\n')
 
                 # FIXME TODO unit is missing https://github.com/NREL/GEOPHIRES-X/issues/382
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')

@@ -1,3 +1,9 @@
+from __future__ import annotations
+
+from geophires_x.Parameter import OutputParameter
+from geophires_x.Units import Units, PercentUnit
+
+
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
                       EscalationStartYear: int, EscalationRate: float, PTCAddition: list) -> list:
     """
@@ -29,3 +35,13 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
             Price[i] = EndPrice
         Price[i] = Price[i] + PTCAddition[i]
     return Price
+
+
+def wacc_output_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='WACC',
+        ToolTipText='Weighted Average Cost of Capital',
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+    )

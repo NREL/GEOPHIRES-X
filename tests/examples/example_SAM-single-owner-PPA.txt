@@ -15,7 +15,7 @@ Electricity Escalation Start Year, 1
 
 Fraction of Investment in Bonds, .5
 Inflated Bond Interest Rate, .05
-# Inflated Equity Interest Rate, .08, -- not supported by SAM economic model
+Discount Rate, 0.07
 
 Inflation Rate, .02
 Inflation Rate During Construction, 0.05

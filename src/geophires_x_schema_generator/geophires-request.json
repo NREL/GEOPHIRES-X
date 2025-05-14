@@ -1154,7 +1154,7 @@
       "maximum": 1.0
     },
     "Utilization Factor": {
-      "description": "Ratio of the time the plant is running in normal production in a 1-year time period.",
+      "description": "Ratio of the time the plant is running in normal production in a 1-year time period. Synonymous with capacity factor.",
       "type": "number",
       "units": "",
       "category": "Surface Plant",
@@ -1577,7 +1577,7 @@
       "maximum": 1.0
     },
     "Discount Rate": {
-      "description": "Discount rate used in the Standard Levelized Cost Model. Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value will be automatically set to the same value.",
+      "description": "Discount rate used in the Standard Levelized Cost Model and SAM Economic Models. Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value will be automatically set to the same value.",
       "type": "number",
       "units": "",
       "category": "Economics",

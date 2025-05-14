@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import pprint
 from dataclasses import dataclass, field
 from functools import lru_cache
 from math import isnan
@@ -28,7 +27,7 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
-from geophires_x.EconomicsUtils import BuildPricingModel
+from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
@@ -36,7 +35,7 @@ from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Un
 
 
 @dataclass
-class SamEconomics:
+class SamEconomicsCalculations:
     sam_cash_flow_profile: list[list[Any]]
 
     lcoe_nominal: OutputParameter = field(
@@ -63,6 +62,8 @@ class SamEconomics:
             CurrentUnits=PercentUnit.PERCENT,
         )
     )
+
+    wacc: OutputParameter = field(default_factory=wacc_output_parameter)
 
 
 def validate_read_parameters(model: Model):
@@ -107,11 +108,11 @@ def validate_read_parameters(model: Model):
 
 
 @lru_cache(maxsize=12)
-def calculate_sam_economics(model: Model) -> SamEconomics:
+def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     custom_gen = CustomGeneration.new()
     grid = Grid.from_existing(custom_gen)
     utility_rate = UtilityRate.from_existing(custom_gen)
-    single_owner = Singleowner.from_existing(custom_gen)
+    single_owner: Singleowner = Singleowner.from_existing(custom_gen)
 
     project_name = 'Generic_400_MWe'
     project_dir = Path(os.path.dirname(model.economics.MyPath), 'sam_economics', project_name)
@@ -152,13 +153,33 @@ def calculate_sam_economics(model: Model) -> SamEconomics:
     def sf(_v: float) -> float:
         return _sig_figs(_v, 5)
 
-    sam_economics: SamEconomics = SamEconomics(sam_cash_flow_profile=cash_flow)
+    sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
     sam_economics.project_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
+    sam_economics.wacc.value = _calculate_wacc(model, single_owner)
+
     return sam_economics
+
+
+def _calculate_wacc(model: Model, single_owner: Singleowner) -> float:
+    """
+    Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
+    """
+
+    econ = model.economics
+    nominal_discount_rate = ((1 + econ.discountrate.value) * (1 + econ.RINFL.value) - 1) * 100
+    fed_tax_rate = max(single_owner.Outputs.cf_federal_tax_frac)
+    state_tax_rate = max(single_owner.Outputs.cf_state_tax_frac)
+    effective_tax_rate = (fed_tax_rate * (1 - state_tax_rate) + state_tax_rate) * 100
+    debt_fraction = single_owner.Outputs.debt_fraction / 100
+    wacc = (
+        nominal_discount_rate / 100 * (1 - debt_fraction)
+        + debt_fraction * econ.BIR.value * (1 - effective_tax_rate / 100)
+    ) * 100
+    return wacc
 
 
 def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args) -> str:
@@ -186,7 +207,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
                 return entry_display
         return entry
 
-    profile_display = model.economics.sam_economics.sam_cash_flow_profile.copy()
+    profile_display = model.economics.sam_economics_calculations.sam_cash_flow_profile.copy()
     for i in range(len(profile_display)):
         for j in range(len(profile_display[i])):
             profile_display[i][j] = get_entry_display(profile_display[i][j])

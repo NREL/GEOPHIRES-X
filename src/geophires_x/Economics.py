@@ -4,8 +4,8 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
-from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomics
-from geophires_x.EconomicsUtils import BuildPricingModel
+from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
+from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -442,7 +442,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple:
             LCOH = LCOH * 2.931  # $/Million Btu
     elif econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
         # Designated as nominal (as opposed to real) in parameter tooltip text
-        LCOE = econ.sam_economics.lcoe_nominal.quantity().to(convertible_unit(econ.LCOE.CurrentUnits.value)).magnitude
+        LCOE = econ.sam_economics_calculations.lcoe_nominal.quantity().to(convertible_unit(econ.LCOE.CurrentUnits.value)).magnitude
     else:
         # must be BICYCLE
         # average return on investment (tax and inflation adjusted)
@@ -852,7 +852,7 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage=f'assume default discount rate ({discount_rate_default_val})',
-            ToolTipText="Discount rate used in the Standard Levelized Cost Model. "
+            ToolTipText="Discount rate used in the Standard Levelized Cost Model and SAM Economic Models. "
                         "Discount Rate is synonymous with Fixed Internal Rate. If one is provided, the other's value "
                         "will be automatically set to the same value."
         )
@@ -1519,7 +1519,7 @@ class Economics:
         self.InputFile = ""
         self.Cplantcorrelation = 0.0
 
-        self.sam_economics: SamEconomics = None
+        self.sam_economics_calculations: SamEconomicsCalculations = None
 
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
@@ -1774,6 +1774,8 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+
+        self.wacc = self.OutputParameterDict[self.wacc.Name] = wacc_output_parameter()
 
         # TODO this is displayed as "Project Net Revenue" in Revenue & Cashflow Profile which is probably not an
         #   accurate synonym for annual revenue
@@ -2755,10 +2757,10 @@ class Economics:
 
         non_calculated_output_placeholder_val = -1
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-            self.sam_economics = calculate_sam_economics(model)
-            self.ProjectNPV.value = self.sam_economics.project_npv.quantity().to(
+            self.sam_economics_calculations = calculate_sam_economics(model)
+            self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
                 convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
-            self.ProjectIRR.value = self.sam_economics.project_irr.quantity().to(
+            self.ProjectIRR.value = self.sam_economics_calculations.project_irr.quantity().to(
                 convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
 
             self.ProjectVIR.value = non_calculated_output_placeholder_val  # TODO SAM VIR

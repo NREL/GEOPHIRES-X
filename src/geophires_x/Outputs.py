@@ -246,31 +246,23 @@ class Outputs:
                     f.write(f'      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} {model.economics.FCR.CurrentUnits.value}\n')
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
+                    # TODO disambiguate interest rate for all economic models - see
+                    #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
                 elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
 
                 if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    fields : list[OutputParameter] = [
-                        # TODO disambiguate interest rate for all economic models - see
-                        #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
-                        econ.interest_rate,
-
+                    sam_econ_fields: list[OutputParameter] = [
+                        econ.real_discount_rate,
                         econ.nominal_discount_rate,
                         econ.wacc,
                     ]
 
-                    for field in fields:
+                    for field in sam_econ_fields:
                         label = Outputs._field_label(field.Name, 49)
                         f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
-
-                    # ir_fl = Outputs._field_label(econ.interest_rate.Name, 49)
-                    # f.write(f'      {ir_fl}{econ.interest_rate.value:10.2f} {econ.interest_rate.CurrentUnits.value}\n')
-                    #
-                    # wacc = econ.sam_economics_calculations.wacc
-                    # wacc_fl = Outputs._field_label(wacc.Name, 49)
-                    # f.write(f'      {wacc_fl}{wacc.value:10.2f} {wacc.CurrentUnits.value}\n')
 
                 # FIXME TODO unit is missing https://github.com/NREL/GEOPHIRES-X/issues/382
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')

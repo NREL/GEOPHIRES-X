@@ -37,6 +37,28 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
     return Price
 
 
+def real_discount_rate_parameter() -> OutputParameter:
+    return OutputParameter(
+            Name="Real Discount Rate",
+            UnitType=Units.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+        )
+
+
+def nominal_discount_rate_parameter() -> OutputParameter:
+    return OutputParameter(
+            Name="Nominal Discount Rate",
+            ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
+                        "It is calculated according to the following formula, defined in SAM Help documentation: "
+                        "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
+                        "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
+            UnitType=Units.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+        )
+
+
 def wacc_output_parameter() -> OutputParameter:
     return OutputParameter(
         Name='WACC',
@@ -52,16 +74,3 @@ def wacc_output_parameter() -> OutputParameter:
         CurrentUnits=PercentUnit.PERCENT,
         PreferredUnits=PercentUnit.PERCENT,
     )
-
-
-def nominal_discount_rate_parameter() -> OutputParameter:
-    return OutputParameter(
-            Name="Nominal Discount Rate",
-            ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
-                        "It is calculated according to the following formula, defined in SAM Help documentation: "
-                        "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
-                        "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-        )

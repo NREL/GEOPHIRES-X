@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.6
  Simulation Date: 2025-05-14
- Simulation Time:  11:19
- Calculation Time:      0.880 sec
+ Simulation Time:  11:36
+ Calculation Time:      0.888 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -24,9 +24,9 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = SAM Single Owner PPA
-      Interest Rate:                                         7.00 %
-      WACC:                                                  6.41 %
+      Real Discount Rate:                                    7.00 %
       Nominal Discount Rate:                                 9.14 %
+      WACC:                                                  6.41 %
       Accrued financing during construction:                  5.00
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %

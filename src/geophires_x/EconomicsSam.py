@@ -250,8 +250,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         - Construction years
         - Break out indirect costs (instead of lumping all into direct cost):
             https://github.com/NREL/GEOPHIRES-X/issues/383
-        - Inflated Equity Interest Rate: doesn't appear to have equivalent in SAM, but should probably be supported
-            in some form.
     """
     econ = model.economics
 

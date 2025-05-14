@@ -53,8 +53,11 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertGreater(base_lcoe, 7)
 
         ir = base_result.result['ECONOMIC PARAMETERS']['Interest Rate']
-        self.assertEqual(ir['value'], 7.0)
-        self.assertEqual(ir['unit'], '%')
+        self.assertIsNone(ir)
+
+        rdr = base_result.result['ECONOMIC PARAMETERS']['Real Discount Rate']
+        self.assertEqual(rdr['value'], 7.0)
+        self.assertEqual(rdr['unit'], '%')
 
     def test_drawdown(self):
         r = self._get_result(

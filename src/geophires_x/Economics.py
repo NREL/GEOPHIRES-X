@@ -2909,8 +2909,9 @@ class Economics:
                 / model.wellbores.numnonverticalsections.value
             )
 
-        self.real_discount_rate.value = self.discountrate.quantity().to(convertible_unit(
-            self.real_discount_rate.CurrentUnits)).magnitude
+        if hasattr(self, 'discountrate'):
+            self.real_discount_rate.value = self.discountrate.quantity().to(convertible_unit(
+                self.real_discount_rate.CurrentUnits)).magnitude
 
     def __str__(self):
         return "Economics"

@@ -642,4 +642,3 @@ def is_float(o: Any) -> bool:
     else:
         return True
 
-

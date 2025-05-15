@@ -320,16 +320,18 @@ class Reservoir:
             ToolTipText="Geothermal reservoir volume"
         )
 
+        # noinspection SpellCheckingInspection
         self.waterloss = self.ParameterDict[self.waterloss.Name] = floatParameter(
             "Water Loss Fraction",
             DefaultValue=0.0,
             Min=0.0,
             Max=0.99,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             ErrMessage="assume default water loss fraction (0)",
-            ToolTipText="Fraction of water lost in the reservoir defined as (total geofluid lost)/(total geofluid produced)."
+            ToolTipText="Fraction of water lost in the reservoir defined as "
+                        "(total geofluid lost)/(total geofluid produced)."
         )
 
         self.cprock = self.ParameterDict[self.cprock.Name] = floatParameter(

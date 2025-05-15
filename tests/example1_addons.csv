@@ -36,7 +36,7 @@ EXTENDED ECONOMICS,AddOns Payback Period,,0.0,yr
 ENGINEERING PARAMETERS,Number of Production Wells,,2,count
 ENGINEERING PARAMETERS,Number of Injection Wells,,2,count
 ENGINEERING PARAMETERS,Well depth,,3.0,kilometer
-ENGINEERING PARAMETERS,Water loss rate,,2.0,
+ENGINEERING PARAMETERS,Water loss rate,,2.0,%
 ENGINEERING PARAMETERS,Pump efficiency,,80.0,%
 ENGINEERING PARAMETERS,Injection temperature,,50.0,degC
 ENGINEERING PARAMETERS,Average production well temperature drop,,3.0,degC

@@ -1,6 +1,5 @@
 # Case Study: Fervo Cape Station: 500 MWe Production
 https://github.com/NREL/GEOPHIRES-X/issues/385?title=Fervo+Cape+Station+500+MWe+update
-
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
@@ -19,7 +18,6 @@ Property Tax Rate, 0
 Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production)
 Exploration Capital Cost, 30
 Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
-
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************
 End-Use Option, 1
@@ -35,8 +33,8 @@ Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001
 Number of Fractures, 149
 Fracture Shape, 4
-Fracture Height, 2000
-Fracture Width, 10000
+Fracture Height, 1400
+Fracture Width, 1400
 Fracture Separation, 30
 Number of Segments, 1
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
@@ -53,7 +51,7 @@ Plant Outlet Pressure, 1000 psi
 Production Wellhead Pressure, 325 psi
 Utilization Factor, .9
 Water Loss Fraction, 0.10
-Maximum Drawdown, 1
+Maximum Drawdown, 0.005, -- WIP
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 Circulation Pump Efficiency, 0.80
@@ -62,7 +60,6 @@ Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 3
 Nonvertical Length per Multilateral Section, 4700 feet
-# TODO drawdown - redrill at 10 years after ~25C production temp drop
 
 # *** SIMULATION PARAMETERS ***
 # *****************************

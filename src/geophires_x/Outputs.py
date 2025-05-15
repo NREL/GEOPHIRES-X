@@ -306,7 +306,7 @@ class Outputs:
                 f.write(f'      Number of Production Wells:                    {model.wellbores.nprod.value:10.0f}' + NL)
                 f.write(f'      Number of Injection Wells:                     {model.wellbores.ninj.value:10.0f}' + NL)
                 f.write(f'      {Outputs._field_label(Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME, 49)}{model.reserv.depth.value:10.1f} ' + model.reserv.depth.CurrentUnits.value + NL)
-                f.write(f'      Water loss rate:                                 {model.reserv.waterloss.value:10.2f} {model.reserv.waterloss.CurrentUnits.value}\n')
+                f.write(f'      Water loss rate:                                 {model.reserv.waterloss.value:10.1f} {model.reserv.waterloss.CurrentUnits.value}\n')
                 f.write(f'      Pump efficiency:                                 {model.surfaceplant.pump_efficiency.value:10.1f} ' + model.surfaceplant.pump_efficiency.CurrentUnits.value + NL)
                 f.write(f'      Injection temperature:                           {model.wellbores.Tinj.value:10.1f} ' + model.wellbores.Tinj.CurrentUnits.value + NL)
                 if model.wellbores.rameyoptionprod.value:

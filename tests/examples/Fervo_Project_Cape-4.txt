@@ -15,9 +15,11 @@ Inflation Rate During Construction, 0.05
 Combined Income Tax Rate, .28
 Investment Tax Credit Rate, .3
 Property Tax Rate, 0
-Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production)
+Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production) TODO
 Exploration Capital Cost, 30
 Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
+Reservoir Stimulation Capital Cost Adjustment Factor, 3.97
+
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************
 End-Use Option, 1
@@ -38,8 +40,8 @@ Fracture Width, 1400
 Fracture Separation, 30
 Number of Segments, 1
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
-Number of Injection Wells, 46
-Number of Production Wells, 46
+Number of Injection Wells, 47
+Number of Production Wells, 47
 Production Flow Rate per Well, 120, -- peak flow reported in paper
 Production Well Diameter, 9.625
 Injection Well Diameter, 9.625
@@ -51,7 +53,7 @@ Plant Outlet Pressure, 1000 psi
 Production Wellhead Pressure, 325 psi
 Utilization Factor, .9
 Water Loss Fraction, 0.10
-Maximum Drawdown, 0.005, -- WIP
+Maximum Drawdown, 0.0066
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 Circulation Pump Efficiency, 0.80
@@ -65,4 +67,3 @@ Nonvertical Length per Multilateral Section, 4700 feet
 # *****************************
 Maximum Temperature, 500
 Time steps per year, 10
-Reservoir Stimulation Capital Cost Adjustment Factor, 3.97

@@ -1,5 +1,6 @@
 # Case Study: Fervo Cape Station: 500 MWe Production
 https://github.com/NREL/GEOPHIRES-X/issues/385?title=Fervo+Cape+Station+500+MWe+update
+
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
@@ -13,9 +14,9 @@ Discount Rate, 0.08
 Inflation Rate, .02
 Inflation Rate During Construction, 0.05
 Combined Income Tax Rate, .28
-Investment Tax Credit Rate, .3
+Investment Tax Credit Rate, 0
 Property Tax Rate, 0
-Surface Plant Capital Cost Adjustment Factor, 0.71, -- $1900/kW (peak production) TODO
+Capital Cost for Power Plant for Electricity Generation, 1900, -- (peak production)
 Exploration Capital Cost, 30
 Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
 Reservoir Stimulation Capital Cost Adjustment Factor, 3.97

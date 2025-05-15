@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.8.4
- Simulation Date: 2025-03-19
- Simulation Time:  10:30
- Calculation Time:      0.797 sec
+ GEOPHIRES Version: 3.9.7
+ Simulation Date: 2025-05-15
+ Simulation Time:  09:22
+ Calculation Time:      0.776 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -25,14 +25,14 @@ Simulation Metadata
 
       Economic Model = Fixed Charge Rate (FCR)
       Fixed Charge Rate (FCR):                                5.00
-      Accrued financing during construction:                  0.00
+      Accrued financing during construction:                  0.00 %
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                           1.32 MUSD
       Project IRR:                                           7.26 %
       Project VIR=PI=PIR:                                    1.03
       Project MOIC:                                          0.89
-      Project Payback Period:                               13.74 yr
+      Project Payback Period:                                      13.74 yr
       Estimated Jobs Created:                                 13
 
                           ***ENGINEERING PARAMETERS***

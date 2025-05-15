@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.8.4
- Simulation Date: 2025-03-19
- Simulation Time:  10:30
- Calculation Time:      0.104 sec
+ GEOPHIRES Version: 3.9.7
+ Simulation Date: 2025-05-15
+ Simulation Time:  09:22
+ Calculation Time:      0.097 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -27,14 +27,14 @@ Simulation Metadata
 
       Economic Model = Standard Levelized Cost
       Interest Rate:                                          5.00 %
-      Accrued financing during construction:                  5.00
+      Accrued financing during construction:                  5.00 %
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          10.11 MUSD
       Project IRR:                                           8.23 %
       Project VIR=PI=PIR:                                    1.38
       Project MOIC:                                          1.01
-      Project Payback Period:                               11.81 yr
+      Project Payback Period:                                      11.81 yr
 
                           ***ENGINEERING PARAMETERS***
 

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.23
- Simulation Date: 2025-03-10
- Simulation Time:  10:42
- Calculation Time:      0.871 sec
+ GEOPHIRES Version: 3.9.7
+ Simulation Date: 2025-05-15
+ Simulation Time:  09:22
+ Calculation Time:      0.868 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -23,15 +23,15 @@ Simulation Metadata
 
                            ***ECONOMIC PARAMETERS***
 
-      Economic Model  = BICYCLE
-      Accrued financing during construction:                  5.00
+      Economic Model = BICYCLE
+      Accrued financing during construction:                  5.00 %
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                        4580.36 MUSD
       Project IRR:                                          43.75 %
       Project VIR=PI=PIR:                                    5.27
       Project MOIC:                                          6.30
-      Project Payback Period:                                3.38 yr
+      Project Payback Period:                                       3.38 yr
       Estimated Jobs Created:                                 976
 
                           ***ENGINEERING PARAMETERS***

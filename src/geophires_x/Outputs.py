@@ -264,8 +264,7 @@ class Outputs:
                         label = Outputs._field_label(field.Name, 49)
                         f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
 
-                # FIXME TODO unit is missing https://github.com/NREL/GEOPHIRES-X/issues/382
-                f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')
+                f.write(f'      Accrued financing during construction:            {econ.inflrateconstruction.value*100:10.2f} {econ.inflrateconstruction.CurrentUnits.value}\n')
 
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')

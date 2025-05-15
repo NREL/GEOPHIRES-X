@@ -969,8 +969,8 @@ class Economics:
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
             ErrMessage="assume default inflation rate during construction (0)"
         )
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(

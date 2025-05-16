@@ -884,7 +884,7 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default fraction of investment in bonds (0.5)",
-            ToolTipText="Fraction of geothermal project financing through bonds (see docs)"
+            ToolTipText="Fraction of geothermal project financing through bonds (debt)."
         )
         self.BIR = self.ParameterDict[self.BIR.Name] = floatParameter(
             "Inflated Bond Interest Rate",

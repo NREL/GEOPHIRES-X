@@ -1595,7 +1595,7 @@
       "maximum": null
     },
     "Fraction of Investment in Bonds": {
-      "description": "Fraction of geothermal project financing through bonds (see docs)",
+      "description": "Fraction of geothermal project financing through bonds (debt).",
       "type": "number",
       "units": "",
       "category": "Economics",

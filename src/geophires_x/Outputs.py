@@ -1,4 +1,5 @@
 import datetime
+import math
 import time
 import sys
 from pathlib import Path
@@ -274,7 +275,8 @@ class Outputs:
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
-                f.write(f'      {econ.ProjectIRR.display_name}:                                     {econ.ProjectIRR.value:10.2f} {econ.ProjectIRR.PreferredUnits.value}\n')
+                irr_display_value = f'{econ.ProjectIRR.value:10.2f}' if not math.isnan(econ.ProjectIRR.value) else 'NaN'
+                f.write(f'      {econ.ProjectIRR.display_name}:                                     {irr_display_value} {econ.ProjectIRR.CurrentUnits.value}\n')
 
                 if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)

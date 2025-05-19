@@ -862,8 +862,8 @@ class GeophiresXResult:
             return None
 
         try:
-            number_str = number_str.replace(',', '')
-            if '.' in number_str or number_str.lower() == 'nan':
+            number_str = number_str.replace(',', '').lower()
+            if '.' in number_str or number_str == 'nan':
                 # TODO should probably ideally use decimal.Decimal to preserve precision,
                 #  i.e. 1.00 for USD instead of 1.0
                 return float(number_str)

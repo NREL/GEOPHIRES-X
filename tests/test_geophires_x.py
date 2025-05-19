@@ -1,3 +1,4 @@
+import math
 import os
 import tempfile
 import uuid
@@ -193,6 +194,22 @@ class GeophiresXTestCase(BaseTestCase):
                 expected_result: GeophiresXResult = GeophiresXResult(get_output_file_for_example(example_file_path))
                 del expected_result.result['metadata']
                 del expected_result.result['Simulation Metadata']
+
+                def sanitize_nan(r: GeophiresXResult) -> None:
+                    """
+                    Workaround for float('nan') != float('nan')
+                    See https://stackoverflow.com/questions/51728427/unittest-how-to-assert-if-the-two-possibly-nan-values-are-equal
+
+                    TODO generalize beyond Project IRR
+                    """
+                    try:
+                        if math.isnan(r.result['ECONOMIC PARAMETERS']['Project IRR']['value']):
+                            r.result['ECONOMIC PARAMETERS']['Project IRR']['value'] = 'NaN'
+                    except TypeError:
+                        pass
+
+                sanitize_nan(geophires_result)
+                sanitize_nan(expected_result)
 
                 try:
                     self.assertDictEqual(

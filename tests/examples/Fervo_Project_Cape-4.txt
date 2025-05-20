@@ -17,7 +17,7 @@ Combined Income Tax Rate, .28
 Investment Tax Credit Rate, 0.3
 Property Tax Rate, 0
 Capital Cost for Power Plant for Electricity Generation, 1900, -- (peak production)
-Exploration Capital Cost, 30
+Exploration Capital Cost, 30, -- TODO source/citation
 Well Drilling and Completion Capital Cost, 3.84, -- Assume cost continues to decrease from $4.8M/well (https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)
 Reservoir Stimulation Capital Cost Adjustment Factor, 3.97
 

@@ -8,7 +8,7 @@ Starting Electricity Sale Price, 0.12
 Ending Electricity Sale Price, 1.00
 Electricity Escalation Rate Per Year, 0.004053223
 Electricity Escalation Start Year, 1
-Fraction of Investment in Bonds, .5
+Fraction of Investment in Bonds, .2
 Inflated Bond Interest Rate, .05
 Discount Rate, 0.08
 Inflation Rate, .02

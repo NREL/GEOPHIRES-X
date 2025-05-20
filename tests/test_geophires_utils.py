@@ -11,6 +11,8 @@ from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import enthalpy_water_kJ_per_kg
 from geophires_x.GeoPHIRESUtils import entropy_water_kJ_per_kg_per_K
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K
+from geophires_x.GeoPHIRESUtils import is_float
+from geophires_x.GeoPHIRESUtils import is_int
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
@@ -570,6 +572,16 @@ class GeophiresUtilsTestCase(BaseTestCase):
                 ),
             },
         )
+
+    def test_is_int_and_is_float(self):
+        self.assertTrue(is_int('1'))
+        self.assertFalse(is_int('1.1'))
+        self.assertTrue(is_float('1.1'))
+
+        self.assertFalse(is_int('Year 0'))
+        self.assertFalse(is_float('Year 0'))
+
+        self.assertFalse(is_float(None))
 
 
 if __name__ == '__main__':

@@ -10,7 +10,11 @@ requires = [
 extend-exclude = ["static", "ci/templates", "src/geophires_x"]
 
 # Incrementally add files to this list as they are cleaned up
-extend-include=["src/geophires_x/GEOPHIRESv3.py"]
+extend-include=[
+    "src/geophires_x/GEOPHIRESv3.py",
+    "src/geophires_x/EconomicsSam.py",
+    "src/geophires_x/EconomicsSamCashFlow.py",
+]
 
 ignore = [
     "RUF001", # ruff-specific rules ambiguous-unicode-character-string

@@ -19,7 +19,7 @@ def main(enable_geophires_logging_config=True):
     logging will be configured in the Model class.
     :return: None
     """
-    original_cwd:Path = Path.cwd().absolute()
+    original_cwd: Path = Path.cwd().absolute()
 
     # set the starting directory to be the directory that this file is in
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -49,18 +49,25 @@ def main(enable_geophires_logging_config=True):
     jsons.suppress_warnings(True)
     json_resrv = jsons.dumps(model.reserv.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
     json_wells = jsons.dumps(model.wellbores.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
-    json_surfaceplant = jsons.dumps(model.surfaceplant.OutputParameterDict, indent=4, sort_keys=True,
-                                    supress_warnings=True)
+    json_surfaceplant = jsons.dumps(
+        model.surfaceplant.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True
+    )
     json_economics = jsons.dumps(model.economics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True)
-    json_merged = {**json.loads(json_resrv), **json.loads(json_wells), **json.loads(json_economics),
-                   **json.loads(json_surfaceplant)}
+    json_merged = {
+        **json.loads(json_resrv),
+        **json.loads(json_wells),
+        **json.loads(json_economics),
+        **json.loads(json_surfaceplant),
+    }
     if model.economics.DoAddOnCalculations.value:
-        json_addons = jsons.dumps(model.addeconomics.OutputParameterDict, indent=4, sort_keys=True,
-                                  supress_warnings=True)
+        json_addons = jsons.dumps(
+            model.addeconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True
+        )
         json_merged = {**json_merged, **json.loads(json_addons)}
     if model.economics.DoSDACGTCalculations.value:
-        json_sdacgt = jsons.dumps(model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True,
-                                  supress_warnings=True)
+        json_sdacgt = jsons.dumps(
+            model.sdacgteconomics.OutputParameterDict, indent=4, sort_keys=True, supress_warnings=True
+        )
         json_merged = {**json_merged, **json.loads(json_sdacgt)}
 
     json_outputfile = Path(original_cwd, 'HDR.json')

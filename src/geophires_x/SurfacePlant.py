@@ -305,7 +305,8 @@ class SurfacePlant:
             CurrentUnits=PercentUnit.TENTH,
             Required=True,
             ErrMessage="assume default utilization factor (0.9)",
-            ToolTipText="Ratio of the time the plant is running in normal production in a 1-year time period."
+            ToolTipText="Ratio of the time the plant is running in normal production in a 1-year time period. "
+                        "Synonymous with capacity factor."
         )
         self.enduse_efficiency_factor = self.ParameterDict[self.enduse_efficiency_factor.Name] = floatParameter(
             "End-Use Efficiency Factor",

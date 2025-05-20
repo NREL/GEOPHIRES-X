@@ -487,37 +487,6 @@ class GeophiresXClientTestCase(BaseTestCase):
          3. Copy-paste the value of `as_csv` (in Threads & Variables tab in PyCharm) to example1_addons.csv
         """
 
-        def assertFileContentsEqual(expected_file_path, actual_file_path, tol=0.01):
-            with open(expected_file_path, encoding='utf-8') as ef:
-                expected_lines = ef.readlines()
-            with open(actual_file_path, encoding='utf-8') as af:
-                actual_lines = af.readlines()
-
-            self.assertEqual(len(expected_lines), len(actual_lines), 'The number of lines in the files do not match.')
-
-            for line_index, (expected_line, actual_line) in enumerate(zip(expected_lines, actual_lines), start=1):
-                expected_parts = expected_line.strip().split(',')
-                actual_parts = actual_line.strip().split(',')
-                self.assertEqual(
-                    len(expected_parts),
-                    len(actual_parts),
-                    f'The number of columns in line {line_index} does not match.',
-                )
-                for col_index, (expected, actual) in enumerate(zip(expected_parts, actual_parts), start=1):
-                    try:
-                        expected_float = float(expected)
-                        actual_float = float(actual)
-                        self.assertTrue(
-                            abs(expected_float - actual_float) < tol,
-                            f'Float values differ at line {line_index}, column {col_index}: {expected} != {actual}',
-                        )
-                    except ValueError:
-                        self.assertEqual(
-                            expected,
-                            actual,
-                            f'String values differ at line {line_index}, column {col_index}: {expected} != {actual}',
-                        )
-
         def assert_csv_equal(case_report_file_path, expected_csv_file_path):
             test_result_path = self._get_test_file_path(case_report_file_path)
             result = GeophiresXResult(test_result_path)
@@ -527,7 +496,7 @@ class GeophiresXClientTestCase(BaseTestCase):
             result_file = Path(tempfile.gettempdir(), f'test_csv-result_{uuid.uuid1()!s}.csv')
             with open(result_file, 'w', newline='', encoding='utf-8') as rf:
                 rf.write(as_csv)
-            assertFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
+            self.assertCsvFileContentsEqual(self._get_test_file_path(expected_csv_file_path), result_file)
 
         for case in [
             ('examples/example1_addons.out', 'example1_addons.csv'),
@@ -535,6 +504,54 @@ class GeophiresXClientTestCase(BaseTestCase):
         ]:
             with self.subTest(msg=case[0]):
                 assert_csv_equal(case[0], case[1])
+
+        op_example_file = 'examples/example_overpressure.out'
+        with self.subTest(msg=op_example_file):
+            # Ensure overpressure-specific RESERVOIR POWER REQUIRED PROFILES doesn't cause issues
+            op_result = GeophiresXResult(self._get_test_file_path(op_example_file))
+            op_csv = op_result.as_csv()
+            self.assertIsNotNone(op_csv)
+
+        sam_example_file = 'examples/example_SAM-single-owner-PPA.out'
+        with self.subTest(msg=sam_example_file):
+            sam_result = GeophiresXResult(self._get_test_file_path(sam_example_file))
+            sam_csv = sam_result.as_csv()
+            self.assertIsNotNone(sam_csv)
+            sam_cf_lines = [line.split(',') for line in sam_csv.split('\n') if line.startswith('SAM CASH FLOW PROFILE')]
+            self.assertGreater(len(sam_cf_lines), 250)
+            # TODO test more of the content (but not full result given how big/complex it is, which would add undue
+            #  maintenance overhead)
+
+    def assertCsvFileContentsEqual(self, expected_file_path, actual_file_path, tol=0.01):
+        with open(expected_file_path, encoding='utf-8') as ef:
+            expected_lines = ef.readlines()
+        with open(actual_file_path, encoding='utf-8') as af:
+            actual_lines = af.readlines()
+
+        self.assertEqual(len(expected_lines), len(actual_lines), 'The number of lines in the files do not match.')
+
+        for line_index, (expected_line, actual_line) in enumerate(zip(expected_lines, actual_lines), start=1):
+            expected_parts = expected_line.strip().split(',')
+            actual_parts = actual_line.strip().split(',')
+            self.assertEqual(
+                len(expected_parts),
+                len(actual_parts),
+                f'The number of columns in line {line_index} does not match.',
+            )
+            for col_index, (expected, actual) in enumerate(zip(expected_parts, actual_parts), start=1):
+                try:
+                    expected_float = float(expected)
+                    actual_float = float(actual)
+                    self.assertTrue(
+                        abs(expected_float - actual_float) < tol,
+                        f'Float values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                    )
+                except ValueError:
+                    self.assertEqual(
+                        expected,
+                        actual,
+                        f'String values differ at line {line_index}, column {col_index}: {expected} != {actual}',
+                    )
 
     def test_parse_chp_percent_cost_allocation(self):
         result = GeophiresXResult(self._get_test_file_path('examples/example3.out'))
@@ -592,3 +609,13 @@ class GeophiresXClientTestCase(BaseTestCase):
         result_legacy_em._lines = ['   Economic Model  = BICYCLE']
         em_legacy = result_legacy_em._get_equal_sign_delimited_field('Economic Model')
         self.assertEqual(em_legacy, 'BICYCLE')
+
+    def test_parse_sam_cash_flow_profile(self):
+        result = GeophiresXResult(self._get_test_file_path('examples/example_SAM-single-owner-PPA.out'))
+        em = result.result['ECONOMIC PARAMETERS']['Economic Model']
+        self.assertEqual(em, 'SAM Single Owner PPA')
+        self.assertIn('SAM CASH FLOW PROFILE', result.result)
+
+        cash_flow = result.result['SAM CASH FLOW PROFILE']
+        self.assertIsNotNone(cash_flow)
+        self.assertListEqual([''] + [f'Year {y}' for y in range(21)], cash_flow[0])

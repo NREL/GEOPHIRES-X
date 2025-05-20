@@ -3,11 +3,13 @@ import time
 import sys
 from pathlib import Path
 
+# noinspection PyPackageRequirements
 import numpy as np
 
 import geophires_x
 import geophires_x.Model as Model
 from geophires_x.Economics import Economics
+from geophires_x.EconomicsSam import get_sam_cash_flow_profile_tabulated_output
 from geophires_x.OutputsRich import print_outputs_rich
 from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, strParameter, boolParameter, \
     OutputParameter, ReadParameter
@@ -244,11 +246,27 @@ class Outputs:
                     f.write(f'      Fixed Charge Rate (FCR):                          {model.economics.FCR.value*100.0:10.2f} {model.economics.FCR.CurrentUnits.value}\n')
                 elif model.economics.econmodel.value == EconomicModel.STANDARDIZED_LEVELIZED_COST:
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
+                    # TODO disambiguate interest rate for all economic models - see
+                    #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
-                elif model.economics.econmodel.value == EconomicModel.BICYCLE:
+                elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
+
+                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    sam_econ_fields: list[OutputParameter] = [
+                        econ.real_discount_rate,
+                        econ.nominal_discount_rate,
+                        econ.wacc,
+                    ]
+
+                    for field in sam_econ_fields:
+                        label = Outputs._field_label(field.Name, 49)
+                        f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
+
+                # FIXME TODO unit is missing https://github.com/NREL/GEOPHIRES-X/issues/382
                 f.write(f'      Accrued financing during construction:            {model.economics.inflrateconstruction.value*100:10.2f} {model.economics.inflrateconstruction.CurrentUnits.value}\n')
+
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')
 
@@ -257,14 +275,19 @@ class Outputs:
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
-                f.write(f'      {model.economics.ProjectIRR.display_name}:                                     {model.economics.ProjectIRR.value:10.2f} {model.economics.ProjectIRR.PreferredUnits.value}\n')
-                f.write(f'      {model.economics.ProjectVIR.display_name}:                              {model.economics.ProjectVIR.value:10.2f}\n')
-                f.write(f'      {model.economics.ProjectMOIC.Name}:                                    {model.economics.ProjectMOIC.value:10.2f}\n')
+                f.write(f'      {econ.ProjectIRR.display_name}:                                     {econ.ProjectIRR.value:10.2f} {econ.ProjectIRR.PreferredUnits.value}\n')
 
-                payback_period_val = model.economics.ProjectPaybackPeriod.value
-                project_payback_period_display = f'{payback_period_val:10.2f} {model.economics.ProjectPaybackPeriod.PreferredUnits.value}' \
-                    if payback_period_val > 0.0 else 'N/A'
-                f.write(f'      Project Payback Period:                          {project_payback_period_display}\n')
+                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)
+
+                    f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
+                    f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
+
+                    payback_period_val = model.economics.ProjectPaybackPeriod.value
+                    project_payback_period_display = f'{payback_period_val:10.2f} {econ.ProjectPaybackPeriod.PreferredUnits.value}' \
+                        if payback_period_val > 0.0 else 'N/A'
+                    project_payback_period_label = Outputs._field_label(model.economics.ProjectPaybackPeriod.display_name, 56)
+                    f.write(f'      {project_payback_period_label}{project_payback_period_display}\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
@@ -675,51 +698,11 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                f.write(NL)
-                f.write(NL)
-                f.write('                             ********************************\n')
-                f.write('                             *  REVENUE & CASHFLOW PROFILE  *\n')
-                f.write('                             ********************************\n')
-                f.write(
-                    'Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project' + NL)
-                f.write(
-                    'Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow' + NL)
+                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    self.write_revenue_and_cashflow_profile_output(model, f)
 
-                def o(output_param: OutputParameter):
-                    # TODO generalize this and/or FIXME make it unnecessary
-                    if output_param.Name in econ.OutputParameterDict:
-                        return econ.OutputParameterDict[output_param.Name]
-                    else:
-                        return output_param
-
-                f.write('Start    ('
-                        + o(econ.ElecPrice).CurrentUnits.value +
-                        ')(' + o(econ.ElecRevenue).CurrentUnits.value +
-                        ') (' + o(econ.ElecCummRevenue).CurrentUnits.value +
-                        ')    |(' + o(econ.HeatPrice).CurrentUnits.value +
-                        ') (' + o(econ.HeatRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.HeatCummRevenue).CurrentUnits.value +
-                        ')   |(' + o(econ.CoolingPrice).CurrentUnits.value +
-                        ') (' + o(econ.CoolingRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.CoolingCummRevenue).CurrentUnits.value +
-                        ')    |(' + o(econ.CarbonPrice).CurrentUnits.value +
-                        ')    (' + o(econ.CarbonRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.CarbonCummCashFlow).CurrentUnits.value +
-                        ')    |(' + o(econ.Coam).CurrentUnits.value +
-                        ') (' + o(econ.TotalRevenue).CurrentUnits.value +
-                        ')    (' + o(econ.TotalCummRevenue).CurrentUnits.value + ')\n')
-                f.write(
-                    '________________________________________________________________________________________________________________________________________________________________________________________' + NL)
-                # running years...
-                for ii in range(0, (
-                    model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value), 1):
-                    if ii < model.surfaceplant.construction_years.value:
-                        opex = 0.0   # zero out the OPEX during construction years
-                    else:
-                        opex = o(econ.Coam).value
-                    f.write(
-                        f'{ii:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
-                f.write(NL)
+                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    f.write(self.get_sam_cash_flow_profile_output(model))
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
                 if model.wellbores.overpressure_percentage.Provided:
@@ -729,14 +712,19 @@ class Outputs:
                     f.write('                            ***************************************\n')
                     f.write('  YEAR     PROD PUMP     INJECT PUMP     TOTAL PUMP\n')
                     f.write('             POWER          POWER           POWER\n')
-                    f.write('             (' + model.wellbores.PumpingPowerProd.CurrentUnits.value+')           (' + model.wellbores.PumpingPowerInj.CurrentUnits.value + ')            (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  \n')
+                    f.write(
+                        '             (' + model.wellbores.PumpingPowerProd.CurrentUnits.value + ')           (' + model.wellbores.PumpingPowerInj.CurrentUnits.value + ')            (' + model.surfaceplant.NetElectricityProduced.CurrentUnits.value + ')                  \n')
                     for i in range(0, model.surfaceplant.plant_lifetime.value):
-                        f.write('  {0:2.0f}     {1:8.4f}        {2:8.4f}       {3:8.4f}'.format(i+1,
-                            model.wellbores.PumpingPowerProd.value[i*model.economics.timestepsperyear.value],
-                            model.wellbores.PumpingPowerInj.value[i*model.economics.timestepsperyear.value],
-                            model.wellbores.PumpingPower.value[i*model.economics.timestepsperyear.value]))
+                        f.write('  {0:2.0f}     {1:8.4f}        {2:8.4f}       {3:8.4f}'.format(i + 1,
+                                                                                                model.wellbores.PumpingPowerProd.value[
+                                                                                                    i * model.economics.timestepsperyear.value],
+                                                                                                model.wellbores.PumpingPowerInj.value[
+                                                                                                    i * model.economics.timestepsperyear.value],
+                                                                                                model.wellbores.PumpingPower.value[
+                                                                                                    i * model.economics.timestepsperyear.value]))
                         f.write(NL)
-                    f.write(NL)\
+                    f.write(NL)
+
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -751,9 +739,83 @@ class Outputs:
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
+    # noinspection PyMethodMayBeStatic
+    def write_revenue_and_cashflow_profile_output(self, model, f):
+        econ: Economics = model.economics
+
+        f.write(NL)
+        f.write(NL)
+        f.write('                             ********************************\n')
+        f.write('                             *  REVENUE & CASHFLOW PROFILE  *\n')
+        f.write('                             ********************************\n')
+        f.write(
+            'Year            Electricity             |            Heat                  |           Cooling                 |         Carbon                    |          Project' + NL)
+        f.write(
+            'Since     Price   Ann. Rev.  Cumm. Rev. |   Price   Ann. Rev.   Cumm. Rev. |  Price   Ann. Rev.   Cumm. Rev.   |   Price   Ann. Rev.   Cumm. Rev.  | OPEX    Net Rev.      Net Cashflow' + NL)
+
+        def o(output_param: OutputParameter):
+            # TODO generalize this and/or FIXME make it unnecessary
+            if output_param.Name in econ.OutputParameterDict:
+                return econ.OutputParameterDict[output_param.Name]
+            else:
+                return output_param
+
+        f.write('Start    ('
+                + o(econ.ElecPrice).CurrentUnits.value +
+                ')(' + o(econ.ElecRevenue).CurrentUnits.value +
+                ') (' + o(econ.ElecCummRevenue).CurrentUnits.value +
+                ')    |(' + o(econ.HeatPrice).CurrentUnits.value +
+                ') (' + o(econ.HeatRevenue).CurrentUnits.value +
+                ')    (' + o(econ.HeatCummRevenue).CurrentUnits.value +
+                ')   |(' + o(econ.CoolingPrice).CurrentUnits.value +
+                ') (' + o(econ.CoolingRevenue).CurrentUnits.value +
+                ')    (' + o(econ.CoolingCummRevenue).CurrentUnits.value +
+                ')    |(' + o(econ.CarbonPrice).CurrentUnits.value +
+                ')    (' + o(econ.CarbonRevenue).CurrentUnits.value +
+                ')    (' + o(econ.CarbonCummCashFlow).CurrentUnits.value +
+                ')    |(' + o(econ.Coam).CurrentUnits.value +
+                ') (' + o(econ.TotalRevenue).CurrentUnits.value +
+                ')    (' + o(econ.TotalCummRevenue).CurrentUnits.value + ')\n')
+        f.write(
+            '________________________________________________________________________________________________________________________________________________________________________________________' + NL)
+        # running years...
+        for ii in range(0, (
+            model.surfaceplant.construction_years.value + model.surfaceplant.plant_lifetime.value), 1):
+            if ii < model.surfaceplant.construction_years.value:
+                opex = 0.0  # zero out the OPEX during construction years
+            else:
+                opex = o(econ.Coam).value
+            f.write(
+                f'{ii:3.0f}     {o(econ.ElecPrice).value[ii]:5.2f}          {o(econ.ElecRevenue).value[ii]:5.2f}  {o(econ.ElecCummRevenue).value[ii]:5.2f}     |   {o(econ.HeatPrice).value[ii]:5.2f}    {o(econ.HeatRevenue).value[ii]:5.2f}        {o(econ.HeatCummRevenue).value[ii]:5.2f}    |   {o(econ.CoolingPrice).value[ii]:5.2f}    {o(econ.CoolingRevenue).value[ii]:5.2f}        {o(econ.CoolingCummRevenue).value[ii]:5.2f}     |   {o(econ.CarbonPrice).value[ii]:5.2f}    {o(econ.CarbonRevenue).value[ii]:5.2f}        {o(econ.CarbonCummCashFlow).value[ii]:5.2f}     | {opex:5.2f}     {o(econ.TotalRevenue).value[ii]:5.2f}     {o(econ.TotalCummRevenue).value[ii]:5.2f}\n')
+        f.write(NL)
+
+    # noinspection PyMethodMayBeStatic
+    def get_sam_cash_flow_profile_output(self, model):
+        ret = '\n'
+        ret += '                            ***************************\n'
+        ret += '                            *  SAM CASH FLOW PROFILE  *\n'
+        ret += '                            ***************************\n'
+
+        cfp_o: str = get_sam_cash_flow_profile_tabulated_output(model)
+
+        # Ideally the separator line would be exactly the print width of the widest column, but the actual print width
+        # of tabs varies (at least according to https://stackoverflow.com/a/7643592). 4 spaces seems to be the minimum
+        # number that results in a separator line at least as wide as the table (narrower would be unsightly).
+        spaces_per_tab = 4
+
+        # The tabluate library has native separating line functionality (per https://pypi.org/project/tabulate/) but
+        # I wasn't able to get it to replicate the formatting as coded below.
+        separator_line = len(cfp_o.split('\n')[0].replace('\t',' ' * spaces_per_tab)) * '-'
+
+        ret += separator_line + '\n'
+        ret += cfp_o
+        ret += '\n' + separator_line
+
+        ret += '\n\n'
+
+        return ret
 
     @staticmethod
     def _field_label(field_name: str, print_width_before_value: int) -> str:
         return f'{field_name}:{" " * (print_width_before_value - len(field_name) - 1)}'
-
 

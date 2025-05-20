@@ -14,7 +14,7 @@
         "Average Net Electricity Production": {},
         "Electricity breakeven price": {
           "type": "number",
-          "description": "LCOE",
+          "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
         "Average Direct-Use Heat Production": {},
@@ -49,7 +49,7 @@
         "Segment 4   Geothermal gradient": {},
         "LCOE": {
           "type": "number",
-          "description": "LCOE",
+          "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
         "LCOH": {
@@ -72,6 +72,21 @@
         "Interest Rate": {
           "type": "number",
           "description": "",
+          "units": "%"
+        },
+        "Real Discount Rate": {
+          "type": "number",
+          "description": "",
+          "units": "%"
+        },
+        "Nominal Discount Rate": {
+          "type": "number",
+          "description": "Nominal Discount Rate is displayed for SAM Economic Models. It is calculated per https://samrepo.nrelcloud.org/help/fin_single_owner.html?q=nominal+discount+rate: Nominal Discount Rate = [ ( 1 + Real Discount Rate \u00f7 100 ) \u00d7 ( 1 + Inflation Rate \u00f7 100 ) - 1 ] \u00d7 100.",
+          "units": "%"
+        },
+        "WACC": {
+          "type": "number",
+          "description": "Weighted Average Cost of Capital displayed for SAM Economic Models. It is calculated per https://samrepo.nrelcloud.org/help/fin_commercial.html?q=wacc: WACC = [ Nominal Discount Rate \u00f7 100 \u00d7 (1 - Debt Percent \u00f7 100) + Debt Percent \u00f7 100 \u00d7 Loan Rate \u00f7 100 \u00d7  (1 - Effective Tax Rate \u00f7 100 ) ] \u00d7 100; Effective Tax Rate = [ Federal Tax Rate \u00f7 100 \u00d7 ( 1 - State Tax Rate \u00f7 100 ) + State Tax Rate \u00f7 100 ] \u00d7 100; ",
           "units": "%"
         },
         "Accrued financing during construction": {},

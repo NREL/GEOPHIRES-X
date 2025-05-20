@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import re
 from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
+from typing import Any
 from typing import ClassVar
+
+from geophires_x.GeoPHIRESUtils import is_float
+from geophires_x.GeoPHIRESUtils import is_int
 
 from .common import _get_logger
 from .geophires_input_parameters import EndUseOption
@@ -62,6 +67,9 @@ class GeophiresXResult:
             'ECONOMIC PARAMETERS': [
                 _EqualSignDelimitedField('Economic Model'),
                 'Interest Rate',  # %
+                'Real Discount Rate',
+                'Nominal Discount Rate',
+                'WACC',
                 'Accrued financing during construction',
                 'Project lifetime',
                 'Capacity factor',
@@ -402,6 +410,10 @@ class GeophiresXResult:
         if sdacgt_profile is not None:
             self.result['S-DAC-GT PROFILE'] = sdacgt_profile
 
+        sam_cash_flow_profile = self._get_sam_cash_flow_profile()
+        if sam_cash_flow_profile is not None:
+            self.result['SAM CASH FLOW PROFILE'] = sam_cash_flow_profile
+
         self.result['metadata'] = {'output_file_path': self.output_file_path}
         for metadata_field in GeophiresXResult._METADATA_FIELDS:
             self.result['metadata'][metadata_field] = self._get_equal_sign_delimited_field(metadata_field)
@@ -449,7 +461,7 @@ class GeophiresXResult:
                         v_u = ValueUnit(value_unit)
                         csv_entries.append([category, field_display, '', v_u.value_display, v_u.unit_display])
             else:
-                if category not in (
+                if category in (
                     'POWER GENERATION PROFILE',
                     'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE',
                     'EXTENDED ECONOMIC PROFILE',
@@ -458,25 +470,49 @@ class GeophiresXResult:
                     GeophiresXResult.CCUS_PROFILE_LEGACY_NAME,
                     'S-DAC-GT PROFILE',
                 ):
-                    raise RuntimeError('unexpected category')
 
-                for i in range(len(fields[0][1:])):
-                    field_profile = fields[0][i + 1]
-                    unit_split = field_profile.split(' (')
-                    field_display = unit_split[0]
-                    unit_display = ''
-                    if len(unit_split) > 1:
-                        unit_display = unit_split[1].replace(')', '')
-                    for j in range(len(fields[1:])):
-                        year_entry = fields[j + 1]
-                        year = year_entry[0]
-                        profile_year_val = year_entry[i + 1]
-                        csv_entries.append([category, field_display, year, profile_year_val, unit_display])
+                    for i in range(len(fields[0][1:])):
+                        field_profile = fields[0][i + 1]
+                        name_unit_split = field_profile.split(' (')
+                        field_display = name_unit_split[0]
+                        unit_display = ''
+                        if len(name_unit_split) > 1:
+                            unit_display = name_unit_split[1].replace(')', '')
+                        for j in range(len(fields[1:])):
+                            year_entry = fields[j + 1]
+                            year = year_entry[0]
+                            profile_year_val = year_entry[i + 1]
+                            csv_entries.append([category, field_display, year, profile_year_val, unit_display])
+                elif category == 'SAM CASH FLOW PROFILE':
+                    for row_num in range(len(fields) - 1):
+                        row_idx = row_num + 1
+                        row_data = fields[row_idx]
+                        if len(row_data) > 1:
+                            name_unit_split = GeophiresXResult._get_sam_cash_flow_row_name_unit_split(
+                                fields[row_idx][0]
+                            )
+                            row_name = name_unit_split[0]
+                            unit_display = name_unit_split[1]
+                            for year in range(len(row_data) - 1):
+                                row_datapoint = row_data[year + 1]
+                                csv_entries.append([category, row_name, year, row_datapoint, unit_display])
+
+                else:
+                    raise RuntimeError(f'Unexpected category: {category}')
 
         for csv_entry in csv_entries:
             w.writerow(csv_entry)
 
         return f.getvalue()
+
+    @staticmethod
+    def _get_sam_cash_flow_row_name_unit_split(first_entry_in_row) -> list[str]:
+        name_unit_split = [it[::-1] for it in first_entry_in_row[::-1].split('( ', maxsplit=1)][::-1]
+        if len(name_unit_split) < 2:
+            name_unit_split.append('')
+
+        name_unit_split[1] = name_unit_split[1].replace(')', '')
+        return name_unit_split
 
     @property
     def json_output_file_path(self) -> Path:
@@ -725,6 +761,44 @@ class GeophiresXResult:
         except BaseException as e:
             self._logger.debug(f'Failed to get legacy {GeophiresXResult.CCUS_PROFILE_LEGACY_NAME}: {e}')
             return None
+
+    def _get_sam_cash_flow_profile(self) -> list[Any]:
+        profile_name = 'SAM CASH FLOW PROFILE'
+
+        try:
+            s1 = f'*  {profile_name}  *'
+            _lines_joined = ''.join(self._lines)
+            if s1 not in _lines_joined:
+                return None
+
+            profile_text = _lines_joined.split(s1)[1]
+            profile_text = re.split(r'^\s*-{20,}\s*$\n?', profile_text, flags=re.MULTILINE)[1]
+            rd = csv.reader(StringIO(profile_text), delimiter='\t', skipinitialspace=True)
+            profile_lines = []
+            for row in rd:
+                row_clean = []
+                for entry_display in row:
+                    row_clean.append(
+                        GeophiresXResult._get_sam_cash_flow_profile_entry_display_to_entry_val(entry_display)
+                    )
+                profile_lines.append(row_clean)
+
+            return profile_lines
+        except BaseException as e:
+            self._logger.debug(f'Failed to get SAM cash flow profile: {e}')
+            return None
+
+    @staticmethod
+    def _get_sam_cash_flow_profile_entry_display_to_entry_val(entry_display: str) -> Any:
+        if entry_display is None:
+            return None
+
+        ed_san = entry_display.strip().replace(',', '') if type(entry_display) is str else entry_display
+        if is_float(ed_san):
+            if not math.isnan(float(ed_san)):
+                return float(ed_san) if not is_int(ed_san) else int(float(ed_san))
+
+        return entry_display.strip()
 
     def _extract_addons_style_table_data(self, lines: list):
         """TODO consolidate with _get_data_from_profile_lines"""

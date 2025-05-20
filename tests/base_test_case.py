@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import inspect
 import numbers
 import os.path
 import unittest
+
+# noinspection PyProtectedMember
+from geophires_x_client import _get_logger
 
 
 class BaseTestCase(unittest.TestCase):
@@ -15,12 +20,21 @@ class BaseTestCase(unittest.TestCase):
             return f.readlines()
 
     def _list_test_files_dir(self, test_files_dir: str):
-        return os.listdir(self._get_test_file_path(test_files_dir))
+        return os.listdir(self._get_test_file_path(test_files_dir))  # noqa: PTH208
 
-    def assertAlmostEqualWithinPercentage(self, expected, actual, msg=None, percent=5):
+    def assertAlmostEqualWithinPercentage(self, expected, actual, msg: str | None = None, percent=5):
+        if msg is not None and not isinstance(msg, str):
+            raise ValueError(f'msg must be a string (you may have meant to pass percent={msg})')
+
         if isinstance(expected, numbers.Real):
             self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
         else:
+            if isinstance(expected, list) and isinstance(actual, list):
+                suggest = f'self.assertListAlmostEqual({expected}, {actual}, msg={msg}, percent={percent})'
+                suggest = f'Got 2 lists, you probably meant to call:\n\t{suggest}'
+                log = _get_logger(__name__)
+                log.warning(suggest)
+
             self.assertEqual(expected, actual, msg)
 
     def assertDictAlmostEqual(self, expected, actual, msg=None, places=7, percent=None):
@@ -83,3 +97,7 @@ class BaseTestCase(unittest.TestCase):
                 f1_lines = f1_o.readlines()
                 f2_lines = f2_o.readlines()
                 self.assertListEqual(f1_lines, f2_lines, msg=f'{expected}, {actual}')
+
+    # noinspection PyPep8Naming,PyMethodMayBeStatic
+    def assertHasLogRecordWithMessage(self, logs_, message):
+        assert message in [record.message for record in logs_.records]

@@ -569,17 +569,13 @@ Print Output to Console, 1"""
 
         client = GeophiresXClient()
 
-        # noinspection PyPep8Naming
-        def assertHasLogRecordWithMessage(logs_, message):
-            assert message in [record.message for record in logs_.records]
-
         with self.assertLogs(level='INFO') as logs:
             result = client.get_geophires_result(input_params(discount_rate='0.042'))
 
             self.assertIsNotNone(result)
             self.assertEqual(4.2, result.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
             self.assertEqual('%', result.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
-            assertHasLogRecordWithMessage(
+            self.assertHasLogRecordWithMessage(
                 logs, 'Set Fixed Internal Rate to 4.2 percent because Discount Rate was provided (0.042)'
             )
 
@@ -590,7 +586,7 @@ Print Output to Console, 1"""
             self.assertEqual(4.2, result2.result['ECONOMIC PARAMETERS']['Interest Rate']['value'])
             self.assertEqual('%', result2.result['ECONOMIC PARAMETERS']['Interest Rate']['unit'])
 
-            assertHasLogRecordWithMessage(
+            self.assertHasLogRecordWithMessage(
                 logs2, 'Set Discount Rate to 0.042 because Fixed Internal Rate was provided (4.2 percent)'
             )
 

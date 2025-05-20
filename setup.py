@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.8.14',
+    version='3.9.7',
     license='MIT',
     description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
@@ -83,11 +83,13 @@ setup(
         'coolprop==6.7.0; python_version == "3.8"',
         'rich',
         'pylocker',
+        'nrel-pysam',
+        'tabulate',
     ],
     extras_require={
         # eg:
         #   "rst": ["docutils>=0.11"],
         #   ":python_version=="2.6"": ["argparse"],
-        'development': ['bumpversion']
+        'development': ['bumpversion', 'sphinx_py3doc_enhanced_theme']
     },
 )

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.7.23
- Simulation Date: 2025-03-10
- Simulation Time:  10:42
- Calculation Time:      0.107 sec
+ GEOPHIRES Version: 3.9.7
+ Simulation Date: 2025-05-15
+ Simulation Time:  10:13
+ Calculation Time:      0.099 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -25,15 +25,15 @@ Simulation Metadata
 
                            ***ECONOMIC PARAMETERS***
 
-      Economic Model  = BICYCLE
-      Accrued financing during construction:                  0.00
+      Economic Model = BICYCLE
+      Accrued financing during construction:                  0.00 %
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                         -82.17 MUSD
       Project IRR:                                          -5.86 %
       Project VIR=PI=PIR:                                    0.20
       Project MOIC:                                         -0.30
-      Project Payback Period:                          N/A
+      Project Payback Period:                                 N/A
       CHP: Percent cost allocation for electrical plant:      92.25 %
 
                           ***ENGINEERING PARAMETERS***
@@ -41,7 +41,7 @@ Simulation Metadata
       Number of Production Wells:                             3
       Number of Injection Wells:                              3
       Well depth:                                             3.1 kilometer
-      Water loss rate:                                        2.0
+      Water loss rate:                                        2.0 %
       Pump efficiency:                                       80.0 %
       Injection temperature:                                 70.0 degC
       User-provided production well temperature drop

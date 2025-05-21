@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.8.4
- Simulation Date: 2025-03-19
- Simulation Time:  10:29
- Calculation Time:      0.784 sec
+ GEOPHIRES Version: 3.9.7
+ Simulation Date: 2025-05-15
+ Simulation Time:  10:12
+ Calculation Time:      0.776 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -26,14 +26,14 @@ Simulation Metadata
 
       Economic Model = Fixed Charge Rate (FCR)
       Fixed Charge Rate (FCR):                                5.00
-      Accrued financing during construction:                  0.00
+      Accrued financing during construction:                  0.00 %
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          72.08 MUSD
       Project IRR:                                          23.66 %
       Project VIR=PI=PIR:                                    3.81
       Project MOIC:                                      -1324.72
-      Project Payback Period:                                5.97 yr
+      Project Payback Period:                                       5.97 yr
       Estimated Jobs Created:                                 12
 
                           ***ENGINEERING PARAMETERS***
@@ -41,7 +41,7 @@ Simulation Metadata
       Number of Production Wells:                             2
       Number of Injection Wells:                              2
       Well depth:                                             3.0 kilometer
-      Water loss rate:                                        2.0
+      Water loss rate:                                        2.0 %
       Pump efficiency:                                       80.0 %
       Injection temperature:                                 50.0 degC
       Production Wellbore heat transmission calculated with Ramey's model

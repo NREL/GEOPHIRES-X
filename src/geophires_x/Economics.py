@@ -1581,12 +1581,19 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS
         )
+
+        # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+        #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
             display_name='Exploration costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Default correlation: 60% of the cost of one production well plus 15% contingency '
+                        f'plus 12% indirect costs. '
+                        f'Provide {self.ccexpladjfactor.Name} to multiply the default correlation. '
+                        f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'
         )
 
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
@@ -1597,6 +1604,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
 
             # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+            #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
             ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
                         "laterals, plus 5% indirect costs."
         )

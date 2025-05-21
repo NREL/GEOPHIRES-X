@@ -362,7 +362,7 @@
         "Total surface equipment costs": {},
         "Exploration costs": {
           "type": "number",
-          "description": "Exploration cost",
+          "description": "Exploration cost. Default correlation: 60% of the cost of one production well plus 15% contingency plus 12% indirect costs. Provide Exploration Capital Cost Adjustment Factor to multiply the default correlation. Provide Exploration Capital Cost to override the default correlation and set your own cost.",
           "units": "MUSD"
         },
         "Investment Tax Credit": {

@@ -1,37 +1,39 @@
 # Example: SAM Single Owner PPA Economic Model
-# See "SAM Economic Models" in GEOPHIRES documentation for details on how GEOPHIRES parameters and outputs are transformed and passed
-# to the SAM financial model.
-# NREL SAM PPA (Power Purchase Agreement) Financial Model documentation: https://sam.nrel.gov/financial-models/utility-scale-ppa
-
-# SAM Economic Model Preview: 50 MWe based on Fervo Cape Station 500 MWe extrapolation
-# Created by Jonathan Pezzino | jonathan@scientificwebservices.com
+# This example demonstrates a 50 MWe EGS project with similar engineering parameters to Fervo Cape Station.
+# The SAM Single Owner PPA Economic Model calculates project NPV, after-tax IRR, and cash flow based on
+# electricity production, capital costs, and economic input parameters.
+# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
+Capital Cost for Power Plant for Electricity Generation, 1900
+
 Starting Electricity Sale Price, 0.08
 Ending Electricity Sale Price, 1.00
 Electricity Escalation Rate Per Year, 0.00322
 Electricity Escalation Start Year, 1
+
 Fraction of Investment in Bonds, .4
 Inflated Bond Interest Rate, .05
 Discount Rate, 0.08
 Inflation Rate, .02
 Inflation Rate During Construction, 0.05
+
 Combined Income Tax Rate, .28
 Investment Tax Credit Rate, 0.3
 Property Tax Rate, 0
-Capital Cost for Power Plant for Electricity Generation, 1900
+
 
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************
-End-Use Option, 1
-Plant Lifetime, 20
+End-Use Option, 1, -- Electricity
 Power Plant Type, 2, -- Supercritical ORC
+Plant Lifetime, 20
 Reservoir Model, 1
 Reservoir Volume Option, 1
 Reservoir Density, 2800
-Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
+Reservoir Depth, 2.6, -- km
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
@@ -66,7 +68,8 @@ Multilaterals Cased, True
 Number of Multilateral Sections, 3
 Nonvertical Length per Multilateral Section, 4700 feet
 
+
 # *** SIMULATION PARAMETERS ***
 # *****************************
 Maximum Temperature, 500
-Time steps per year, 10
+Time steps per year, 12

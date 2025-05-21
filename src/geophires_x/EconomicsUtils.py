@@ -37,27 +37,39 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
     return Price
 
 
+def after_tax_irr_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='After-Tax IRR',
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+        ToolTipText='The After-Tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
+                    'a net present value (NPV) of zero for PPA SAM Economic models. '
+                    'See https://samrepo.nrelcloud.org/help/mtf_irr.html.'
+    )
+
+
 def real_discount_rate_parameter() -> OutputParameter:
     return OutputParameter(
-            Name="Real Discount Rate",
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-        )
+        Name="Real Discount Rate",
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+    )
 
 
 def nominal_discount_rate_parameter() -> OutputParameter:
     return OutputParameter(
-            Name="Nominal Discount Rate",
-            ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
-                        "It is calculated "
-                        "per https://samrepo.nrelcloud.org/help/fin_single_owner.html?q=nominal+discount+rate: "
-                        "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
-                        "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-        )
+        Name="Nominal Discount Rate",
+        ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
+                    "It is calculated "
+                    "per https://samrepo.nrelcloud.org/help/fin_single_owner.html?q=nominal+discount+rate: "
+                    "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
+                    "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+    )
 
 
 def wacc_output_parameter() -> OutputParameter:

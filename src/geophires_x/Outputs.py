@@ -275,8 +275,12 @@ class Outputs:
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
-                irr_display_value = f'{econ.ProjectIRR.value:10.2f}' if not math.isnan(econ.ProjectIRR.value) else 'NaN'
-                f.write(f'      {econ.ProjectIRR.display_name}:                                     {irr_display_value} {econ.ProjectIRR.CurrentUnits.value}\n')
+                irr_output_param: OutputParameter = econ.ProjectIRR \
+                    if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.after_tax_irr
+                irr_field_label = Outputs._field_label(irr_output_param.display_name, 49)
+                irr_display_value = f'{irr_output_param.value:10.2f}' \
+                    if not math.isnan(irr_output_param.value) else 'NaN'
+                f.write(f'      {irr_field_label}{irr_display_value} {irr_output_param.CurrentUnits.value}\n')
 
                 if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)

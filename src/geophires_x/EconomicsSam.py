@@ -27,7 +27,12 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
-from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter
+from geophires_x.EconomicsUtils import (
+    BuildPricingModel,
+    wacc_output_parameter,
+    nominal_discount_rate_parameter,
+    after_tax_irr_parameter,
+)
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
@@ -44,24 +49,22 @@ class SamEconomicsCalculations:
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH,
         )
     )
+
     capex: OutputParameter = field(
         default_factory=lambda: OutputParameter(
             UnitType=Units.CURRENCY,
             CurrentUnits=CurrencyUnit.MDOLLARS,
         )
     )
+
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(
             UnitType=Units.CURRENCY,
             CurrentUnits=CurrencyUnit.MDOLLARS,
         )
     )
-    project_irr: OutputParameter = field(
-        default_factory=lambda: OutputParameter(
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-        )
-    )
+
+    after_tax_irr: OutputParameter = field(default_factory=after_tax_irr_parameter)
 
     nominal_discount_rate: OutputParameter = field(default_factory=nominal_discount_rate_parameter)
 
@@ -157,7 +160,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
-    sam_economics.project_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
+    sam_economics.after_tax_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 

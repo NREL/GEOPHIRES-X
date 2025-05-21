@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.7
- Simulation Date: 2025-05-20
- Simulation Time:  13:06
- Calculation Time:      1.051 sec
+ Simulation Date: 2025-05-21
+ Simulation Time:  09:51
+ Calculation Time:      1.041 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -31,7 +31,7 @@ Simulation Metadata
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                        1940.10 MUSD
-      Project IRR:                                          24.75 %
+      After-Tax IRR:                                        24.75 %
       Estimated Jobs Created:                                 1190
 
                           ***ENGINEERING PARAMETERS***

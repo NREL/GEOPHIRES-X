@@ -6,7 +6,7 @@ import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
-    real_discount_rate_parameter
+    real_discount_rate_parameter, after_tax_irr_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -1784,6 +1784,8 @@ class Economics:
             CurrentUnits=PercentUnit.PERCENT
         )
 
+        self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
+            after_tax_irr_parameter())
         self.real_discount_rate = self.OutputParameterDict[self.real_discount_rate.Name] = (
             real_discount_rate_parameter())
         self.nominal_discount_rate = self.OutputParameterDict[self.nominal_discount_rate.Name] = (
@@ -2775,7 +2777,9 @@ class Economics:
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
             self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
                 convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
-            self.ProjectIRR.value = self.sam_economics_calculations.project_irr.quantity().to(
+
+            self.ProjectIRR.value = non_calculated_output_placeholder_val  # SAM calculates After-Tax IRR instead
+            self.after_tax_irr.value = self.sam_economics_calculations.after_tax_irr.quantity().to(
                 convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
 
             self.ProjectVIR.value = non_calculated_output_placeholder_val  # TODO SAM VIR

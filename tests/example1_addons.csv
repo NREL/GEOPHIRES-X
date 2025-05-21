@@ -9,7 +9,7 @@ SUMMARY OF RESULTS,Well depth,,3.0,kilometer
 SUMMARY OF RESULTS,Geothermal gradient,,50,degC/km
 SUMMARY OF RESULTS,Total Avoided Carbon Emissions,,474.67,kilotonne
 ECONOMIC PARAMETERS,Economic Model,,Fixed Charge Rate (FCR),
-ECONOMIC PARAMETERS,Accrued financing during construction,,0.0,
+ECONOMIC PARAMETERS,Accrued financing during construction,,0.0,%
 ECONOMIC PARAMETERS,Project lifetime,,30,yr
 ECONOMIC PARAMETERS,Capacity factor,,90.0,%
 ECONOMIC PARAMETERS,Project NPV,,72.08,MUSD
@@ -36,7 +36,7 @@ EXTENDED ECONOMICS,AddOns Payback Period,,0.0,yr
 ENGINEERING PARAMETERS,Number of Production Wells,,2,count
 ENGINEERING PARAMETERS,Number of Injection Wells,,2,count
 ENGINEERING PARAMETERS,Well depth,,3.0,kilometer
-ENGINEERING PARAMETERS,Water loss rate,,2.0,
+ENGINEERING PARAMETERS,Water loss rate,,2.0,%
 ENGINEERING PARAMETERS,Pump efficiency,,80.0,%
 ENGINEERING PARAMETERS,Injection temperature,,50.0,degC
 ENGINEERING PARAMETERS,Average production well temperature drop,,3.0,degC
@@ -99,7 +99,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
 SURFACE EQUIPMENT SIMULATION RESULTS,Heat to Power Conversion Efficiency,,10.07,%
-Simulation Metadata,GEOPHIRES Version,,3.8.4,
+Simulation Metadata,GEOPHIRES Version,,3.9.7,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

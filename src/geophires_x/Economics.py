@@ -969,7 +969,7 @@ class Economics:
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
+            PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)"
         )

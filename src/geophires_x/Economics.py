@@ -1575,11 +1575,19 @@ class Economics:
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,  # $/MMBTU
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )
+
+        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+        contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 12% indirect costs'
+
+        # noinspection SpellCheckingInspection
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",  # FIXME wrong name - should be Stimulation Costs
+            Name="Stimulation costs",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Default correlation: $1.25M {contingency_and_indirect_costs_tooltip}. '
+                        f'Provide {self.ccstimadjfactor.Name} to multiply the default correlation. '
+                        f'Provide {self.ccstimfixed.Name} to override the default correlation and set your own cost.'
         )
 
         # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
@@ -1590,8 +1598,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default correlation: 60% of the cost of one production well plus 15% contingency '
-                        f'plus 12% indirect costs. '
+            ToolTipText=f'Default correlation: 60% of the cost of one production well '
+                        f'{contingency_and_indirect_costs_tooltip}. '
                         f'Provide {self.ccexpladjfactor.Name} to multiply the default correlation. '
                         f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'
         )
@@ -2294,7 +2302,13 @@ class Economics:
         if self.ccstimfixed.Valid:
             self.Cstim.value = self.ccstimfixed.value
         else:
-            self.Cstim.value = 1.05 * 1.15 * self.ccstimadjfactor.value * model.wellbores.ninj.value * 1.25  # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+            base_stimulation_cost_MUSD_per_injection_well = 1.25
+
+            # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+            self.Cstim.value = (base_stimulation_cost_MUSD_per_injection_well * self.ccstimadjfactor.value
+                                * model.wellbores.ninj.value
+                                * 1.05 * 1.15)
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:

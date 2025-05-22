@@ -343,7 +343,11 @@
         },
         "Drilling and completion costs (for redrilling)": {},
         "Drilling and completion costs per redrilled well": {},
-        "Stimulation costs": {},
+        "Stimulation costs": {
+          "type": "number",
+          "description": "Default correlation: $1.25M plus 15% contingency plus 12% indirect costs. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the default correlation. Provide Reservoir Stimulation Capital Cost to override the default correlation and set your own cost.",
+          "units": "MUSD"
+        },
         "Stimulation costs (for redrilling)": {},
         "Surface power plant costs": {},
         "of which Absorption Chiller Cost": {},

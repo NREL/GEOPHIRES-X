@@ -1,8 +1,11 @@
-# Example: SAM Single Owner PPA Economic Model
+# Example: SAM Single Owner PPA Economic Model: 400 MWe BICYCLE Comparison
 # This example is adapted from Fervo_Project_Cape-3, allowing for comparison between BICYCLE and SAM economic models.
-# See "SAM Economic Models" in GEOPHIRES documentation for details on how GEOPHIRES parameters and outputs are transformed and passed
-# to the SAM financial model.
-# NREL SAM PPA (Power Purchase Agreement) Financial Model documentation: https://sam.nrel.gov/financial-models/utility-scale-ppa
+# Note that this example produces an unrealistically high IRR of ~60%. This is an artifact of using Fervo_Project_Cape-3's
+# BICYCLE parameters and assumptions as-is with the SAM Economic Model (such as starting electricity rate = $15 cents/kWh).
+# See example_SAM-single-owner-PPA for parameters formulated with more refined assumptions appropriate for the
+# SAM Economic Model.
+# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html
+
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************

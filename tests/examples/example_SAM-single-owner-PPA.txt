@@ -1,4 +1,4 @@
-# Example: SAM Single Owner PPA Economic Model
+# Example: SAM Single Owner PPA Economic Model: 50 MWe
 # This example demonstrates a 50 MWe EGS project with similar engineering parameters to Fervo Cape Station.
 # The SAM Single Owner PPA Economic Model calculates project NPV, after-tax IRR, and cash flow based on
 # electricity production, capital costs, and economic input parameters.

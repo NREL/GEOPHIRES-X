@@ -293,7 +293,7 @@ electricity: (1) fixed charge rate (FCR) model;
 (2) standard discounting levelized cost model;
 (3) BICYCLE model;
 (4) CLGS;
-(5) SAM Single-owner PPA.
+(5) `SAM Single-owner PPA <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__.
 
 .. TODO link to SAM Economic Model docs
 

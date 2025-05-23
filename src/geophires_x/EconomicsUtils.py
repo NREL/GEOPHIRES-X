@@ -39,11 +39,11 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
 
 def after_tax_irr_parameter() -> OutputParameter:
     return OutputParameter(
-        Name='After-Tax IRR',
+        Name='After-tax IRR',
         UnitType=Units.PERCENT,
         CurrentUnits=PercentUnit.PERCENT,
         PreferredUnits=PercentUnit.PERCENT,
-        ToolTipText='The After-Tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
+        ToolTipText='The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
                     'a net present value (NPV) of zero for PPA SAM Economic models. '
                     'See https://samrepo.nrelcloud.org/help/mtf_irr.html.'
     )

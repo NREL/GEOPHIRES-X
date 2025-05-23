@@ -102,9 +102,9 @@
           "description": "Project Internal Rate of Return",
           "units": "%"
         },
-        "After-Tax IRR": {
+        "After-tax IRR": {
           "type": "number",
-          "description": "The After-Tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html.",
+          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html.",
           "units": "%"
         },
         "Project VIR=PI=PIR": {

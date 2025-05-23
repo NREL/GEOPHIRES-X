@@ -140,7 +140,9 @@ class GeophiresXSchemaGenerator:
             'properties': properties,
         }
 
-        return request_schema, self.get_result_json_schema(output_params_json)
+        result_schema = self.get_result_json_schema(output_params_json)
+
+        return request_schema, result_schema
 
     def get_result_json_schema(self, output_params_json) -> dict:
         properties = {}
@@ -164,6 +166,11 @@ class GeophiresXSchemaGenerator:
             # noinspection PyProtectedMember
             for field in GeophiresXResult._RESULT_FIELDS_BY_CATEGORY[category]:
                 param_name = field if isinstance(field, str) else field.field_name
+
+                ignored_output_param_names = ['After-Tax IRR']  # Silently ignored in favor of "After-tax IRR"
+
+                if param_name in ignored_output_param_names:
+                    continue
 
                 if param_name in properties:
                     _log.warning(f'Param {param_name} is already in properties: {properties[param_name]}')

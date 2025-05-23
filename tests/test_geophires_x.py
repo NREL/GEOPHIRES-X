@@ -254,9 +254,9 @@ class GeophiresXTestCase(BaseTestCase):
         Workaround for float('nan') != float('nan')
         See https://stackoverflow.com/questions/51728427/unittest-how-to-assert-if-the-two-possibly-nan-values-are-equal
 
-        TODO generalize beyond After-Tax IRR
+        TODO generalize beyond After-tax IRR
         """
-        irr_key = 'After-Tax IRR'
+        irr_key = 'After-tax IRR'
         if irr_key in r.result['ECONOMIC PARAMETERS']:
             try:
                 if math.isnan(r.result['ECONOMIC PARAMETERS'][irr_key]['value']):

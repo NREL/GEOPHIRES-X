@@ -76,6 +76,7 @@ class GeophiresXResult:
                 'Project NPV',
                 'Project IRR',
                 'After-Tax IRR',
+                'After-tax IRR',
                 'Project VIR=PI=PIR',
                 'Project MOIC',
                 'Fixed Charge Rate (FCR)',  # SUTRA

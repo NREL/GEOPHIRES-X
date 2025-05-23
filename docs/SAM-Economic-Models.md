@@ -53,3 +53,45 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
     1. Project VIR=PI=PIR
     2. Project MOIC
     3. Project Payback Period
+
+## Using SAM Economic Models with Existing GEOPHIRES Inputs
+
+In many cases, all you need to do to use SAM Economic Models for your existing GEOPHIRES inputs is to change the `Economic Model` parameter value.
+For example, if your GEOPHIRES `.txt` file contained the following:
+
+```
+# *** Financial Parameters ***
+Economic Model, 2, -- Standard Levelized Cost Model
+Discount Rate, .05
+Inflation Rate During Construction, 0
+Plant Lifetime, 25
+```
+
+You would change it to:
+
+```
+# *** Financial Parameters ***
+Economic Model, 5, -- SAM Single Owner PPA Economic Model
+Discount Rate, .05
+Inflation Rate During Construction, 0
+Plant Lifetime, 25
+```
+
+For inputs with the BICYCLE economic model, such as the following:
+
+```
+# *** Financial Parameters ***
+Economic Model, 3, -- BICYCLE
+Inflated Equity Interest Rate, .08
+Plant Lifetime, 30
+```
+
+Change `Economic Model` and replace `Inflated Equity Interest Rate` with a suitable `Discount Rate` and `Inflation Rate`:
+
+```
+# *** Financial Parameters ***
+Economic Model, 5, -- SAM Single Owner PPA Economic Model
+Discount Rate, .08
+Inflation Rate, .03
+Plant Lifetime, 30
+```

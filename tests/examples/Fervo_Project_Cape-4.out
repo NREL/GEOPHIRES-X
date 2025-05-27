@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.11
+ GEOPHIRES Version: 3.9.12
  Simulation Date: 2025-05-27
- Simulation Time:  10:11
- Calculation Time:      1.040 sec
+ Simulation Time:  11:57
+ Calculation Time:      1.055 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                   522.55 MW
-      Electricity breakeven price:                            7.19 cents/kWh
+      Electricity breakeven price:                            7.27 cents/kWh
       Number of production wells:                            48
       Number of injection wells:                             48
       Flowrate per production well:                         120.0 kg/sec
@@ -25,12 +25,12 @@ Simulation Metadata
 
       Economic Model = SAM Single Owner PPA
       Real Discount Rate:                                    8.00 %
-      Nominal Discount Rate:                                10.16 %
-      WACC:                                                  8.30 %
+      Nominal Discount Rate:                                10.48 %
+      WACC:                                                  8.54 %
       Accrued financing during construction:                  5.00 %
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         891.03 MUSD
+      Project NPV:                                         842.25 MUSD
       After-tax IRR:                                        19.32 %
       Estimated Jobs Created:                                 1190
 
@@ -283,20 +283,20 @@ State tax benefit (liability) ($)                	0             	-15,950,856  	-
 Total after-tax returns ($)                      	-1,694,367,529	909,236,837  	211,918,959  	213,819,616  	215,508,919  	217,016,718  	218,216,518  	218,885,872  	218,737,390  	217,446,511  	214,682,973  	220,914,468  	223,419,145  	223,486,585  	223,288,034  	222,898,877  	222,212,003  	221,017,741  	219,040,634  	215,969,011  	1,083,433,979
 
 After-tax cumulative IRR (%)                     	NaN           	-46.34       	-28.78       	-14.47       	-4.66        	1.94         	6.47         	9.64         	11.92        	13.58        	14.81        	15.77        	16.52        	17.10        	17.55        	17.91        	18.20        	18.43        	18.61        	18.76        	19.32
-After-tax cumulative NPV ($)                     	-1,694,367,529	-868,989,137 	-694,357,889 	-534,411,013 	-388,068,827 	-254,294,259 	-132,186,276 	-21,000,242  	79,862,694   	170,882,751  	252,457,985  	328,659,035  	398,616,371  	462,140,746  	519,755,070  	571,964,502  	619,212,638  	661,872,591  	700,251,621  	734,602,419  	891,033,810
+After-tax cumulative NPV ($)                     	-1,694,367,529	-871,409,601 	-697,801,082 	-539,257,240 	-394,624,142 	-262,799,607 	-142,824,462 	-33,900,857  	64,619,939   	153,265,694  	232,480,016  	306,258,695  	373,793,510  	434,938,292  	490,231,782  	540,191,162  	585,270,475  	625,852,856  	662,255,730  	694,742,239  	842,249,931
 
 AFTER-TAX LCOE AND PPA PRICE
 Annual costs ($)                                 	-1,694,367,529	518,178,946  	-181,173,884 	-182,249,329 	-183,267,909 	-184,241,377 	-185,125,077 	-185,839,756 	-186,282,762 	-186,338,081 	-185,887,696 	-188,712,791 	-190,220,879 	-190,879,063 	-191,472,889 	-192,031,164 	-192,516,873 	-192,856,052 	-192,951,067 	-192,691,299 	679,707,320
 PPA revenue ($)                                  	0             	391,057,891  	393,092,843  	396,068,945  	398,776,828  	401,258,096  	403,341,595  	404,725,627  	405,020,152  	403,784,593  	400,570,669  	409,627,259  	413,640,024  	414,365,648  	414,760,924  	414,930,041  	414,728,876  	413,873,793  	411,991,701  	408,660,310  	403,726,660
 Electricity to grid (kWh)                        	0.0           	4,116,398,851	4,137,819,399	4,144,281,104	4,147,876,305	4,149,085,882	4,146,192,382	4,136,184,234	4,115,222,031	4,079,044,274	4,023,409,688	4,096,272,590	4,136,400,237	4,143,656,480	4,147,609,239	4,149,300,407	4,147,288,763	4,138,737,927	4,119,917,007	4,086,603,102	4,037,266,598
 
-Present value of annual costs ($)                	2,497,918,412
-Present value of annual energy nominal (kWh)     	34,739,281,954
-LCOE Levelized cost of energy nominal (cents/kWh)	7.19
+Present value of annual costs ($)                	2,472,724,517
+Present value of annual energy nominal (kWh)     	33,990,894,668
+LCOE Levelized cost of energy nominal (cents/kWh)	7.27
 
-Present value of PPA revenue ($)                 	3,388,952,221
-Present value of annual energy nominal (kWh)     	34,739,281,954
-LPPA Levelized PPA price nominal (cents/kWh)     	9.76
+Present value of PPA revenue ($)                 	3,314,974,448
+Present value of annual energy nominal (kWh)     	33,990,894,668
+LPPA Levelized PPA price nominal (cents/kWh)     	9.75
 
 PROJECT STATE INCOME TAXES
 EBITDA ($)                                       	0             	312,231,795  	314,266,747  	317,242,849  	319,950,732  	322,432,000  	324,515,499  	325,899,531  	326,194,056  	324,958,497  	321,744,572  	330,801,163  	334,813,928  	335,539,552  	335,934,828  	336,103,945  	335,902,780  	335,047,697  	333,165,605  	329,834,214  	1,511,432,447

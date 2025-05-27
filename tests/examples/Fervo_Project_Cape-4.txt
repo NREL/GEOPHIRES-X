@@ -14,7 +14,7 @@ Fraction of Investment in Bonds, .286, -- Yields WACC = 8.3% target given in htt
 Inflated Bond Interest Rate, .05
 Discount Rate, 0.08
 
-Inflation Rate, .02
+Inflation Rate, .023, -- US inflation as of April 2025
 Inflation Rate During Construction, 0.05
 
 Combined Income Tax Rate, .28

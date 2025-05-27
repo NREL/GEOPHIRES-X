@@ -66,13 +66,13 @@ Injection Wellbore Temperature Gain, 3
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 
-Plant Outlet Pressure, 1000 psi
-Production Wellhead Pressure, 325 psi
+Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe and triggers 1 redrilling over project lifetime.
+Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9
+Plant Outlet Pressure, 1000 psi
+Production Wellhead Pressure, 325 psi
 Circulation Pump Efficiency, 0.80
-Water Loss Fraction, 0.10
-Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe and triggers 1 redrilling over project lifetime.
 
 Well Geometry Configuration, 4
 Number of Multilateral Sections, 3

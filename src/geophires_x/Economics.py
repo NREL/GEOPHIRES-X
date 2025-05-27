@@ -2787,6 +2787,12 @@ class Economics:
         non_calculated_output_placeholder_val = -1
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics_calculations = calculate_sam_economics(model)
+
+            # Distinguish capex from default display name of 'Total capital costs' since SAM Economic Model doesn't
+            # subtract ITC from this value.
+            self.CCap.display_name = 'Total CAPEX'
+            self.CCap.value = self.sam_economics_calculations.capex.quantity().to(self.CCap.CurrentUnits.value).magnitude
+
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
             self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(

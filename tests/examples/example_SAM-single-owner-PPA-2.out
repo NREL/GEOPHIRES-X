@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.10
- Simulation Date: 2025-05-23
- Simulation Time:  12:57
- Calculation Time:      0.879 sec
+ GEOPHIRES Version: 3.9.11
+ Simulation Date: 2025-05-27
+ Simulation Time:  10:11
+ Calculation Time:      0.908 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -102,7 +102,7 @@ Simulation Metadata
          Total surface equipment costs:                     969.26 MUSD
          Exploration costs:                                  30.00 MUSD
          Investment Tax Credit:                            -459.83 MUSD
-      Total capital costs:                                 1072.95 MUSD
+      Total CAPEX:                                         1609.42 MUSD
 
 
                 ***OPERATING AND MAINTENANCE COSTS (M$/yr)***

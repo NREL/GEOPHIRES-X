@@ -270,11 +270,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
-
-    # 'Inflation Rate During Construction'
-    construction_additional_cost = econ.inflrateconstruction.value * total_capex
-
-    ret['total_installed_cost'] = (total_capex + construction_additional_cost).to('USD').magnitude
+    ret['total_installed_cost'] = (total_capex * (1 + econ.inflrateconstruction.value)).to('USD').magnitude
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]

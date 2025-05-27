@@ -478,7 +478,10 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
                 if model.economics.RITCValue.value:
                     f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
-                f.write(f'      {model.economics.CCap.display_name}:                              {model.economics.CCap.value:10.2f} {model.economics.CCap.CurrentUnits.value}\n')
+
+                capex_label = Outputs._field_label(econ.CCap.display_name, 50)
+                f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
 

@@ -40,7 +40,7 @@ Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers
 
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
 Number of Segments, 1
-Reservoir Density, 2800
+Reservoir Density, 2800, -- per https://doi.org/10.31223/X52X0B: phyllite + quartzite + diorite + granodiorite
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
@@ -70,8 +70,8 @@ Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity
 Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9
-Plant Outlet Pressure, 1000 psi
-Production Wellhead Pressure, 325 psi
+Plant Outlet Pressure, 1000 psi, -- https://doi.org/10.31223/X5VH8C
+Production Wellhead Pressure, 325 psi, -- https://doi.org/10.31223/X5VH8C
 Circulation Pump Efficiency, 0.80
 
 Well Geometry Configuration, 4

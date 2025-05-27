@@ -24,45 +24,54 @@ Reservoir Stimulation Capital Cost Adjustment Factor, 3.97
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************
 End-Use Option, 1
-Plant Lifetime, 20
 Power Plant Type, 2, -- Supercritical ORC
-Reservoir Model, 1
-Reservoir Volume Option, 1
-Reservoir Density, 2800
+Plant Lifetime, 20
+
+Reservoir Model, 1, -- Multiple Parallel Fractures
+Reservoir Volume Option, 1, -- FRAC_NUM_SEP (Specify number of fractures and fracture separation)
+
 Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
+
+Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
+Number of Segments, 1
+Reservoir Density, 2800
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001
+
 Number of Fractures, 149
 Fracture Shape, 4
 Fracture Height, 1400
 Fracture Width, 1400
 Fracture Separation, 30
-Number of Segments, 1
-Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
+
 Number of Injection Wells, 48
 Number of Production Wells, 48
-Production Flow Rate per Well, 120, -- peak flow reported in paper
-Production Well Diameter, 9.625
+# Well Separation, 365 feet, -- Value given in paper but has no effect for MPF + FRAC_NUM_SEP Reservoir Model & Volume Option
+
+Production Flow Rate per Well, 120, -- Peak flow reported for Project Red
+Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"
 Injection Well Diameter, 9.625
-Well Separation, 365 feet
+
 Ramey Production Wellbore Model, 1
 Injection Temperature, 60 degC
 Injection Wellbore Temperature Gain, 3
-Plant Outlet Pressure, 1000 psi
-Production Wellhead Pressure, 325 psi
-Utilization Factor, .9
-Water Loss Fraction, 0.10
-Maximum Drawdown, 0.009
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
+
+Plant Outlet Pressure, 1000 psi
+Production Wellhead Pressure, 325 psi
+
+Utilization Factor, .9
 Circulation Pump Efficiency, 0.80
+Water Loss Fraction, 0.10
+Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe and triggers 1 redrilling over project lifetime.
+
 Well Geometry Configuration, 4
-Has Nonvertical Section, True
-Multilaterals Cased, True
 Number of Multilateral Sections, 3
 Nonvertical Length per Multilateral Section, 4700 feet
+Multilaterals Cased, True
 
 # *** SIMULATION PARAMETERS ***
 # *****************************

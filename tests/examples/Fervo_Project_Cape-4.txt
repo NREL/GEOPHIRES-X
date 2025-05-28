@@ -5,7 +5,7 @@
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
 
-Starting Electricity Sale Price, 0.095, -- Both PPAs 'firm for 10 years at less than $100/MWh' estimate given in a podcast
+Starting Electricity Sale Price, 0.095, -- Upper end of ranges given in https://atb.nrel.gov/electricity/2024/geothermal. Both PPAs 'firm for 10 years at less than $100/MWh' estimate given in a podcast.
 Ending Electricity Sale Price, 0.1
 Electricity Escalation Rate Per Year, 0.00057
 Electricity Escalation Start Year, 1

@@ -1585,7 +1585,7 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default correlation: $1.25M {contingency_and_indirect_costs_tooltip}. '
+            ToolTipText=f'Default correlation: $1.25M per injection well {contingency_and_indirect_costs_tooltip}. '
                         f'Provide {self.ccstimadjfactor.Name} to multiply the default correlation. '
                         f'Provide {self.ccstimfixed.Name} to override the default correlation and set your own cost.'
         )
@@ -2302,7 +2302,7 @@ class Economics:
         if self.ccstimfixed.Valid:
             self.Cstim.value = self.ccstimfixed.value
         else:
-            base_stimulation_cost_MUSD_per_injection_well = 1.25
+            base_stimulation_cost_MUSD_per_injection_well = 1.25  # TODO parameterize
 
             # 1.15 for 15% contingency and 1.05 for 5% indirect costs
             # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor

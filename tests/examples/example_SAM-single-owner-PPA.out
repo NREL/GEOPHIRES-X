@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.11
- Simulation Date: 2025-05-27
- Simulation Time:  10:10
- Calculation Time:      1.053 sec
+ GEOPHIRES Version: 3.9.12
+ Simulation Date: 2025-05-28
+ Simulation Time:  16:11
+ Calculation Time:      1.060 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -63,13 +63,13 @@ Simulation Metadata
       Reservoir Model = Multiple Parallel Fractures Model
       Bottom-hole temperature:                              202.40 degC
       Fracture model = Rectangular
-      Well separation: fracture height:                    1400.00 meter
-      Fracture width:                                                1400.00 meter
-      Fracture area:                                    1960000.00 m**2
-      Reservoir volume calculated with fracture separation and number of fractures as input
-      Number of fractures:                                  149.00
-      Fracture separation:                                   30.00 meter
-      Reservoir volume:                              8702400000 m**3
+      Well separation: fracture height:                     500.00 meter
+      Fracture width:                                                 500.00 meter
+      Fracture area:                                     250000.00 m**2
+      Number of fractures calculated with reservoir volume and fracture separation as input
+      Number of fractures:                                 2321.64
+      Fracture separation:                                   10.00 meter
+      Reservoir volume:                              5801599999 m**3
       Reservoir impedance:                                  0.0010 GPa.s/m**3
       Reservoir density:                                   2800.00 kg/m**3
       Reservoir thermal conductivity:                         3.05 W/m/K
@@ -165,26 +165,26 @@ Simulation Metadata
   YEAR             ELECTRICITY                   HEAT                RESERVOIR            PERCENTAGE OF
                     PROVIDED                   EXTRACTED            HEAT CONTENT        TOTAL HEAT MINED
                    (GWh/year)                  (GWh/year)            (10^15 J)                 (%)
-   1                 459.4                      2826.8               2673.23                   0.38
-   2                 462.0                      2836.1               2663.02                   0.76
-   3                 462.8                      2838.9               2652.80                   1.14
-   4                 463.3                      2840.6               2642.58                   1.52
-   5                 463.7                      2841.7               2632.35                   1.90
-   6                 463.9                      2842.6               2622.11                   2.28
-   7                 464.1                      2843.3               2611.88                   2.67
-   8                 464.3                      2843.9               2601.64                   3.05
-   9                 464.4                      2844.4               2591.40                   3.43
-  10                 464.5                      2844.9               2581.16                   3.81
-  11                 464.7                      2845.2               2570.91                   4.19
-  12                 464.8                      2845.6               2560.67                   4.57
-  13                 464.8                      2845.9               2550.43                   4.96
-  14                 464.9                      2846.2               2540.18                   5.34
-  15                 465.0                      2846.4               2529.93                   5.72
-  16                 465.1                      2846.7               2519.68                   6.10
-  17                 465.1                      2846.9               2509.43                   6.48
-  18                 465.2                      2847.1               2499.19                   6.87
-  19                 465.2                      2847.3               2488.94                   7.25
-  20                 465.3                      2847.5               2478.68                   7.63
+   1                 459.4                      2826.8               1778.76                   0.57
+   2                 462.0                      2836.1               1768.55                   1.14
+   3                 462.8                      2838.9               1758.33                   1.71
+   4                 463.3                      2840.6               1748.11                   2.28
+   5                 463.7                      2841.7               1737.88                   2.85
+   6                 463.9                      2842.6               1727.64                   3.43
+   7                 464.1                      2843.3               1717.41                   4.00
+   8                 464.3                      2843.9               1707.17                   4.57
+   9                 464.4                      2844.4               1696.93                   5.14
+  10                 464.5                      2844.9               1686.69                   5.72
+  11                 464.7                      2845.2               1676.44                   6.29
+  12                 464.8                      2845.6               1666.20                   6.86
+  13                 464.8                      2845.9               1655.96                   7.43
+  14                 464.9                      2846.2               1645.71                   8.01
+  15                 465.0                      2846.4               1635.46                   8.58
+  16                 465.1                      2846.7               1625.21                   9.15
+  17                 465.1                      2846.9               1614.97                   9.73
+  18                 465.2                      2847.1               1604.72                  10.30
+  19                 465.2                      2847.3               1594.47                  10.87
+  20                 465.3                      2847.5               1584.21                  11.44
 
                             ***************************
                             *  SAM CASH FLOW PROFILE  *

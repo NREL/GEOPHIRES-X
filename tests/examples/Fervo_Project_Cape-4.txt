@@ -34,7 +34,6 @@ Power Plant Type, 2, -- Supercritical ORC
 Plant Lifetime, 20
 
 Reservoir Model, 1, -- Multiple Parallel Fractures
-Reservoir Volume Option, 1, -- FRAC_NUM_SEP (Specify number of fractures and fracture separation)
 
 Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
 
@@ -46,11 +45,10 @@ Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001
 
-Number of Fractures, 149
+Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
+Reservoir Volume, 5801599999 m**3
 Fracture Shape, 4
-Fracture Height, 1400
-Fracture Width, 1400
-Fracture Separation, 30
+Fracture Separation, 10
 
 Number of Injection Wells, 54
 Number of Production Wells, 54

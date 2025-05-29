@@ -1,11 +1,12 @@
-# Case Study: Fervo Cape Station: 500 MWe Production
-# https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/
+# Case Study: Fervo Cape Station 500 MWe Production
+# 500 MWe EGS Case Study Modeled on Fervo Cape Station after upsizing announcement:
+#   https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
 
-Starting Electricity Sale Price, 0.095, -- Upper end of ranges given in https://atb.nrel.gov/electricity/2024/geothermal. Both PPAs 'firm for 10 years at less than $100/MWh' estimate given in a podcast.
+Starting Electricity Sale Price, 0.095, -- Upper end of ranges given in https://atb.nrel.gov/electricity/2024/geothermal
 Ending Electricity Sale Price, 0.1
 Electricity Escalation Rate Per Year, 0.00057
 Electricity Escalation Start Year, 1

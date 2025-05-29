@@ -140,3 +140,16 @@ Single Owner       ibi_oth_amount        0.0
 You can then manually enter the parameters from the logged mapping into the SAM desktop app.
 
 ![](sam-desktop-app-manually-enter-system-capacity-from-geophires-log.png)
+
+
+## Examples
+
+### SAM Single Owner PPA: 50 MWe
+
+[Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA)
+
+### 500 MWe EGS Case Study Modeled on Fervo Cape Station
+
+[Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4)
+
+See [500 MWe EGS Case Study Modeled on Fervo Cape Station documentation](Fervo_Project_Cape-4.html).

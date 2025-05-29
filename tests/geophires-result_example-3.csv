@@ -35,6 +35,7 @@ RESERVOIR PARAMETERS,Reservoir Model,,Single Fracture m/A Thermal Drawdown Model
 RESERVOIR PARAMETERS,Bottom-hole temperature,,232.0,degC
 RESERVOIR PARAMETERS,Number of fractures,,12.0,count
 RESERVOIR PARAMETERS,Fracture separation,,80.0,meter
+RESERVOIR PARAMETERS,Reservoir volume calculation note,,Reservoir volume calculated with fracture separation and number of fractures as input,
 RESERVOIR PARAMETERS,Reservoir volume,,176000000,m**3
 RESERVOIR PARAMETERS,Average reservoir pressure,,100.0,kPa
 RESERVOIR PARAMETERS,Plant outlet pressure,,100.0,kPa

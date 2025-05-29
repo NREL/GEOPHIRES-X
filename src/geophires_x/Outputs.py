@@ -221,6 +221,9 @@ class Outputs:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
+                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    f.write(f'      {Outputs._field_label(econ.CCap.display_name, 50)}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} '  + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
@@ -380,7 +383,8 @@ class Outputs:
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_ONLY:
                         f.write('      Reservoir volume provided as input\n')
                     if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP, ReservoirVolume.FRAC_NUM_SEP]:
-                        f.write(f'      {model.reserv.fracnumbcalc.display_name}:                                 {math.ceil(model.reserv.fracnumbcalc.value)}\n')
+                        frac_num_label = Outputs._field_label(model.reserv.fracnumbcalc.display_name, 56)
+                        f.write(f'      {frac_num_label}{math.ceil(model.reserv.fracnumbcalc.value)}\n')
                         f.write(f'      {model.reserv.fracsepcalc.display_name}:                              {model.reserv.fracsepcalc.value:10.2f} {model.reserv.fracsep.CurrentUnits.value}\n')
                     f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} {model.reserv.resvol.CurrentUnits.value}\n')
 

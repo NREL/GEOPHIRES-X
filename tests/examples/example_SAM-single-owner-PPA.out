@@ -6,14 +6,15 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.12
  Simulation Date: 2025-05-29
- Simulation Time:  08:41
- Calculation Time:      1.054 sec
+ Simulation Time:  08:55
+ Calculation Time:      1.052 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                    58.87 MW
       Electricity breakeven price:                            6.60 cents/kWh
+      Total CAPEX:                                          264.61 MUSD
       Number of production wells:                             6
       Number of injection wells:                              6
       Flowrate per production well:                         100.0 kg/sec
@@ -67,7 +68,7 @@ Simulation Metadata
       Fracture width:                                                 500.00 meter
       Fracture area:                                     250000.00 m**2
       Number of fractures calculated with reservoir volume and fracture separation as input
-      Number of fractures:                                 2322
+      Number of fractures:                                    2322
       Fracture separation:                                   10.00 meter
       Reservoir volume:                              5801599999 m**3
       Reservoir impedance:                                  0.0010 GPa.s/m**3

@@ -27,6 +27,12 @@ class _StringValueField:
         self.field_name: str = field_name
 
 
+class _UnlabeledStringField:
+    def __init__(self, field_name: str, marker_prefixes: list[str]):
+        self.field_name: str = field_name
+        self.marker_prefixes = marker_prefixes
+
+
 class GeophiresXResult:
     _RESULT_FIELDS_BY_CATEGORY = MappingProxyType(
         {
@@ -173,7 +179,15 @@ class GeophiresXResult:
                 'Fracture area',
                 'Number of fractures',
                 'Fracture separation',
-                # TODO reservoir volume note
+                _UnlabeledStringField(
+                    'Reservoir volume calculation note',
+                    [
+                        'Reservoir volume calculated',
+                        'Number of fractures calculated',
+                        'Fracture separation calculated',
+                        'Reservoir volume provided as input',
+                    ],
+                ),
                 'Reservoir volume',
                 'Reservoir impedance',
                 'Reservoir hydrostatic pressure',
@@ -377,6 +391,10 @@ class GeophiresXResult:
             for field in fields:
                 if isinstance(field, _EqualSignDelimitedField):
                     self.result[category][field.field_name] = self._get_equal_sign_delimited_field(field.field_name)
+                elif isinstance(field, _UnlabeledStringField):
+                    self.result[category][field.field_name] = self._get_unlabeled_string_field(
+                        field.field_name, field.marker_prefixes
+                    )
                 else:
                     is_string_field = isinstance(field, _StringValueField)
                     field_name = field.field_name if is_string_field else field
@@ -594,6 +612,27 @@ class GeophiresXResult:
                 return matching_line.split(marker)[1].replace('\n', '')
 
         self._logger.error(f'Unexpected error extracting equal sign-delimited field {field_name}')  # Shouldn't happen
+        return None
+
+    def _get_unlabeled_string_field(self, field_name: str, marker_prefixes: list[str]):
+        matching_lines = set(filter(lambda line: any(m in line for m in marker_prefixes), self._lines))
+
+        if len(matching_lines) == 0:
+            self._logger.debug(f'Unlabeled string field not found: {field_name}')
+            return None
+
+        if len(matching_lines) > 1:
+            self._logger.warning(
+                f'Found multiple ({len(matching_lines)}) entries for unlabeled string field: '
+                f'{field_name}\n\t{matching_lines}'
+            )
+
+        matching_line = matching_lines.pop()
+        for marker_prefix in marker_prefixes:
+            if marker_prefix in matching_line:
+                return matching_line.strip()
+
+        self._logger.error(f'Unexpected error extracting unlabeled string  field {field_name}')  # Shouldn't happen
         return None
 
     @property

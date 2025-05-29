@@ -380,7 +380,7 @@ class Outputs:
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_ONLY:
                         f.write('      Reservoir volume provided as input\n')
                     if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP, ReservoirVolume.FRAC_NUM_SEP]:
-                        f.write(f'      {model.reserv.fracnumbcalc.display_name}:                              {model.reserv.fracnumbcalc.value:10.2f}\n')
+                        f.write(f'      {model.reserv.fracnumbcalc.display_name}:                                 {math.ceil(model.reserv.fracnumbcalc.value)}\n')
                         f.write(f'      {model.reserv.fracsepcalc.display_name}:                              {model.reserv.fracsepcalc.value:10.2f} {model.reserv.fracsep.CurrentUnits.value}\n')
                     f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} {model.reserv.resvol.CurrentUnits.value}\n')
 

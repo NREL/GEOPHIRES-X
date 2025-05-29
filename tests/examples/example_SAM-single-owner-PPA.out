@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.12
- Simulation Date: 2025-05-28
- Simulation Time:  16:11
- Calculation Time:      1.060 sec
+ Simulation Date: 2025-05-29
+ Simulation Time:  08:41
+ Calculation Time:      1.054 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -67,7 +67,7 @@ Simulation Metadata
       Fracture width:                                                 500.00 meter
       Fracture area:                                     250000.00 m**2
       Number of fractures calculated with reservoir volume and fracture separation as input
-      Number of fractures:                                 2321.64
+      Number of fractures:                                 2322
       Fracture separation:                                   10.00 meter
       Reservoir volume:                              5801599999 m**3
       Reservoir impedance:                                  0.0010 GPa.s/m**3

@@ -246,7 +246,7 @@
         },
         "Number of fractures": {
           "type": "number",
-          "description": "Calculated Number of Fractures",
+          "description": "Calculated Number of Fractures. Displayed rounded up to the nearest whole number.",
           "units": null
         },
         "Fracture separation": {

@@ -42,6 +42,7 @@ class GeophiresXResult:
                 _StringValueField('Surface Application'),
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
+                'Total CAPEX',
                 'Average Direct-Use Heat Production',
                 'Direct-Use heat breakeven price',
                 'Direct-Use heat breakeven price (LCOH)',

@@ -32,3 +32,8 @@ class GeophiresXResultTestCase(BaseTestCase):
         self.assertIn('value', r.result['SUMMARY OF RESULTS'][field_name])
         self.assertGreater(r.result['SUMMARY OF RESULTS'][field_name]['value'], 1)
         self.assertEqual(r.result['SUMMARY OF RESULTS'][field_name]['unit'], 'MUSD')
+
+    def test_sam_economic_model_result_csv(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('sam-em-csv-test.out'))
+        as_csv = r.as_csv()
+        self.assertIsNotNone(as_csv)

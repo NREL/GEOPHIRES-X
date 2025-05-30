@@ -1,5 +1,5 @@
-# Case Study: Fervo Cape Station 500 MWe Production
-# 500 MWe EGS Case Study Modeled on Fervo Cape Station after upsizing announcement:
+# Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station
+# 500 MWe EGS Case Study Modeled on Fervo Cape Station after Fervo's April 2025 upsizing announcement:
 #   https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
@@ -25,7 +25,9 @@ Property Tax Rate, 0
 Capital Cost for Power Plant for Electricity Generation, 1900, -- (peak production)
 Exploration Capital Cost, 30, -- Estimate significantly higher exploration costs than default correlation for FOAK EGS projects
 
-Well Drilling Cost Correlation, 3, -- VERTICAL_LARGE correlation. Correlation-calculated value of $4.72M/well aligns with paper-reported value of $4.8M/well.
+Well Drilling Cost Correlation, 3, -- VERTICAL_LARGE (2025 NREL Geothermal Drilling Cost Curve Update)
+Well Drilling and Completion Capital Cost Adjustment Factor, 0.84, -- Adjust correlation-calculated value of $4.72M/well to $3.96M/well per Tim Latimer on 2025-02-12 Volts podcast: less than $4M/well
+
 Reservoir Stimulation Capital Cost Adjustment Factor, 2, -- Estimate; cost of ~$1.5M per well falls within typical range of $0.5-2M.
 
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***

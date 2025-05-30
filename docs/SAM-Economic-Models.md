@@ -148,8 +148,8 @@ You can then manually enter the parameters from the logged mapping into the SAM 
 
 [Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA)
 
-### 500 MWe EGS Case Study Modeled on Fervo Cape Station
+### Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station
 
 [Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4)
 
-See [500 MWe EGS Case Study Modeled on Fervo Cape Station documentation](Fervo_Project_Cape-4.html).
+See [Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station](Fervo_Project_Cape-4.html).

@@ -11,6 +11,7 @@ Contents
    hip_ra_x_parameters
    Monte-Carlo-User-Guide
    SAM-Economic-Models
+   GEOPHIRES-Examples
 ..   reference/index
 
 Indices and tables

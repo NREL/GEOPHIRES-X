@@ -102,6 +102,11 @@
           "description": "Project Internal Rate of Return",
           "units": "%"
         },
+        "After-tax IRR": {
+          "type": "number",
+          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html.",
+          "units": "%"
+        },
         "Project VIR=PI=PIR": {
           "type": "number",
           "description": "Project Value Investment Ratio",
@@ -241,7 +246,7 @@
         },
         "Number of fractures": {
           "type": "number",
-          "description": "Calculated Number of Fractures",
+          "description": "Calculated Number of Fractures. Displayed rounded up to the nearest whole number.",
           "units": null
         },
         "Fracture separation": {
@@ -338,7 +343,11 @@
         },
         "Drilling and completion costs (for redrilling)": {},
         "Drilling and completion costs per redrilled well": {},
-        "Stimulation costs": {},
+        "Stimulation costs": {
+          "type": "number",
+          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 12% indirect costs. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the default correlation. Provide Reservoir Stimulation Capital Cost to override the default correlation and set your own cost.",
+          "units": "MUSD"
+        },
         "Stimulation costs (for redrilling)": {},
         "Surface power plant costs": {},
         "of which Absorption Chiller Cost": {},
@@ -362,7 +371,7 @@
         "Total surface equipment costs": {},
         "Exploration costs": {
           "type": "number",
-          "description": "Exploration cost",
+          "description": "Exploration cost. Default correlation: 60% of the cost of one production well plus 15% contingency plus 12% indirect costs. Provide Exploration Capital Cost Adjustment Factor to multiply the default correlation. Provide Exploration Capital Cost to override the default correlation and set your own cost.",
           "units": "MUSD"
         },
         "Investment Tax Credit": {

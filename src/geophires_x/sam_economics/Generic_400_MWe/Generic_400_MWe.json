@@ -220,7 +220,7 @@
     "pbi_oth_escal" : 0,
     "pbi_oth_tax_fed" : 1,
     "pbi_oth_tax_sta" : 1,
-    "term_tenor" : 30,
+    "term_tenor" : 20,
     "term_int_rate" : 5,
     "dscr" : 1.05,
     "dscr_limit_debt_fraction" : 0,

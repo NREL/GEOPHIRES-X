@@ -430,7 +430,7 @@ class Reservoir:
         )
 
         self.fracnumbcalc = self.OutputParameterDict[self.fracnumbcalc.Name] = OutputParameter(
-            "Calculated Number of Fractures",
+            "Calculated Number of Fractures. Displayed rounded up to the nearest whole number.",
             display_name='Number of fractures',
             value=self.fracnumb.value,
             UnitType=Units.NONE

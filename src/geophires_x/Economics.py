@@ -6,7 +6,7 @@ import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
-    real_discount_rate_parameter
+    real_discount_rate_parameter, after_tax_irr_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -884,7 +884,7 @@ class Economics:
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default fraction of investment in bonds (0.5)",
-            ToolTipText="Fraction of geothermal project financing through bonds (see docs)"
+            ToolTipText="Fraction of geothermal project financing through bonds (debt)."
         )
         self.BIR = self.ParameterDict[self.BIR.Name] = floatParameter(
             "Inflated Bond Interest Rate",
@@ -1575,18 +1575,33 @@ class Economics:
             PreferredUnits=EnergyCostUnit.DOLLARSPERMMBTU,  # $/MMBTU
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )
+
+        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+        contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 12% indirect costs'
+
+        # noinspection SpellCheckingInspection
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
-            Name="O&M Surface Plant costs",  # FIXME wrong name - should be Stimulation Costs
+            Name="Stimulation costs",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Default correlation: $1.25M per injection well {contingency_and_indirect_costs_tooltip}. '
+                        f'Provide {self.ccstimadjfactor.Name} to multiply the default correlation. '
+                        f'Provide {self.ccstimfixed.Name} to override the default correlation and set your own cost.'
         )
+
+        # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+        #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
             display_name='Exploration costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Default correlation: 60% of the cost of one production well '
+                        f'{contingency_and_indirect_costs_tooltip}. '
+                        f'Provide {self.ccexpladjfactor.Name} to multiply the default correlation. '
+                        f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'
         )
 
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
@@ -1597,6 +1612,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
 
             # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
+            #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
             ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
                         "laterals, plus 5% indirect costs."
         )
@@ -1776,6 +1792,8 @@ class Economics:
             CurrentUnits=PercentUnit.PERCENT
         )
 
+        self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
+            after_tax_irr_parameter())
         self.real_discount_rate = self.OutputParameterDict[self.real_discount_rate.Name] = (
             real_discount_rate_parameter())
         self.nominal_discount_rate = self.OutputParameterDict[self.nominal_discount_rate.Name] = (
@@ -2284,7 +2302,13 @@ class Economics:
         if self.ccstimfixed.Valid:
             self.Cstim.value = self.ccstimfixed.value
         else:
-            self.Cstim.value = 1.05 * 1.15 * self.ccstimadjfactor.value * model.wellbores.ninj.value * 1.25  # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+            base_stimulation_cost_MUSD_per_injection_well = 1.25  # TODO parameterize
+
+            # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+            self.Cstim.value = (base_stimulation_cost_MUSD_per_injection_well * self.ccstimadjfactor.value
+                                * model.wellbores.ninj.value
+                                * 1.05 * 1.15)
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:
@@ -2763,11 +2787,19 @@ class Economics:
         non_calculated_output_placeholder_val = -1
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics_calculations = calculate_sam_economics(model)
+
+            # Distinguish capex from default display name of 'Total capital costs' since SAM Economic Model doesn't
+            # subtract ITC from this value.
+            self.CCap.display_name = 'Total CAPEX'
+            self.CCap.value = self.sam_economics_calculations.capex.quantity().to(self.CCap.CurrentUnits.value).magnitude
+
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
             self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
                 convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
-            self.ProjectIRR.value = self.sam_economics_calculations.project_irr.quantity().to(
+
+            self.ProjectIRR.value = non_calculated_output_placeholder_val  # SAM calculates After-Tax IRR instead
+            self.after_tax_irr.value = self.sam_economics_calculations.after_tax_irr.quantity().to(
                 convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
 
             self.ProjectVIR.value = non_calculated_output_placeholder_val  # TODO SAM VIR

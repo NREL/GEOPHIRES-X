@@ -1,0 +1,88 @@
+# Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station
+# 500 MWe EGS Case Study Modeled on Fervo Cape Station after Fervo's April 2025 upsizing announcement:
+#   https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/
+# See https://softwareengineerprogrammer.github.io/GEOPHIRES/Fervo_Project_Cape-4.html
+#   for further documentation and discussion.
+
+# *** ECONOMIC/FINANCIAL PARAMETERS ***
+# *************************************
+Economic Model, 5, -- SAM Single Owner PPA
+
+Starting Electricity Sale Price, 0.095, -- Upper end of ranges given in https://atb.nrel.gov/electricity/2024/geothermal
+Ending Electricity Sale Price, 0.1
+Electricity Escalation Rate Per Year, 0.00057
+Electricity Escalation Start Year, 1
+
+Fraction of Investment in Bonds, .286, -- Yields WACC = 8.3% target given in https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc
+Inflated Bond Interest Rate, .056
+Discount Rate, 0.075
+
+Inflation Rate, .023, -- US inflation as of April 2025
+Inflation Rate During Construction, 0.05
+
+Combined Income Tax Rate, .28
+Investment Tax Credit Rate, 0.3
+Property Tax Rate, 0
+
+Capital Cost for Power Plant for Electricity Generation, 1900, -- https://betterbuildingssolutioncenter.energy.gov/sites/default/files/attachments/Waste_Heat_to_Power_Fact_Sheet.pdf
+Exploration Capital Cost, 30, -- Estimate significantly higher exploration costs than default correlation in consideration of potential risks associated with second/third/fourth-of-a-kind EGS projects
+
+Well Drilling Cost Correlation, 3, -- VERTICAL_LARGE (2025 NREL Geothermal Drilling Cost Curve Update)
+Well Drilling and Completion Capital Cost Adjustment Factor, 0.84, -- Adjust correlation-calculated value of $4.72M/well to $3.96M/well per Tim Latimer on 2025-02-12 Volts podcast: less than $4M/well
+
+Reservoir Stimulation Capital Cost Adjustment Factor, 2, -- Estimate; cost of ~$1.5M per well falls within typical range of $0.5-2M.
+
+# *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
+# *************************************************
+End-Use Option, 1
+Power Plant Type, 2, -- Supercritical ORC
+Plant Lifetime, 20
+
+Reservoir Model, 1, -- Multiple Parallel Fractures
+
+Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
+
+Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
+Number of Segments, 1
+Reservoir Density, 2800, -- per https://doi.org/10.31223/X52X0B: phyllite + quartzite + diorite + granodiorite
+Reservoir Heat Capacity, 790
+Reservoir Thermal Conductivity, 3.05
+Reservoir Porosity, 0.0118
+Reservoir Impedance, 0.001
+
+Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
+Reservoir Volume, 5801599999 m**3
+Fracture Shape, 4
+Fracture Separation, 10
+
+Number of Injection Wells, 54
+Number of Production Wells, 54
+# Well Separation, 365 feet, -- Value given in paper but has no effect for MPF + FRAC_NUM_SEP Reservoir Model & Volume Option
+
+Production Flow Rate per Well, 107, -- Maximum flow rate achieved at Cape Station per https://www.businesswire.com/news/home/20240910997008/en/Fervo-Energys-Record-Breaking-Production-Results-Showcase-Rapid-Scale-Up-of-Enhanced-Geothermal
+Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"
+Injection Well Diameter, 9.625
+
+Ramey Production Wellbore Model, 1
+Injection Temperature, 60 degC
+Injection Wellbore Temperature Gain, 3
+Ambient Temperature, 10 degC
+Surface Temperature, 10 degC
+
+Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe and triggers 1 redrilling over project lifetime.
+Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
+
+Utilization Factor, .9
+Plant Outlet Pressure, 1000 psi, -- https://doi.org/10.31223/X5VH8C
+Production Wellhead Pressure, 325 psi, -- https://doi.org/10.31223/X5VH8C
+Circulation Pump Efficiency, 0.80
+
+Well Geometry Configuration, 4
+Number of Multilateral Sections, 3
+Nonvertical Length per Multilateral Section, 4700 feet
+Multilaterals Cased, True
+
+# *** SIMULATION PARAMETERS ***
+# *****************************
+Maximum Temperature, 500
+Time steps per year, 12

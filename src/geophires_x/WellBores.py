@@ -807,9 +807,10 @@ class WellBores:
             PreferredUnits=ImpedanceUnit.GPASPERM3,
             CurrentUnits=ImpedanceUnit.GPASPERM3,
             ErrMessage="assume default reservoir impedance (0.1 GPa*s/m^3)",
-            ToolTipText="Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well "
-                        "is in hydraulic communication with the production well, this parameter specifies the overall "
-                        "pressure drop in the reservoir between injection well and production well (see docs)"
+            ToolTipText='Reservoir resistance to flow per well-pair. '
+                        'For EGS-type reservoirs when the injection well is in hydraulic communication with the '
+                        'production well, this parameter specifies the overall pressure drop in the reservoir between '
+                        'injection well and production well (see docs)'
         )
         self.wellsep = self.ParameterDict[self.wellsep.Name] = floatParameter(
             "Well Separation",

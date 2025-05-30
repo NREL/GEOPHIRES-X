@@ -1,3 +1,4 @@
+import math
 import os
 import tempfile
 import uuid
@@ -194,6 +195,9 @@ class GeophiresXTestCase(BaseTestCase):
                 del expected_result.result['metadata']
                 del expected_result.result['Simulation Metadata']
 
+                self._sanitize_nan(geophires_result)
+                self._sanitize_nan(expected_result)
+
                 try:
                     self.assertDictEqual(
                         expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
@@ -243,6 +247,22 @@ class GeophiresXTestCase(BaseTestCase):
 
         if len(regenerate_cmds) > 0:
             print(f'Command to regenerate {len(regenerate_cmds)} failed examples:\n{" && ".join(regenerate_cmds)}')
+
+    # noinspection PyMethodMayBeStatic
+    def _sanitize_nan(self, r: GeophiresXResult) -> None:
+        """
+        Workaround for float('nan') != float('nan')
+        See https://stackoverflow.com/questions/51728427/unittest-how-to-assert-if-the-two-possibly-nan-values-are-equal
+
+        TODO generalize beyond After-tax IRR
+        """
+        irr_key = 'After-tax IRR'
+        if irr_key in r.result['ECONOMIC PARAMETERS']:
+            try:
+                if math.isnan(r.result['ECONOMIC PARAMETERS'][irr_key]['value']):
+                    r.result['ECONOMIC PARAMETERS'][irr_key]['value'] = 'NaN'
+            except TypeError:
+                pass
 
     def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
         for i in range(99):

@@ -693,7 +693,7 @@
       "maximum": 500.0
     },
     "Reservoir Impedance": {
-      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well             is in hydraulic communication with the production well, this parameter specifies the overall pressure drop             in the reservoir between injection well and production well (see docs)",
+      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well is in hydraulic communication with the production well, this parameter specifies the overall pressure drop in the reservoir between injection well and production well (see docs)",
       "type": "number",
       "units": "GPa.s/m**3",
       "category": "Well Bores",
@@ -1595,7 +1595,7 @@
       "maximum": null
     },
     "Fraction of Investment in Bonds": {
-      "description": "Fraction of geothermal project financing through bonds (see docs)",
+      "description": "Fraction of geothermal project financing through bonds (debt).",
       "type": "number",
       "units": "",
       "category": "Economics",

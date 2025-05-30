@@ -1,4 +1,5 @@
 import datetime
+import math
 import time
 import sys
 from pathlib import Path
@@ -220,6 +221,9 @@ class Outputs:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
+                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    f.write(f'      {Outputs._field_label(econ.CCap.display_name, 50)}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} '  + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
@@ -274,7 +278,12 @@ class Outputs:
                 # TODO should use CurrentUnits instead of PreferredUnits
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
-                f.write(f'      {econ.ProjectIRR.display_name}:                                     {econ.ProjectIRR.value:10.2f} {econ.ProjectIRR.PreferredUnits.value}\n')
+                irr_output_param: OutputParameter = econ.ProjectIRR \
+                    if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.after_tax_irr
+                irr_field_label = Outputs._field_label(irr_output_param.display_name, 49)
+                irr_display_value = f'{irr_output_param.value:10.2f}' \
+                    if not math.isnan(irr_output_param.value) else 'NaN'
+                f.write(f'      {irr_field_label}{irr_display_value} {irr_output_param.CurrentUnits.value}\n')
 
                 if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
                     # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)
@@ -374,7 +383,8 @@ class Outputs:
                     elif model.reserv.resvoloption.value == ReservoirVolume.RES_VOL_ONLY:
                         f.write('      Reservoir volume provided as input\n')
                     if model.reserv.resvoloption.value in [ReservoirVolume.FRAC_NUM_SEP, ReservoirVolume.RES_VOL_FRAC_SEP, ReservoirVolume.FRAC_NUM_SEP]:
-                        f.write(f'      {model.reserv.fracnumbcalc.display_name}:                              {model.reserv.fracnumbcalc.value:10.2f}\n')
+                        frac_num_label = Outputs._field_label(model.reserv.fracnumbcalc.display_name, 56)
+                        f.write(f'      {frac_num_label}{math.ceil(model.reserv.fracnumbcalc.value)}\n')
                         f.write(f'      {model.reserv.fracsepcalc.display_name}:                              {model.reserv.fracsepcalc.value:10.2f} {model.reserv.fracsep.CurrentUnits.value}\n')
                     f.write(f'      Reservoir volume:                              {model.reserv.resvolcalc.value:10.0f} {model.reserv.resvol.CurrentUnits.value}\n')
 
@@ -451,7 +461,7 @@ class Outputs:
                         f.write(f'             Drilling and completion costs per injection well:    {econ.cost_one_injection_well.value:10.2f} ' + econ.cost_one_injection_well.CurrentUnits.value + NL)
                     else:
                         f.write(f'         Drilling and completion costs per well:        {model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
-                    f.write(f'         Stimulation costs:                             {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
+                    f.write(f'         {econ.Cstim.display_name}:                             {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
                     f.write(f'         Surface power plant costs:                     {model.economics.Cplant.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
                     if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
                         f.write(f'            of which Absorption Chiller Cost:           {model.economics.chillercapex.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
@@ -472,7 +482,10 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {model.economics.Cstim.value:10.2f} ' + model.economics.Cstim.CurrentUnits.value + NL)
                 if model.economics.RITCValue.value:
                     f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
-                f.write(f'      {model.economics.CCap.display_name}:                              {model.economics.CCap.value:10.2f} {model.economics.CCap.CurrentUnits.value}\n')
+
+                capex_label = Outputs._field_label(econ.CCap.display_name, 50)
+                f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
 

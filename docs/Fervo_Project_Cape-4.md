@@ -5,7 +5,7 @@ on Fervo Cape Station with its April 2025-announced
 [upsizing from 400 MW to 500 MW](https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/),
 using a combination of publicly available data, extrapolations, and estimates.
 
-[Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4)
+[Click here to go to the case study in the web interface](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4).
 
 ## Approach & Methodology
 
@@ -50,7 +50,7 @@ the [web interface](https://gtp.scientificwebservices.com/geophires/?geophires-e
 | Exploration Capital Cost                                  | $30M                                                                                                                   | Estimate significantly higher exploration costs than default correlation in consideration of potential risks associated with second/third/fourth-of-a-kind EGS projects                                                                                                                                                                                                                                                                                                                                                         |
 | Investment Tax Credit Rate (ITC)                          | 30%                                                                                                                    | Same as 400 MWe case study (Fervo_Project_Cape-3)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
-See `tests/examples/Fervo_Project_Cape-4.txt` in source code for the full set of inputs.
+See [Fervo_Project_Cape-4.txt](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/main/tests/examples/Fervo_Project_Cape-4.txt) in source code for the full set of inputs.
 
 ## Results
 
@@ -66,4 +66,4 @@ See `tests/examples/Fervo_Project_Cape-4.txt` in source code for the full set of
 | After-tax IRR                                 | 18.80%                                                    | 15–25%                                             | Typical levered returns for energy projects                                                                                                                                                                                 |
 | Number of times redrilling                    | 1                                                         | 1–2                                                | Redrilling expected to be required within 5–10 years of project start                                                                                                                                                       |
 
-See `tests/examples/Fervo_Project_Cape-4.out` in source code for the results.
+See [Fervo_Project_Cape-4.out](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/main/tests/examples/Fervo_Project_Cape-4.out) in source code for the complete results.

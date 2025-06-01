@@ -187,7 +187,7 @@
 	"months_receivables_reserve" : 0,
 	"cost_other_financing" : 0,
 	"flip_target_percent" : 20,
-	"flip_target_year" : 11,
+	"flip_target_year" : 20,
 	"pbi_fed_for_ds" : 0,
 	"pbi_sta_for_ds" : 0,
 	"pbi_uti_for_ds" : 0,

@@ -268,6 +268,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['analysis_period'] = model.surfaceplant.plant_lifetime.value
 
+    # SAM docs claim that specifying flip target year, aka "year in which you want the IRR to be achieved" influences
+    # how after-tax cumulative IRR is reported (https://samrepo.nrelcloud.org/help/mtf_irr.html). This claim seems to
+    # be erroneous, however, as setting this value appears to have no effect in either the SAM desktop app nor when
+    # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
+    ret['flip_target_year'] = model.surfaceplant.plant_lifetime.value
+
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
     ret['total_installed_cost'] = (total_capex * (1 + econ.inflrateconstruction.value)).to('USD').magnitude

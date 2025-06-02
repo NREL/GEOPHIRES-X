@@ -17,6 +17,7 @@
           "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
+        "Total CAPEX": {},
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
         "Direct-Use heat breakeven price (LCOH)": {
@@ -104,7 +105,7 @@
         },
         "After-tax IRR": {
           "type": "number",
-          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html.",
+          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) is used to calculate the value from SAM's total after-tax returns.",
           "units": "%"
         },
         "Project VIR=PI=PIR": {
@@ -254,6 +255,7 @@
           "description": "Calculated Fracture Separation",
           "units": "meter"
         },
+        "Reservoir volume calculation note": {},
         "Reservoir volume": {},
         "Reservoir impedance": {},
         "Reservoir hydrostatic pressure": {},

@@ -45,7 +45,9 @@ def after_tax_irr_parameter() -> OutputParameter:
         PreferredUnits=PercentUnit.PERCENT,
         ToolTipText='The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
                     'a net present value (NPV) of zero for PPA SAM Economic models. '
-                    'See https://samrepo.nrelcloud.org/help/mtf_irr.html.'
+                    'See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, '
+                    'numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) '
+                    'is used to calculate the value from SAM\'s total after-tax returns.'
     )
 
 

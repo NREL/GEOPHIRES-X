@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import math
 import os
 import sys
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+import numpy_financial as npf
 
 from base_test_case import BaseTestCase
 
@@ -465,6 +467,38 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(([21], [0]), _get_fed_and_state_tax_rates(0.21))
         self.assertEqual(([21], [9]), _get_fed_and_state_tax_rates(0.3))
         self.assertEqual(([10], [0]), _get_fed_and_state_tax_rates(0.1))
+
+    def test_nan_after_tax_irr(self):
+        """
+        Verify that After-tax IRRs that would have been calculated as NaN by SAM are instead calculated with
+        numpy-financial.irr
+        """
+
+        def _irr(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['After-tax IRR']['value']
+
+        rate_params = {
+            'Electricity Escalation Rate Per Year': 0.00348993288590604,
+            'Starting Electricity Sale Price': 0.13,
+        }
+        r: GeophiresXResult = self._get_result(rate_params)
+        after_tax_irr_cash_flow_entries = EconomicsSamTestCase._get_cash_flow_row(
+            r.result['SAM CASH FLOW PROFILE'], 'After-tax cumulative IRR (%)'
+        )
+        sam_after_tax_irr_calc = float(after_tax_irr_cash_flow_entries[-1])
+
+        # Test case condition - we expect SAM to have calculated NaN here. If this assertion fails, adjust params passed
+        # to _get_result such that final year of After-tax cumulative IRR is NaN.
+        assert math.isnan(sam_after_tax_irr_calc)
+
+        after_tax_cash_flow = EconomicsSamTestCase._get_cash_flow_row(
+            r.result['SAM CASH FLOW PROFILE'], 'Total after-tax returns ($)'
+        )
+        npf_irr = npf.irr(after_tax_cash_flow) * 100.0
+
+        r_irr = _irr(r)
+        self.assertFalse(math.isnan(r_irr))
+        self.assertAlmostEqual(npf_irr, r_irr, places=2)
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

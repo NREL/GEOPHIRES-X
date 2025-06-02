@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -11,6 +12,7 @@ from typing import Any
 from decimal import Decimal
 
 import numpy as np
+import numpy_financial as npf
 
 # noinspection PyPackageRequirements
 from PySAM import CustomGeneration
@@ -155,12 +157,13 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 
     cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
 
-    def sf(_v: float) -> float:
-        return _sig_figs(_v, 5)
+    def sf(_v: float, num_sig_figs: int = 5) -> float:
+        return _sig_figs(_v, num_sig_figs)
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
-    sam_economics.after_tax_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
+    sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))
+
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
@@ -169,6 +172,25 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     )
 
     return sam_economics
+
+
+def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
+    after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
+    if math.isnan(after_tax_irr_pct):
+        try:
+
+            def cash_flow_profile_row(row_name: str) -> list[Any]:
+                return next(  # type: ignore[no-any-return]
+                    row for row in cash_flow if len(row) > 0 and row[0] == row_name
+                )[1:]
+
+            after_tax_returns_cash_flow = cash_flow_profile_row('Total after-tax returns ($)')
+            after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
+            model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
+        except Exception as e:
+            model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
+
+    return after_tax_irr_pct
 
 
 def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:

@@ -219,11 +219,11 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
 
 def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
     try:
-        total_capital_invested_USD = _cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0]
-        total_value_received_from_investment_USD = np.sum(
-            _cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')
+        total_capital_invested_USD = Decimal(_cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0])
+        total_value_received_from_investment_USD = Decimal(
+            float(np.sum(_cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')))
         )
-        return total_value_received_from_investment_USD / total_capital_invested_USD
+        return float(total_value_received_from_investment_USD / total_capital_invested_USD)
     except Exception as e:
         model.logger.error(f'Encountered exception calculating MOIC: {e}')
         return None

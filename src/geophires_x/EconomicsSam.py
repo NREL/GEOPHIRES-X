@@ -34,6 +34,7 @@ from geophires_x.EconomicsUtils import (
     wacc_output_parameter,
     nominal_discount_rate_parameter,
     after_tax_irr_parameter,
+    moic_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -71,6 +72,8 @@ class SamEconomicsCalculations:
     nominal_discount_rate: OutputParameter = field(default_factory=nominal_discount_rate_parameter)
 
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
+
+    moic: OutputParameter = field(default_factory=moic_parameter)
 
 
 def validate_read_parameters(model: Model):
@@ -171,6 +174,8 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
         model, single_owner
     )
 
+    sam_economics.moic.value = _calculate_moic(cash_flow, model)
+
     return sam_economics
 
 
@@ -178,19 +183,17 @@ def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]]
     after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
     if math.isnan(after_tax_irr_pct):
         try:
-
-            def cash_flow_profile_row(row_name: str) -> list[Any]:
-                return next(  # type: ignore[no-any-return]
-                    row for row in cash_flow if len(row) > 0 and row[0] == row_name
-                )[1:]
-
-            after_tax_returns_cash_flow = cash_flow_profile_row('Total after-tax returns ($)')
+            after_tax_returns_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
             after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
             model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
         except Exception as e:
             model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
 
     return after_tax_irr_pct
+
+
+def _cash_flow_profile_row(cash_flow: list[list[Any]], row_name: str) -> list[Any]:
+    return next(row for row in cash_flow if len(row) > 0 and row[0] == row_name)[1:]  # type: ignore[no-any-return]
 
 
 def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:
@@ -212,6 +215,18 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
     ) * 100
 
     return nominal_discount_rate_pct, wacc_pct
+
+
+def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
+    try:
+        total_capital_invested_USD = _cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0]
+        total_value_received_from_investment_USD = np.sum(
+            _cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')
+        )
+        return total_value_received_from_investment_USD / total_capital_invested_USD
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating MOIC: {e}')
+        return None
 
 
 def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args) -> str:

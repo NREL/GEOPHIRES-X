@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.12
- Simulation Date: 2025-05-29
- Simulation Time:  08:55
- Calculation Time:      1.052 sec
+ GEOPHIRES Version: 3.9.14
+ Simulation Date: 2025-06-03
+ Simulation Time:  08:48
+ Calculation Time:      1.039 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -33,6 +33,7 @@ Simulation Metadata
       Capacity factor:                                       90.0 %
       Project NPV:                                         124.91 MUSD
       After-tax IRR:                                        22.33 %
+      Project MOIC:                                          4.15
       Estimated Jobs Created:                                 125
 
                           ***ENGINEERING PARAMETERS***

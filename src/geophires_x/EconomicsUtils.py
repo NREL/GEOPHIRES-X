@@ -37,6 +37,18 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
     return Price
 
 
+def moic_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project MOIC",
+        ToolTipText='Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the '
+                    'cash flow profile Issuance of equity (total capital invested) divided by the sum of '
+                    'Total pre-tax returns (total value received).',
+        UnitType=Units.PERCENT,
+        PreferredUnits=PercentUnit.TENTH,
+        CurrentUnits=PercentUnit.TENTH
+    )
+
+
 def after_tax_irr_parameter() -> OutputParameter:
     return OutputParameter(
         Name='After-tax IRR',

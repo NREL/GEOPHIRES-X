@@ -286,11 +286,13 @@ class Outputs:
                 f.write(f'      {irr_field_label}{irr_display_value} {irr_output_param.CurrentUnits.value}\n')
 
                 if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    # VIR, MOIC, and Payback period not currently supported by SAM economic model(s)
-
+                    # TODO SAM economic models VIR https://github.com/NREL/GEOPHIRES-X/issues/390
                     f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
-                    f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
 
+                f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
+
+                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    # TODO TODO SAM economic models Payback period https://github.com/NREL/GEOPHIRES-X/issues/390
                     payback_period_val = model.economics.ProjectPaybackPeriod.value
                     project_payback_period_display = f'{payback_period_val:10.2f} {econ.ProjectPaybackPeriod.PreferredUnits.value}' \
                         if payback_period_val > 0.0 else 'N/A'

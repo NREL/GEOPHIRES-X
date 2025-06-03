@@ -115,7 +115,7 @@
         },
         "Project MOIC": {
           "type": "number",
-          "description": "Project Multiple of Invested Capital",
+          "description": "Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the cash flow profile Issuance of equity (total capital invested) divided by the sum of Total pre-tax returns (total value received).",
           "units": ""
         },
         "Fixed Charge Rate (FCR)": {},

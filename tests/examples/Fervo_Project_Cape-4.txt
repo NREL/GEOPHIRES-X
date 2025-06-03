@@ -37,18 +37,15 @@ Reservoir Stimulation Capital Cost Adjustment Factor, 2, -- Estimate; cost of ~$
 End-Use Option, 1
 Power Plant Type, 2, -- Supercritical ORC
 Plant Lifetime, 20
-
 Reservoir Model, 1, -- Multiple Parallel Fractures
-
 Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf
-
 Gradient 1, 74, -- temperature at 8500 ft: 200 degC (https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf); 228.89 degC @ 9824 ft (https://doi.org/10.31223/X5VH8C)
 Number of Segments, 1
 Reservoir Density, 2800, -- per https://doi.org/10.31223/X52X0B: phyllite + quartzite + diorite + granodiorite
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
-Reservoir Impedance, 0.001
+Reservoir Impedance, 0.001565
 
 Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
 Reservoir Volume, 5801599999 m**3
@@ -57,27 +54,25 @@ Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, la
 Fracture Height, 502, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
 Fracture Width, 591, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
 
-Number of Injection Wells, 54
-Number of Production Wells, 54
+Number of Injection Wells, 59
+Number of Production Wells, 59
 
 Production Flow Rate per Well, 107, -- Maximum flow rate achieved at Cape Station per https://www.businesswire.com/news/home/20240910997008/en/Fervo-Energys-Record-Breaking-Production-Results-Showcase-Rapid-Scale-Up-of-Enhanced-Geothermal
 Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"
 Injection Well Diameter, 9.625
-
 Ramey Production Wellbore Model, 1
 Injection Temperature, 60 degC
 Injection Wellbore Temperature Gain, 3
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 
-Maximum Drawdown, 0.009, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
+Maximum Drawdown, 0.017, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
 Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9
 Plant Outlet Pressure, 1000 psi, -- https://doi.org/10.31223/X5VH8C
 Production Wellhead Pressure, 325 psi, -- https://doi.org/10.31223/X5VH8C
 Circulation Pump Efficiency, 0.80
-
 Well Geometry Configuration, 4
 Number of Multilateral Sections, 3
 Nonvertical Length per Multilateral Section, 4700 feet

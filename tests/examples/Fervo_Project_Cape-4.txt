@@ -53,7 +53,9 @@ Reservoir Impedance, 0.001
 Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
 Reservoir Volume, 5801599999 m**3
 Fracture Shape, 4
-Fracture Separation, 10
+Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
+Fracture Height, 502, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
+Fracture Width, 591, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
 
 Number of Injection Wells, 54
 Number of Production Wells, 54

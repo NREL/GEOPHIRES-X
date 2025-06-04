@@ -10,9 +10,7 @@ GEOPHIRES-X (2023-2025)
 
 `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.7>`__
 
-v3.9 adds the `SAM Single Owner PPA Economic Model <https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html>`__
-
-.. TODO switch link to nrel.github.io version once merged into main repo
+v3.9 adds the `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__
 
 
 3.8

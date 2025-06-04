@@ -295,8 +295,6 @@ electricity: (1) fixed charge rate (FCR) model;
 (4) CLGS;
 (5) `SAM Single-owner PPA <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__.
 
-.. TODO link to SAM Economic Model docs
-
 The capital and O&M costs for the different geothermal system components (exploration,
 well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
 correlations.

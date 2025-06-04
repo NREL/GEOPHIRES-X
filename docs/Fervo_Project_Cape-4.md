@@ -16,10 +16,10 @@ applicable
 outside of Cape Station's first-of-a-kind status (such as drilling costs of initial wells which were more expensive
 at [$4.8–9.4M per well](https://houston.innovationmap.com/fervo-energy-drilling-utah-project-2667300142.html)).
 
-Exact values were used for publicly available technical and engineering parameters, such as reservoir
-density ([2800 kg/m³](https://doi.org/10.31223/X52X0B)).
-Some technical parameters were inferred with high confidence from publicly available data, such as well diameter
-and geothermal gradient ([74 ℃/km](https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf)).
+Exact values were used for publicly available technical and engineering parameters, such as
+geothermal gradient ([74 ℃/km](https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf))
+and reservoir density ([2800 kg/m³](https://doi.org/10.31223/X52X0B)).
+Some technical parameters were inferred with high confidence from publicly available data, such as well diameter .
 Other parameters were extrapolated or speculatively estimated based on plausibility and/or compatibility with known
 results, such as reservoir volume.
 

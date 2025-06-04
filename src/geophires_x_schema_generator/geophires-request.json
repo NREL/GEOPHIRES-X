@@ -1667,7 +1667,7 @@
       "maximum": 1.0
     },
     "Inflation Rate During Construction": {
-      "description": "",
+      "description": "For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.",
       "type": "number",
       "units": "",
       "category": "Economics",

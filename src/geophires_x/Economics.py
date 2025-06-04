@@ -963,6 +963,7 @@ class Economics:
             ErrMessage="assume default property tax rate (0)",
             ToolTipText="Property tax rate (see docs)"
         )
+        # noinspection SpellCheckingInspection
         self.inflrateconstruction = self.ParameterDict[self.inflrateconstruction.Name] = floatParameter(
             "Inflation Rate During Construction",
             DefaultValue=0.0,
@@ -971,7 +972,8 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default inflation rate during construction (0)"
+            ErrMessage="assume default inflation rate during construction (0)",
+            ToolTipText='For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.'
         )
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",

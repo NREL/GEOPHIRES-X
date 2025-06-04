@@ -13,12 +13,12 @@ Electricity Escalation Rate Per Year, 0.00057, -- calibrated to reach 10 cents/k
 Ending Electricity Sale Price, 0.15, -- Note that this value does not directly determine price at the end of the project life, but rather as a cap as the maximum price to which the starting price can escalate.
 Electricity Escalation Start Year, 1
 
-Fraction of Investment in Bonds, .286, -- Yields WACC = 8.3% target given in https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc
+Discount Rate, 0.12
+Fraction of Investment in Bonds, .6, -- Based on fraction of CAPEX with $1 billion in sponsor equity per https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
 Inflated Bond Interest Rate, .056
-Discount Rate, 0.075
 
 Inflation Rate, .023, -- US inflation as of April 2025
-Inflation Rate During Construction, 0.05
+Inflation Rate During Construction, 0.15
 
 Combined Income Tax Rate, .28
 Investment Tax Credit Rate, 0.3

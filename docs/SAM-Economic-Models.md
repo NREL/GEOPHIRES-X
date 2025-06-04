@@ -48,7 +48,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 ### Limitations
 
 1. Only Electricity end-use is supported
-2. Only 1 construction year is supported.
+2. Only 1 construction year is supported. Note that the `Inflation Rate During Construction` parameter can be used to partially account for longer construction periods.
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 
@@ -60,7 +60,6 @@ For example, if your GEOPHIRES `.txt` file contained the following:
 # *** Financial Parameters ***
 Economic Model, 2, -- Standard Levelized Cost Model
 Discount Rate, .05
-Inflation Rate During Construction, 0
 Plant Lifetime, 25
 ```
 
@@ -70,7 +69,6 @@ You would change it to:
 # *** Financial Parameters ***
 Economic Model, 5, -- SAM Single Owner PPA Economic Model
 Discount Rate, .05
-Inflation Rate During Construction, 0
 Plant Lifetime, 25
 ```
 
@@ -94,7 +92,7 @@ Inflation Rate, .03
 Plant Lifetime, 30
 ```
 
-## Recreating SAM Economic Model Results in the SAM Desktop Application
+## Re-creating SAM Economic Model Results in the SAM Desktop Application
 
 First, open `src/geophires_sam_economics/Generic_400_MWe.sam`
 in the SAM desktop application.

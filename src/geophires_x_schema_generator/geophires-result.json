@@ -121,7 +121,7 @@
         "Fixed Charge Rate (FCR)": {},
         "Project Payback Period": {
           "type": "number",
-          "description": "",
+          "description": "The time at which cumulative cash flow reaches zero. For projects that never pay back, the calculated value will be \"N/A\". For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.",
           "units": "yr"
         },
         "CHP: Percent cost allocation for electrical plant": {},

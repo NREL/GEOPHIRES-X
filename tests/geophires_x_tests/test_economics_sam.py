@@ -500,6 +500,17 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertFalse(math.isnan(r_irr))
         self.assertAlmostEqual(npf_irr, r_irr, places=2)
 
+    def test_nan_project_payback_period(self):
+        def _payback_period(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['Project Payback Period']['value']
+
+        never_pays_back_params = {
+            'Starting Electricity Sale Price': 0.00001,
+            'Ending Electricity Sale Price': 0.00002,
+        }
+        r: GeophiresXResult = self._get_result(never_pays_back_params)
+        self.assertIsNone(_payback_period(r))
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

@@ -288,13 +288,12 @@ class Outputs:
                 f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
                 f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
 
-                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    # TODO TODO SAM economic models Payback period https://github.com/NREL/GEOPHIRES-X/issues/390
-                    payback_period_val = model.economics.ProjectPaybackPeriod.value
-                    project_payback_period_display = f'{payback_period_val:10.2f} {econ.ProjectPaybackPeriod.PreferredUnits.value}' \
-                        if payback_period_val > 0.0 else 'N/A'
-                    project_payback_period_label = Outputs._field_label(model.economics.ProjectPaybackPeriod.display_name, 56)
-                    f.write(f'      {project_payback_period_label}{project_payback_period_display}\n')
+                payback_period_val = model.economics.ProjectPaybackPeriod.value
+                project_payback_period_display = (f'{payback_period_val:10.2f} '
+                                                  f'{econ.ProjectPaybackPeriod.PreferredUnits.value}') \
+                    if payback_period_val > 0.0 else 'N/A'
+                project_payback_period_label = Outputs._field_label(model.economics.ProjectPaybackPeriod.display_name, 56)
+                f.write(f'      {project_payback_period_label}{project_payback_period_display}\n')
 
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT,
                                                               EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,

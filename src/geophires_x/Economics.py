@@ -6,7 +6,8 @@ import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
-    real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter
+    real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
+    project_payback_period_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -1841,12 +1842,8 @@ class Economics:
         )
         self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = project_vir_parameter()
         self.ProjectMOIC = self.OutputParameterDict[self.ProjectMOIC.Name] = moic_parameter()
-        self.ProjectPaybackPeriod = self.OutputParameterDict[self.ProjectPaybackPeriod.Name] = OutputParameter(
-            "Project Payback Period",
-            UnitType=Units.TIME,
-            PreferredUnits=TimeUnit.YEAR,
-            CurrentUnits=TimeUnit.YEAR
-        )
+        self.ProjectPaybackPeriod = self.OutputParameterDict[self.ProjectPaybackPeriod.Name] = (
+            project_payback_period_parameter())
         self.RITCValue = self.OutputParameterDict[self.RITCValue.Name] = OutputParameter(
             Name="Investment Tax Credit Value",
             display_name='Investment Tax Credit',
@@ -2794,12 +2791,10 @@ class Economics:
 
             self.ProjectMOIC.value = self.sam_economics_calculations.moic.value
             self.ProjectVIR.value = self.sam_economics_calculations.project_vir.value
+            self.ProjectPaybackPeriod.value = self.sam_economics_calculations.project_payback_period.value
 
         # Calculate the project payback period
-        if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-            # TODO TODO SAM economic models Payback period https://github.com/NREL/GEOPHIRES-X/issues/390
-            self.ProjectPaybackPeriod.value = non_calculated_output_placeholder_val
-        else:
+        if self.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.ProjectPaybackPeriod.value = 0.0  # start by assuming the project never pays back
             for i in range(0, len(self.TotalCummRevenue.value), 1):
                 # find out when the cumm cashflow goes from negative to positive

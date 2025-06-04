@@ -36,6 +36,7 @@ from geophires_x.EconomicsUtils import (
     after_tax_irr_parameter,
     moic_parameter,
     project_vir_parameter,
+    project_payback_period_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -73,6 +74,7 @@ class SamEconomicsCalculations:
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
     moic: OutputParameter = field(default_factory=moic_parameter)
     project_vir: OutputParameter = field(default_factory=project_vir_parameter)
+    project_payback_period: OutputParameter = field(default_factory=project_payback_period_parameter)
 
 
 def validate_read_parameters(model: Model):
@@ -174,6 +176,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     )
     sam_economics.moic.value = _calculate_moic(cash_flow, model)
     sam_economics.project_vir.value = _calculate_project_vir(cash_flow, model)
+    sam_economics.project_payback_period.value = _calculate_project_payback_period(cash_flow, model)
 
     return sam_economics
 
@@ -244,6 +247,28 @@ def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
         return float(vir)
     except Exception as e:
         model.logger.error(f'Encountered exception calculating Project VIR: {e}')
+        return None
+
+
+def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:
+    try:
+        after_tax_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+        cumm_cash_flow = np.zeros(len(after_tax_cash_flow))
+        cumm_cash_flow[0] = after_tax_cash_flow[0]
+        for year in range(1, len(after_tax_cash_flow)):
+            cumm_cash_flow[year] = cumm_cash_flow[year - 1] + after_tax_cash_flow[year]
+            if cumm_cash_flow[year] >= 0:
+                year_before_full_recovery = year - 1
+                payback_period = (
+                    year_before_full_recovery
+                    + abs(cumm_cash_flow[year_before_full_recovery]) / after_tax_cash_flow[year]
+                )
+
+                return float(payback_period)
+
+        return float('nan')  # never pays back
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating Project Payback Period: {e}')
         return None
 
 

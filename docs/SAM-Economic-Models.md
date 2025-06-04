@@ -48,9 +48,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 ### Limitations
 
 1. Only Electricity end-use is supported
-2. Only 1 construction year is supported
-3. The following economic outputs are not calculated:
-    1. Project Payback Period
+2. Only 1 construction year is supported.
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from geophires_x.Parameter import OutputParameter
-from geophires_x.Units import Units, PercentUnit
+from geophires_x.Units import Units, PercentUnit, TimeUnit
 
 
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
@@ -56,6 +56,18 @@ def project_vir_parameter() -> OutputParameter:
         UnitType=Units.PERCENT,
         PreferredUnits=PercentUnit.TENTH,
         CurrentUnits=PercentUnit.TENTH
+    )
+
+
+def project_payback_period_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project Payback Period",
+        UnitType=Units.TIME,
+        PreferredUnits=TimeUnit.YEAR,
+        CurrentUnits=TimeUnit.YEAR,
+        ToolTipText='The time at which cumulative cash flow reaches zero. '
+                    'For projects that never pay back, the calculated value will be "N/A". '
+                    'For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.',
     )
 
 

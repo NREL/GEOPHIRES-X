@@ -50,9 +50,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 1. Only Electricity end-use is supported
 2. Only 1 construction year is supported
 3. The following economic outputs are not calculated:
-    1. Project VIR=PI=PIR
-    2. Project MOIC
-    3. Project Payback Period
+    1. Project Payback Period
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 

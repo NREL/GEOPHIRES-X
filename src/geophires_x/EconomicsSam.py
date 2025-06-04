@@ -35,6 +35,7 @@ from geophires_x.EconomicsUtils import (
     nominal_discount_rate_parameter,
     after_tax_irr_parameter,
     moic_parameter,
+    project_vir_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -68,12 +69,10 @@ class SamEconomicsCalculations:
     )
 
     after_tax_irr: OutputParameter = field(default_factory=after_tax_irr_parameter)
-
     nominal_discount_rate: OutputParameter = field(default_factory=nominal_discount_rate_parameter)
-
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
-
     moic: OutputParameter = field(default_factory=moic_parameter)
+    project_vir: OutputParameter = field(default_factory=project_vir_parameter)
 
 
 def validate_read_parameters(model: Model):
@@ -173,8 +172,8 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner
     )
-
     sam_economics.moic.value = _calculate_moic(cash_flow, model)
+    sam_economics.project_vir.value = _calculate_project_vir(cash_flow, model)
 
     return sam_economics
 
@@ -226,6 +225,25 @@ def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
         return float(total_value_received_from_investment_USD / total_capital_invested_USD)
     except Exception as e:
         model.logger.error(f'Encountered exception calculating MOIC: {e}')
+        return None
+
+
+def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
+    """
+    VIR = PV(Future Cash Flows) / |CF_0|
+    Where CF_0 is the cash flow at Year 0 (the initial investment).
+    NPV = CF_0 + PV(Future Cash Flows)
+    PV(Future Cash Flows) = NPV - CF_0
+    """
+    try:
+        npv_USD = Decimal(_cash_flow_profile_row(cash_flow, 'After-tax cumulative NPV ($)')[-1])
+        cf_0_USD = Decimal(_cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')[0])
+        pv_of_future_cash_flows_USD = npv_USD - cf_0_USD
+        vir = pv_of_future_cash_flows_USD / abs(cf_0_USD)
+
+        return float(vir)
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating Project VIR: {e}')
         return None
 
 

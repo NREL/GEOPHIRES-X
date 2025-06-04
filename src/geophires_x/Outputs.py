@@ -285,10 +285,7 @@ class Outputs:
                     if not math.isnan(irr_output_param.value) else 'NaN'
                 f.write(f'      {irr_field_label}{irr_display_value} {irr_output_param.CurrentUnits.value}\n')
 
-                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    # TODO SAM economic models VIR https://github.com/NREL/GEOPHIRES-X/issues/390
-                    f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
-
+                f.write(f'      {econ.ProjectVIR.display_name}:                              {econ.ProjectVIR.value:10.2f}\n')
                 f.write(f'      {econ.ProjectMOIC.display_name}:                                    {econ.ProjectMOIC.value:10.2f}\n')
 
                 if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:

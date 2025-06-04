@@ -49,6 +49,16 @@ def moic_parameter() -> OutputParameter:
     )
 
 
+def project_vir_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project Value Investment Ratio",
+        display_name='Project VIR=PI=PIR',
+        UnitType=Units.PERCENT,
+        PreferredUnits=PercentUnit.TENTH,
+        CurrentUnits=PercentUnit.TENTH
+    )
+
+
 def after_tax_irr_parameter() -> OutputParameter:
     return OutputParameter(
         Name='After-tax IRR',

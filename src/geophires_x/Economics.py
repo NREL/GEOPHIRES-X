@@ -6,7 +6,7 @@ import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
-    real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter
+    real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -1839,13 +1839,7 @@ class Economics:
             CurrentUnits=PercentUnit.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
         )
-        self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = OutputParameter(
-            "Project Value Investment Ratio",
-            display_name='Project VIR=PI=PIR',
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH
-        )
+        self.ProjectVIR = self.OutputParameterDict[self.ProjectVIR.Name] = project_vir_parameter()
         self.ProjectMOIC = self.OutputParameterDict[self.ProjectMOIC.Name] = moic_parameter()
         self.ProjectPaybackPeriod = self.OutputParameterDict[self.ProjectPaybackPeriod.Name] = OutputParameter(
             "Project Payback Period",
@@ -2799,9 +2793,7 @@ class Economics:
                 convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
 
             self.ProjectMOIC.value = self.sam_economics_calculations.moic.value
-
-            # TODO SAM economic models VIR https://github.com/NREL/GEOPHIRES-X/issues/390
-            # self.ProjectVIR.value = non_calculated_output_placeholder_val
+            self.ProjectVIR.value = self.sam_economics_calculations.project_vir.value
 
         # Calculate the project payback period
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:

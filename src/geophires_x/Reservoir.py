@@ -221,6 +221,7 @@ class Reservoir:
             ToolTipText="Thickness of rock segment 4"
         )
 
+        # noinspection SpellCheckingInspection
         self.resvoloption = self.ParameterDict[self.resvoloption.Name] = intParameter(
             "Reservoir Volume Option",
             DefaultValue=ReservoirVolume.RES_VOL_FRAC_NUM.int_value,
@@ -229,14 +230,11 @@ class Reservoir:
             Required=True,
             UnitType=Units.NONE,
             ErrMessage="assume default reservoir volume option",
-            ToolTipText=(
-                "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) "
-                "are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The "
-                "fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: "
-                "Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, "
-                "3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only "
-                "(sufficient for reservoir models 3, 4, 5 and 6)"
-            )
+            ToolTipText="Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) "
+                        "are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored "
+                        "heat in place. The fracture distribution is needed as input for the EGS fracture-based "
+                        "reservoir models 1 and 2. " +
+                        '; '.join([f'{it.int_value}: {it.name}: {it.value}' for it in ReservoirVolume])
         )
 
         self.fracshape = self.ParameterDict[self.fracshape.Name] = intParameter(

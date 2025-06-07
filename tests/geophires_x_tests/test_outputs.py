@@ -71,7 +71,7 @@ class OutputsTestCase(BaseTestCase):
                 #  - https://github.com/NREL/GEOPHIRES-X/actions/runs/15499833486/job/43649021692
                 #  - https://github.com/NREL/GEOPHIRES-X/actions/runs/15501867732/job/43650830019?pr=389
                 _log.warning(
-                    f'Ignoring absolute output file path test error since we appear to be running on Windows '
+                    f'Ignoring file path equality assertion error since we appear to be running on Windows '
                     f'in GitHub Actions ({e!s})'
                 )
             else:

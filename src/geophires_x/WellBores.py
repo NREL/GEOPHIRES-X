@@ -713,7 +713,7 @@ class WellBores:
             DefaultValue=2,
             AllowableRange=list(range(1, 201, 1)),
             UnitType=Units.NONE,
-            Required=True,
+            Required=False,
             ErrMessage="assume default number of production wells (2)",
             ToolTipText="Number of (identical) production wells"
         )
@@ -722,9 +722,16 @@ class WellBores:
             DefaultValue=2,
             AllowableRange=list(range(0, 201, 1)),
             UnitType=Units.NONE,
-            Required=True,
+            Required=False,
             ErrMessage="assume default number of injection wells (2)",
             ToolTipText="Number of (identical) injection wells"
+        )
+        self.doublets_count = self.ParameterDict[self.doublets_count.Name] = intParameter(
+            "Number of Doublets",
+            DefaultValue=2,
+            AllowableRange=list(range(0, 201, 1)),
+            UnitType=Units.NONE,
+            ToolTipText="Number of doublets"  # FIXME WIP
         )
         self.prodwelldiam = self.ParameterDict[self.prodwelldiam.Name] = floatParameter(
             "Production Well Diameter",
@@ -1316,6 +1323,11 @@ class WellBores:
             model.logger.info("No parameters read because no content provided")
 
         coerce_int_params_to_enum_values(self.ParameterDict)
+
+        if self.doublets_count.Provided:
+            # FIXME WIP validate that ninj/nprod haven't been provided and vice versa
+            self.ninj.value = self.doublets_count.value
+            self.nprod.value = self.doublets_count.value
 
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
 

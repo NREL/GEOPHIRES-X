@@ -31,7 +31,7 @@ Well Drilling Cost Correlation, 3, -- VERTICAL_LARGE (2025 NREL Geothermal Drill
 Well Drilling and Completion Capital Cost Adjustment Factor, 0.84, -- Adjust correlation-calculated value of $4.72M/well to $3.96M/well per Tim Latimer on 2025-02-12 Volts podcast: less than $4M/well
 
 Reservoir Stimulation Capital Cost Adjustment Factor, 2.66, -- Estimated cost of ~$2M per well. Typical range for Nth-of-kind projects may be $0.5–2M.
-Field Gathering System Capital Cost Adjustment Factor, 0.339, -- Gathering costs represent 2% of facilities CAPEX per https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
+Field Gathering System Capital Cost Adjustment Factor, 0.54, -- Gathering costs represent 2% of facilities CAPEX per https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
 
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************

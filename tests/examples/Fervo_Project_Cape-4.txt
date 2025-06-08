@@ -37,7 +37,7 @@ Field Gathering System Capital Cost Adjustment Factor, 0.54, -- Gathering costs 
 # *************************************************
 End-Use Option, 1, -- Electricity
 Power Plant Type, 2, -- Supercritical ORC
-Plant Lifetime, 20
+Plant Lifetime, 30, -- Per https://fervoenergy.com/geothermal-mythbusting-water-use-and-impacts/
 
 Reservoir Model, 1, -- Multiple Parallel Fractures
 Reservoir Depth, 8500 feet, -- https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf

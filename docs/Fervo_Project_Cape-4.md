@@ -75,3 +75,11 @@ in source code for the full set of inputs.
 
 See [Fervo_Project_Cape-4.out](https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/main/tests/examples/Fervo_Project_Cape-4.out)
 in source code for the complete results.
+
+## Uncertainty & Sensitivities
+
+Given the methodological approach, including speculative estimation of some input parameters, and lack of real-world
+reference data for comparison, the case study results are subject to uncertainty. This case study does not attempt to
+quantify uncertainties, but sensitivity analysis may be included in future updates. Users may wish to perform their own
+sensitivity analysis using [GEOPHIRES's Monte Carlo simulation module](Monte-Carlo-User-Guide.html) or other data analysis
+tools.

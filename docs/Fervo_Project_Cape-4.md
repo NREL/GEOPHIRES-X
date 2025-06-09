@@ -1,13 +1,15 @@
 # Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station
 
-This case study – example name: `Fervo_Project_Cape-4` – is a 500 MWe EGS Project modeled
+The GEOPHIRES example `Fervo_Project_Cape-4` models a 500 MWe EGS Project based on
 on Fervo Cape Station with its April 2025-announced
-[upsizing from 400 MW to 500 MW](https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/),
-using a combination of publicly available data, extrapolations, and estimates. Financial results are calculated
+[upsizing from 400 MW to 500 MW](https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/).
+Case study inputs are formulated using a combination of publicly available data, extrapolations, and estimates. Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-[Click here to go to the case study in the web interface](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4).
+Key case study results include LCOE = $79.4/MWh and CAPEX = $4650/kW.
+
+[Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to interactively explore the case study in the GEOPHIRES web interface.
 
 ## Approach & Methodology
 
@@ -23,7 +25,7 @@ density ([2800 kg/m³](https://doi.org/10.31223/X52X0B)).
 Some technical parameters were inferred with high confidence from publicly available data, such as geothermal
 gradient ([74 ℃/km](https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2024/Fercho.pdf)) and well diameter.
 Other parameters were extrapolated or speculatively estimated based on plausibility and/or compatibility with known
-results, such as reservoir volume.
+results, such as number of doublets.
 
 The Inputs and Results tables below document key assumptions, inputs, and a comparison of results with reference
 values.
@@ -89,8 +91,8 @@ in source code for the complete results.
 
 | Metric                                          | Result Value | Reference Value(s)                                 | Reference Source                                                                                                                                                                                                            |
 |-------------------------------------------------|--------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Maximum Total Electricity Generation            | 615 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
 | Minimum Net Electricity Generation              | 500 MW       | 500 MW                                             | Fervo Energy, 2025. The 500 MW PPA is interpreted to mean that Cape Station's net electricity generation must never fall below 500 MWe.                                                                                     |
+| Maximum Total Electricity Generation            | 615 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
 | Number of times redrilling                      | 3            | 3–6                                                | Redrilling expected to be required within 5–10 years of project start                                                                                                                                                       |
 | Average Production Temperature                  | 199℃         | 204℃, 190.6–198.6℃ (optimal plant operating range) | Trent, 2024; Norbeck et al, 2024.                                                                                                                                                                                           |
 | Total fracture surface area per production well | 2.787×10⁶ m² | 2.787×10⁶ m² (30 million ft² per well)             | Fercho et al, 2025.                                                                                                                                                                                                         |

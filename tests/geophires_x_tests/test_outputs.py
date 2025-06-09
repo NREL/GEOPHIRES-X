@@ -31,7 +31,9 @@ class OutputsTestCase(BaseTestCase):
                 # TODO expand test to assert more about output HTML
         except RuntimeError as e:
             # https://github.com/NREL/GEOPHIRES-X/issues/365
-            has_expected_error_msg = 'cannot unpack non-iterable NoneType object' in str(e)
+            has_expected_error_msg = 'cannot unpack non-iterable NoneType object' in str(
+                e
+            ) or "Can't find a usable tk.tcl" in str(e)
             if has_expected_error_msg and os.name == 'nt' and 'TOXPYTHON' in os.environ:
                 _log.warning(
                     f'Ignoring error while testing HTML output file '

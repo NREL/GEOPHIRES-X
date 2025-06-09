@@ -52,12 +52,10 @@ Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001565
 
 Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
-Reservoir Volume, 5801599999 m**3
-Fracture Shape, 4
+Reservoir Volume, 5418039158, -- Based on 102 fractures per well
 Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
-Fracture Height, 250, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
-Fracture Width, 250, -- Based on average of stimulated volume estimates given for Project Red in https://doi.org/10.31223/X52X0B
-
+Fracture Shape, 3, -- Square
+Fracture Height, 165.3, -- Based on total fracture surface area of 30 million ft^2 per well https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf
 Number of Injection Wells, 59
 Number of Production Wells, 59
 
@@ -65,12 +63,12 @@ Production Flow Rate per Well, 107, -- Maximum flow rate achieved at Cape Statio
 Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"
 Injection Well Diameter, 9.625
 Ramey Production Wellbore Model, 1
-Injection Temperature, 60 degC
+Injection Temperature, 80, -- https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf
 Injection Wellbore Temperature Gain, 3
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 
-Maximum Drawdown, 0.017, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
+Maximum Drawdown, 0.014, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
 Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9

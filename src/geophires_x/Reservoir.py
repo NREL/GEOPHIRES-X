@@ -457,7 +457,8 @@ class Reservoir:
             value=self.fracarea.value,
             UnitType=Units.AREA,
             PreferredUnits=AreaUnit.METERS2,
-            CurrentUnits=AreaUnit.METERS2
+            CurrentUnits=AreaUnit.METERS2,
+            ToolTipText='Effective heat transfer area per fracture'
         )
 
         self.resvolcalc = self.OutputParameterDict[self.resvolcalc.Name] = floatParameter(

@@ -242,7 +242,7 @@
         },
         "Fracture area": {
           "type": "number",
-          "description": "Calculated Fracture Area",
+          "description": "Calculated Fracture Area. Effective heat transfer area per fracture",
           "units": "m**2"
         },
         "Number of fractures": {

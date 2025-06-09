@@ -3,13 +3,15 @@
 The GEOPHIRES example `Fervo_Project_Cape-4` models a 500 MWe EGS Project based on
 on Fervo Cape Station with its April 2025-announced
 [upsizing from 400 MW to 500 MW](https://fervoenergy.com/fervo-energy-announces-31-mw-power-purchase-agreement-with-shell-energy/).
-Case study inputs are formulated using a combination of publicly available data, extrapolations, and estimates. Financial results are calculated
+Case study inputs are formulated using a combination of publicly available data, extrapolations, and estimates.
+Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $79.4/MWh and CAPEX = $4650/kW.
+Key case study results include LCOE = $78.8/MWh and CAPEX = $4650/kW.
 
-[Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to interactively explore the case study in the GEOPHIRES web interface.
+[Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
+interactively explore the case study in the GEOPHIRES web interface.
 
 ## Approach & Methodology
 
@@ -44,7 +46,7 @@ in source code for the full set of inputs.
 | Economic Model                                                        | SAM Single Owner PPA                                                                                                   | The SAM Single Owner PPA economic model is used to calculate financial results including LCOE, NPV, IRR, and pro-forma cash flow analysis. See [GEOPHIRES documentation of SAM Economic Models](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html) for details on how System Advisor Model financial models are integrated into GEOPHIRES. |
 | Inflation Rate                                                        | 2.3%                                                                                                                   | US inflation rate as of April 2025                                                                                                                                                                                                                                                                                                                                       |
 | PPA Price                                                             | Starting at 9.5 cents/kWh, escalating to 10 cents/kWh by project year 11                                               | Upper end of ranges given in 2024 NREL ATB baseline (NREL, 2024). Both PPAs 'firm for 10 years at less than $100/MWh' estimate given in a podcast.                                                                                                                                                                                                                       |
-| Well Drilling Cost Correlation & Adjustment Factor                    | Vertical large baseline correlation + adjustment factor = 0.84 to align with Fervo claimed drilling costs of <$4M/well | Akindipe and Witter, 2025;  Latimer, 2025.                                                                                                                                                                                                                                                                                                                               |
+| Well Drilling Cost Correlation & Adjustment Factor                    | Vertical large baseline correlation + adjustment factor = 0.84 to align with Fervo claimed drilling costs of <$4M/well | Akindipe & Witter, 2025;  Latimer, 2025.                                                                                                                                                                                                                                                                                                                                 |
 | Reservoir Stimulation Capital Cost Adjustment Factor                  | 2.66                                                                                                                   | Estimated cost of ~$2M per well. Typical range for Nth-of-kind projects may be $0.5–2M.                                                                                                                                                                                                                                                                                  |
 | Capital Cost for Power Plant for Electricity Generation               | $1900/kW                                                                                                               | US DOE, 2021.                                                                                                                                                                                                                                                                                                                                                            |
 | Discount Rate                                                         | 12%                                                                                                                    | Typical discount rates for high-risk projects may be 12–15%                                                                                                                                                                                                                                                                                                              |
@@ -67,9 +69,9 @@ in source code for the full set of inputs.
 | Fracture Geometry             | 165.3 m × 165.3 m (Square) | Extrapolated from 30 million ft² fracture surface area per well per Fercho et al, 2025.                                                                                                                                                                                                                                                        |
 | Reservoir Volume              | 5,418,039,158 m³           | Calculated from fracture area (27,324.09 m²) × fracture separation (18 m) × targeted number of fractures per well (102)                                                                                                                                                                                                                        |
 | Water Loss Rate               | 15%                        | Water loss rate is conservatively estimated to be between 10 and 20%. Other estimates and some simulations may suggest a significantly lower water loss rate than this conservative estimate. See [Geothermal Mythbusting: Water Use and Impacts](https://fervoenergy.com/geothermal-mythbusting-water-use-and-impacts/) (Fervo Energy, 2025). |
-| Maximum Drawdown              | 0.014                      | Tuned to keep minimum net electricity generation ≥ 500 MWe and thermal breakthrough requiring redrilling occurring every 5–10 years                                                                                                                                                                                                            |
-| Reservoir Impedance           | 0.001565 GPa.s/m³          | Yields 16% initial pumping power/net installed power                                                                                                                                                                                                                                                                                           |
-| Injection Temperature         | 80 ℃                       | Fercho et al, 2025.                                                                                                                                                                                                                                                                                                                            |
+| Maximum Drawdown              | 0.015                      | Tuned to keep minimum net electricity generation ≥ 500 MWe and thermal breakthrough requiring redrilling occurring every 5–10 years                                                                                                                                                                                                            |
+| Reservoir Impedance           | 0.001565 GPa.s/m³          | Yields ~15% initial pumping power/net installed power                                                                                                                                                                                                                                                                                          |
+| Injection Temperature         | 53.6 ℃                     | Calibrated with GEOPHIRES model-calculated reinjection temperature (Beckers & McCabe, 2019). Close to upper bound of Project Red injection temperatures (75–125℉; 23.89–51.67℃) (Norbeck & Latimer, 2023).                                                                                                                                     |
 
 ## Results
 
@@ -80,18 +82,18 @@ in source code for the complete results.
 
 | Metric                             | Result Value                                             | Reference Value(s)       | Reference Source                            |
 |------------------------------------|----------------------------------------------------------|--------------------------|---------------------------------------------|
-| LCOE                               | $79.4/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
+| LCOE                               | $78.8/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
 | Project capital costs: Total CAPEX | $2.86B                                                   |                          |                                             |
 | Project capital costs: $/kW        | $4650/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
 | Well Drilling and Completion Cost  | $3.96M/well                                              | $<4M/well                | Latimer, 2025.                              |
 | WACC                               | 8.3%                                                     | 8.3%                     | Matson, 2024.                               |
-| After-tax IRR                      | 27.7%                                                    | 15–25%                   | Typical levered returns for energy projects |
+| After-tax IRR                      | 28%                                                      | 15–25%                   | Typical levered returns for energy projects |
 
 ### Technical & Engineering Results
 
 | Metric                                          | Result Value | Reference Value(s)                                 | Reference Source                                                                                                                                                                                                            |
 |-------------------------------------------------|--------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Minimum Net Electricity Generation              | 500 MW       | 500 MW                                             | Fervo Energy, 2025. The 500 MW PPA is interpreted to mean that Cape Station's net electricity generation must never fall below 500 MWe.                                                                                     |
+| Minimum Net Electricity Generation              | 503 MW       | 500 MW                                             | Fervo Energy, 2025. The 500 MW PPA is interpreted to mean that Cape Station's net electricity generation must never fall below 500 MWe.                                                                                     |
 | Maximum Total Electricity Generation            | 615 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
 | Number of times redrilling                      | 3            | 3–6                                                | Redrilling expected to be required within 5–10 years of project start                                                                                                                                                       |
 | Average Production Temperature                  | 199℃         | 204℃, 190.6–198.6℃ (optimal plant operating range) | Trent, 2024; Norbeck et al, 2024.                                                                                                                                                                                           |
@@ -110,6 +112,9 @@ tools.
 
 Akindipe, D. and Witter. E. (2025). "2025 Geothermal Drilling Cost Curves
 Update". https://pangea.stanford.edu/ERE/db/GeoConf/papers/SGW/2025/Akindipe.pdf?t=1740084555
+
+Beckers, K., McCabe, K. (2019) GEOPHIRES v2.0: updated geothermal techno-economic simulation tool. Geotherm Energy
+7,5. https://doi.org/10.1186/s40517-019-0119-6
 
 Fercho, S., Norbeck, J., Dadi, S., Matson, G., Borell, J., McConville, E., Webb, S., Bowie, C., & Rhodes, G. (2025).
 Update on the geology, temperature, fracturing, and resource potential at the Cape Geothermal Project informed by data
@@ -143,8 +148,11 @@ Energy. https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering
 NREL. (2024). Annual Technology Baseline: Recent Public Geothermal Power Purchase Agreement
 Pricing. https://atb.nrel.gov/electricity/2024/geothermal
 
-Norbeck, J., Gradl, C., Latimer, T. (2024, September 10). "Deployment of Enhanced Geothermal System Technology Leads to
-Rapid Cost Reductions and Performance Improvements." https://doi.org/10.31223/X5VH8C
+Norbeck, J., Gradl, C., Latimer, T. (2024, September 10). Deployment of Enhanced Geothermal System Technology Leads to
+Rapid Cost Reductions and Performance Improvements. https://doi.org/10.31223/X5VH8C
+
+Norbeck J., Latimer T. (2023). Commercial-Scale Demonstration of a First-of-a-Kind Enhanced Geothermal
+System. https://doi.org/10.31223/X52X0B
 
 US DOE. (2021). Combined Heat and Power Technology Fact Sheet Series: Waste Heat to
 Power. https://betterbuildingssolutioncenter.energy.gov/sites/default/files/attachments/Waste_Heat_to_Power_Fact_Sheet.pdf

@@ -62,12 +62,12 @@ Production Flow Rate per Well, 107, -- Maximum flow rate achieved at Cape Statio
 Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"
 Injection Well Diameter, 9.625
 Ramey Production Wellbore Model, 1
-Injection Temperature, 80, -- https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf
+Injection Temperature, 53.6, -- GEOPHIRES model-calculated reinjection temperature
 Injection Wellbore Temperature Gain, 3
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 
-Maximum Drawdown, 0.014, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
+Maximum Drawdown, 0.0153, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
 Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9

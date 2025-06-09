@@ -974,3 +974,9 @@ Print Output to Console, 1"""
         ]
         self.assertLess(well_cost, 4.0)
         self.assertGreater(well_cost, 3.0)
+
+        pumping_power_pct = r.result['SURFACE EQUIPMENT SIMULATION RESULTS'][
+            'Initial pumping power/net installed power'
+        ]['value']
+        self.assertGreater(pumping_power_pct, 13)
+        self.assertLess(pumping_power_pct, 17)

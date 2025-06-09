@@ -68,7 +68,7 @@ Injection Wellbore Temperature Gain, 3
 Ambient Temperature, 10 degC
 Surface Temperature, 10 degC
 
-Maximum Drawdown, 0.017, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
+Maximum Drawdown, 0.014, -- Drawdown value that prevents minimum net electricity generation from going below 500 MWe
 Water Loss Fraction, 0.15, -- Estimated to be between 10 and 20%
 
 Utilization Factor, .9

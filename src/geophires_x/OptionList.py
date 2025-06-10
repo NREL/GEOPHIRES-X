@@ -137,6 +137,10 @@ class ReservoirModel(GeophiresInputEnum):
 
 
 class ReservoirVolume(GeophiresInputEnum):
+    """
+    TODO should probably be renamed to ReservoirVolumeOption
+    """
+
     FRAC_NUM_SEP = 1, "Specify number of fractures and fracture separation"
     RES_VOL_FRAC_SEP = 2, "Specify reservoir volume and fracture separation"
     RES_VOL_FRAC_NUM = 3, "Specify reservoir volume and number of fractures"

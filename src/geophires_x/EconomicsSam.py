@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -11,6 +12,7 @@ from typing import Any
 from decimal import Decimal
 
 import numpy as np
+import numpy_financial as npf
 
 # noinspection PyPackageRequirements
 from PySAM import CustomGeneration
@@ -27,7 +29,15 @@ from tabulate import tabulate
 
 from geophires_x import Model as Model
 from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
-from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter
+from geophires_x.EconomicsUtils import (
+    BuildPricingModel,
+    wacc_output_parameter,
+    nominal_discount_rate_parameter,
+    after_tax_irr_parameter,
+    moic_parameter,
+    project_vir_parameter,
+    project_payback_period_parameter,
+)
 from geophires_x.GeoPHIRESUtils import is_float, is_int
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
@@ -44,28 +54,27 @@ class SamEconomicsCalculations:
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH,
         )
     )
+
     capex: OutputParameter = field(
         default_factory=lambda: OutputParameter(
             UnitType=Units.CURRENCY,
             CurrentUnits=CurrencyUnit.MDOLLARS,
         )
     )
+
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(
             UnitType=Units.CURRENCY,
             CurrentUnits=CurrencyUnit.MDOLLARS,
         )
     )
-    project_irr: OutputParameter = field(
-        default_factory=lambda: OutputParameter(
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-        )
-    )
 
+    after_tax_irr: OutputParameter = field(default_factory=after_tax_irr_parameter)
     nominal_discount_rate: OutputParameter = field(default_factory=nominal_discount_rate_parameter)
-
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
+    moic: OutputParameter = field(default_factory=moic_parameter)
+    project_vir: OutputParameter = field(default_factory=project_vir_parameter)
+    project_payback_period: OutputParameter = field(default_factory=project_payback_period_parameter)
 
 
 def validate_read_parameters(model: Model):
@@ -152,20 +161,41 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 
     cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
 
-    def sf(_v: float) -> float:
-        return _sig_figs(_v, 5)
+    def sf(_v: float, num_sig_figs: int = 5) -> float:
+        return _sig_figs(_v, num_sig_figs)
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
-    sam_economics.project_irr.value = sf(single_owner.Outputs.project_return_aftertax_irr)
+    sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))
+
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner
     )
+    sam_economics.moic.value = _calculate_moic(cash_flow, model)
+    sam_economics.project_vir.value = _calculate_project_vir(cash_flow, model)
+    sam_economics.project_payback_period.value = _calculate_project_payback_period(cash_flow, model)
 
     return sam_economics
+
+
+def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
+    after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
+    if math.isnan(after_tax_irr_pct):
+        try:
+            after_tax_returns_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+            after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
+            model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
+        except Exception as e:
+            model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
+
+    return after_tax_irr_pct
+
+
+def _cash_flow_profile_row(cash_flow: list[list[Any]], row_name: str) -> list[Any]:
+    return next(row for row in cash_flow if len(row) > 0 and row[0] == row_name)[1:]  # type: ignore[no-any-return]
 
 
 def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:
@@ -187,6 +217,59 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
     ) * 100
 
     return nominal_discount_rate_pct, wacc_pct
+
+
+def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
+    try:
+        total_capital_invested_USD: Decimal = Decimal(_cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0])
+        total_value_received_from_investment_USD: Decimal = sum(
+            [Decimal(it) for it in _cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')]
+        )
+        return float(total_value_received_from_investment_USD / total_capital_invested_USD)
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating MOIC: {e}')
+        return None
+
+
+def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
+    """
+    VIR = PV(Future Cash Flows) / |CF_0|
+    Where CF_0 is the cash flow at Year 0 (the initial investment).
+    NPV = CF_0 + PV(Future Cash Flows)
+    PV(Future Cash Flows) = NPV - CF_0
+    """
+    try:
+        npv_USD = Decimal(_cash_flow_profile_row(cash_flow, 'After-tax cumulative NPV ($)')[-1])
+        cf_0_USD = Decimal(_cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')[0])
+        pv_of_future_cash_flows_USD = npv_USD - cf_0_USD
+        vir = pv_of_future_cash_flows_USD / abs(cf_0_USD)
+
+        return float(vir)
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating Project VIR: {e}')
+        return None
+
+
+def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:
+    try:
+        after_tax_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+        cumm_cash_flow = np.zeros(len(after_tax_cash_flow))
+        cumm_cash_flow[0] = after_tax_cash_flow[0]
+        for year in range(1, len(after_tax_cash_flow)):
+            cumm_cash_flow[year] = cumm_cash_flow[year - 1] + after_tax_cash_flow[year]
+            if cumm_cash_flow[year] >= 0:
+                year_before_full_recovery = year - 1
+                payback_period = (
+                    year_before_full_recovery
+                    + abs(cumm_cash_flow[year_before_full_recovery]) / after_tax_cash_flow[year]
+                )
+
+                return float(payback_period)
+
+        return float('nan')  # never pays back
+    except Exception as e:
+        model.logger.error(f'Encountered exception calculating Project Payback Period: {e}')
+        return None
 
 
 def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args) -> str:
@@ -265,13 +348,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['analysis_period'] = model.surfaceplant.plant_lifetime.value
 
+    # SAM docs claim that specifying flip target year, aka "year in which you want the IRR to be achieved" influences
+    # how after-tax cumulative IRR is reported (https://samrepo.nrelcloud.org/help/mtf_irr.html). This claim seems to
+    # be erroneous, however, as setting this value appears to have no effect in either the SAM desktop app nor when
+    # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
+    ret['flip_target_year'] = model.surfaceplant.plant_lifetime.value
+
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
-
-    # 'Inflation Rate During Construction'
-    construction_additional_cost = econ.inflrateconstruction.value * total_capex
-
-    ret['total_installed_cost'] = (total_capex + construction_additional_cost).to('USD').magnitude
+    ret['total_installed_cost'] = (total_capex * (1 + econ.inflrateconstruction.value)).to('USD').magnitude
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]

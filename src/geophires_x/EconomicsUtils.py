@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from geophires_x.Parameter import OutputParameter
-from geophires_x.Units import Units, PercentUnit
+from geophires_x.Units import Units, PercentUnit, TimeUnit
 
 
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
@@ -37,27 +37,75 @@ def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
     return Price
 
 
+def moic_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project MOIC",
+        ToolTipText='Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the '
+                    'sum of Total pre-tax returns (total value received) '
+                    'divided by Issuance of equity (total capital invested).',
+        UnitType=Units.PERCENT,
+        PreferredUnits=PercentUnit.TENTH,
+        CurrentUnits=PercentUnit.TENTH
+    )
+
+
+def project_vir_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project Value Investment Ratio",
+        display_name='Project VIR=PI=PIR',
+        UnitType=Units.PERCENT,
+        PreferredUnits=PercentUnit.TENTH,
+        CurrentUnits=PercentUnit.TENTH
+    )
+
+
+def project_payback_period_parameter() -> OutputParameter:
+    return OutputParameter(
+        "Project Payback Period",
+        UnitType=Units.TIME,
+        PreferredUnits=TimeUnit.YEAR,
+        CurrentUnits=TimeUnit.YEAR,
+        ToolTipText='The time at which cumulative cash flow reaches zero. '
+                    'For projects that never pay back, the calculated value will be "N/A". '
+                    'For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.',
+    )
+
+
+def after_tax_irr_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='After-tax IRR',
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+        ToolTipText='The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
+                    'a net present value (NPV) of zero for PPA SAM Economic models. '
+                    'See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, '
+                    'numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) '
+                    'is used to calculate the value from SAM\'s total after-tax returns.'
+    )
+
+
 def real_discount_rate_parameter() -> OutputParameter:
     return OutputParameter(
-            Name="Real Discount Rate",
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-        )
+        Name="Real Discount Rate",
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+    )
 
 
 def nominal_discount_rate_parameter() -> OutputParameter:
     return OutputParameter(
-            Name="Nominal Discount Rate",
-            ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
-                        "It is calculated "
-                        "per https://samrepo.nrelcloud.org/help/fin_single_owner.html?q=nominal+discount+rate: "
-                        "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
-                        "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
-            UnitType=Units.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-        )
+        Name="Nominal Discount Rate",
+        ToolTipText="Nominal Discount Rate is displayed for SAM Economic Models. "
+                    "It is calculated "
+                    "per https://samrepo.nrelcloud.org/help/fin_single_owner.html?q=nominal+discount+rate: "
+                    "Nominal Discount Rate = [ ( 1 + Real Discount Rate ÷ 100 ) "
+                    "× ( 1 + Inflation Rate ÷ 100 ) - 1 ] × 100.",
+        UnitType=Units.PERCENT,
+        CurrentUnits=PercentUnit.PERCENT,
+        PreferredUnits=PercentUnit.PERCENT,
+    )
 
 
 def wacc_output_parameter() -> OutputParameter:

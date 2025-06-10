@@ -226,7 +226,7 @@
       "maximum": 100.0
     },
     "Reservoir Volume Option": {
-      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2: Specify number of fractures and fracture separation, 2: Specify reservoir volume and fracture separation, 3: Specify reservoir volume and number of fractures, 4: Specify reservoir volume only (sufficient for reservoir models 3, 4, 5 and 6)",
+      "description": "Specifies how the reservoir volume, and fracture distribution (for reservoir models 1 and 2) are calculated. The reservoir volume is used by GEOPHIRES to estimate the stored heat in place. The fracture distribution is needed as input for the EGS fracture-based reservoir models 1 and 2. 1: FRAC_NUM_SEP: Specify number of fractures and fracture separation; 2: RES_VOL_FRAC_SEP: Specify reservoir volume and fracture separation; 3: RES_VOL_FRAC_NUM: Specify reservoir volume and number of fractures; 4: RES_VOL_ONLY: Specify reservoir volume only",
       "type": "integer",
       "units": null,
       "category": "Reservoir",
@@ -693,7 +693,7 @@
       "maximum": 500.0
     },
     "Reservoir Impedance": {
-      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well             is in hydraulic communication with the production well, this parameter specifies the overall pressure drop             in the reservoir between injection well and production well (see docs)",
+      "description": "Reservoir resistance to flow per well-pair. For EGS-type reservoirs when the injection well is in hydraulic communication with the production well, this parameter specifies the overall pressure drop in the reservoir between injection well and production well (see docs)",
       "type": "number",
       "units": "GPa.s/m**3",
       "category": "Well Bores",
@@ -1595,7 +1595,7 @@
       "maximum": null
     },
     "Fraction of Investment in Bonds": {
-      "description": "Fraction of geothermal project financing through bonds (see docs)",
+      "description": "Fraction of geothermal project financing through bonds (debt).",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1667,7 +1667,7 @@
       "maximum": 1.0
     },
     "Inflation Rate During Construction": {
-      "description": "",
+      "description": "For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.",
       "type": "number",
       "units": "",
       "category": "Economics",

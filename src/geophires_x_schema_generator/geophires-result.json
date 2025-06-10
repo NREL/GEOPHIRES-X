@@ -17,6 +17,7 @@
           "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
+        "Total CAPEX": {},
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
         "Direct-Use heat breakeven price (LCOH)": {
@@ -102,6 +103,11 @@
           "description": "Project Internal Rate of Return",
           "units": "%"
         },
+        "After-tax IRR": {
+          "type": "number",
+          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) is used to calculate the value from SAM's total after-tax returns.",
+          "units": "%"
+        },
         "Project VIR=PI=PIR": {
           "type": "number",
           "description": "Project Value Investment Ratio",
@@ -109,13 +115,13 @@
         },
         "Project MOIC": {
           "type": "number",
-          "description": "Project Multiple of Invested Capital",
+          "description": "Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the sum of Total pre-tax returns (total value received) divided by Issuance of equity (total capital invested).",
           "units": ""
         },
         "Fixed Charge Rate (FCR)": {},
         "Project Payback Period": {
           "type": "number",
-          "description": "",
+          "description": "The time at which cumulative cash flow reaches zero. For projects that never pay back, the calculated value will be \"N/A\". For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.",
           "units": "yr"
         },
         "CHP: Percent cost allocation for electrical plant": {},
@@ -236,12 +242,12 @@
         },
         "Fracture area": {
           "type": "number",
-          "description": "Calculated Fracture Area",
+          "description": "Calculated Fracture Area. Effective heat transfer area per fracture",
           "units": "m**2"
         },
         "Number of fractures": {
           "type": "number",
-          "description": "Calculated Number of Fractures",
+          "description": "Calculated Number of Fractures. Displayed rounded up to the nearest whole number.",
           "units": null
         },
         "Fracture separation": {
@@ -249,6 +255,7 @@
           "description": "Calculated Fracture Separation",
           "units": "meter"
         },
+        "Reservoir volume calculation note": {},
         "Reservoir volume": {},
         "Reservoir impedance": {},
         "Reservoir hydrostatic pressure": {},
@@ -338,7 +345,11 @@
         },
         "Drilling and completion costs (for redrilling)": {},
         "Drilling and completion costs per redrilled well": {},
-        "Stimulation costs": {},
+        "Stimulation costs": {
+          "type": "number",
+          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 12% indirect costs. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the default correlation. Provide Reservoir Stimulation Capital Cost to override the default correlation and set your own cost.",
+          "units": "MUSD"
+        },
         "Stimulation costs (for redrilling)": {},
         "Surface power plant costs": {},
         "of which Absorption Chiller Cost": {},
@@ -362,7 +373,7 @@
         "Total surface equipment costs": {},
         "Exploration costs": {
           "type": "number",
-          "description": "Exploration cost",
+          "description": "Exploration cost. Default correlation: 60% of the cost of one production well plus 15% contingency plus 12% indirect costs. Provide Exploration Capital Cost Adjustment Factor to multiply the default correlation. Provide Exploration Capital Cost to override the default correlation and set your own cost.",
           "units": "MUSD"
         },
         "Investment Tax Credit": {

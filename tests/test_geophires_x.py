@@ -1,3 +1,4 @@
+import math
 import os
 import tempfile
 import uuid
@@ -194,6 +195,9 @@ class GeophiresXTestCase(BaseTestCase):
                 del expected_result.result['metadata']
                 del expected_result.result['Simulation Metadata']
 
+                self._sanitize_nan(geophires_result)
+                self._sanitize_nan(expected_result)
+
                 try:
                     self.assertDictEqual(
                         expected_result.result, geophires_result.result, msg=f'Example test: {example_file_path}'
@@ -243,6 +247,22 @@ class GeophiresXTestCase(BaseTestCase):
 
         if len(regenerate_cmds) > 0:
             print(f'Command to regenerate {len(regenerate_cmds)} failed examples:\n{" && ".join(regenerate_cmds)}')
+
+    # noinspection PyMethodMayBeStatic
+    def _sanitize_nan(self, r: GeophiresXResult) -> None:
+        """
+        Workaround for float('nan') != float('nan')
+        See https://stackoverflow.com/questions/51728427/unittest-how-to-assert-if-the-two-possibly-nan-values-are-equal
+
+        TODO generalize beyond After-tax IRR
+        """
+        irr_key = 'After-tax IRR'
+        if irr_key in r.result['ECONOMIC PARAMETERS']:
+            try:
+                if math.isnan(r.result['ECONOMIC PARAMETERS'][irr_key]['value']):
+                    r.result['ECONOMIC PARAMETERS'][irr_key]['value'] = 'NaN'
+            except TypeError:
+                pass
 
     def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
         for i in range(99):
@@ -921,3 +941,42 @@ Print Output to Console, 1"""
             )
             client.get_geophires_result(params)
         self.assertIn('SBT with coaxial configuration is not implemented', str(e.exception))
+
+    def test_fervo_project_cape_4_results_against_reference_values(self):
+        """
+        Asserts that results conform to some of the key reference values claimed in docs/Fervo_Project_Cape-4.md.
+        """
+
+        r = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(from_file_path=self._get_test_file_path('examples/Fervo_Project_Cape-4.txt'))
+        )
+
+        min_net_gen = r.result['SURFACE EQUIPMENT SIMULATION RESULTS']['Minimum Net Electricity Generation']['value']
+        self.assertGreater(min_net_gen, 500)
+        self.assertLess(min_net_gen, 505)
+
+        max_total_gen = r.result['SURFACE EQUIPMENT SIMULATION RESULTS']['Maximum Total Electricity Generation'][
+            'value'
+        ]
+        self.assertGreater(max_total_gen, 600)
+        self.assertLess(max_total_gen, 650)
+
+        lcoe = r.result['SUMMARY OF RESULTS']['Electricity breakeven price']['value']
+        self.assertGreater(lcoe, 7.5)
+        self.assertLess(lcoe, 8.5)
+
+        redrills = r.result['ENGINEERING PARAMETERS']['Number of times redrilling']['value']
+        self.assertGreater(redrills, 2)
+        self.assertLess(redrills, 7)
+
+        well_cost = r.result['CAPITAL COSTS (M$)']['Drilling and completion costs per vertical production well'][
+            'value'
+        ]
+        self.assertLess(well_cost, 4.0)
+        self.assertGreater(well_cost, 3.0)
+
+        pumping_power_pct = r.result['SURFACE EQUIPMENT SIMULATION RESULTS'][
+            'Initial pumping power/net installed power'
+        ]['value']
+        self.assertGreater(pumping_power_pct, 13)
+        self.assertLess(pumping_power_pct, 17)

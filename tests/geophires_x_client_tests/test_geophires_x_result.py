@@ -15,3 +15,25 @@ class GeophiresXResultTestCase(BaseTestCase):
             with self.subTest(msg=case[0]):
                 actual = GeophiresXResult._get_sam_cash_flow_row_name_unit_split(case[0])
                 self.assertListEqual(actual, case[1])
+
+    def test_reservoir_volume_calculation_note(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('../examples/example2.out'))
+        field_name = 'Reservoir volume calculation note'
+        self.assertIn(field_name, r.result['RESERVOIR PARAMETERS'])
+        self.assertEqual(
+            r.result['RESERVOIR PARAMETERS'][field_name],
+            'Number of fractures calculated with reservoir volume and fracture separation as input',
+        )
+
+    def test_sam_econ_model_capex_in_summary(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('../examples/example_SAM-single-owner-PPA.out'))
+        field_name = 'Total CAPEX'
+        self.assertIn(field_name, r.result['SUMMARY OF RESULTS'])
+        self.assertIn('value', r.result['SUMMARY OF RESULTS'][field_name])
+        self.assertGreater(r.result['SUMMARY OF RESULTS'][field_name]['value'], 1)
+        self.assertEqual(r.result['SUMMARY OF RESULTS'][field_name]['unit'], 'MUSD')
+
+    def test_sam_economic_model_result_csv(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('sam-em-csv-test.out'))
+        as_csv = r.as_csv()
+        self.assertIsNotNone(as_csv)

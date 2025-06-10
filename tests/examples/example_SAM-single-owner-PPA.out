@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.15
- Simulation Date: 2025-06-04
- Simulation Time:  12:20
- Calculation Time:      1.061 sec
+ GEOPHIRES Version: 3.9.16
+ Simulation Date: 2025-06-10
+ Simulation Time:  09:15
+ Calculation Time:      1.068 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -66,13 +66,12 @@ Simulation Metadata
 
       Reservoir Model = Multiple Parallel Fractures Model
       Bottom-hole temperature:                              202.40 degC
-      Fracture model = Rectangular
-      Well separation: fracture height:                     500.00 meter
-      Fracture width:                                                 500.00 meter
-      Fracture area:                                     250000.00 m**2
+      Fracture model = Square
+      Well separation: fracture height:                     165.00 meter
+      Fracture area:                                      27225.00 m**2
       Number of fractures calculated with reservoir volume and fracture separation as input
-      Number of fractures:                                    2322
-      Fracture separation:                                   10.00 meter
+      Number of fractures:                                    11840
+      Fracture separation:                                   18.00 meter
       Reservoir volume:                              5801599999 m**3
       Reservoir impedance:                                  0.0010 GPa.s/m**3
       Reservoir density:                                   2800.00 kg/m**3

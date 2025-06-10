@@ -1,5 +1,5 @@
 # Example: SAM Single Owner PPA Economic Model: 50 MWe
-# This example demonstrates a 50 MWe EGS project with similar engineering parameters to Fervo Cape Station.
+# This example demonstrates the SAM Single Owner PPA Economic Model for a 50 MWe EGS project with similar engineering parameters to Fervo Cape Station.
 # The SAM Single Owner PPA Economic Model calculates project NPV， after-tax IRR， and cash flow based on
 # electricity production， capital costs， and economic input parameters.
 # See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html
@@ -34,7 +34,7 @@ Plant Lifetime, 20
 Reservoir Model, 1
 
 Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
-Reservoir Volume, 5801599999 m**3
+Reservoir Volume, 2000000000, -- m**3
 Fracture Shape, 3, -- Square
 Fracture Separation, 18
 Fracture Height, 165
@@ -68,15 +68,15 @@ Production Wellhead Pressure, 325 psi
 Utilization Factor, .9
 Water Loss Fraction, 0.10
 Maximum Drawdown, 0.0066
-Ambient Temperature, 10 degC
-Surface Temperature, 10 degC
+Ambient Temperature, 10, -- degC
+Surface Temperature, 10, -- degC
 Circulation Pump Efficiency, 0.80
 
 Well Geometry Configuration, 4
 Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 3
-Nonvertical Length per Multilateral Section, 4700 feet
+Nonvertical Length per Multilateral Section, 1433, -- meters
 
 
 # *** SIMULATION PARAMETERS ***

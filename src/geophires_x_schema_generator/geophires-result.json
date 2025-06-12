@@ -428,7 +428,11 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
-        "Total operating and maintenance costs": {},
+        "Total operating and maintenance costs": {
+          "type": "number",
+          "description": "Total O&M Cost",
+          "units": "MUSD/yr"
+        },
         "OPEX": {},
         "Average annual auxiliary fuel cost": {},
         "Average annual pumping cost": {},

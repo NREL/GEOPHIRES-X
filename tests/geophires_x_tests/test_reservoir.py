@@ -7,6 +7,8 @@ from pint.facets.plain import PlainQuantity
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
+from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresXClient
 from tests.base_test_case import BaseTestCase
 
 
@@ -27,6 +29,7 @@ class ReservoirTestCase(BaseTestCase):
         self.assertAlmostEqual(79.433865, p.magnitude, places=3)
         self.assertEqual('megapascal', p.units)
 
+    # noinspection PyMethodMayBeStatic
     def _new_model(self, input_file=None) -> Model:
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
@@ -45,3 +48,15 @@ class ReservoirTestCase(BaseTestCase):
         os.chdir(stash_cwd)
 
         return m
+
+    def test_number_of_fractures(self):
+        r = GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                from_file_path=self._get_test_file_path('generic-egs-case.txt'),
+                params={
+                    'Number of Fractures': 10_000,
+                },
+            )
+        )
+
+        self.assertEqual(10_000, r.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])

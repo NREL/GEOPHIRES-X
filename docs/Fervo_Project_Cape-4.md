@@ -8,7 +8,7 @@ Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $78.8/MWh and CAPEX = $4650/kW.
+Key case study results include LCOE = $76.5/MWh and CAPEX = $4350/kW.
 
 [Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
 interactively explore the case study in the GEOPHIRES web interface.
@@ -82,12 +82,12 @@ in source code for the complete results.
 
 | Metric                             | Result Value                                             | Reference Value(s)       | Reference Source                            |
 |------------------------------------|----------------------------------------------------------|--------------------------|---------------------------------------------|
-| LCOE                               | $78.8/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
-| Project capital costs: Total CAPEX | $2.86B                                                   |                          |                                             |
-| Project capital costs: $/kW        | $4650/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
+| LCOE                               | $76.5/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
+| Project capital costs: Total CAPEX | $2.67B                                                   |                          |                                             |
+| Project capital costs: $/kW        | $4350/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
 | Well Drilling and Completion Cost  | $3.96M/well                                              | $<4M/well                | Latimer, 2025.                              |
 | WACC                               | 8.3%                                                     | 8.3%                     | Matson, 2024.                               |
-| After-tax IRR                      | 28%                                                      | 15–25%                   | Typical levered returns for energy projects |
+| After-tax IRR                      | 30.7%                                                    | 15–25%                   | Typical levered returns for energy projects |
 
 ### Technical & Engineering Results
 

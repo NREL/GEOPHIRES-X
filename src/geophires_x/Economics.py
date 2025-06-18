@@ -2381,8 +2381,11 @@ class Economics:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
+                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
                 self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    model.surfaceplant.HeatExtracted.value) * 1000.
+
                 self.peakingboilercost.value = 65 * model.surfaceplant.max_peaking_boiler_demand.value / 1000  # add 65$/KW for peaking boiler
                 self.Cplant.value += self.peakingboilercost.value  # add peaking boiler cost to surface plant cost
 

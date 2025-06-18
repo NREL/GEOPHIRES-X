@@ -321,7 +321,7 @@
       "category": "Reservoir",
       "default": 10,
       "minimum": 1,
-      "maximum": 149
+      "maximum": 99999
     },
     "Fracture Separation": {
       "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",

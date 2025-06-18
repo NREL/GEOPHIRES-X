@@ -74,16 +74,18 @@ class AGSEconomics(Economics.Economics):
             Required=False,
             ErrMessage="assume default Capital cost for surface plant for direct-use system (100 $/kWth)"
         )
+        self._default_Power_plant_cost_USD_per_kWe = 3000
         self.Power_plant_cost_per_kWe = self.ParameterDict[self.Power_plant_cost_per_kWe.Name] = floatParameter(
             "Capital Cost for Power Plant for Electricity Generation",
-            DefaultValue=3000.0,
+            DefaultValue=self._default_Power_plant_cost_USD_per_kWe,
             Min=0.0,
             Max=10000.0,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
             Required=True,
-            ErrMessage="assume default Power plant capital cost per kWe (3000 USD/kWe)"
+            ErrMessage=f'assume default Power plant capital cost per kWe '
+                       f'({self._default_Power_plant_cost_USD_per_kWe} USD/kWe)'
         )
 
         # results are stored here and in the parent ProducedTemperature array

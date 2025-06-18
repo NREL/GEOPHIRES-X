@@ -1861,6 +1861,15 @@
       "minimum": 0,
       "maximum": 1
     },
+    "Peaking Boiler Cost per KW": {
+      "description": "Peaking boiler cost per KW of maximum peaking boiler demand",
+      "type": "number",
+      "units": "USD/kW",
+      "category": "Economics",
+      "default": 65,
+      "minimum": 0,
+      "maximum": 1000
+    },
     "District Heating Piping Cost Rate": {
       "description": "District heating piping cost rate ($/m)",
       "type": "number",

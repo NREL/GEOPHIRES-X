@@ -7,6 +7,7 @@ import numpy_financial as npf
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 from geophires_x.Model import Model
 from geophires_x.Economics import CalculateFinancialPerformance
+from geophires_x_client import GeophiresXResult, GeophiresXClient, GeophiresInputParameters
 from tests.base_test_case import BaseTestCase
 
 
@@ -115,3 +116,24 @@ class EconomicsTestCase(BaseTestCase):
         os.chdir(stash_cwd)
 
         return m
+
+    def test_peaking_boiler_cost(self):
+        def _get_result(peaking_boiler_cost_: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('../examples/example12_DH.txt'),
+                    params={
+                        'Peaking Boiler Cost per KW': peaking_boiler_cost_,
+                    },
+                )
+            )
+
+        def _lcoh_pbc(r: GeophiresXResult) -> tuple[float, float]:
+            return (
+                r.result['SUMMARY OF RESULTS']['Direct-Use heat breakeven price (LCOH)']['value'],
+                r.result['CAPITAL COSTS (M$)']['of which Peaking Boiler Cost']['value'],
+            )
+
+        lcoh, peaking_boiler_cost = _lcoh_pbc(_get_result(0))
+        self.assertLess(lcoh, 13.19)
+        self.assertEqual(0, peaking_boiler_cost)

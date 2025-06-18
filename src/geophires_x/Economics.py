@@ -1111,6 +1111,18 @@ class Economics:
             ErrMessage="assume default peaking boiler efficiency (85%)",
             ToolTipText="Peaking boiler efficiency"
         )
+        self._default_peaking_boiler_cost_USD_per_kw = 65
+        self.peaking_boiler_cost_per_kw = self.ParameterDict[self.peaking_boiler_cost_per_kw.Name] = floatParameter(
+            "Peaking Boiler Cost per KW",
+            DefaultValue=self._default_peaking_boiler_cost_USD_per_kw,
+            Min=0,
+            Max=1000,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
+            Required=False,
+            ToolTipText="Peaking boiler cost per KW of maximum peaking boiler demand"
+        )
         self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
             "District Heating Piping Cost Rate",
             DefaultValue=1200,
@@ -1689,13 +1701,18 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
             Name="Peaking boiler cost",
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Default cost: ${self._default_peaking_boiler_cost_USD_per_kw}/KW '
+                        f'of maximum peaking boiler demand. '
+                        f'Provide {self.peaking_boiler_cost_per_kw.Name} override the default.'
         )
+
         self.dhdistrictcost = self.OutputParameterDict[self.dhdistrictcost.Name] = OutputParameter(
             Name="District Heating System Cost",
             UnitType=Units.CURRENCY,
@@ -2386,8 +2403,13 @@ class Economics:
                 self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
-                self.peakingboilercost.value = 65 * model.surfaceplant.max_peaking_boiler_demand.value / 1000  # add 65$/KW for peaking boiler
-                self.Cplant.value += self.peakingboilercost.value  # add peaking boiler cost to surface plant cost
+                # add 65$/KW for peaking boiler
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kw.quantity()
+                                                .to('USD / kilowatt').magnitude
+                                                * model.surfaceplant.max_peaking_boiler_demand.value / 1000)
+
+                # add peaking boiler cost to surface plant cost
+                self.Cplant.value += self.peakingboilercost.value
 
 
         else:  # all other options have power plant

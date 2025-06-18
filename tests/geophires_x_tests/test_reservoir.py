@@ -9,6 +9,7 @@ from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
+from geophires_x_client import GeophiresXResult
 from tests.base_test_case import BaseTestCase
 
 
@@ -50,13 +51,20 @@ class ReservoirTestCase(BaseTestCase):
         return m
 
     def test_number_of_fractures(self):
-        r = GeophiresXClient().get_geophires_result(
-            GeophiresInputParameters(
-                from_file_path=self._get_test_file_path('generic-egs-case.txt'),
-                params={
-                    'Number of Fractures': 10_000,
-                },
+        def _get_result(num_fractures: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('generic-egs-case.txt'),
+                    params={
+                        'Number of Fractures': num_fractures,
+                    },
+                )
             )
-        )
 
+        r = _get_result(10_000)
         self.assertEqual(10_000, r.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
+
+        max_fracs = 99_999
+        self.assertEqual(
+            max_fracs, _get_result(max_fracs).result['RESERVOIR PARAMETERS']['Number of fractures']['value']
+        )

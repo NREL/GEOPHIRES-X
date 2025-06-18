@@ -56,15 +56,38 @@ class ReservoirTestCase(BaseTestCase):
                 GeophiresInputParameters(
                     from_file_path=self._get_test_file_path('generic-egs-case.txt'),
                     params={
+                        'Reservoir Volume Option': '1, -- FRAC_NUM_SEP',
+                        'Fracture Shape': '3, -- Square',
+                        'Fracture Height': 165,
                         'Number of Fractures': num_fractures,
                     },
                 )
             )
 
-        r = _get_result(10_000)
-        self.assertEqual(10_000, r.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
+        def _fractures_lcoe_net(r: GeophiresXResult) -> tuple[int, float, float]:
+            return (
+                r.result['RESERVOIR PARAMETERS']['Number of fractures']['value'],
+                r.result['SUMMARY OF RESULTS']['Electricity breakeven price']['value'],
+                r.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'],
+            )
 
-        max_fracs = 99_999
-        self.assertEqual(
-            max_fracs, _get_result(max_fracs).result['RESERVOIR PARAMETERS']['Number of fractures']['value']
-        )
+        fractures, lcoe, net_production = _fractures_lcoe_net(_get_result(10_000))
+
+        self.assertEqual(10_000, fractures)
+
+        self.assertGreater(lcoe, 0)
+        self.assertLess(lcoe, 400)
+
+        self.assertGreater(net_production, 0)
+        self.assertLess(net_production, 500)
+
+        max_fractures = 99_999
+        fractures, lcoe, net_production = _fractures_lcoe_net(_get_result(max_fractures))
+
+        self.assertEqual(max_fractures, fractures)
+
+        self.assertGreater(lcoe, 0)
+        self.assertLess(lcoe, 400)
+
+        self.assertGreater(net_production, 0)
+        self.assertLess(net_production, 500)

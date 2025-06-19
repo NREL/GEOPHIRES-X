@@ -700,6 +700,7 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for built-in wellfield O&M cost correlation"
         )
+
         self.ccplantfixed = self.ParameterDict[self.ccplantfixed.Name] = floatParameter(
             "Surface Plant Capital Cost",
             DefaultValue=-1.0,
@@ -724,6 +725,19 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for built-in surface plant capital cost correlation"
         )
+        self._default_Power_plant_cost_USD_per_kWe = 3000
+        self.Power_plant_cost_per_kWe = self.ParameterDict[self.Power_plant_cost_per_kWe.Name] = floatParameter(
+            "Capital Cost for Power Plant for Electricity Generation",
+            DefaultValue=self._default_Power_plant_cost_USD_per_kWe,
+            Min=0.0,
+            Max=10000.0,
+            UnitType=Units.ENERGYCOST,
+            PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
+            CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
+            ErrMessage=f'assume default Power plant capital cost per kWe '
+                       f'({self._default_Power_plant_cost_USD_per_kWe} USD/kWe)'
+        )
+
         self.ccgathfixed = self.ParameterDict[self.ccgathfixed.Name] = floatParameter(
             "Field Gathering System Capital Cost",
             DefaultValue=-1.0,
@@ -2351,236 +2365,11 @@ class Economics:
                 self.Cpumps = Cpumpsinj + Cpumpsprod
 
             # Based on GETEM 2016: 1.15 for 15% contingency and 1.12 for 12% indirect costs
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
             self.Cgath.value = 1.15 * self.ccgathadjfactor.value * 1.12 * (
                     (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
-        # plant costs
-        if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT
-            and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):  # direct-use
-            if self.ccplantfixed.Valid:
-                self.Cplant.value = self.ccplantfixed.value
-            else:
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-
-        # absorption chiller
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
-            if self.ccplantfixed.Valid:
-                self.Cplant.value = self.ccplantfixed.value
-            else:
-                # this is for the direct-use part all the way up to the absorption chiller
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
-                    self.chillercapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency and 1.12 for 12% indirect costs
-
-                # now add chiller cost to surface plant cost
-                self.Cplant.value += self.chillercapex.value
-
-        # heat pump
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
-            if self.ccplantfixed.Valid:
-                self.Cplant.value = self.ccplantfixed.value
-            else:
-                # this is for the direct-use part all the way up to the heat pump
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
-                    self.heatpumpcapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency and 1.12 for 12% indirect costs
-
-                # now add heat pump cost to surface plant cost
-                self.Cplant.value += self.heatpumpcapex.value
-
-        # district heating
-        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
-            if self.ccplantfixed.Valid:
-                self.Cplant.value = self.ccplantfixed.value
-            else:
-                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.
-
-                # add 65$/KW for peaking boiler
-                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kw.quantity()
-                                                .to('USD / kilowatt').magnitude
-                                                * model.surfaceplant.max_peaking_boiler_demand.value / 1000)
-
-                # add peaking boiler cost to surface plant cost
-                self.Cplant.value += self.peakingboilercost.value
-
-
-        else:  # all other options have power plant
-            if model.surfaceplant.plant_type.value == PlantType.SUB_CRITICAL_ORC:
-                MaxProducedTemperature = np.max(model.surfaceplant.TenteringPP.value)
-                if MaxProducedTemperature < 150.:
-                    C3 = -1.458333E-3
-                    C2 = 7.6875E-1
-                    C1 = -1.347917E2
-                    C0 = 1.0075E4
-                    CCAPP1 = C3 * MaxProducedTemperature ** 3 + C2 * MaxProducedTemperature ** 2 + C1 * MaxProducedTemperature + C0
-                else:
-                    CCAPP1 = 2231 - 2 * (MaxProducedTemperature - 150.)
-                x = np.max(model.surfaceplant.ElectricityProduced.value)
-                y = np.max(model.surfaceplant.ElectricityProduced.value)
-                if y == 0.0:
-                    y = 15.0
-                z = math.pow(y / 15., -0.06)
-                self.Cplantcorrelation = CCAPP1 * z * x * 1000. / 1E6
-
-            elif model.surfaceplant.plant_type.value == PlantType.SUPER_CRITICAL_ORC:
-                MaxProducedTemperature = np.max(model.surfaceplant.TenteringPP.value)
-                if MaxProducedTemperature < 150.:
-                    C3 = -1.458333E-3
-                    C2 = 7.6875E-1
-                    C1 = -1.347917E2
-                    C0 = 1.0075E4
-                    CCAPP1 = C3 * MaxProducedTemperature ** 3 + C2 * MaxProducedTemperature ** 2 + C1 * MaxProducedTemperature + C0
-                else:
-                    CCAPP1 = 2231 - 2 * (MaxProducedTemperature - 150.)
-                # factor 1.1 to make supercritical 10% more expansive than subcritical
-                self.Cplantcorrelation = 1.1 * CCAPP1 * math.pow(
-                    np.max(model.surfaceplant.ElectricityProduced.value) / 15., -0.06) * np.max(
-                    model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6
-
-            elif model.surfaceplant.plant_type.value == PlantType.SINGLE_FLASH:
-                if np.max(model.surfaceplant.ElectricityProduced.value) < 10.:
-                    C2 = 4.8472E-2
-                    C1 = -35.2186
-                    C0 = 8.4474E3
-                    D2 = 4.0604E-2
-                    D1 = -29.3817
-                    D0 = 6.9911E3
-                    PLL = 5.
-                    PRL = 10.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 25.:
-                    C2 = 4.0604E-2
-                    C1 = -29.3817
-                    C0 = 6.9911E3
-                    D2 = 3.2773E-2
-                    D1 = -23.5519
-                    D0 = 5.5263E3
-                    PLL = 10.
-                    PRL = 25.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 50.:
-                    C2 = 3.2773E-2
-                    C1 = -23.5519
-                    C0 = 5.5263E3
-                    D2 = 3.4716E-2
-                    D1 = -23.8139
-                    D0 = 5.1787E3
-                    PLL = 25.
-                    PRL = 50.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 75.:
-                    C2 = 3.4716E-2
-                    C1 = -23.8139
-                    C0 = 5.1787E3
-                    D2 = 3.5271E-2
-                    D1 = -24.3962
-                    D0 = 5.1972E3
-                    PLL = 50.
-                    PRL = 75.
-                else:
-                    C2 = 3.5271E-2
-                    C1 = -24.3962
-                    C0 = 5.1972E3
-                    D2 = 3.3908E-2
-                    D1 = -23.4890
-                    D0 = 5.0238E3
-                    PLL = 75.
-                    PRL = 100.
-                maxProdTemp = np.max(model.surfaceplant.TenteringPP.value)
-                CCAPPLL = C2 * maxProdTemp ** 2 + C1 * maxProdTemp + C0
-                CCAPPRL = D2 * maxProdTemp ** 2 + D1 * maxProdTemp + D0
-                b = math.log(CCAPPRL / CCAPPLL) / math.log(PRL / PLL)
-                a = CCAPPRL / PRL ** b
-                # factor 0.75 to make double flash 25% more expansive than single flash
-                self.Cplantcorrelation = (0.8 * a * math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
-                                          np.max(model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6)
-
-            elif model.surfaceplant.plant_type.value == PlantType.DOUBLE_FLASH:
-                if np.max(model.surfaceplant.ElectricityProduced.value) < 10.:
-                    C2 = 4.8472E-2
-                    C1 = -35.2186
-                    C0 = 8.4474E3
-                    D2 = 4.0604E-2
-                    D1 = -29.3817
-                    D0 = 6.9911E3
-                    PLL = 5.
-                    PRL = 10.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 25.:
-                    C2 = 4.0604E-2
-                    C1 = -29.3817
-                    C0 = 6.9911E3
-                    D2 = 3.2773E-2
-                    D1 = -23.5519
-                    D0 = 5.5263E3
-                    PLL = 10.
-                    PRL = 25.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 50.:
-                    C2 = 3.2773E-2
-                    C1 = -23.5519
-                    C0 = 5.5263E3
-                    D2 = 3.4716E-2
-                    D1 = -23.8139
-                    D0 = 5.1787E3
-                    PLL = 25.
-                    PRL = 50.
-                elif np.max(model.surfaceplant.ElectricityProduced.value) < 75.:
-                    C2 = 3.4716E-2
-                    C1 = -23.8139
-                    C0 = 5.1787E3
-                    D2 = 3.5271E-2
-                    D1 = -24.3962
-                    D0 = 5.1972E3
-                    PLL = 50.
-                    PRL = 75.
-                else:
-                    C2 = 3.5271E-2
-                    C1 = -24.3962
-                    C0 = 5.1972E3
-                    D2 = 3.3908E-2
-                    D1 = -23.4890
-                    D0 = 5.0238E3
-                    PLL = 75.
-                    PRL = 100.
-                maxProdTemp = np.max(model.surfaceplant.TenteringPP.value)
-                CCAPPLL = C2 * maxProdTemp ** 2 + C1 * maxProdTemp + C0
-                CCAPPRL = D2 * maxProdTemp ** 2 + D1 * maxProdTemp + D0
-                b = math.log(CCAPPRL / CCAPPLL) / math.log(PRL / PLL)
-                a = CCAPPRL / PRL ** b
-                self.Cplantcorrelation = (a * math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
-                                          np.max(model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6)
-
-            if self.ccplantfixed.Valid:
-                self.Cplant.value = self.ccplantfixed.value
-                self.CAPEX_cost_electricity_plant = self.Cplant.value * self.CAPEX_heat_electricity_plant_ratio.value
-                self.CAPEX_cost_heat_plant = self.Cplant.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
-            else:
-                # 1.02 to convert cost from 2012 to 2016 #factor 1.15 for 15% contingency and 1.12 for 12% indirect costs. factor 1.10 to convert from 2016 to 2022
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
-                self.CAPEX_cost_electricity_plant = self.Cplant.value
-
-        # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
-        if not self.ccplantfixed.Valid:  # 1.15 below for contingency and 1.12 for indirect costs
-            if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
-                                                          EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduse_option = 3: cogen topping cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
-            elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
-                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:  # enduse_option = 4: cogen bottoming cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
-            elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY,
-                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
-
-            self.Cplant.value = self.Cplant.value + self.CAPEX_cost_heat_plant
-            if not self.CAPEX_heat_electricity_plant_ratio.Provided:
-                self.CAPEX_heat_electricity_plant_ratio.value = self.CAPEX_cost_electricity_plant/self.Cplant.value
+        self.calculate_plant_costs(model)
 
         if not self.totalcapcost.Valid:
             # exploration costs (same as in Geophires v1.2) (M$)
@@ -2842,6 +2631,249 @@ class Economics:
 
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
+
+    def calculate_plant_costs(self, model:Model) -> None:
+        # plant costs
+        if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT
+            and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):  # direct-use
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.
+
+        # absorption chiller
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # this is for the direct-use part all the way up to the absorption chiller
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
+                    self.chillercapex.value = 1.12 * 1.15 * np.max(
+                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+
+                # now add chiller cost to surface plant cost
+                self.Cplant.value += self.chillercapex.value
+
+        # heat pump
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # this is for the direct-use part all the way up to the heat pump
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
+                    self.heatpumpcapex.value = 1.12 * 1.15 * np.max(
+                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+
+                # now add heat pump cost to surface plant cost
+                self.Cplant.value += self.heatpumpcapex.value
+
+        # district heating
+        elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+            else:
+                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.
+
+                # add 65$/KW for peaking boiler
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kw.quantity()
+                                                .to('USD / kilowatt').magnitude
+                                                * model.surfaceplant.max_peaking_boiler_demand.value / 1000)
+
+                # add peaking boiler cost to surface plant cost
+                self.Cplant.value += self.peakingboilercost.value
+
+
+        else:  # all other options have power plant
+            if model.surfaceplant.plant_type.value == PlantType.SUB_CRITICAL_ORC:
+                MaxProducedTemperature = np.max(model.surfaceplant.TenteringPP.value)
+                if MaxProducedTemperature < 150.:
+                    C3 = -1.458333E-3
+                    C2 = 7.6875E-1
+                    C1 = -1.347917E2
+                    C0 = 1.0075E4
+                    CCAPP1 = C3 * MaxProducedTemperature ** 3 + C2 * MaxProducedTemperature ** 2 + C1 * MaxProducedTemperature + C0
+                else:
+                    CCAPP1 = 2231 - 2 * (MaxProducedTemperature - 150.)
+                x = np.max(model.surfaceplant.ElectricityProduced.value)
+                y = np.max(model.surfaceplant.ElectricityProduced.value)
+                if y == 0.0:
+                    y = 15.0
+                z = math.pow(y / 15., -0.06)
+                self.Cplantcorrelation = CCAPP1 * z * x * 1000. / 1E6
+
+            elif model.surfaceplant.plant_type.value == PlantType.SUPER_CRITICAL_ORC:
+                MaxProducedTemperature = np.max(model.surfaceplant.TenteringPP.value)
+                if MaxProducedTemperature < 150.:
+                    C3 = -1.458333E-3
+                    C2 = 7.6875E-1
+                    C1 = -1.347917E2
+                    C0 = 1.0075E4
+                    CCAPP1 = C3 * MaxProducedTemperature ** 3 + C2 * MaxProducedTemperature ** 2 + C1 * MaxProducedTemperature + C0
+                else:
+                    CCAPP1 = 2231 - 2 * (MaxProducedTemperature - 150.)
+                # factor 1.1 to make supercritical 10% more expansive than subcritical
+                self.Cplantcorrelation = 1.1 * CCAPP1 * math.pow(
+                    np.max(model.surfaceplant.ElectricityProduced.value) / 15., -0.06) * np.max(
+                    model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6
+
+            elif model.surfaceplant.plant_type.value == PlantType.SINGLE_FLASH:
+                if np.max(model.surfaceplant.ElectricityProduced.value) < 10.:
+                    C2 = 4.8472E-2
+                    C1 = -35.2186
+                    C0 = 8.4474E3
+                    D2 = 4.0604E-2
+                    D1 = -29.3817
+                    D0 = 6.9911E3
+                    PLL = 5.
+                    PRL = 10.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 25.:
+                    C2 = 4.0604E-2
+                    C1 = -29.3817
+                    C0 = 6.9911E3
+                    D2 = 3.2773E-2
+                    D1 = -23.5519
+                    D0 = 5.5263E3
+                    PLL = 10.
+                    PRL = 25.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 50.:
+                    C2 = 3.2773E-2
+                    C1 = -23.5519
+                    C0 = 5.5263E3
+                    D2 = 3.4716E-2
+                    D1 = -23.8139
+                    D0 = 5.1787E3
+                    PLL = 25.
+                    PRL = 50.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 75.:
+                    C2 = 3.4716E-2
+                    C1 = -23.8139
+                    C0 = 5.1787E3
+                    D2 = 3.5271E-2
+                    D1 = -24.3962
+                    D0 = 5.1972E3
+                    PLL = 50.
+                    PRL = 75.
+                else:
+                    C2 = 3.5271E-2
+                    C1 = -24.3962
+                    C0 = 5.1972E3
+                    D2 = 3.3908E-2
+                    D1 = -23.4890
+                    D0 = 5.0238E3
+                    PLL = 75.
+                    PRL = 100.
+                maxProdTemp = np.max(model.surfaceplant.TenteringPP.value)
+                CCAPPLL = C2 * maxProdTemp ** 2 + C1 * maxProdTemp + C0
+                CCAPPRL = D2 * maxProdTemp ** 2 + D1 * maxProdTemp + D0
+                b = math.log(CCAPPRL / CCAPPLL) / math.log(PRL / PLL)
+                a = CCAPPRL / PRL ** b
+                # factor 0.75 to make double flash 25% more expansive than single flash
+                self.Cplantcorrelation = (0.8 * a * math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
+                                          np.max(model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6)
+
+            elif model.surfaceplant.plant_type.value == PlantType.DOUBLE_FLASH:
+                if np.max(model.surfaceplant.ElectricityProduced.value) < 10.:
+                    C2 = 4.8472E-2
+                    C1 = -35.2186
+                    C0 = 8.4474E3
+                    D2 = 4.0604E-2
+                    D1 = -29.3817
+                    D0 = 6.9911E3
+                    PLL = 5.
+                    PRL = 10.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 25.:
+                    C2 = 4.0604E-2
+                    C1 = -29.3817
+                    C0 = 6.9911E3
+                    D2 = 3.2773E-2
+                    D1 = -23.5519
+                    D0 = 5.5263E3
+                    PLL = 10.
+                    PRL = 25.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 50.:
+                    C2 = 3.2773E-2
+                    C1 = -23.5519
+                    C0 = 5.5263E3
+                    D2 = 3.4716E-2
+                    D1 = -23.8139
+                    D0 = 5.1787E3
+                    PLL = 25.
+                    PRL = 50.
+                elif np.max(model.surfaceplant.ElectricityProduced.value) < 75.:
+                    C2 = 3.4716E-2
+                    C1 = -23.8139
+                    C0 = 5.1787E3
+                    D2 = 3.5271E-2
+                    D1 = -24.3962
+                    D0 = 5.1972E3
+                    PLL = 50.
+                    PRL = 75.
+                else:
+                    C2 = 3.5271E-2
+                    C1 = -24.3962
+                    C0 = 5.1972E3
+                    D2 = 3.3908E-2
+                    D1 = -23.4890
+                    D0 = 5.0238E3
+                    PLL = 75.
+                    PRL = 100.
+                maxProdTemp = np.max(model.surfaceplant.TenteringPP.value)
+                CCAPPLL = C2 * maxProdTemp ** 2 + C1 * maxProdTemp + C0
+                CCAPPRL = D2 * maxProdTemp ** 2 + D1 * maxProdTemp + D0
+                b = math.log(CCAPPRL / CCAPPLL) / math.log(PRL / PLL)
+                a = CCAPPRL / PRL ** b
+                self.Cplantcorrelation = (a * math.pow(np.max(model.surfaceplant.ElectricityProduced.value), b) *
+                                          np.max(model.surfaceplant.ElectricityProduced.value) * 1000. / 1E6)
+
+            if self.ccplantfixed.Valid:
+                self.Cplant.value = self.ccplantfixed.value
+                self.CAPEX_cost_electricity_plant = self.Cplant.value * self.CAPEX_heat_electricity_plant_ratio.value
+                self.CAPEX_cost_heat_plant = self.Cplant.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
+            else:
+                if self.Power_plant_cost_per_kWe.Provided:
+                    nameplate_capacity_kW = np.max(model.surfaceplant.ElectricityProduced.quantity().to('kW'))
+                    direct_plant_cost_MUSD = (nameplate_capacity_kW.magnitude *
+                                              model.economics.Power_plant_cost_per_kWe
+                                              .quantity().to('MUSD / kW').magnitude)
+                else:
+                    # 1.02 to convert cost from 2012 to 2016
+                    # factor 1.10 to convert from 2016 to 2022
+                    direct_plant_cost_MUSD = self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
+
+                # factor 1.15 for 15% contingency and 1.12 for 12% indirect costs.
+                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+                self.Cplant.value = 1.12 * 1.15 * direct_plant_cost_MUSD
+                self.CAPEX_cost_electricity_plant = self.Cplant.value
+
+        # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
+        if not self.ccplantfixed.Valid:  # 1.15 below for contingency and 1.12 for indirect costs
+            if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
+                                                          EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduse_option = 3: cogen topping cycle
+                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
+            elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
+                                                            EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:  # enduse_option = 4: cogen bottoming cycle
+                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
+            elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY,
+                                                            EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
+                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
+
+            self.Cplant.value = self.Cplant.value + self.CAPEX_cost_heat_plant
+            if not self.CAPEX_heat_electricity_plant_ratio.Provided:
+                self.CAPEX_heat_electricity_plant_ratio.value = self.CAPEX_cost_electricity_plant/self.Cplant.value
+
 
 
     def calculate_cashflow(self, model: Model) -> None:

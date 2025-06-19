@@ -37,8 +37,7 @@
     "Dead-state Pressure",
     "Economic Model",
     "Time steps per year",
-    "Operation & Maintenance Cost of Surface Plant",
-    "Capital Cost for Power Plant for Electricity Generation"
+    "Operation & Maintenance Cost of Surface Plant"
   ],
   "properties": {
     "Reservoir Model": {
@@ -1486,6 +1485,15 @@
       "minimum": 0,
       "maximum": 10
     },
+    "Capital Cost for Power Plant for Electricity Generation": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kW",
+      "category": "Economics",
+      "default": 3000,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
     "Field Gathering System Capital Cost": {
       "description": "Total field gathering system capital cost",
       "type": "number",
@@ -2227,15 +2235,6 @@
       "units": "USD/kW",
       "category": "Economics",
       "default": 100.0,
-      "minimum": 0.0,
-      "maximum": 10000.0
-    },
-    "Capital Cost for Power Plant for Electricity Generation": {
-      "description": "",
-      "type": "number",
-      "units": "USD/kW",
-      "category": "Economics",
-      "default": 3000.0,
       "minimum": 0.0,
       "maximum": 10000.0
     },

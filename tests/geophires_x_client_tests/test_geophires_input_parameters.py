@@ -96,3 +96,23 @@ class ImmutableGeophiresInputParametersTestCase(BaseTestCase):
         with self.assertRaises(TypeError):
             # This should fail because MappingProxyType is read-only
             p1.params['Reservoir Depth'] = 4
+
+    def test_combining_file_and_params_with_no_trailing_newline(self):
+        """Verify that combining a base file and params works correctly when the base file lacks a trailing newline."""
+        # Arrange
+        base_content = 'base_key,base_value'  # Note: no trailing newline
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, newline='') as tmp_file:
+            base_file_path = Path(tmp_file.name)
+            tmp_file.write(base_content)
+
+        # Act
+        params = ImmutableGeophiresInputParameters(from_file_path=base_file_path, params={'new_key': 'new_value'})
+        combined_file_path = params.as_file_path()
+        combined_content = combined_file_path.read_text()
+
+        # Assert
+        expected_content = 'base_key,base_value\nnew_key, new_value\n'
+        self.assertEqual(expected_content, combined_content)
+
+        # Clean up the temporary file
+        base_file_path.unlink()

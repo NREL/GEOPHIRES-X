@@ -157,7 +157,7 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
 
         file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._instance_id!s}.txt')
 
-        with open(file_path, 'w', encoding='UTF-8') as f:
+        with open(file_path, 'w+', encoding='UTF-8') as f:
             if self.from_file_path:
                 with open(self.from_file_path, encoding='UTF-8') as base_file:
                     f.write(base_file.read())

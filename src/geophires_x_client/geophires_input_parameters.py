@@ -145,12 +145,27 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
 
         return hash((param_hash, file_content_hash))
 
+    def __deepcopy__(self, memo):
+        """
+        Return the instance itself for deepcopy, as the object is immutable.
+
+        This implementation prevents a TypeError when `copy.deepcopy` is used
+        on an object containing an instance of this class, as it avoids trying
+        to pickle the internal `mappingproxy` object.
+
+        Args:
+            memo: The memoization dictionary used by `copy.deepcopy` to prevent
+                  infinite recursion in case of circular references.
+        """
+        # Add self to the memoization dictionary to handle circular references correctly.
+        memo[id(self)] = self
+        return self
+
     def as_file_path(self) -> Path:
         """
         Creates a temporary file representation of the parameters on demand.
         The resulting file path is cached on the instance for efficiency.
         """
-
         # Use hasattr to check for the cached attribute on the frozen instance
         if hasattr(self, '_cached_file_path'):
             return self._cached_file_path

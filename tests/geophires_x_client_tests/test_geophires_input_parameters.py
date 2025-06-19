@@ -1,3 +1,4 @@
+import copy
 import tempfile
 import uuid
 from pathlib import Path
@@ -116,3 +117,16 @@ class ImmutableGeophiresInputParametersTestCase(BaseTestCase):
 
         # Clean up the temporary file
         base_file_path.unlink()
+
+    def test_deepcopy(self):
+        """Verify that copy.deepcopy works on an instance without raising a TypeError."""
+        p1 = ImmutableGeophiresInputParameters(params={'Reservoir Depth': 3})
+        p2 = None
+
+        try:
+            p2 = copy.deepcopy(p1)
+        except TypeError:
+            self.fail('copy.deepcopy(ImmutableGeophiresInputParameters) raised TypeError unexpectedly!')
+
+        # For an immutable object, deepcopy should ideally return the same instance.
+        self.assertIs(p1, p2)

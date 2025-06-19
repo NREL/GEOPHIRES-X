@@ -9,10 +9,11 @@ from tests.base_test_case import BaseTestCase
 
 class GeophiresInputParametersTestCase(BaseTestCase):
 
-    def test_id(self):
+    def test_internal_id_and_hash(self):
         input_1 = GeophiresInputParameters(from_file_path=self._get_test_file_path('client_test_input_1.txt'))
         input_2 = GeophiresInputParameters(from_file_path=self._get_test_file_path('client_test_input_2.txt'))
         self.assertIsNot(input_1._id, input_2._id)
+        self.assertNotEqual(hash(input_1), hash(input_2))
 
     def test_init_with_input_file(self):
         file_path = self._get_test_file_path('client_test_input_1.txt')

@@ -1,9 +1,11 @@
 import tempfile
 import uuid
 from pathlib import Path
+from types import MappingProxyType
 
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
+from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 from tests.base_test_case import BaseTestCase
 
 
@@ -52,3 +54,45 @@ class GeophiresInputParametersTestCase(BaseTestCase):
             GeophiresInputParameters(from_file_path=self._get_test_file_path('input_comments.txt'))
         )
         self.assertIsNotNone(result)
+
+
+class ImmutableGeophiresInputParametersTestCase(BaseTestCase):
+    def test_init_with_file_path_as_string(self):
+        """Verify that the class can be initialized with a string path without raising an AttributeError."""
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as tmp_file:
+            tmp_file_path = tmp_file.name
+            tmp_file.write('key,value\n')
+
+        # This should not raise an AttributeError
+        params = ImmutableGeophiresInputParameters(from_file_path=tmp_file_path)
+
+        # Verify the path was correctly converted and can be used
+        self.assertTrue(params.as_file_path().exists())
+        self.assertIsInstance(params.from_file_path, Path)
+
+        # Clean up the temporary file
+        Path(tmp_file_path).unlink()
+
+    def test_hash_equality(self):
+        """Verify that two objects with the same content have the same hash."""
+        params = {'Reservoir Depth': 3, 'Gradient 1': 50}
+        p1 = ImmutableGeophiresInputParameters(params=params)
+        p2 = ImmutableGeophiresInputParameters(params=params)
+
+        self.assertIsNot(p1, p2)
+        self.assertEqual(hash(p1), hash(p2))
+
+    def test_hash_inequality(self):
+        """Verify that two objects with different content have different hashes."""
+        p1 = ImmutableGeophiresInputParameters(params={'Reservoir Depth': 3})
+        p2 = ImmutableGeophiresInputParameters(params={'Reservoir Depth': 4})
+        self.assertNotEqual(hash(p1), hash(p2))
+
+    def test_immutability_of_params(self):
+        """Verify that the params dictionary is an immutable mapping proxy."""
+        p1 = ImmutableGeophiresInputParameters(params={'Reservoir Depth': 3})
+        self.assertIsInstance(p1.params, MappingProxyType)
+
+        with self.assertRaises(TypeError):
+            # This should fail because MappingProxyType is read-only
+            p1.params['Reservoir Depth'] = 4

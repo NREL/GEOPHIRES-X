@@ -40,6 +40,13 @@ class PowerPlantType(Enum):
 
 
 class GeophiresInputParameters:
+    """
+    .. deprecated:: v3.9.21
+        Use :class:`~geophires_x_client.geophires_input_parameters.ImmutableGeophiresInputParameters` instead for
+        better performance and guardrails against erroneous usage.
+        This class is kept for backwards compatibility, but does not work with GeophiresXClient caching and is more
+        susceptible to potential bugs due to its mutability.
+    """
 
     def __init__(self, params: Optional[MappingProxyType] = None, from_file_path: Optional[Path] = None):
         """
@@ -100,15 +107,24 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
     """
 
     params: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
-    from_file_path: Union[Path, None] = None
+    from_file_path: Union[Path, str, None] = None
 
     # A unique ID for this instance, used for file I/O but not for hashing or equality.
     _instance_id: uuid.UUID = field(default_factory=uuid.uuid4, init=False, repr=False, compare=False)
 
     def __post_init__(self):
-        """Ensures that the parameters dictionary is immutable."""
+        """
+        Validates input and normalizes field types for immutability and consistency.
+        - Ensures from_file_path is a Path object if provided as a string.
+        - Ensures the params dictionary is an immutable mapping proxy.
+        """
+        # Normalize from_file_path to a Path object. object.__setattr__ is required
+        # because the dataclass is frozen.
+        if self.from_file_path and isinstance(self.from_file_path, str):
+            object.__setattr__(self, 'from_file_path', Path(self.from_file_path))
+
+        # Ensure params is an immutable proxy
         if not isinstance(self.params, MappingProxyType):
-            # object.__setattr__ is required to modify a field in a frozen dataclass
             object.__setattr__(self, 'params', MappingProxyType(self.params))
 
     def __hash__(self) -> int:
@@ -117,12 +133,14 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
         If a base file is used, its content is read and hashed to ensure
         the hash reflects a true snapshot of all inputs.
         """
-
         param_hash = hash(frozenset(self.params.items()))
 
-        if self.from_file_path is not None and self.from_file_path.exists():
+        file_content_hash = None
+        # self.from_file_path is now guaranteed to be a Path object or None
+        if self.from_file_path and self.from_file_path.exists():
             file_content_hash = hash(self.from_file_path.read_bytes())
         else:
+            # Hash the path itself if it's None or doesn't exist.
             file_content_hash = hash(self.from_file_path)
 
         return hash((param_hash, file_content_hash))
@@ -130,23 +148,23 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
     def as_file_path(self) -> Path:
         """
         Creates a temporary file representation of the parameters on demand.
-        The resulting file path is cached for efficiency.
+        The resulting file path is cached on the instance for efficiency.
         """
 
-        # Return the cached path if the file has already been generated for this instance.
+        # Use hasattr to check for the cached attribute on the frozen instance
         if hasattr(self, '_cached_file_path'):
             return self._cached_file_path
 
         file_path = Path(tempfile.gettempdir(), f'geophires-input-params_{self._instance_id!s}.txt')
 
         with open(file_path, 'w', encoding='UTF-8') as f:
-            if self.from_file_path is not None:
+            if self.from_file_path:
                 with open(self.from_file_path, encoding='UTF-8') as base_file:
                     f.write(base_file.read())
 
             if self.params:
                 # Ensure there is a newline between the base file content and appended params.
-                if self.from_file_path is not None and f.tell() > 0:
+                if self.from_file_path and f.tell() > 0:
                     f.seek(f.tell() - 1)
                     if f.read(1) != '\n':
                         f.write('\n')

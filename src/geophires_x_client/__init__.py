@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 import threading
@@ -7,18 +6,23 @@ from pathlib import Path
 
 from geophires_x import GEOPHIRESv3 as geophires
 
+# Assuming these are in a sibling file or accessible path
 from .common import _get_logger
-from .geophires_input_parameters import EndUseOption
 from .geophires_input_parameters import GeophiresInputParameters
+from .geophires_input_parameters import ImmutableGeophiresInputParameters
 from .geophires_x_result import GeophiresXResult
 
 
 class GeophiresXClient:
+    """
+    A thread-safe and process-safe client for running GEOPHIRES simulations.
+    Relies on an explicit shutdown() call to clean up background processes.
+    """
+
     # --- Class-level shared resources ---
-    # These will be initialized lazily and shared across all instances and processes.
     _manager = None
     _cache = None
-    _lock = None  # This will be a process-safe RLock from the manager.
+    _lock = None
 
     # A standard threading lock to make the one-time initialization thread-safe.
     _init_lock = threading.Lock()
@@ -31,7 +35,6 @@ class GeophiresXClient:
         self._enable_caching = enable_caching
 
         # Lazy-initialize shared resources if they haven't been already.
-        # This approach is safe to call from multiple threads/processes.
         if GeophiresXClient._manager is None:
             self._initialize_shared_resources()
 
@@ -41,69 +44,63 @@ class GeophiresXClient:
         Initializes the multiprocessing Manager and shared resources (cache, lock)
         in a thread-safe and process-safe manner.
         """
-        # Use a thread-safe lock to ensure this block only ever runs once
-        # across all threads in the main process.
         with cls._init_lock:
-            # The double-check locking pattern ensures we don't try to
-            # re-initialize if another thread finished while we were waiting.
             if cls._manager is None:
                 cls._manager = Manager()
                 cls._cache = cls._manager.dict()
-                cls._lock = cls._manager.RLock()  # The Manager now creates the lock.
+                cls._lock = cls._manager.RLock()
+
+    @classmethod
+    def shutdown(cls):
+        """
+        Explicitly shuts down the background manager process.
+        This MUST be called when the application is finished with the client
+        to prevent orphaned processes.
+        """
+        with cls._init_lock:
+            if cls._manager is not None:
+                cls._manager.shutdown()
+                cls._manager = None
+                cls._cache = None
+                cls._lock = None
 
     def get_geophires_result(self, input_params: GeophiresInputParameters) -> GeophiresXResult:
         """
-        Calculates a GEOPHIRES result in a thread-safe and process-safe manner.
+        Calculates a GEOPHIRES result, using a cross-process cache to avoid
+        re-computing results for the same inputs. Caching is only effective
+        when providing an instance of ImmutableGeophiresInputParameters.
         """
-        # Use the process-safe lock from the manager to make the check-then-act
-        # operation on the cache fully atomic across multiple processes.
+        is_immutable = isinstance(input_params, ImmutableGeophiresInputParameters)
+
+        if not (self._enable_caching and is_immutable):
+            return self._run_simulation(input_params)
+
+        cache_key = hash(input_params)
+
         with GeophiresXClient._lock:
-            cache_key = hash(input_params)
-            if self._enable_caching and cache_key in GeophiresXClient._cache:
+            if cache_key in GeophiresXClient._cache:
                 return GeophiresXClient._cache[cache_key]
 
-            # --- This section is now guaranteed to run only once per unique input ---
-            stash_cwd = Path.cwd()
-            stash_sys_argv = sys.argv
-
-            sys.argv = ['', input_params.as_file_path(), input_params.get_output_file_path()]
-            try:
-                geophires.main(enable_geophires_logging_config=False)
-            except Exception as e:
-                raise RuntimeError(f'GEOPHIRES encountered an exception: {e!s}') from e
-            except SystemExit:
-                raise RuntimeError('GEOPHIRES exited without giving a reason') from None
-            finally:
-                # Ensure global state is restored even if geophires.main() fails
-                sys.argv = stash_sys_argv
-                os.chdir(stash_cwd)
-
-            self._logger.info(f'GEOPHIRES-X output file: {input_params.get_output_file_path()}')
-
-            result = GeophiresXResult(input_params.get_output_file_path())
-            if self._enable_caching:
-                self._cache[cache_key] = result
-
+            result = self._run_simulation(input_params)
+            GeophiresXClient._cache[cache_key] = result
             return result
 
+    def _run_simulation(self, input_params: GeophiresInputParameters) -> GeophiresXResult:
+        """Helper method to encapsulate the actual GEOPHIRES run."""
+        stash_cwd = Path.cwd()
+        stash_sys_argv = sys.argv
+        sys.argv = ['', input_params.as_file_path(), input_params.get_output_file_path()]
 
-if __name__ == '__main__':
-    # This block remains for direct testing of the script.
-    client = GeophiresXClient()
-    log = _get_logger()
+        try:
+            geophires.main(enable_geophires_logging_config=False)
+        except Exception as e:
+            raise RuntimeError(f'GEOPHIRES encountered an exception: {e!s}') from e
+        except SystemExit:
+            raise RuntimeError('GEOPHIRES exited without giving a reason') from None
+        finally:
+            sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)
 
-    params = GeophiresInputParameters(
-        {
-            'Print Output to Console': 0,
-            'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
-            'Reservoir Model': 1,
-            'Time steps per year': 1,
-            'Reservoir Depth': 3,
-            'Gradient 1': 50,
-            'Maximum Temperature': 250,
-        }
-    )
-
-    result_ = client.get_geophires_result(params)
-    log.info(f'Breakeven price: ${result_.direct_use_heat_breakeven_price_USD_per_MMBTU}/MMBTU')
-    log.info(json.dumps(result_.result, indent=2))
+        self._logger.info(f'GEOPHIRES-X output file: {input_params.get_output_file_path()}')
+        result = GeophiresXResult(input_params.get_output_file_path())
+        return result

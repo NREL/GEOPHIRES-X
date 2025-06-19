@@ -6,19 +6,16 @@ import unittest
 from logging.handlers import QueueHandler
 from queue import Empty
 
-from geophires_x_client import EndUseOption
-
 # Important: We must be able to import the client and all parameter classes
 from geophires_x_client import GeophiresXClient
+from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 
 
-# This is the function that each worker process will execute.
-# It must be a top-level function to be picklable by multiprocessing.
 def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, result_queue: multiprocessing.Queue):
     """
-    Instantiates a client and runs a calculation, reporting results
-    and logs back to the main process via queues.
+    This is the function that each worker process will execute.
+    It must be a top-level function to be picklable by multiprocessing.
     """
     # Configure logging for this worker process to send messages to the shared queue.
     root_logger = logging.getLogger()
@@ -26,8 +23,7 @@ def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, r
     root_logger.handlers = [QueueHandler(log_queue)]
 
     try:
-        # Client initialization is now done in the worker, relying on the
-        # lazy-loading singleton pattern in the client itself.
+        # The client will use the Manager that was injected by the test's main process.
         client = GeophiresXClient(enable_caching=True)
         params = ImmutableGeophiresInputParameters(params_dict)
         result = client.get_geophires_result(params)
@@ -37,10 +33,8 @@ def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, r
 
 
 class TestMultiprocessingSafety(unittest.TestCase):
-    # By removing setUpClass and tearDownClass, we ensure each test is fully isolated.
-
     def setUp(self):
-        """Set up a shared set of parameters for each test."""
+        """Set up a unique set of parameters for each test."""
         self.params_dict = {
             'Print Output to Console': 0,
             'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
@@ -54,24 +48,25 @@ class TestMultiprocessingSafety(unittest.TestCase):
     def test_client_runs_real_geophires_and_caches_across_processes(self):
         """
         Tests that GeophiresXClient can run the real geophires.main in multiple
-        processes and that the cache is shared between them.
+        processes and that the cache is shared between them. This test is now
+        fully self-contained to prevent resource conflicts with the test runner.
         """
         if sys.platform == 'win32':
             self.skipTest("The 'fork' multiprocessing context is not available on Windows.")
 
         ctx = multiprocessing.get_context('fork')
-        # THE FIX: Use the Manager as a context manager within the test.
-        # This guarantees it and all its resources (queues, etc.) are
-        # properly created and shut down for each individual test run.
+        # Use the Manager as a context manager. This is the key to ensuring
+        # all resources it creates (queues, etc.) are properly shut down
+        # at the end of the block, preventing deadlocks.
         with ctx.Manager() as manager:
-            log_queue = manager.Queue()
-            result_queue = manager.Queue()
-
-            # The client needs to be re-initialized inside the test to use the new manager.
-            # This is a bit of a workaround to reset the class-level singleton for the test.
+            # For this test to work, we MUST inject the test-specific manager
+            # into the client's class-level singleton attributes.
             GeophiresXClient._manager = manager
             GeophiresXClient._cache = manager.dict()
             GeophiresXClient._lock = manager.RLock()
+
+            log_queue = manager.Queue()
+            result_queue = manager.Queue()
 
             num_processes = 4
             process_timeout_seconds = 15
@@ -102,7 +97,7 @@ class TestMultiprocessingSafety(unittest.TestCase):
             for p in processes:
                 p.join(timeout=process_timeout_seconds)
                 if p.is_alive():
-                    p.terminate()  # Forcefully end if stuck
+                    p.terminate()
                     self.fail(f'Process {p.pid} failed to terminate cleanly.')
 
             # --- Assertions ---
@@ -128,7 +123,7 @@ class TestMultiprocessingSafety(unittest.TestCase):
                 f'\nTest passed: Detected {successful_runs} non-cached GEOPHIRES run(s) for {num_processes} requests.'
             )
 
-        # Reset the client's singleton state after the test to not interfere with others.
+        # CRITICAL: Reset the client's singleton state after the test to not interfere with other tests.
         GeophiresXClient._manager = None
         GeophiresXClient._cache = None
         GeophiresXClient._lock = None

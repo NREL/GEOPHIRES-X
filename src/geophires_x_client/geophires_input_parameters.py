@@ -161,6 +161,26 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
         memo[id(self)] = self
         return self
 
+    def __getstate__(self) -> dict:
+        """
+        Prepare the object's state for pickling.
+        Converts the mappingproxy to a regular dict, which is pickleable.
+        """
+        state = self.__dict__.copy()
+        # Convert mappingproxy to dict for serialization
+        state['params'] = dict(self.params)
+        return state
+
+    def __setstate__(self, state: dict):
+        """
+        Restore the object's state after unpickling.
+        Converts the dict back to a mappingproxy to maintain immutability.
+        """
+        # Convert dict back to mappingproxy
+        state['params'] = MappingProxyType(state['params'])
+        # Restore the instance's dictionary
+        self.__dict__.update(state)
+
     def as_file_path(self) -> Path:
         """
         Creates a temporary file representation of the parameters on demand.

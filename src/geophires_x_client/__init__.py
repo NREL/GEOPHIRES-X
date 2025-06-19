@@ -1,10 +1,8 @@
 import json
 import os
 import sys
-
-# --- MULTIPROCESSING CHANGES ---
+import threading
 from multiprocessing import Manager
-from multiprocessing import RLock
 from pathlib import Path
 
 from geophires_x import GEOPHIRESv3 as geophires
@@ -16,11 +14,14 @@ from .geophires_x_result import GeophiresXResult
 
 
 class GeophiresXClient:
-    # --- LAZY-LOADED, PROCESS-SAFE SINGLETONS ---
-    # Define class-level placeholders. These will be shared across all instances.
+    # --- Class-level shared resources ---
+    # These will be initialized lazily and shared across all instances and processes.
     _manager = None
     _cache = None
-    _lock = RLock()  # Use a process-safe re-entrant lock
+    _lock = None  # This will be a process-safe RLock from the manager.
+
+    # A standard threading lock to make the one-time initialization thread-safe.
+    _init_lock = threading.Lock()
 
     def __init__(self, enable_caching=True, logger_name=None):
         if logger_name is None:
@@ -29,33 +30,39 @@ class GeophiresXClient:
         self._logger = _get_logger(logger_name=logger_name)
         self._enable_caching = enable_caching
 
-        # This method will safely initialize the shared manager and cache
-        # only when the first client instance is created.
-        self._initialize_shared_resources()
+        # Lazy-initialize shared resources if they haven't been already.
+        # This approach is safe to call from multiple threads/processes.
+        if GeophiresXClient._manager is None:
+            self._initialize_shared_resources()
 
     @classmethod
     def _initialize_shared_resources(cls):
         """
-        Initializes the multiprocessing Manager and shared cache dictionary.
-        This method is designed to be called safely by multiple processes,
-        ensuring the manager is only started once.
+        Initializes the multiprocessing Manager and shared resources (cache, lock)
+        in a thread-safe and process-safe manner.
         """
-        with cls._lock:
+        # Use a thread-safe lock to ensure this block only ever runs once
+        # across all threads in the main process.
+        with cls._init_lock:
+            # The double-check locking pattern ensures we don't try to
+            # re-initialize if another thread finished while we were waiting.
             if cls._manager is None:
-                # This code is now protected. It won't run on module import.
-                # It runs only when the first GeophiresXClient is instantiated.
                 cls._manager = Manager()
                 cls._cache = cls._manager.dict()
+                cls._lock = cls._manager.RLock()  # The Manager now creates the lock.
 
     def get_geophires_result(self, input_params: GeophiresInputParameters) -> GeophiresXResult:
-        # Use the class-level lock to protect access to the shared cache
-        # and the non-reentrant GEOPHIRES core.
+        """
+        Calculates a GEOPHIRES result in a thread-safe and process-safe manner.
+        """
+        # Use the process-safe lock from the manager to make the check-then-act
+        # operation on the cache fully atomic across multiple processes.
         with GeophiresXClient._lock:
             cache_key = hash(input_params)
             if self._enable_caching and cache_key in GeophiresXClient._cache:
                 return GeophiresXClient._cache[cache_key]
 
-            # ... (The rest of your logic remains the same)
+            # --- This section is now guaranteed to run only once per unique input ---
             stash_cwd = Path.cwd()
             stash_sys_argv = sys.argv
 
@@ -67,6 +74,7 @@ class GeophiresXClient:
             except SystemExit:
                 raise RuntimeError('GEOPHIRES exited without giving a reason') from None
             finally:
+                # Ensure global state is restored even if geophires.main() fails
                 sys.argv = stash_sys_argv
                 os.chdir(stash_cwd)
 
@@ -74,13 +82,13 @@ class GeophiresXClient:
 
             result = GeophiresXResult(input_params.get_output_file_path())
             if self._enable_caching:
-                GeophiresXClient._cache[cache_key] = result
+                self._cache[cache_key] = result
 
             return result
 
 
 if __name__ == '__main__':
-    # This block is safe, as it's protected from being run on import.
+    # This block remains for direct testing of the script.
     client = GeophiresXClient()
     log = _get_logger()
 

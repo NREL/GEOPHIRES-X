@@ -7,10 +7,10 @@ from logging.handlers import QueueHandler
 from queue import Empty
 
 from geophires_x_client import EndUseOption
-from geophires_x_client import GeophiresInputParameters
 
 # Important: We must be able to import the client
 from geophires_x_client import GeophiresXClient
+from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 
 
 # This is the function that each worker process will execute.
@@ -27,7 +27,7 @@ def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, r
 
     try:
         client = GeophiresXClient(enable_caching=True)
-        params = GeophiresInputParameters(params_dict)
+        params = ImmutableGeophiresInputParameters(params_dict)
 
         # This now calls the REAL geophires.main via the client.
         result = client.get_geophires_result(params)
@@ -90,7 +90,7 @@ class TestMultiprocessingSafety(unittest.TestCase):
         """
         log_queue = self._ctx.Queue()
         result_queue = self._ctx.Queue()
-        num_processes = 4
+        num_processes = 8
         # Timeout should be long enough for at least one successful run.
         process_timeout_seconds = 5
 
@@ -140,8 +140,8 @@ class TestMultiprocessingSafety(unittest.TestCase):
         successful_runs = sum(1 for record in log_records if cache_indicator_log in record)
 
         self.assertEqual(
-            successful_runs,
             1,
+            successful_runs,
             f'FAIL: GEOPHIRES was run {successful_runs} times instead of once, indicating the cross-process cache failed.',
         )
 

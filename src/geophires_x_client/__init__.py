@@ -1,12 +1,13 @@
+import atexit
 import os
 import sys
 import threading
 from multiprocessing import Manager
 from pathlib import Path
 
+# noinspection PyPep8Naming
 from geophires_x import GEOPHIRESv3 as geophires
 
-# Assuming these are in a sibling file or accessible path
 from .common import _get_logger
 from .geophires_input_parameters import GeophiresInputParameters
 from .geophires_input_parameters import ImmutableGeophiresInputParameters
@@ -16,7 +17,8 @@ from .geophires_x_result import GeophiresXResult
 class GeophiresXClient:
     """
     A thread-safe and process-safe client for running GEOPHIRES simulations.
-    Relies on an explicit shutdown() call to clean up background processes.
+    It automatically manages a background process via atexit and provides an
+    explicit shutdown() method for advanced use cases like testing.
     """
 
     # --- Class-level shared resources ---
@@ -24,8 +26,8 @@ class GeophiresXClient:
     _cache = None
     _lock = None
 
-    # A standard threading lock to make the one-time initialization thread-safe.
     _init_lock = threading.Lock()
+    """A standard threading lock to make the one-time initialization thread-safe."""
 
     def __init__(self, enable_caching=True, logger_name=None):
         if logger_name is None:
@@ -41,25 +43,31 @@ class GeophiresXClient:
     @classmethod
     def _initialize_shared_resources(cls):
         """
-        Initializes the multiprocessing Manager and shared resources (cache, lock)
-        in a thread-safe and process-safe manner.
+        Initializes the multiprocessing Manager and shared resources in a
+        thread-safe manner. It also registers the shutdown hook to ensure
+        automatic cleanup on application exit.
         """
         with cls._init_lock:
             if cls._manager is None:
                 cls._manager = Manager()
                 cls._cache = cls._manager.dict()
                 cls._lock = cls._manager.RLock()
+                # Register the shutdown method to be called automatically on exit.
+                atexit.register(cls.shutdown)
 
     @classmethod
     def shutdown(cls):
         """
-        Explicitly shuts down the background manager process.
-        This MUST be called when the application is finished with the client
-        to prevent orphaned processes.
+        Explicitly shuts down the background manager process and de-registers
+        the atexit hook to prevent errors if called multiple times.
+        This is useful for test suites or applications that need to precisely
+        control the resource lifecycle.
         """
         with cls._init_lock:
             if cls._manager is not None:
                 cls._manager.shutdown()
+                # De-register the hook to avoid trying to shut down twice.
+                atexit.unregister(cls.shutdown)
                 cls._manager = None
                 cls._cache = None
                 cls._lock = None

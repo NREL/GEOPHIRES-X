@@ -28,7 +28,7 @@ class GeophiresXClient:
     _init_lock = threading.Lock()
     """A standard threading lock to make the one-time initialization thread-safe."""
 
-    def __init__(self, enable_caching=True, logger_name=None):
+    def __init__(self, enable_caching=False, logger_name=None):
         if logger_name is None:
             logger_name = __name__
 

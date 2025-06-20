@@ -180,7 +180,7 @@ class FervoProjectCape4TestCase(BaseTestCase):
             return structured_results
 
         results_in_markdown = parse_markdown_results_structured(
-            '\n'.join(self._get_test_file_content('../../docs/Fervo_Project_Cape-4.md'))
+            '\n'.join(self._get_test_file_content('../../docs/Fervo_Project_Cape-4.md', encoding='utf-8'))
         )
 
         self.assertEqual(3.96, results_in_markdown['Well Drilling and Completion Cost']['value'])

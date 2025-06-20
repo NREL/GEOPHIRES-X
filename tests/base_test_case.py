@@ -15,8 +15,8 @@ class BaseTestCase(unittest.TestCase):
     def _get_test_file_path(self, test_file_name) -> str:
         return os.path.join(os.path.abspath(os.path.dirname(inspect.getfile(self.__class__))), test_file_name)
 
-    def _get_test_file_content(self, test_file_name):
-        with open(self._get_test_file_path(test_file_name)) as f:
+    def _get_test_file_content(self, test_file_name, **open_kw_args) -> str:
+        with open(self._get_test_file_path(test_file_name), **open_kw_args) as f:
             return f.readlines()
 
     def _list_test_files_dir(self, test_files_dir: str):

@@ -8,7 +8,7 @@ Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $76.5/MWh and CAPEX = $4350/kW.
+Key case study results include LCOE = $76.3/MWh and CAPEX = $4340/kW.
 
 [Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
 interactively explore the case study in the GEOPHIRES web interface.
@@ -82,19 +82,19 @@ in source code for the complete results.
 
 | Metric                             | Result Value                                             | Reference Value(s)       | Reference Source                            |
 |------------------------------------|----------------------------------------------------------|--------------------------|---------------------------------------------|
-| LCOE                               | $76.5/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
+| LCOE                               | $76.3/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
 | Project capital costs: Total CAPEX | $2.67B                                                   |                          |                                             |
-| Project capital costs: $/kW        | $4350/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
-| Well Drilling and Completion Cost  | $3.96M/well                                              | $<4M/well                | Latimer, 2025.                              |
+| Project capital costs: $/kW        | $4340/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
+| Well Drilling and Completion Cost  | $3.96M/well (before 5% indirect costs)                   | $<4M/well                | Latimer, 2025.                              |
 | WACC                               | 8.3%                                                     | 8.3%                     | Matson, 2024.                               |
-| After-tax IRR                      | 30.7%                                                    | 15–25%                   | Typical levered returns for energy projects |
+| After-tax IRR                      | 30.8%                                                    | 15–25%                   | Typical levered returns for energy projects |
 
 ### Technical & Engineering Results
 
 | Metric                                          | Result Value | Reference Value(s)                                 | Reference Source                                                                                                                                                                                                            |
 |-------------------------------------------------|--------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Minimum Net Electricity Generation              | 503 MW       | 500 MW                                             | Fervo Energy, 2025. The 500 MW PPA is interpreted to mean that Cape Station's net electricity generation must never fall below 500 MWe.                                                                                     |
-| Maximum Total Electricity Generation            | 615 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
+| Maximum Total Electricity Generation            | 614 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
 | Number of times redrilling                      | 3            | 3–6                                                | Redrilling expected to be required within 5–10 years of project start                                                                                                                                                       |
 | Average Production Temperature                  | 199℃         | 204℃, 190.6–198.6℃ (optimal plant operating range) | Trent, 2024; Norbeck et al, 2024.                                                                                                                                                                                           |
 | Total fracture surface area per production well | 2.787×10⁶ m² | 2.787×10⁶ m² (30 million ft² per well)             | Fercho et al, 2025.                                                                                                                                                                                                         |

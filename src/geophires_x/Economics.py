@@ -2985,6 +2985,7 @@ class Economics:
             for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
                 self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i-1] + self.TotalRevenue.value[i]
 
+    # noinspection SpellCheckingInspection
     def _calculate_derived_outputs(self, model: Model) -> None:
         """
         Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
@@ -3001,10 +3002,11 @@ class Economics:
             self.real_discount_rate.value = self.discountrate.quantity().to(convertible_unit(
                 self.real_discount_rate.CurrentUnits)).magnitude
 
-        self.drilling_and_completion_costs_per_well.value = (
-            self.Cwell.value /
-            (model.wellbores.nprod.value + model.wellbores.ninj.value)
-        )
+        if hasattr(self, 'Cwell') and hasattr(model.wellbores, 'nprod') and hasattr(model.wellbores, 'ninj'):
+            self.drilling_and_completion_costs_per_well.value = (
+                self.Cwell.value /
+                (model.wellbores.nprod.value + model.wellbores.ninj.value)
+            )
 
     def __str__(self):
         return "Economics"

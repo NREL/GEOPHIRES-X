@@ -102,7 +102,7 @@ class FervoProjectCape4TestCase(BaseTestCase):
                 value_ = float(match.group(1))
                 return {'value': value_, 'unit': 'degC'}
 
-            # Case 7: Scientific notation format (X.X×10⁶ Y) # ruff: noqa: RUF003
+            # Case 7: Scientific notation format (X.Xx10⁶ Y)
             match = re.match(r'^(\d+\.?\d*)\s*[×xX]\s*10[⁶6]\s*(.*)$', clean_str)
             if match:
                 base_value = float(match.group(1))

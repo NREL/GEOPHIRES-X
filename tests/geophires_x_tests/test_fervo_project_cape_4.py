@@ -184,7 +184,7 @@ class FervoProjectCape4TestCase(BaseTestCase):
         self.assertEqual(3.96, results_in_markdown['Well Drilling and Completion Cost']['value'])
         self.assertEqual('MUSD', results_in_markdown['Well Drilling and Completion Cost']['unit'])
 
-        class Q(HasQuantity):
+        class _Q(HasQuantity):
             def __init__(self, vu: dict[str, Any]):
                 self.value = vu['value']
 
@@ -193,10 +193,10 @@ class FervoProjectCape4TestCase(BaseTestCase):
 
                 self.CurrentUnits.value = vu['unit']
 
-        capex_q = Q(results_in_markdown['Project capital costs: Total CAPEX']).quantity()
+        capex_q = _Q(results_in_markdown['Project capital costs: Total CAPEX']).quantity()
         markdown_capex_USD_per_kW = (
             capex_q.to('USD').magnitude
-            / Q(results_in_markdown['Maximum Total Electricity Generation']).quantity().to('kW').magnitude
+            / _Q(results_in_markdown['Maximum Total Electricity Generation']).quantity().to('kW').magnitude
         )
         self.assertAlmostEqual(
             sig_figs(markdown_capex_USD_per_kW, 3), results_in_markdown['Project capital costs: $/kW']['value']
@@ -226,3 +226,9 @@ class FervoProjectCape4TestCase(BaseTestCase):
                 del results_in_markdown[ignore_key]
 
         self.assertDictAlmostEqual(results_in_markdown, example_result_values_in_documentation, places=3)
+
+        result_capex_USD_per_kW = (
+            _Q(example_result._get_result_field('Total CAPEX')).quantity().to('USD').magnitude
+            / _Q(example_result._get_result_field('Maximum Total Electricity Generation')).quantity().to('kW').magnitude
+        )
+        self.assertAlmostEqual(sig_figs(result_capex_USD_per_kW, 3), sig_figs(markdown_capex_USD_per_kW, 3))

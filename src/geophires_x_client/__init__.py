@@ -37,7 +37,7 @@ class GeophiresXClient:
         self._enable_caching = enable_caching
 
         # Lazy-initialize shared resources if they haven't been already.
-        if GeophiresXClient._manager is None:
+        if enable_caching and GeophiresXClient._manager is None:
             self._initialize_shared_resources()
 
     @classmethod

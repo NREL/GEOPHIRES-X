@@ -10,6 +10,8 @@ from typing import Mapping
 from typing import Optional
 from typing import Union
 
+from typing_extensions import override
+
 
 class EndUseOption(Enum):
     """
@@ -127,6 +129,7 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
         if not isinstance(self.params, MappingProxyType):
             object.__setattr__(self, 'params', MappingProxyType(self.params))
 
+    @override
     def __hash__(self) -> int:
         """
         Computes a hash based on the content of the parameters.
@@ -181,6 +184,7 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
         # Restore the instance's dictionary
         self.__dict__.update(state)
 
+    @override
     def as_file_path(self) -> Path:
         """
         Creates a temporary file representation of the parameters on demand.
@@ -209,6 +213,7 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
         object.__setattr__(self, '_cached_file_path', file_path)
         return file_path
 
+    @override
     def get_output_file_path(self) -> Path:
         """Returns a unique path for the GEOPHIRES output file."""
         return Path(tempfile.gettempdir(), f'geophires-result_{self._instance_id!s}.out')

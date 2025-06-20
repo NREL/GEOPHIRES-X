@@ -642,3 +642,16 @@ def is_float(o: Any) -> bool:
     else:
         return True
 
+
+def sig_figs(val: float | list | tuple, num_sig_figs: int) -> float:
+    if val is None:
+        return None
+
+    if isinstance(val, list) or isinstance(val, tuple):
+        return [sig_figs(v, num_sig_figs) for v in val]
+
+    try:
+        return float('%s' % float(f'%.{num_sig_figs}g' % val))  # pylint: disable=consider-using-f-string
+    except TypeError:
+        # TODO warn
+        return val

@@ -1035,14 +1035,24 @@ class WellBores:
             ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
             ToolTipText="Non-vertical Wellbore Diameter"
         )
+
+        max_allowed_total_wells = max(self.nprod.AllowableRange) + max(self.ninj.AllowableRange)
+        max_allowed_laterals_per_well_when_max_wells = 3
+        """Arbitrary upper limit, could be increased in future if needed"""
+
+        # noinspection SpellCheckingInspection
         self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
             "Number of Multilateral Sections",
             DefaultValue=0,
-            AllowableRange=list(range(0, 101, 1)),
+            AllowableRange=list(range(0, max_allowed_total_wells * max_allowed_laterals_per_well_when_max_wells, 1)),
             UnitType=Units.NONE,
             ErrMessage="assume default for Number of Nonvertical Wellbore Sections (0)",
-            ToolTipText="Number of Nonvertical Wellbore Sections"
+            ToolTipText='Number of Nonvertical Wellbore Sections, aka laterals or horizontals. '
+                        'Note that this is the total number of sections for the entire project and not the number of '
+                        'sections per well. For example, a project with 2 injectors and 2 producers with 3 laterals '
+                        'per well should set Number of Multilateral Sections = 2 * 2 * 3 = 12.'
         )
+
         self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
             "Multilaterals Cased",
             DefaultValue=False,

@@ -333,7 +333,11 @@
           "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
           "units": "MUSD"
         },
-        "Drilling and completion costs per well": {},
+        "Drilling and completion costs per well": {
+          "type": "number",
+          "description": "Includes total drilling and completion cost per well, including injection and production wells and laterals, plus 5% indirect costs.",
+          "units": "MUSD"
+        },
         "Drilling and completion costs per production well": {},
         "Drilling and completion costs per injection well": {},
         "Drilling and completion costs per vertical production well": {},

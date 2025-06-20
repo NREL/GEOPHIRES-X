@@ -27,7 +27,7 @@ Capital Cost for Power Plant for Electricity Generation, 1900, -- https://better
 Exploration Capital Cost, 30, -- Estimate significantly higher exploration costs than default correlation in consideration of potential risks associated with second/third/fourth-of-a-kind EGS projects
 
 Well Drilling Cost Correlation, 3, -- VERTICAL_LARGE (2025 NREL Geothermal Drilling Cost Curve Update)
-Well Drilling and Completion Capital Cost Adjustment Factor, 0.84, -- Adjust correlation-calculated value of $4.72M/well to $3.96M/well per Tim Latimer on 2025-02-12 Volts podcast: less than $4M/well
+Well Drilling and Completion Capital Cost Adjustment Factor, 0.8, -- Adjust correlation-calculated value of $4.72M/well to $3.96M/well per Tim Latimer on 2025-02-12 Volts podcast: less than $4M/well
 
 Reservoir Stimulation Capital Cost Adjustment Factor, 2.66, -- Estimated cost of ~$2M per well. Typical range for Nth-of-kind projects may be $0.5–2M.
 Field Gathering System Capital Cost Adjustment Factor, 0.54, -- Gathering costs represent 2% of facilities CAPEX per https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
@@ -50,8 +50,8 @@ Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001565
 
-Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
-Reservoir Volume, 5418039158, -- Based on 102 fractures per well
+Reservoir Volume Option, 1, -- FRAC_NUM_SEP: Reservoir volume calculated with fracture separation and number of fractures as input
+Number of Fractures, 12036, -- 102 fractures per well
 Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
 Fracture Shape, 3, -- Square
 Fracture Height, 165.3, -- Based on total fracture surface area of 30 million ft^2 per well https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf
@@ -74,9 +74,10 @@ Utilization Factor, .9
 Plant Outlet Pressure, 1000 psi, -- https://doi.org/10.31223/X5VH8C
 Production Wellhead Pressure, 325 psi, -- https://doi.org/10.31223/X5VH8C
 Circulation Pump Efficiency, 0.80
-Well Geometry Configuration, 4
-Number of Multilateral Sections, 3
-Nonvertical Length per Multilateral Section, 4700 feet
+
+Well Geometry Configuration, 4, -- L
+Number of Multilateral Sections, 0, -- This parameter is set to 0 because, for this case study, the cost of horizontal drilling (which would otherwise account for approximately 118 multilateral sections) is included within the 'vertical drilling cost.' This approach allows us to more directly convey the overall well drilling and completion cost, which is under $4 million.
+Nonvertical Length per Multilateral Section, 4700 feet, -- Deployment of Enhanced Geothermal System Technology Leads to Rapid Cost Reductions and Performance Improvements. p. 3. https://doi.org/10.31223/X5VH8C
 Multilaterals Cased, True
 
 # *** SIMULATION PARAMETERS ***

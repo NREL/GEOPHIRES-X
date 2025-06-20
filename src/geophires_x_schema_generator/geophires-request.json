@@ -947,13 +947,13 @@
       "maximum": 100.0
     },
     "Number of Multilateral Sections": {
-      "description": "Number of Nonvertical Wellbore Sections",
+      "description": "Number of Nonvertical Wellbore Sections, aka laterals or horizontals. Note that this is the total number of sections for the entire project and not the number of sections per well. For example, a project with 2 injectors and 2 producers with 3 laterals per well should set Number of Multilateral Sections = 2 * 2 * 3 = 12.",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
       "default": 0,
       "minimum": 0,
-      "maximum": 100
+      "maximum": 1199
     },
     "Multilaterals Cased": {
       "description": "If set to True, casing & cementing are assumed to comprise 50% of drilling costs (doubling cost compared to uncased).",

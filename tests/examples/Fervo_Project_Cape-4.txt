@@ -50,8 +50,8 @@ Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
 Reservoir Impedance, 0.001565
 
-Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
-Reservoir Volume, 5418039158, -- Based on 102 fractures per well
+Reservoir Volume Option, 1, -- FRAC_NUM_SEP: Reservoir volume calculated with fracture separation and number of fractures as input
+Number of Fractures, 12036, -- 102 fractures per well
 Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
 Fracture Shape, 3, -- Square
 Fracture Height, 165.3, -- Based on total fracture surface area of 30 million ft^2 per well https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf

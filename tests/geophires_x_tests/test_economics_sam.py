@@ -17,11 +17,11 @@ from geophires_x.Model import Model
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSam import (
     calculate_sam_economics,
-    _sig_figs,
     get_sam_cash_flow_profile_tabulated_output,
     _ppa_pricing_model,
     _get_fed_and_state_tax_rates,
 )
+from geophires_x.GeoPHIRESUtils import sig_figs
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
@@ -459,8 +459,8 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertTrue(_is_designator_row_label('plus PBI if not available for debt service:'))
 
     def test_sig_figs(self):
-        self.assertListEqual(_sig_figs([1.14, 2.24], 2), [1.1, 2.2])
-        self.assertListEqual(_sig_figs((1.14, 2.24), 2), [1.1, 2.2])
+        self.assertListEqual(sig_figs([1.14, 2.24], 2), [1.1, 2.2])
+        self.assertListEqual(sig_figs((1.14, 2.24), 2), [1.1, 2.2])
 
     def test_get_fed_and_state_tax_rates(self):
         self.assertEqual(([21], [7]), _get_fed_and_state_tax_rates(0.28))

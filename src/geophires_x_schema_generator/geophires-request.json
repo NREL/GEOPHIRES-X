@@ -1869,8 +1869,8 @@
       "minimum": 0,
       "maximum": 1
     },
-    "Peaking Boiler Cost per KW": {
-      "description": "Peaking boiler cost per KW of maximum peaking boiler demand",
+    "Peaking Boiler Cost per kW": {
+      "description": "Peaking boiler cost per kW of maximum peaking boiler demand",
       "type": "number",
       "units": "USD/kW",
       "category": "Economics",

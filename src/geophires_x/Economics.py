@@ -1125,17 +1125,17 @@ class Economics:
             ErrMessage="assume default peaking boiler efficiency (85%)",
             ToolTipText="Peaking boiler efficiency"
         )
-        self._default_peaking_boiler_cost_USD_per_kw = 65
-        self.peaking_boiler_cost_per_kw = self.ParameterDict[self.peaking_boiler_cost_per_kw.Name] = floatParameter(
-            "Peaking Boiler Cost per KW",
-            DefaultValue=self._default_peaking_boiler_cost_USD_per_kw,
+        self._default_peaking_boiler_cost_USD_per_kW = 65
+        self.peaking_boiler_cost_per_kW = self.ParameterDict[self.peaking_boiler_cost_per_kW.Name] = floatParameter(
+            "Peaking Boiler Cost per kW",
+            DefaultValue=self._default_peaking_boiler_cost_USD_per_kW,
             Min=0,
             Max=1000,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
             Required=False,
-            ToolTipText="Peaking boiler cost per KW of maximum peaking boiler demand"
+            ToolTipText="Peaking boiler cost per kW of maximum peaking boiler demand"
         )
         self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
             "District Heating Piping Cost Rate",
@@ -1733,9 +1733,9 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default cost: ${self._default_peaking_boiler_cost_USD_per_kw}/KW '
+            ToolTipText=f'Default cost: ${self._default_peaking_boiler_cost_USD_per_kW}/KW '
                         f'of maximum peaking boiler demand. '
-                        f'Provide {self.peaking_boiler_cost_per_kw.Name} override the default.'
+                        f'Provide {self.peaking_boiler_cost_per_kW.Name} override the default.'
         )
 
         self.dhdistrictcost = self.OutputParameterDict[self.dhdistrictcost.Name] = OutputParameter(
@@ -2698,7 +2698,7 @@ class Economics:
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
                 # add 65$/KW for peaking boiler
-                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kw.quantity()
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kW.quantity()
                                                 .to('USD / kilowatt').magnitude
                                                 * model.surfaceplant.max_peaking_boiler_demand.value / 1000)
 

@@ -6,7 +6,6 @@ import unittest
 from logging.handlers import QueueHandler
 from queue import Empty
 
-# Important: We must be able to import the client and all parameter classes
 from geophires_x_client import GeophiresXClient
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
@@ -15,8 +14,9 @@ from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInpu
 def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, result_queue: multiprocessing.Queue):
     """
     This is the function that each worker process will execute.
-    It must be a top-level function to be picklable by multiprocessing.
+    It must be a top-level function to be pickleable by multiprocessing.
     """
+
     # Configure logging for this worker process to send messages to the shared queue.
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
@@ -32,7 +32,7 @@ def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, r
         result_queue.put(e)
 
 
-class TestMultiprocessingSafety(unittest.TestCase):
+class MultiprocessingSafetyTestCase(unittest.TestCase):
     def setUp(self):
         """Set up a unique set of parameters for each test."""
         self.params_dict = {
@@ -48,14 +48,15 @@ class TestMultiprocessingSafety(unittest.TestCase):
     def test_client_runs_real_geophires_and_caches_across_processes(self):
         """
         Tests that GeophiresXClient can run the real geophires.main in multiple
-        processes and that the cache is shared between them. This test is now
+        processes and that the cache is shared between them. This test is
         fully self-contained to prevent resource conflicts with the test runner.
         """
+
         if sys.platform == 'win32':
             self.skipTest("The 'fork' multiprocessing context is not available on Windows.")
 
         ctx = multiprocessing.get_context('fork')
-        # Use the Manager as a context manager. This is the key to ensuring
+        # Use the Manager as a context manager. This is key to ensuring
         # all resources it creates (queues, etc.) are properly shut down
         # at the end of the block, preventing deadlocks.
         with ctx.Manager() as manager:
@@ -79,7 +80,7 @@ class TestMultiprocessingSafety(unittest.TestCase):
             for p in processes:
                 p.start()
 
-            # --- Robust Result Collection ---
+            # --- Result Collection ---
             results = []
             for i in range(num_processes):
                 try:

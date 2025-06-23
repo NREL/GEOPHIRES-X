@@ -38,10 +38,10 @@ from geophires_x.EconomicsUtils import (
     project_vir_parameter,
     project_payback_period_parameter,
 )
-from geophires_x.GeoPHIRESUtils import is_float, is_int
+from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
-from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, PercentUnit
+from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
 
 
 @dataclass
@@ -162,7 +162,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
 
     def sf(_v: float, num_sig_figs: int = 5) -> float:
-        return _sig_figs(_v, num_sig_figs)
+        return sig_figs(_v, num_sig_figs)
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
@@ -435,21 +435,3 @@ def _ppa_pricing_model(
 
 def _get_max_total_generation_kW(model: Model) -> float:
     return np.max(model.surfaceplant.ElectricityProduced.quantity().to(convertible_unit('kW')).magnitude)
-
-
-def _sig_figs(val: float | list | tuple, num_sig_figs: int) -> float:
-    """
-    TODO move to utilities, probably
-    """
-
-    if val is None:
-        return None
-
-    if isinstance(val, list) or isinstance(val, tuple):
-        return [_sig_figs(v, num_sig_figs) for v in val]
-
-    try:
-        return float('%s' % float(f'%.{num_sig_figs}g' % val))  # pylint: disable=consider-using-f-string
-    except TypeError:
-        # TODO warn
-        return val

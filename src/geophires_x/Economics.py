@@ -1125,17 +1125,17 @@ class Economics:
             ErrMessage="assume default peaking boiler efficiency (85%)",
             ToolTipText="Peaking boiler efficiency"
         )
-        self._default_peaking_boiler_cost_USD_per_kw = 65
-        self.peaking_boiler_cost_per_kw = self.ParameterDict[self.peaking_boiler_cost_per_kw.Name] = floatParameter(
-            "Peaking Boiler Cost per KW",
-            DefaultValue=self._default_peaking_boiler_cost_USD_per_kw,
+        self._default_peaking_boiler_cost_USD_per_kW = 65
+        self.peaking_boiler_cost_per_kW = self.ParameterDict[self.peaking_boiler_cost_per_kW.Name] = floatParameter(
+            "Peaking Boiler Cost per kW",
+            DefaultValue=self._default_peaking_boiler_cost_USD_per_kW,
             Min=0,
             Max=1000,
             UnitType=Units.ENERGYCOST,
             PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
             CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
             Required=False,
-            ToolTipText="Peaking boiler cost per KW of maximum peaking boiler demand"
+            ToolTipText="Peaking boiler cost per kW of maximum peaking boiler demand"
         )
         self.dhpipingcostrate = self.ParameterDict[self.dhpipingcostrate.Name] = floatParameter(
             "District Heating Piping Cost Rate",
@@ -1633,6 +1633,7 @@ class Economics:
                         f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'
         )
 
+        # noinspection SpellCheckingInspection
         self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
             Name="Wellfield cost",
             display_name='Drilling and completion costs',
@@ -1640,10 +1641,20 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
 
-            # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
-            #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
             ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
                         "laterals, plus 5% indirect costs."
+        )
+        self.drilling_and_completion_costs_per_well = self.OutputParameterDict[
+            self.drilling_and_completion_costs_per_well.Name] = OutputParameter(
+            Name='Drilling and completion costs per well',
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+            ToolTipText='Includes total drilling and completion cost per well, '
+                        'including injection and production wells and laterals, plus 5% indirect costs.'
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
@@ -1722,9 +1733,9 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default cost: ${self._default_peaking_boiler_cost_USD_per_kw}/KW '
+            ToolTipText=f'Default cost: ${self._default_peaking_boiler_cost_USD_per_kW}/KW '
                         f'of maximum peaking boiler demand. '
-                        f'Provide {self.peaking_boiler_cost_per_kw.Name} override the default.'
+                        f'Provide {self.peaking_boiler_cost_per_kW.Name} override the default.'
         )
 
         self.dhdistrictcost = self.OutputParameterDict[self.dhdistrictcost.Name] = OutputParameter(
@@ -2313,7 +2324,9 @@ class Economics:
             else:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field
-            # 1.05 for 5% indirect costs - see TODO re:parameterizing at src/geophires_x/Economics.py:652
+
+            # 1.05 for 5% indirect costs
+            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
             self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
                                           (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                           self.cost_lateral_section.value)
@@ -2685,7 +2698,7 @@ class Economics:
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
                 # add 65$/KW for peaking boiler
-                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kw.quantity()
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kW.quantity()
                                                 .to('USD / kilowatt').magnitude
                                                 * model.surfaceplant.max_peaking_boiler_demand.value / 1000)
 
@@ -2972,6 +2985,7 @@ class Economics:
             for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
                 self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i-1] + self.TotalRevenue.value[i]
 
+    # noinspection SpellCheckingInspection
     def _calculate_derived_outputs(self, model: Model) -> None:
         """
         Subclasses should call _calculate_derived_outputs at the end of their Calculate methods to populate output
@@ -2987,6 +3001,12 @@ class Economics:
         if hasattr(self, 'discountrate'):
             self.real_discount_rate.value = self.discountrate.quantity().to(convertible_unit(
                 self.real_discount_rate.CurrentUnits)).magnitude
+
+        if hasattr(self, 'Cwell') and hasattr(model.wellbores, 'nprod') and hasattr(model.wellbores, 'ninj'):
+            self.drilling_and_completion_costs_per_well.value = (
+                self.Cwell.value /
+                (model.wellbores.nprod.value + model.wellbores.ninj.value)
+            )
 
     def __str__(self):
         return "Economics"

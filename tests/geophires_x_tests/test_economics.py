@@ -125,7 +125,7 @@ class EconomicsTestCase(BaseTestCase):
                 GeophiresInputParameters(
                     from_file_path=self._get_test_file_path('../examples/example12_DH.txt'),
                     params={
-                        'Peaking Boiler Cost per KW': peaking_boiler_cost_,
+                        'Peaking Boiler Cost per kW': peaking_boiler_cost_,
                     },
                 )
             )

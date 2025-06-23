@@ -55,8 +55,7 @@ Number of Fractures, 12036, -- 102 fractures per well
 Fracture Separation, 18, -- Per https://eartharxiv.org/repository/view/7665/, lateral length is 4700 ft = 1432 m. Dividing 1432 by 80 = ~18 m fracture spacing.
 Fracture Shape, 3, -- Square
 Fracture Height, 165.3, -- Based on total fracture surface area of 30 million ft^2 per well https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2025/Fercho.pdf
-Number of Injection Wells, 59
-Number of Production Wells, 59
+Number of Doublets, 59
 
 Production Flow Rate per Well, 107, -- Maximum flow rate achieved at Cape Station per https://www.businesswire.com/news/home/20240910997008/en/Fervo-Energys-Record-Breaking-Production-Results-Showcase-Rapid-Scale-Up-of-Enhanced-Geothermal
 Production Well Diameter, 9.625, -- Next standard size up from 7", implied by announcement of "increasing casing diameter"

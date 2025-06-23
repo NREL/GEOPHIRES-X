@@ -7,6 +7,7 @@ from logging.handlers import QueueHandler
 from queue import Empty
 
 from geophires_x_client import GeophiresXClient
+from geophires_x_client import GeophiresXResult
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 
@@ -27,7 +28,7 @@ def run_client_in_process(params_dict: dict, log_queue: multiprocessing.Queue, r
         client = GeophiresXClient(enable_caching=True)
         params = ImmutableGeophiresInputParameters(params_dict)
         result = client.get_geophires_result(params)
-        result_queue.put(result.direct_use_heat_breakeven_price_USD_per_MMBTU)
+        result_queue.put(result)
     except Exception as e:
         result_queue.put(e)
 
@@ -105,7 +106,8 @@ class MultiprocessingSafetyTestCase(unittest.TestCase):
             for r in results:
                 self.assertNotIsInstance(r, Exception, f'A process failed with an exception: {r}')
                 self.assertIsNotNone(r)
-                self.assertIsInstance(r, float)
+                self.assertIsInstance(r, GeophiresXResult)
+                self.assertIsInstance(r.direct_use_heat_breakeven_price_USD_per_MMBTU, float)
 
             log_records = []
             while not log_queue.empty():

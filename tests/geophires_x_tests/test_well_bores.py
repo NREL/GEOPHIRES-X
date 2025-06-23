@@ -5,8 +5,6 @@ from base_test_case import BaseTestCase
 # ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
 
 # noinspection PyProtectedMember
-
-# noinspection PyProtectedMember
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -87,13 +85,7 @@ class WellBoresTestCase(BaseTestCase):
     # noinspection PyMethodMayBeStatic
     def _get_result(self, _params) -> GeophiresXResult:
         params = GeophiresInputParameters(
-            {
-                'Reservoir Depth': 5,
-                'Gradient 1': 74,
-                'Power Plant Type': 2,
-                'Maximum Temperature': 600,
-            }
-            | _params
+            {'Reservoir Depth': 5, 'Gradient 1': 74, 'Power Plant Type': 2, 'Maximum Temperature': 600, **_params}
         )
         return GeophiresXClient().get_geophires_result(params)
 

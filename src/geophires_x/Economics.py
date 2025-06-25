@@ -1695,7 +1695,8 @@ class Economics:
             display_name='Water costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText='Assumes $3.5/1,000 gallons of water'
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
@@ -2490,6 +2491,7 @@ class Economics:
                 self.Coamwater.value = self.oamwaterfixed.value
             else:
                 # here is assumed 1 l per kg maybe correct with real temp. (M$/year) 925$/ML = 3.5$/1,000 gallon
+                # TODO parameterize
                 self.Coamwater.value = self.oamwateradjfactor.value * (model.wellbores.nprod.value *
                                                                        model.wellbores.prodwellflowrate.value *
                                                                        model.reserv.waterloss.value * model.surfaceplant.utilization_factor.value *

@@ -80,14 +80,14 @@ in source code for the complete results.
 
 ### Economic Results
 
-| Metric                             | Result Value                                           | Reference Value(s)       | Reference Source                            |
-|------------------------------------|--------------------------------------------------------|--------------------------|---------------------------------------------|
-| LCOE                               | $75.5/MWh                                              | $80/MWh                  | Horne et al, 2025                           |
-| Project capital costs: Total CAPEX | $2.64B                                                 |                          |                                             |
-| Project capital costs: $/kW        | $4900/kW (based on maximum net electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
-| Well Drilling and Completion Cost  | $3.96M/well (including 5% indirect costs)              | $<4M/well                | Latimer, 2025.                              |
-| WACC                               | 8.3%                                                   | 8.3%                     | Matson, 2024.                               |
-| After-tax IRR                      | 31.5%                                                  | 15–25%                   | Typical levered returns for energy projects |
+| Metric                             | Result Value                                           | Reference Value(s)                 | Reference Source                                 |
+|------------------------------------|--------------------------------------------------------|------------------------------------|--------------------------------------------------|
+| LCOE                               | $75.5/MWh                                              | $80/MWh                            | Horne et al, 2025                                |
+| Project capital costs: Total CAPEX | $2.64B                                                 |                                    |                                                  |
+| Project capital costs: $/kW        | $4900/kW (based on maximum net electricity generation) | $5000/kW; $4500/kW; $3000–$6000/kW | McClure, 2024; Horne et al, 2025; Latimer, 2025. |
+| Well Drilling and Completion Cost  | $3.96M/well (including 5% indirect costs)              | $<4M/well                          | Latimer, 2025.                                   |
+| WACC                               | 8.3%                                                   | 8.3%                               | Matson, 2024.                                    |
+| After-tax IRR                      | 31.5%                                                  | 15–25%                             | Typical levered returns for energy projects      |
 
 ### Technical & Engineering Results
 
@@ -145,6 +145,10 @@ Interviewer). https://www.volts.wtf/p/catching-up-with-enhanced-geothermal
 Matson, M. (2024, September 11). Fervo Energy Technology Day 2024: Entering "the Geothermal Decade" with Next-Generation
 Geothermal
 Energy. https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
+
+McClure, M. (2024, September 12). Digesting the Bonkers, Incredible, Off-the-Charts, Spectacular Results from the Fervo
+and FORGE Enhanced Geothermal Projects. ResFrac Corporation Blog.
+https://www.resfrac.com/blog/digesting-the-bonkers-incredible-off-the-charts-spectacular-results-from-the-fervo-and-forge-enhanced-geothermal-projects
 
 NREL. (2024). Annual Technology Baseline: Recent Public Geothermal Power Purchase Agreement
 Pricing. https://atb.nrel.gov/electricity/2024/geothermal

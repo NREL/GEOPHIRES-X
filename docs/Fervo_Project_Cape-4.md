@@ -8,7 +8,7 @@ Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $75.5/MWh and CAPEX = $4290/kW.
+Key case study results include LCOE = $75.5/MWh.
 
 [Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
 interactively explore the case study in the GEOPHIRES web interface.

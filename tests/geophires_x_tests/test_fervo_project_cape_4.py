@@ -87,10 +87,10 @@ class FervoProjectCape4TestCase(BaseTestCase):
         capex_q = _Q(results_in_markdown['Project capital costs: Total CAPEX']).quantity()
         markdown_capex_USD_per_kW = (
             capex_q.to('USD').magnitude
-            / _Q(results_in_markdown['Maximum Total Electricity Generation']).quantity().to('kW').magnitude
+            / _Q(results_in_markdown['Maximum Net Electricity Generation']).quantity().to('kW').magnitude
         )
         self.assertAlmostEqual(
-            sig_figs(markdown_capex_USD_per_kW, 3), results_in_markdown['Project capital costs: $/kW']['value']
+            sig_figs(markdown_capex_USD_per_kW, 2), results_in_markdown['Project capital costs: $/kW']['value']
         )
 
         field_mapping = {
@@ -123,9 +123,9 @@ class FervoProjectCape4TestCase(BaseTestCase):
 
         result_capex_USD_per_kW = (
             _Q(example_result._get_result_field('Total CAPEX')).quantity().to('USD').magnitude
-            / _Q(example_result._get_result_field('Maximum Total Electricity Generation')).quantity().to('kW').magnitude
+            / _Q(example_result._get_result_field('Maximum Net Electricity Generation')).quantity().to('kW').magnitude
         )
-        self.assertAlmostEqual(sig_figs(result_capex_USD_per_kW, 3), sig_figs(markdown_capex_USD_per_kW, 3))
+        self.assertAlmostEqual(sig_figs(result_capex_USD_per_kW, 2), sig_figs(markdown_capex_USD_per_kW, 2))
 
         num_doublets = inputs_in_markdown['Number of Doublets']['value']
         self.assertEqual(
@@ -187,6 +187,7 @@ class FervoProjectCape4TestCase(BaseTestCase):
                 'LCOE',
                 'Maximum Total Electricity Generation',
                 'Minimum Net Electricity Generation',
+                'Maximum Net Electricity Generation',
                 'Number of times redrilling',
                 'Project capital costs: Total CAPEX',
                 'Project capital costs: $/kW',

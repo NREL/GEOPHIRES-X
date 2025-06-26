@@ -80,20 +80,21 @@ in source code for the complete results.
 
 ### Economic Results
 
-| Metric                             | Result Value                                             | Reference Value(s)       | Reference Source                            |
-|------------------------------------|----------------------------------------------------------|--------------------------|---------------------------------------------|
-| LCOE                               | $75.5/MWh                                                | $80/MWh                  | Horne et al, 2025                           |
-| Project capital costs: Total CAPEX | $2.64B                                                   |                          |                                             |
-| Project capital costs: $/kW        | $4290/kW (based on maximum total electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
-| Well Drilling and Completion Cost  | $3.96M/well (including 5% indirect costs)                | $<4M/well                | Latimer, 2025.                              |
-| WACC                               | 8.3%                                                     | 8.3%                     | Matson, 2024.                               |
-| After-tax IRR                      | 31.5%                                                    | 15–25%                   | Typical levered returns for energy projects |
+| Metric                             | Result Value                                           | Reference Value(s)       | Reference Source                            |
+|------------------------------------|--------------------------------------------------------|--------------------------|---------------------------------------------|
+| LCOE                               | $75.5/MWh                                              | $80/MWh                  | Horne et al, 2025                           |
+| Project capital costs: Total CAPEX | $2.64B                                                 |                          |                                             |
+| Project capital costs: $/kW        | $4900/kW (based on maximum net electricity generation) | $4500/kW, $3000–$6000/kW | Horne et al, 2025; Latimer, 2025.           |
+| Well Drilling and Completion Cost  | $3.96M/well (including 5% indirect costs)              | $<4M/well                | Latimer, 2025.                              |
+| WACC                               | 8.3%                                                   | 8.3%                     | Matson, 2024.                               |
+| After-tax IRR                      | 31.5%                                                  | 15–25%                   | Typical levered returns for energy projects |
 
 ### Technical & Engineering Results
 
 | Metric                                          | Result Value | Reference Value(s)                                 | Reference Source                                                                                                                                                                                                            |
 |-------------------------------------------------|--------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Minimum Net Electricity Generation              | 504 MW       | 500 MW                                             | Fervo Energy, 2025. The 500 MW PPA is interpreted to mean that Cape Station's net electricity generation must never fall below 500 MWe.                                                                                     |
+| Maximum Net Electricity Generation              | 537 MW       |                                                    |                                                                                                                                                                                                                             |
 | Maximum Total Electricity Generation            | 615 MW       |                                                    | Actual maximum total generation may be bounded or constrained by modular power plant design not modeled in this case study. For example, a modular design with 50MW units may constrain maximum total generation to 600 MW. |
 | Number of times redrilling                      | 3            | 3–6                                                | Redrilling expected to be required within 5–10 years of project start                                                                                                                                                       |
 | Average Production Temperature                  | 199℃         | 204℃, 190.6–198.6℃ (optimal plant operating range) | Trent, 2024; Norbeck et al, 2024.                                                                                                                                                                                           |

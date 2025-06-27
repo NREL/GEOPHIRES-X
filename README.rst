@@ -301,7 +301,7 @@ correlations.
 
 For more information on the theoretical basis for GEOPHIRES see
 `GEOPHIRES v2.0: updated geothermal techno‐economic simulation tool (Beckers & McCabe, 2019) <https://github.com/NREL/GEOPHIRES-X/blob/fb5caadfa419c3bd05de656a33700d085fbc0432/References/Beckers%202019%20GEOPHIRES%20v2.pdf>`__
-and `GEOPHIRES reference materials <References/references.md#geophires>`__.
+and `GEOPHIRES reference materials <References/README.md#geophires>`__.
 
 Parameters
 ----------
@@ -513,7 +513,7 @@ Extending GEOPHIRES-X
 Additional Documentation
 ------------------------
 
-Additional materials can be found in `/References </References/references.md>`__.
+Additional materials can be found in `/References </References/README.md>`__.
 
 
 Development

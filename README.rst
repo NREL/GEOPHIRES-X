@@ -513,7 +513,7 @@ Extending GEOPHIRES-X
 Additional Documentation
 ------------------------
 
-Additional materials can be found in `/References </References/>`__.
+Additional materials can be found in `/References </References/README.md>`__.
 
 
 Development

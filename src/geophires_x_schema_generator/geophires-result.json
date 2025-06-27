@@ -415,7 +415,7 @@
         },
         "Water costs": {
           "type": "number",
-          "description": "O&M Make-up Water costs",
+          "description": "O&M Make-up Water costs. Assumes $3.5/1,000 gallons of water",
           "units": "MUSD/yr"
         },
         "Average Reservoir Pumping Cost": {},

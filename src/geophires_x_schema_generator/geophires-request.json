@@ -637,6 +637,15 @@
       "minimum": 0,
       "maximum": 200
     },
+    "Number of Doublets": {
+      "description": "Pass this parameter to set the Number of Production Wells and Number of Injection Wells to same value.",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores",
+      "default": 2,
+      "minimum": 0,
+      "maximum": 200
+    },
     "Production Well Diameter": {
       "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",

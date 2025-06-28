@@ -708,24 +708,36 @@ class WellBores:
         self.ParameterDict = {}
         self.OutputParameterDict = {}
 
+        max_doublets = 200
+        # noinspection SpellCheckingInspection
         self.nprod = self.ParameterDict[self.nprod.Name] = intParameter(
             "Number of Production Wells",
             DefaultValue=2,
-            AllowableRange=list(range(1, 201, 1)),
+            AllowableRange=list(range(1, max_doublets+1, 1)),
             UnitType=Units.NONE,
-            Required=True,
+            Required=False,
             ErrMessage="assume default number of production wells (2)",
             ToolTipText="Number of (identical) production wells"
         )
+        # noinspection SpellCheckingInspection
         self.ninj = self.ParameterDict[self.ninj.Name] = intParameter(
             "Number of Injection Wells",
             DefaultValue=2,
-            AllowableRange=list(range(0, 201, 1)),
+            AllowableRange=list(range(0, max_doublets+1, 1)),
             UnitType=Units.NONE,
-            Required=True,
+            Required=False,
             ErrMessage="assume default number of injection wells (2)",
             ToolTipText="Number of (identical) injection wells"
         )
+        self.doublets_count = self.ParameterDict[self.doublets_count.Name] = intParameter(
+            "Number of Doublets",
+            DefaultValue=2,
+            AllowableRange=list(range(0, max_doublets+1, 1)),
+            UnitType=Units.NONE,
+            ToolTipText="Pass this parameter to set the Number of Production Wells and Number of Injection Wells to "
+                        "same value."
+        )
+
         self.prodwelldiam = self.ParameterDict[self.prodwelldiam.Name] = floatParameter(
             "Production Well Diameter",
             DefaultValue=8.0,
@@ -1035,14 +1047,24 @@ class WellBores:
             ErrMessage="assume default for Non-vertical Wellbore Diameter (0.156 m)",
             ToolTipText="Non-vertical Wellbore Diameter"
         )
+
+        max_allowed_total_wells = max(self.nprod.AllowableRange) + max(self.ninj.AllowableRange)
+        max_allowed_laterals_per_well_when_max_wells = 3
+        """Arbitrary upper limit, could be increased in future if needed"""
+
+        # noinspection SpellCheckingInspection
         self.numnonverticalsections = self.ParameterDict[self.numnonverticalsections.Name] = intParameter(
             "Number of Multilateral Sections",
             DefaultValue=0,
-            AllowableRange=list(range(0, 101, 1)),
+            AllowableRange=list(range(0, max_allowed_total_wells * max_allowed_laterals_per_well_when_max_wells, 1)),
             UnitType=Units.NONE,
             ErrMessage="assume default for Number of Nonvertical Wellbore Sections (0)",
-            ToolTipText="Number of Nonvertical Wellbore Sections"
+            ToolTipText='Number of Nonvertical Wellbore Sections, aka laterals or horizontals. '
+                        'Note that this is the total number of sections for the entire project and not the number of '
+                        'sections per well. For example, a project with 2 injectors and 2 producers with 3 laterals '
+                        'per well should set Number of Multilateral Sections = 2 * 2 * 3 = 12.'
         )
+
         self.NonverticalsCased = self.ParameterDict[self.NonverticalsCased.Name] = boolParameter(
             "Multilaterals Cased",
             DefaultValue=False,
@@ -1306,6 +1328,19 @@ class WellBores:
             model.logger.info("No parameters read because no content provided")
 
         coerce_int_params_to_enum_values(self.ParameterDict)
+
+        if self.doublets_count.Provided:
+            def _error(num_wells_param_:intParameter):
+                msg = f'{num_wells_param_.Name} may not be provided when {self.doublets_count.Name} is provided.'
+                model.logger.error(msg)
+                raise ValueError(msg)
+
+            for num_wells_param in [self.ninj, self.nprod]:
+                if num_wells_param.Provided:
+                    _error(num_wells_param)
+
+            self.ninj.value = self.doublets_count.value
+            self.nprod.value = self.doublets_count.value
 
         model.logger.info(f"read parameters complete {self.__class__.__name__}: {__name__}")
 

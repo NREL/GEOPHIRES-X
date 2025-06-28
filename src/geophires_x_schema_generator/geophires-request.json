@@ -37,8 +37,7 @@
     "Dead-state Pressure",
     "Economic Model",
     "Time steps per year",
-    "Operation & Maintenance Cost of Surface Plant",
-    "Capital Cost for Power Plant for Electricity Generation"
+    "Operation & Maintenance Cost of Surface Plant"
   ],
   "properties": {
     "Reservoir Model": {
@@ -321,7 +320,7 @@
       "category": "Reservoir",
       "default": 10,
       "minimum": 1,
-      "maximum": 149
+      "maximum": 99999
     },
     "Fracture Separation": {
       "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",
@@ -638,6 +637,15 @@
       "minimum": 0,
       "maximum": 200
     },
+    "Number of Doublets": {
+      "description": "Pass this parameter to set the Number of Production Wells and Number of Injection Wells to same value.",
+      "type": "integer",
+      "units": null,
+      "category": "Well Bores",
+      "default": 2,
+      "minimum": 0,
+      "maximum": 200
+    },
     "Production Well Diameter": {
       "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate             frictional pressure drop and wellbore heat transmission with Rameys model",
       "type": "number",
@@ -948,13 +956,13 @@
       "maximum": 100.0
     },
     "Number of Multilateral Sections": {
-      "description": "Number of Nonvertical Wellbore Sections",
+      "description": "Number of Nonvertical Wellbore Sections, aka laterals or horizontals. Note that this is the total number of sections for the entire project and not the number of sections per well. For example, a project with 2 injectors and 2 producers with 3 laterals per well should set Number of Multilateral Sections = 2 * 2 * 3 = 12.",
       "type": "integer",
       "units": null,
       "category": "Well Bores",
       "default": 0,
       "minimum": 0,
-      "maximum": 100
+      "maximum": 1199
     },
     "Multilaterals Cased": {
       "description": "If set to True, casing & cementing are assumed to comprise 50% of drilling costs (doubling cost compared to uncased).",
@@ -1486,6 +1494,15 @@
       "minimum": 0,
       "maximum": 10
     },
+    "Capital Cost for Power Plant for Electricity Generation": {
+      "description": "",
+      "type": "number",
+      "units": "USD/kW",
+      "category": "Economics",
+      "default": 3000,
+      "minimum": 0.0,
+      "maximum": 10000.0
+    },
     "Field Gathering System Capital Cost": {
       "description": "Total field gathering system capital cost",
       "type": "number",
@@ -1861,6 +1878,15 @@
       "minimum": 0,
       "maximum": 1
     },
+    "Peaking Boiler Cost per kW": {
+      "description": "Peaking boiler cost per kW of maximum peaking boiler demand",
+      "type": "number",
+      "units": "USD/kW",
+      "category": "Economics",
+      "default": 65,
+      "minimum": 0,
+      "maximum": 1000
+    },
     "District Heating Piping Cost Rate": {
       "description": "District heating piping cost rate ($/m)",
       "type": "number",
@@ -2218,15 +2244,6 @@
       "units": "USD/kW",
       "category": "Economics",
       "default": 100.0,
-      "minimum": 0.0,
-      "maximum": 10000.0
-    },
-    "Capital Cost for Power Plant for Electricity Generation": {
-      "description": "",
-      "type": "number",
-      "units": "USD/kW",
-      "category": "Economics",
-      "default": 3000.0,
       "minimum": 0.0,
       "maximum": 10000.0
     },

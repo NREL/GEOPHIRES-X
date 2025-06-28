@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
@@ -7,6 +9,9 @@ from pint.facets.plain import PlainQuantity
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
 from geophires_x.Reservoir import Reservoir
+from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresXClient
+from geophires_x_client import GeophiresXResult
 from tests.base_test_case import BaseTestCase
 
 
@@ -27,6 +32,7 @@ class ReservoirTestCase(BaseTestCase):
         self.assertAlmostEqual(79.433865, p.magnitude, places=3)
         self.assertEqual('megapascal', p.units)
 
+    # noinspection PyMethodMayBeStatic
     def _new_model(self, input_file=None) -> Model:
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
@@ -45,3 +51,45 @@ class ReservoirTestCase(BaseTestCase):
         os.chdir(stash_cwd)
 
         return m
+
+    def test_number_of_fractures(self):
+        def _get_result(num_fractures: int) -> GeophiresXResult:
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('generic-egs-case.txt'),
+                    params={
+                        'Reservoir Volume Option': '1, -- FRAC_NUM_SEP',
+                        'Fracture Shape': '3, -- Square',
+                        'Fracture Height': 165,
+                        'Number of Fractures': num_fractures,
+                    },
+                )
+            )
+
+        def _fractures_lcoe_net(r: GeophiresXResult) -> tuple[int, float, float]:
+            return (
+                r.result['RESERVOIR PARAMETERS']['Number of fractures']['value'],
+                r.result['SUMMARY OF RESULTS']['Electricity breakeven price']['value'],
+                r.result['SUMMARY OF RESULTS']['Average Net Electricity Production']['value'],
+            )
+
+        fractures, lcoe, net_production = _fractures_lcoe_net(_get_result(10_000))
+
+        self.assertEqual(10_000, fractures)
+
+        self.assertGreater(lcoe, 0)
+        self.assertLess(lcoe, 400)
+
+        self.assertGreater(net_production, 0)
+        self.assertLess(net_production, 500)
+
+        max_fractures = 99_999
+        fractures, lcoe, net_production = _fractures_lcoe_net(_get_result(max_fractures))
+
+        self.assertEqual(max_fractures, fractures)
+
+        self.assertGreater(lcoe, 0)
+        self.assertLess(lcoe, 400)
+
+        self.assertGreater(net_production, 0)
+        self.assertLess(net_production, 500)

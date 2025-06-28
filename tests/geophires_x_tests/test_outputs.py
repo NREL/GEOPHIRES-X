@@ -49,7 +49,7 @@ class OutputsTestCase(BaseTestCase):
         self.assertTrue(html_filepath.is_absolute())
 
         expected_path = str(Path('/tmp/foo.html'))  # noqa: S108
-        self._assert_file_paths_equal(str(html_filepath).replace('D:', ''), expected_path)
+        self._assert_file_paths_equal(self._strip_drive(str(html_filepath)), expected_path)
 
     def test_absolute_output_file_path(self):
         input_file = GeophiresInputParameters(
@@ -59,8 +59,12 @@ class OutputsTestCase(BaseTestCase):
         html_filepath = Path(m.outputs.html_output_file.value)
         self.assertTrue(html_filepath.is_absolute())
         self._assert_file_paths_equal(
-            str(html_filepath).replace('D:', ''), str(Path('/home/user/my-geophires-project/foo.html'))
+            self._strip_drive(str(html_filepath)), str(Path('/home/user/my-geophires-project/foo.html'))
         )
+
+    # noinspection PyMethodMayBeStatic
+    def _strip_drive(self, p: str) -> str:
+        return p.replace('D:', '').replace('C:', '')
 
     def _assert_file_paths_equal(self, file_path_1, file_path_2):
         try:

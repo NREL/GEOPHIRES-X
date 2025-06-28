@@ -333,7 +333,11 @@
           "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
           "units": "MUSD"
         },
-        "Drilling and completion costs per well": {},
+        "Drilling and completion costs per well": {
+          "type": "number",
+          "description": "Includes total drilling and completion cost per well, including injection and production wells and laterals, plus 5% indirect costs.",
+          "units": "MUSD"
+        },
         "Drilling and completion costs per production well": {},
         "Drilling and completion costs per injection well": {},
         "Drilling and completion costs per vertical production well": {},
@@ -411,7 +415,7 @@
         },
         "Water costs": {
           "type": "number",
-          "description": "O&M Make-up Water costs",
+          "description": "O&M Make-up Water costs. Assumes $3.5/1,000 gallons of water",
           "units": "MUSD/yr"
         },
         "Average Reservoir Pumping Cost": {},
@@ -428,7 +432,11 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
-        "Total operating and maintenance costs": {},
+        "Total operating and maintenance costs": {
+          "type": "number",
+          "description": "Total O&M Cost",
+          "units": "MUSD/yr"
+        },
         "OPEX": {},
         "Average annual auxiliary fuel cost": {},
         "Average annual pumping cost": {},

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.7
- Simulation Date: 2025-05-15
- Simulation Time:  10:12
- Calculation Time:      0.776 sec
+ GEOPHIRES Version: 3.9.28
+ Simulation Date: 2025-07-02
+ Simulation Time:  12:18
+ Calculation Time:      0.882 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -62,7 +62,7 @@ Simulation Metadata
 
                            ***RESERVOIR PARAMETERS***
 
-      Reservoir Model = Multiple Parallel Fractures Model
+      Reservoir Model = Multiple Parallel Fractures Model (Gringarten)
       Bottom-hole temperature:                              170.00 degC
       Fracture model = Square
       Well separation: fracture height:                     900.00 meter

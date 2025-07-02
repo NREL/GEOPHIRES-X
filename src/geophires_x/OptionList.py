@@ -135,6 +135,23 @@ class ReservoirModel(GeophiresInputEnum):
             if member.int_value == int_val:
                 return member
 
+    @property
+    def display_name(self) -> str:
+        """
+        Returns a formatted string for display purposes.
+        Format: "<value> Model <(suffix)>"
+        """
+        val_str = self.value
+
+        if '(' in val_str:
+            index = val_str.find('(')
+            base_name = val_str[:index].strip()
+            suffix = val_str[index:].strip()
+            return f'{base_name} Model {suffix}'
+        else:
+            # No suffix is present
+            return f'{val_str} Model'
+
 
 class ReservoirVolume(GeophiresInputEnum):
     """

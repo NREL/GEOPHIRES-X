@@ -48,7 +48,7 @@ ENGINEERING PARAMETERS,Power plant type,,Supercritical ORC,
 RESOURCE CHARACTERISTICS,Maximum reservoir temperature,,400.0,degC
 RESOURCE CHARACTERISTICS,Number of segments,,1,count
 RESOURCE CHARACTERISTICS,Geothermal gradient,,50,degC/km
-RESERVOIR PARAMETERS,Reservoir Model,,Multiple Parallel Fractures Model,
+RESERVOIR PARAMETERS,Reservoir Model,,Multiple Parallel Fractures Model (Gringarten),
 RESERVOIR PARAMETERS,Fracture model,,Square,
 RESERVOIR PARAMETERS,Bottom-hole temperature,,170.0,degC
 RESERVOIR PARAMETERS,Well separation: fracture height,,900.0,meter
@@ -99,7 +99,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
 SURFACE EQUIPMENT SIMULATION RESULTS,Heat to Power Conversion Efficiency,,10.07,%
-Simulation Metadata,GEOPHIRES Version,,3.9.7,
+Simulation Metadata,GEOPHIRES Version,,3.9.28,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

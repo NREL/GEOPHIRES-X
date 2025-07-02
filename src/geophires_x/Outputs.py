@@ -349,7 +349,7 @@ class Outputs:
                 if model.wellbores.IsAGS.value:
                     f.write('The AGS models contain an intrinsic reservoir model that doesn\'t expose values that can be used in extensive reporting.\n')
                 else:
-                    f.write(f'      Reservoir Model = {str(model.reserv.resoption.value.value)} Model\n')
+                    f.write(f'      Reservoir Model = {model.reserv.resoption.value.display_name}\n')
                     if model.reserv.resoption.value is ReservoirModel.SINGLE_FRACTURE:
                         f.write(f'      m/A Drawdown Parameter:                                 {model.reserv.drawdp.value:.5f} ' + model.reserv.drawdp.CurrentUnits.value + NL)
                     elif model.reserv.resoption.value is ReservoirModel.ANNUAL_PERCENTAGE:

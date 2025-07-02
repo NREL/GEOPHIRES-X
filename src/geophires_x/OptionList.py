@@ -108,7 +108,7 @@ class EconomicModel(GeophiresInputEnum):
 
 class ReservoirModel(GeophiresInputEnum):
     CYLINDRICAL = 0, "Simple cylindrical"
-    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures"
+    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures (Gringarten)"
     LINEAR_HEAT_SWEEP = 2, "1-D Linear Heat Sweep"
     SINGLE_FRACTURE = 3, "Single Fracture m/A Thermal Drawdown"
     ANNUAL_PERCENTAGE = 4, "Annual Percentage Thermal Drawdown"

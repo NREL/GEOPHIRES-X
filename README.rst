@@ -107,7 +107,8 @@ or user-provided components.
 .. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2024-11-20.png
     :alt: GEOPHIRES Architecture Diagram
 
-GEOPHIRES has a variety of different reservoir models including (1) Multiple parallel fractures model;
+GEOPHIRES has a variety of different reservoir models including
+(1) Multiple parallel fractures model (Gringarten);
 (2) 1-Dimensional linear heat sweep model;
 (3) M/A thermal drawdown parameter model;
 (4) Percentage temperature drawdown model;

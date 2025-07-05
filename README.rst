@@ -14,7 +14,9 @@ Various reservoir conditions (EGS, doublets, etc.) and end-use options (electric
 Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
 See the `Documentation`_ section below for more information.
 
-GEOPHIRES-X is the successor version to `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__ (see `CHANGELOG <CHANGELOG.rst>`__ for more info).
+This repository is the canonical source for the modern GEOPHIRES simulator, which succeeds the legacy `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__.
+The name GEOPHIRES-X refers to the initial modernized (v3) framework.
+See the `CHANGELOG <CHANGELOG.rst>`__ for a detailed history of changes and release notes.
 
 Free software: `MIT license <LICENSE>`__
 

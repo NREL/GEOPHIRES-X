@@ -78,7 +78,7 @@ class GeophiresXSchemaGenerator:
         ]
 
     def get_schema_title(self) -> str:
-        return 'GEOPHIRES-X'
+        return 'GEOPHIRES'
 
     def get_parameters_json(self) -> Tuple[str, str]:
 

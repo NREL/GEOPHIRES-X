@@ -2,7 +2,7 @@
   "definitions": {},
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "GEOPHIRES-X Request Schema",
+  "title": "GEOPHIRES Request Schema",
   "required": [
     "Reservoir Model",
     "Reservoir Depth",

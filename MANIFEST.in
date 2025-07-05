@@ -18,6 +18,7 @@ include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
 include LICENSE
+include INSTALL.rst
 include README.rst
 include How-to-extend-GEOPHIRES-X.md
 include geophires-logo.png

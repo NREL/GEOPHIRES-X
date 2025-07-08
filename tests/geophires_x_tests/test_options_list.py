@@ -3,6 +3,7 @@ from typing import ClassVar
 from base_test_case import BaseTestCase
 from geophires_x.OptionList import EndUseOptions
 from geophires_x.OptionList import PlantType
+from geophires_x.OptionList import ReservoirModel
 from geophires_x.OptionList import WellDrillingCostCorrelation
 
 
@@ -68,3 +69,10 @@ class PlantTypeTestCase(BaseTestCase):
     def test_equality(self):
         self.assertFalse(PlantType.SUB_CRITICAL_ORC == PlantType.SUPER_CRITICAL_ORC)
         self.assertTrue(WellDrillingCostCorrelation.VERTICAL_SMALL == WellDrillingCostCorrelation.VERTICAL_SMALL)
+
+
+class ReservoirModelTestCase(BaseTestCase):
+    def test_display_name(self):
+        self.assertEqual(
+            'Multiple Parallel Fractures Model (Gringarten)', ReservoirModel.MULTIPLE_PARALLEL_FRACTURES.display_name
+        )

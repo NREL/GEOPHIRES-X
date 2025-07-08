@@ -1,4 +1,4 @@
-# How to extend GEOPHIRES X
+# How to extend GEOPHIRES-X
 
 ## Guide
 

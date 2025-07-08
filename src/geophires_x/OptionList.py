@@ -108,7 +108,7 @@ class EconomicModel(GeophiresInputEnum):
 
 class ReservoirModel(GeophiresInputEnum):
     CYLINDRICAL = 0, "Simple cylindrical"
-    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures"
+    MULTIPLE_PARALLEL_FRACTURES = 1, "Multiple Parallel Fractures (Gringarten)"
     LINEAR_HEAT_SWEEP = 2, "1-D Linear Heat Sweep"
     SINGLE_FRACTURE = 3, "Single Fracture m/A Thermal Drawdown"
     ANNUAL_PERCENTAGE = 4, "Annual Percentage Thermal Drawdown"
@@ -134,6 +134,23 @@ class ReservoirModel(GeophiresInputEnum):
         for member in __class__:
             if member.int_value == int_val:
                 return member
+
+    @property
+    def display_name(self) -> str:
+        """
+        Returns a formatted string for display purposes.
+        Format: "<value> Model <(suffix)>"
+        """
+        val_str = self.value
+
+        if '(' in val_str:
+            index = val_str.find('(')
+            base_name = val_str[:index].strip()
+            suffix = val_str[index:].strip()
+            return f'{base_name} Model {suffix}'
+        else:
+            # No suffix is present
+            return f'{val_str} Model'
 
 
 class ReservoirVolume(GeophiresInputEnum):

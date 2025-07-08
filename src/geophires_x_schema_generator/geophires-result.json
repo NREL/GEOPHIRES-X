@@ -2,7 +2,7 @@
   "definitions": {},
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "GEOPHIRES-X Result Schema",
+  "title": "GEOPHIRES Result Schema",
   "required": [],
   "properties": {
     "SUMMARY OF RESULTS": {

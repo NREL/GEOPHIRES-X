@@ -278,13 +278,20 @@ Then push both commits and tags to your fork:
     Writing objects: 100% (1/1), 205 bytes | 205.00 KiB/s, done.
     Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
     To github.com:softwareengineerprogrammer/python-geophires-x-nrel.git
-     * [new tag]         v3.2.3 -> v3.2.3
+     * [new tag]         v3.2.3-alpha.0 -> v3.2.3-alpha.0
+
+Once the alpha version builds successfully in GitHubActions and you're ready to release it as v3.2.3:
+
+.. code-block::
+
+    (venv) ➜  python-geophires-x git:(main) bumpversion release
+    (venv) ➜  python-geophires-x git:(main) git push && git push fork --tags
 
 Once a version bump is merged into the main repository with a Pull Request, tags must be manually pushed (GitHub `doesn't include tags in PRs <https://stackoverflow.com/questions/12278660/adding-tags-to-a-pull-request>`__):
 
 .. code-block::
 
-    (venv) ➜  python-geophires-x git:(main) git push origin --tags
+    (venv) ➜  python-geophires-x git:(main) git push origin tag v3.2.3
 
 
 Documentation Updates

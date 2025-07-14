@@ -710,13 +710,13 @@
       "maximum": 10000.0
     },
     "Well Separation": {
-      "description": "Well separation for built-in TOUGH2 doublet reservoir model",
+      "description": "Well separation for built-in TOUGH2 doublet reservoir model. (Note that the default unit is inches.)",
       "type": "number",
       "units": "in",
       "category": "Well Bores",
-      "default": 1000.0,
+      "default": 39370,
       "minimum": 10.0,
-      "maximum": 10000.0
+      "maximum": 393700
     },
     "Injection Temperature": {
       "description": "Constant geofluid injection temperature at injection wellhead.",

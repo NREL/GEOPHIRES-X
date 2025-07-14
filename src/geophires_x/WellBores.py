@@ -824,17 +824,28 @@ class WellBores:
                         'production well, this parameter specifies the overall pressure drop in the reservoir between '
                         'injection well and production well (see docs)'
         )
+
+        well_separation_default_value_m = 1000
+        well_separation_default_unit = LengthUnit.INCHES
+        well_separation_preferred_unit = LengthUnit.METERS
+        well_separation_unit_mismatch_note = (f'. (Note that the default unit is '
+                                              f'{well_separation_default_unit.name.lower()}.)'
+                                              if well_separation_default_unit != well_separation_preferred_unit else '')
+        # noinspection SpellCheckingInspection
         self.wellsep = self.ParameterDict[self.wellsep.Name] = floatParameter(
             "Well Separation",
-            DefaultValue=1000.0,
+            DefaultValue=int(quantity(well_separation_default_value_m, 'm')
+                             .to(well_separation_default_unit.value).magnitude),
             Min=10.,
-            Max=10000.,
+            Max=int(quantity(10000, 'm').to(well_separation_default_unit.value).magnitude),
             UnitType=Units.LENGTH,
-            PreferredUnits=LengthUnit.METERS,
-            CurrentUnits=LengthUnit.INCHES,
-            ErrMessage="assume default well separation (1000 m)",
-            ToolTipText="Well separation for built-in TOUGH2 doublet reservoir model"
+            PreferredUnits=well_separation_preferred_unit,
+            CurrentUnits=well_separation_default_unit,
+            ErrMessage=f'assume default well separation ({well_separation_default_value_m} m)',
+            ToolTipText=f'Well separation for built-in TOUGH2 doublet reservoir model'
+                        f'{well_separation_unit_mismatch_note}'
         )
+
         self.Tinj = self.ParameterDict[self.Tinj.Name] = floatParameter(
             "Injection Temperature",
             DefaultValue=70.0,

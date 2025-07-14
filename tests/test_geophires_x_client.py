@@ -14,7 +14,7 @@ from tests.base_test_case import BaseTestCase
 class GeophiresXClientTestCase(BaseTestCase):
     """
     Note that these are tests of the geophires_x_client package only and not of the core geophires_x package.
-    If a test calls geophires_x_client.GeophiresXClient.get_geophires_result then it belongs in
+    If a test calls geophires_x_client.GeophiresXClient.get_geophires_result then it generally belongs in
     test_geophires_x.GeophiresXTestCase.
     """
 
@@ -615,3 +615,19 @@ class GeophiresXClientTestCase(BaseTestCase):
         cash_flow = result.result['SAM CASH FLOW PROFILE']
         self.assertIsNotNone(cash_flow)
         self.assertListEqual([''] + [f'Year {y}' for y in range(21)], cash_flow[0])
+
+    def test_stash_cwd(self):
+        start_cwd = Path.cwd()
+        GeophiresXClient().get_geophires_result(
+            GeophiresInputParameters(
+                {
+                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                    'Reservoir Model': 1,
+                    'Time steps per year': 1,
+                    'Reservoir Depth': 3,
+                    'Gradient 1': 50,
+                }
+            )
+        )
+
+        self.assertEqual(start_cwd, Path.cwd())

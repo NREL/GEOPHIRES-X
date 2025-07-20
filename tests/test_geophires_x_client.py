@@ -1,3 +1,4 @@
+import csv
 import tempfile
 import uuid
 from pathlib import Path
@@ -615,3 +616,30 @@ class GeophiresXClientTestCase(BaseTestCase):
         cash_flow = result.result['SAM CASH FLOW PROFILE']
         self.assertIsNotNone(cash_flow)
         self.assertListEqual([''] + [f'Year {y}' for y in range(21)], cash_flow[0])
+
+    def test_csv_with_input_parameters(self):
+        with self.assertRaises(NotImplementedError):
+            # This should fail because CSV from file path is not implemented.
+            ImmutableGeophiresInputParameters(from_file_path=self._get_test_file_path('input_comments.txt')).as_csv()
+
+        # Simulate the main use case of adding input parameters to the CSV download from the web interface.
+        csv_input = ImmutableGeophiresInputParameters(params={'Reservoir Depth': 3, 'Gradient 1': 50}).as_csv()
+        csv_output = GeophiresXResult(self._get_test_file_path('geophires-result_example-1.out')).as_csv()
+        csv_parts = csv_output.split(csv.excel.lineterminator, 1)
+        csv_result = csv_parts[0] + csv.excel.lineterminator + csv_input + csv_parts[1]
+
+        # Ensure the returned CSV are as expected.
+        csv_lines = csv_result.splitlines()
+        self.assertEqual(csv_lines[0], 'Category,Field,Year,Value,Units')
+        self.assertEqual(csv_lines[1], 'INPUT PARAMETERS,Reservoir Depth,,3,')
+        self.assertEqual(csv_lines[2], 'INPUT PARAMETERS,Gradient 1,,50,')
+        self.assertEqual(csv_lines[3], 'SUMMARY OF RESULTS,End-Use Option,,Direct-Use Heat,')
+        self.assertEqual(
+            csv_lines[len(csv_lines) - 1],
+            'HEAT AND/OR ELECTRICITY EXTRACTION AND GENERATION PROFILE,PERCENTAGE OF TOTAL HEAT MINED,25,42.7,%',
+        )
+
+        # Export the CSV for testing in Excel (or other spreadsheet software).
+        result_file = Path(tempfile.gettempdir(), f'geophires-result_{uuid.uuid1()!s}.csv')
+        with open(result_file, 'w', newline='', encoding='utf-8') as rf:
+            rf.write(csv_result)

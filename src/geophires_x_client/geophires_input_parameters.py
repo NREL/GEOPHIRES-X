@@ -1,8 +1,10 @@
+import csv
 import tempfile
 import uuid
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
+from io import StringIO
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any
@@ -217,3 +219,17 @@ class ImmutableGeophiresInputParameters(GeophiresInputParameters):
     def get_output_file_path(self) -> Path:
         """Returns a unique path for the GEOPHIRES output file."""
         return Path(tempfile.gettempdir(), f'geophires-result_{self._instance_id!s}.out')
+
+    def as_csv(self) -> str:
+        """
+        This method returns the input parameters in CSV (Comma-Separated Values) format, using its
+        internal dictionary as the definitive source.  It does not include a header, but uses the
+        same columns as GeophiresXResult.as_csv, and is meant to be used in conjunction with the same.
+        """
+        if self.from_file_path:
+            raise NotImplementedError('CSV from file path is not implemented.')
+
+        f = StringIO()
+        w = csv.writer(f)
+        w.writerows([['INPUT PARAMETERS', key, '', value, ''] for key, value in self.params.items()])
+        return f.getvalue()

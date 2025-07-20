@@ -1,8 +1,10 @@
 import atexit
+import os
 import sys
 import threading
 from multiprocessing import Manager
 from multiprocessing import current_process
+from pathlib import Path
 
 # noinspection PyPep8Naming
 from geophires_x import GEOPHIRESv3 as geophires
@@ -110,6 +112,7 @@ class GeophiresXClient:
 
     def _run_simulation(self, input_params: GeophiresInputParameters) -> GeophiresXResult:
         """Helper method to encapsulate the actual GEOPHIRES run."""
+        stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv
         sys.argv = ['', input_params.as_file_path(), input_params.get_output_file_path()]
 
@@ -121,6 +124,7 @@ class GeophiresXClient:
             raise RuntimeError('GEOPHIRES exited without giving a reason') from None
         finally:
             sys.argv = stash_sys_argv
+            os.chdir(stash_cwd)
 
         self._logger.info(f'GEOPHIRES-X output file: {input_params.get_output_file_path()}')
         result = GeophiresXResult(input_params.get_output_file_path())

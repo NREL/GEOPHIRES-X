@@ -1404,8 +1404,17 @@
       "minimum": 0,
       "maximum": 100
     },
+    "Reservoir Stimulation Capital Cost per Production Well": {
+      "description": "Reservoir stimulation capital cost per production well. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
+    },
     "Reservoir Stimulation Capital Cost Adjustment Factor": {
-      "description": "Multiplier for built-in reservoir stimulation capital cost correlation",
+      "description": "Multiplier for reservoir stimulation capital cost correlation",
       "type": "number",
       "units": "",
       "category": "Economics",

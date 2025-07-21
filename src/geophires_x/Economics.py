@@ -585,18 +585,38 @@ class Economics:
             Valid=False,
             ToolTipText="Total reservoir stimulation capital cost"
         )
+
+        max_stimulation_cost_per_well_MUSD = 100
         self.stimulation_cost_per_injection_well = \
           self.ParameterDict[self.stimulation_cost_per_injection_well.Name] = floatParameter(
             'Reservoir Stimulation Capital Cost per Injection Well',
             DefaultValue=1.25,
             Min=0,
-            Max=100,
+            Max=max_stimulation_cost_per_well_MUSD,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             ToolTipText='Reservoir stimulation capital cost per injection well'
         )
+
+        stimulation_cost_per_production_well_default_value_MUSD = 0
+        stimulation_cost_per_production_well_default_value_note = \
+            '. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.' \
+                if stimulation_cost_per_production_well_default_value_MUSD == 0 else ''
+        self.stimulation_cost_per_production_well = \
+          self.ParameterDict[self.stimulation_cost_per_production_well.Name] = floatParameter(
+            'Reservoir Stimulation Capital Cost per Production Well',
+            DefaultValue=stimulation_cost_per_production_well_default_value_MUSD,
+            Min=0,
+            Max=max_stimulation_cost_per_well_MUSD,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f'Reservoir stimulation capital cost per production well'
+                        f'{stimulation_cost_per_production_well_default_value_note}'
+        )
+
         self.ccstimadjfactor = self.ParameterDict[self.ccstimadjfactor.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost Adjustment Factor",
             DefaultValue=1.0,
@@ -607,7 +627,7 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Multiplier for built-in reservoir stimulation capital cost correlation"
+            ToolTipText="Multiplier for reservoir stimulation capital cost correlation"
         )
         self.ccexplfixed = self.ParameterDict[self.ccexplfixed.Name] = floatParameter(
             "Exploration Capital Cost",
@@ -1629,8 +1649,9 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             ToolTipText=f'Default correlation: ${self.stimulation_cost_per_injection_well.value}M '
                         f'per injection well {stimulation_contingency_and_indirect_costs_tooltip}. '
-                        f'Provide {self.stimulation_cost_per_injection_well.Name} to set the correlation '
-                        f'cost per injection well. '
+                        f'Provide {self.stimulation_cost_per_injection_well.Name} and '
+                        f'{self.stimulation_cost_per_production_well.Name} to set the correlation '
+                        f'costs per well. '
                         f'Provide {self.ccstimadjfactor.Name} to multiply the correlation-calculated cost. '
                         f'Provide {self.ccstimfixed.Name} to override the correlation and set your own '
                         f'total stimulation cost.'
@@ -2358,11 +2379,15 @@ class Economics:
         else:
             stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
                 self.Cstim.CurrentUnits).magnitude
+            stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
 
             # 1.15 for 15% contingency and 1.05 for 5% indirect costs
             # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cstim.value = (stim_cost_per_injection_well
-                                * model.wellbores.ninj.value
+            self.Cstim.value = ((
+                                 stim_cost_per_injection_well * model.wellbores.ninj.value
+                                 + stim_cost_per_production_well * model.wellbores.nprod.value
+                                )
                                 * self.ccstimadjfactor.value
                                 * 1.05 * 1.15)
 

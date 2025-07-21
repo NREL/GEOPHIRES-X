@@ -572,6 +572,7 @@ class Economics:
             ToolTipText="Specify the economic model to calculate the levelized cost of energy. " +
                         '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
         )
+
         self.ccstimfixed = self.ParameterDict[self.ccstimfixed.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost",
             DefaultValue=-1.0,
@@ -583,6 +584,18 @@ class Economics:
             Provided=False,
             Valid=False,
             ToolTipText="Total reservoir stimulation capital cost"
+        )
+        self.stimulation_cost_per_injection_well = \
+          self.ParameterDict[self.stimulation_cost_per_injection_well.Name] = floatParameter(
+            'Reservoir Stimulation Capital Cost per Injection Well',
+            DefaultValue=1.25,
+            Min=0,
+            Max=100,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            ToolTipText='Reservoir stimulation capital cost per injection well'
         )
         self.ccstimadjfactor = self.ParameterDict[self.ccstimadjfactor.Name] = floatParameter(
             "Reservoir Stimulation Capital Cost Adjustment Factor",
@@ -1614,7 +1627,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default correlation: $1.25M per injection well {contingency_and_indirect_costs_tooltip}. '
+            ToolTipText=f'Default correlation: ${self.stimulation_cost_per_injection_well.value}M '
+                        f'per injection well {contingency_and_indirect_costs_tooltip}. '
                         f'Provide {self.ccstimadjfactor.Name} to multiply the default correlation. '
                         f'Provide {self.ccstimfixed.Name} to override the default correlation and set your own cost.'
         )
@@ -2336,12 +2350,14 @@ class Economics:
         if self.ccstimfixed.Valid:
             self.Cstim.value = self.ccstimfixed.value
         else:
-            base_stimulation_cost_MUSD_per_injection_well = 1.25  # TODO parameterize
+            stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
 
             # 1.15 for 15% contingency and 1.05 for 5% indirect costs
             # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cstim.value = (base_stimulation_cost_MUSD_per_injection_well * self.ccstimadjfactor.value
+            self.Cstim.value = (stim_cost_per_injection_well
                                 * model.wellbores.ninj.value
+                                * self.ccstimadjfactor.value
                                 * 1.05 * 1.15)
 
         # field gathering system costs (M$)

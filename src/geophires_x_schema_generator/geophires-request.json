@@ -1395,6 +1395,15 @@
       "minimum": 0,
       "maximum": 1000
     },
+    "Reservoir Stimulation Capital Cost per Injection Well": {
+      "description": "Reservoir stimulation capital cost per injection well",
+      "type": "number",
+      "units": "MUSD",
+      "category": "Economics",
+      "default": 1.25,
+      "minimum": 0,
+      "maximum": 100
+    },
     "Reservoir Stimulation Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in reservoir stimulation capital cost correlation",
       "type": "number",

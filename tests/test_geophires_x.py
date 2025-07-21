@@ -12,6 +12,7 @@ from geophires_x_client import GeophiresXResult
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
+from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
 from tests.base_test_case import BaseTestCase
 
@@ -941,3 +942,36 @@ Print Output to Console, 1"""
             )
             client.get_geophires_result(params)
         self.assertIn('SBT with coaxial configuration is not implemented', str(e.exception))
+
+    def test_production_well_stimulation_cost(self):
+        def _get_result(prod_well_stim_MUSD: Optional[int] = None) -> GeophiresXResult:
+            p = {}
+            if prod_well_stim_MUSD is not None:
+                p['Reservoir Stimulation Capital Cost per Production Well'] = prod_well_stim_MUSD
+
+            return GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    params=p,
+                )
+            )
+
+        result_no_prod_stim: GeophiresXResult = _get_result()
+
+        result_prod_stim: GeophiresXResult = _get_result(1.25)
+
+        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+        indirect_and_contingency = 1.05 * 1.15
+
+        self.assertAlmostEqual(
+            (
+                2
+                * (
+                    result_no_prod_stim.result['CAPITAL COSTS (M$)']['Stimulation costs']['value']
+                    / (indirect_and_contingency)
+                )
+            )
+            * indirect_and_contingency,
+            result_prod_stim.result['CAPITAL COSTS (M$)']['Stimulation costs']['value'],
+            places=1,
+        )

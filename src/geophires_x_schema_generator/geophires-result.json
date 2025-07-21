@@ -351,7 +351,7 @@
         "Drilling and completion costs per redrilled well": {},
         "Stimulation costs": {
           "type": "number",
-          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 12% indirect costs. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the default correlation. Provide Reservoir Stimulation Capital Cost to override the default correlation and set your own cost.",
+          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 5% indirect costs. Provide Reservoir Stimulation Capital Cost per Injection Well to set the correlation cost per injection well. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the correlation-calculated cost. Provide Reservoir Stimulation Capital Cost to override the correlation and set your own total stimulation cost.",
           "units": "MUSD"
         },
         "Stimulation costs (for redrilling)": {},

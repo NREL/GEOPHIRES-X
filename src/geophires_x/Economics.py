@@ -1619,7 +1619,7 @@ class Economics:
         )
 
         # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-        contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 12% indirect costs'
+        stimulation_contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 5% indirect costs'
 
         # noinspection SpellCheckingInspection
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
@@ -1628,10 +1628,16 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
             ToolTipText=f'Default correlation: ${self.stimulation_cost_per_injection_well.value}M '
-                        f'per injection well {contingency_and_indirect_costs_tooltip}. '
-                        f'Provide {self.ccstimadjfactor.Name} to multiply the default correlation. '
-                        f'Provide {self.ccstimfixed.Name} to override the default correlation and set your own cost.'
+                        f'per injection well {stimulation_contingency_and_indirect_costs_tooltip}. '
+                        f'Provide {self.stimulation_cost_per_injection_well.Name} to set the correlation '
+                        f'cost per injection well. '
+                        f'Provide {self.ccstimadjfactor.Name} to multiply the correlation-calculated cost. '
+                        f'Provide {self.ccstimfixed.Name} to override the correlation and set your own '
+                        f'total stimulation cost.'
         )
+
+        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
+        contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 12% indirect costs'
 
         # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
         #    (https://github.com/NREL/GEOPHIRES-X/issues/383)

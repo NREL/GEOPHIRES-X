@@ -1861,7 +1861,7 @@
       "maximum": 15000.0
     },
     "Well Drilling and Completion Indirect Capital Cost Percentage": {
-      "description": "The indirect capital cost for well drilling and completion of all wells (the wellfield), calculated as a percentage of the direct cost. ",
+      "description": "The indirect capital cost for well drilling and completion of all wells (the wellfield), calculated as a percentage of the direct cost.",
       "type": "number",
       "units": "%",
       "category": "Economics",
@@ -1870,7 +1870,7 @@
       "maximum": 100
     },
     "Indirect Capital Cost Percentage": {
-      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is defined or provided. For example, wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%).and reservoir stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
+      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is defined or provided. Wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%). Stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
       "type": "number",
       "units": "%",
       "category": "Economics",

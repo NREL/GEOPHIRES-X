@@ -1387,7 +1387,7 @@
       ]
     },
     "Reservoir Stimulation Capital Cost": {
-      "description": "Total reservoir stimulation capital cost",
+      "description": "Total reservoir stimulation capital cost, including contingency and indirect costs.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",

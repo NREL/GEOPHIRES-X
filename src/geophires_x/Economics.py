@@ -2,12 +2,15 @@ import math
 import sys
 import numpy as np
 import numpy_financial as npf
+from pint.facets.plain import PlainQuantity
+
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter
+from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -583,7 +586,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost"
+            ToolTipText="Total reservoir stimulation capital cost, including contingency and indirect costs."
         )
 
         max_stimulation_cost_per_well_MUSD = 100
@@ -2390,26 +2393,7 @@ class Economics:
                                           (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                           self.cost_lateral_section.value)
 
-        # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
-        if self.ccstimfixed.Valid:
-            self.Cstim.value = self.ccstimfixed.value
-        else:
-            stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
-                self.Cstim.CurrentUnits).magnitude
-            stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
-                self.Cstim.CurrentUnits).magnitude
-
-            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost.quantity()
-                                                  .to('dimensionless').magnitude)
-            self.Cstim.value = (
-                (
-                    stim_cost_per_injection_well * model.wellbores.ninj.value
-                    + stim_cost_per_production_well * model.wellbores.nprod.value
-                )
-                * self.ccstimadjfactor.value
-                * (1 + stimulation_indirect_cost_fraction)
-                * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            )
+        self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:
@@ -2714,7 +2698,30 @@ class Economics:
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
-    def calculate_plant_costs(self, model:Model) -> None:
+    def calculate_stimulation_costs(self, model: Model) -> PlainQuantity:
+        if self.ccstimfixed.Valid:
+            stimulation_costs = self.ccstimfixed.quantity().to(self.Cstim.CurrentUnits).magnitude
+        else:
+            stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
+            stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
+
+            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost.quantity()
+                                                  .to('dimensionless').magnitude)
+            stimulation_costs = (
+                (
+                    stim_cost_per_injection_well * model.wellbores.ninj.value
+                    + stim_cost_per_production_well * model.wellbores.nprod.value
+                )
+                * self.ccstimadjfactor.value
+                * (1 + stimulation_indirect_cost_fraction)
+                * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            )
+
+        return quantity(stimulation_costs, self.Cstim.CurrentUnits)
+
+    def calculate_plant_costs(self, model: Model) -> None:
         # plant costs
         if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT
             and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):  # direct-use

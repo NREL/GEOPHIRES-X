@@ -1449,8 +1449,8 @@
       "minimum": 0,
       "maximum": 10
     },
-    "Well Drilling and Completion Capital Cost": {
-      "description": "Well Drilling and Completion Capital Cost",
+    "Injection Well Drilling and Completion Capital Cost": {
+      "description": "Injection Well Drilling and Completion Capital Cost",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1458,8 +1458,8 @@
       "minimum": 0,
       "maximum": 200
     },
-    "Injection Well Drilling and Completion Capital Cost": {
-      "description": "Injection Well Drilling and Completion Capital Cost",
+    "Well Drilling and Completion Capital Cost": {
+      "description": "Well Drilling and Completion Capital Cost per well. Applied to production wells, and injection wells unless Injection Well Drilling and Completion Capital Cost is provided.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1484,15 +1484,6 @@
       "default": 1.0,
       "minimum": 0,
       "maximum": 10
-    },
-    "Indirect Cost Percentage": {
-      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is provided. For example, reservoir stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
-      "type": "number",
-      "units": "%",
-      "category": "Economics",
-      "default": 12,
-      "minimum": 0,
-      "maximum": 100
     },
     "Wellfield O&M Cost": {
       "description": "Total annual wellfield O&M cost",
@@ -1868,6 +1859,24 @@
       "default": 1300.0,
       "minimum": 0.0,
       "maximum": 15000.0
+    },
+    "Well Drilling and Completion Indirect Capital Cost Percentage": {
+      "description": "The indirect capital cost for well drilling and completion of all wells (the wellfield), calculated as a percentage of the direct cost. ",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "Indirect Capital Cost Percentage": {
+      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is defined or provided. For example, wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%).and reservoir stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 12,
+      "minimum": 0,
+      "maximum": 100
     },
     "Absorption Chiller Capital Cost": {
       "description": "Absorption chiller capital cost",

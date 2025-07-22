@@ -632,8 +632,8 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for reservoir stimulation capital cost correlation"
         )
-        self.stimulation_indirect_capital_cost = \
-          self.ParameterDict[self.stimulation_indirect_capital_cost.Name] = floatParameter(
+        self.stimulation_indirect_capital_cost_percentage = \
+          self.ParameterDict[self.stimulation_indirect_capital_cost_percentage.Name] = floatParameter(
             'Reservoir Stimulation Indirect Capital Cost Percentage',
             DefaultValue=5,
             Min=0,
@@ -670,21 +670,10 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for built-in exploration capital cost correlation"
         )
-        self.per_production_well_cost = self.ParameterDict[self.per_production_well_cost.Name] = floatParameter(
-            "Well Drilling and Completion Capital Cost",
-            DefaultValue=-1.0,
-            Min=0,
-            Max=200,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-            Provided=False,
-            Valid=False,
-            ToolTipText="Well Drilling and Completion Capital Cost"
-        )
+
         self.per_injection_well_cost = self.ParameterDict[self.per_injection_well_cost.Name] = floatParameter(
             "Injection Well Drilling and Completion Capital Cost",
-            DefaultValue=self.per_production_well_cost.value,
+            DefaultValue=-1.0,
             Min=0,
             Max=200,
             UnitType=Units.CURRENCY,
@@ -694,9 +683,20 @@ class Economics:
             Valid=False,
             ToolTipText="Injection Well Drilling and Completion Capital Cost"
         )
+        self.per_production_well_cost = self.ParameterDict[self.per_production_well_cost.Name] = floatParameter(
+            "Well Drilling and Completion Capital Cost",
+            DefaultValue=self.per_injection_well_cost.value,
+            Min=0,
+            Max=200,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            Valid=False,
+            ToolTipText=f'Well Drilling and Completion Capital Cost per well. Applied to production wells, '
+                        f'and injection wells unless {self.per_injection_well_cost.Name} is provided.'
+        )
 
-        # TODO parameterize/document default 5% indirect cost factor that is applied when neither of the well
-        #  drilling/completion capital cost adjustment factors are provided
         injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
@@ -725,21 +725,6 @@ class Economics:
             ToolTipText="Injection Well Drilling and Completion Capital Cost Adjustment Factor. "
                         f"If not provided, this value will be set automatically to the same value as "
                         f"{self.production_well_cost_adjustment_factor.Name}."
-        )
-
-        self.indirect_cost = self.ParameterDict[self.indirect_cost.Name] = floatParameter(
-            'Indirect Cost Percentage',
-            DefaultValue=12,
-            Min=0,
-            Max=100,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
-            ToolTipText=f'The default indirect cost percentage applied to capital costs. This value is used for all '
-                        f'cost categories unless a more specific indirect cost parameter is provided. For example, '
-                        f'reservoir stimulation costs use {self.stimulation_indirect_capital_cost.Name} '
-                        f'(default {self.stimulation_indirect_capital_cost.DefaultValue}%).'
-                        # FIXME WIP mention drilling also has 5% default indirect cost
         )
 
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
@@ -1097,6 +1082,7 @@ class Economics:
             ErrMessage="assume default: no S-DAC-GT calculations",
             ToolTipText="Set to true if you want the S-DAC-GT economics calculations to be made"
         )
+
         self.Vertical_drilling_cost_per_m = self.ParameterDict[self.Vertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Vertical Drilling Costs",
             DefaultValue=1000.0,
@@ -1121,6 +1107,35 @@ class Economics:
             ErrMessage="assume default all-in cost for drill non-vertical well segment(s) ($1300/m)",
             ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including drilling, "
                         "casing, cement, insulated insert"
+        )
+        self.wellfield_indirect_capital_cost_percentage = self.ParameterDict[self.wellfield_indirect_capital_cost_percentage.Name] = floatParameter(
+            'Well Drilling and Completion Indirect Capital Cost Percentage',
+            DefaultValue=5,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The indirect capital cost for well drilling and completion of all wells (the wellfield), '
+                        f'calculated as a percentage of the direct cost. '
+        )
+
+        self.indirect_capital_cost_percentage = \
+          self.ParameterDict[self.indirect_capital_cost_percentage.Name] = floatParameter(
+            'Indirect Capital Cost Percentage',
+            DefaultValue=12,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The default indirect cost percentage applied to capital costs. This value is used for all '
+                        f'cost categories unless a more specific indirect cost parameter is defined or provided. '
+                        f'For example, '
+                        f'wellfield costs use {self.wellfield_indirect_capital_cost_percentage.Name} '
+                        f'(default {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
+                        f'and reservoir stimulation costs use {self.stimulation_indirect_capital_cost_percentage.Name} '
+                        f'(default {self.stimulation_indirect_capital_cost_percentage.DefaultValue}%).'
         )
 
         # absorption chiller
@@ -1673,7 +1688,7 @@ class Economics:
 
         stimulation_contingency_and_indirect_costs_tooltip = (
             f'plus 15% contingency ' # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            f'plus {self.stimulation_indirect_capital_cost.quantity().to(convertible_unit("%")).magnitude}% '
+            f'plus {self.stimulation_indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
         )
 
@@ -1695,7 +1710,7 @@ class Economics:
 
         contingency_and_indirect_costs_tooltip = (
             f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            f'plus {self.indirect_cost.quantity().to(convertible_unit("%")).magnitude}% indirect costs'
+            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% indirect costs'
         )
 
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
@@ -2403,11 +2418,16 @@ class Economics:
                 self.cost_lateral_section.value = 0.0
             # cost of the well field
 
-            # 1.05 for 5% indirect costs
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
-                                          (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
-                                          self.cost_lateral_section.value)
+            indirect_cost_factor = (
+                1 +
+                self.wellfield_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+            )
+
+            self.Cwell.value = indirect_cost_factor * (
+                self.cost_one_production_well.value * model.wellbores.nprod.value +
+                self.cost_one_injection_well.value * model.wellbores.ninj.value +
+                self.cost_lateral_section.value
+            )
 
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
@@ -2715,7 +2735,7 @@ class Economics:
 
     @property
     def _indirect_cost_factor(self) -> float:
-        return 1 + self.indirect_cost.quantity().to('dimensionless').magnitude
+        return 1 + self.indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
 
     def calculate_stimulation_costs(self, model: Model) -> PlainQuantity:
         if self.ccstimfixed.Valid:
@@ -2726,7 +2746,7 @@ class Economics:
             stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
                 self.Cstim.CurrentUnits).magnitude
 
-            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost.quantity()
+            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost_percentage.quantity()
                                                   .to('dimensionless').magnitude)
             stimulation_costs = (
                 (

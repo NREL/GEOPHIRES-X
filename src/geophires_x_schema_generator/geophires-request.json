@@ -1485,6 +1485,15 @@
       "minimum": 0,
       "maximum": 10
     },
+    "Indirect Cost Percentage": {
+      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is provided. For example, reservoir stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 12,
+      "minimum": 0,
+      "maximum": 100
+    },
     "Wellfield O&M Cost": {
       "description": "Total annual wellfield O&M cost",
       "type": "number",

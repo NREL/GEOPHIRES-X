@@ -629,6 +629,20 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for reservoir stimulation capital cost correlation"
         )
+        self.stimulation_indirect_capital_cost = \
+          self.ParameterDict[self.stimulation_indirect_capital_cost.Name] = floatParameter(
+            'Reservoir Stimulation Indirect Capital Cost Percentage',
+            DefaultValue=5,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The indirect capital cost for reservoir stimulation, '
+                        f'calculated as a percentage of the direct cost. '
+                        f'(Not applied if {self.ccstimfixed.Name} is provided.)'
+        )
+
         self.ccexplfixed = self.ParameterDict[self.ccexplfixed.Name] = floatParameter(
             "Exploration Capital Cost",
             DefaultValue=-1.0,
@@ -1638,8 +1652,11 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )
 
-        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-        stimulation_contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 5% indirect costs'
+        stimulation_contingency_and_indirect_costs_tooltip = (
+            f'plus 15% contingency ' # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus {self.stimulation_indirect_capital_cost.quantity().to(convertible_unit("%")).magnitude}% '
+            f'indirect costs'
+        )
 
         # noinspection SpellCheckingInspection
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
@@ -2382,14 +2399,17 @@ class Economics:
             stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
                 self.Cstim.CurrentUnits).magnitude
 
-            # 1.15 for 15% contingency and 1.05 for 5% indirect costs
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cstim.value = ((
-                                 stim_cost_per_injection_well * model.wellbores.ninj.value
-                                 + stim_cost_per_production_well * model.wellbores.nprod.value
-                                )
-                                * self.ccstimadjfactor.value
-                                * 1.05 * 1.15)
+            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost.quantity()
+                                                  .to('dimensionless').magnitude)
+            self.Cstim.value = (
+                (
+                    stim_cost_per_injection_well * model.wellbores.ninj.value
+                    + stim_cost_per_production_well * model.wellbores.nprod.value
+                )
+                * self.ccstimadjfactor.value
+                * (1 + stimulation_indirect_cost_fraction)
+                * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            )
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:

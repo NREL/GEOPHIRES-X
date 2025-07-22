@@ -975,3 +975,31 @@ Print Output to Console, 1"""
             result_prod_stim.result['CAPITAL COSTS (M$)']['Stimulation costs']['value'],
             places=1,
         )
+
+    def test_stimulation_indirect_cost(self):
+        def _get_result(indirect_cost_percent: Optional[int] = None) -> float:
+            p = {}
+            if indirect_cost_percent is not None:
+                p['Reservoir Stimulation Indirect Capital Cost Percentage'] = indirect_cost_percent
+
+            return (
+                GeophiresXClient()
+                .get_geophires_result(
+                    ImmutableGeophiresInputParameters(
+                        from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                        params=p,
+                    )
+                )
+                .result['CAPITAL COSTS (M$)']['Stimulation costs']['value']
+            )
+
+        result_default_indirect_cost: GeophiresXResult = _get_result()
+
+        higher_indirect = 12
+        result_higher_indirect_cost: GeophiresXResult = _get_result(higher_indirect)
+
+        self.assertAlmostEqual(
+            result_default_indirect_cost / 1.05,
+            result_higher_indirect_cost / (1 + (higher_indirect / 100)),
+            places=1,
+        )

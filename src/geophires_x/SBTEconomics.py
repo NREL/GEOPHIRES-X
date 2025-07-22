@@ -366,8 +366,10 @@ class SBTEconomics(Economics):
                 self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
 
-                # FIXME use self.peaking_boiler_cost_per_kW instead of hardcoded 65
-                self.peakingboilercost.value = 65 * model.surfaceplant.max_peaking_boiler_demand.value / 1000  # add 65$/KW for peaking boiler
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kW.quantity()
+                                                .to('USD / kilowatt').magnitude
+                                                * model.surfaceplant.max_peaking_boiler_demand.value
+                                                / 1000)
 
                 self.Cplant.value += self.peakingboilercost.value  # add peaking boiler cost to surface plant cost
 

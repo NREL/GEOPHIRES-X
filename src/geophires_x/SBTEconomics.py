@@ -224,12 +224,15 @@ class SBTEconomics(Economics):
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value))
         else:
             # calculate the cost of one vertical production well
-            # 1.05 for 5% indirect costs
-            self.cost_one_production_well.value = 1.05 * calculate_cost_of_one_vertical_well(model, model.wellbores.vertical_section_length.value,
-                                                                                      self.wellcorrelation.value,
-                                                                                      self.Vertical_drilling_cost_per_m.value,
-                                                                                      self.per_production_well_cost.Name,
-                                                                                      self.production_well_cost_adjustment_factor.value)
+            self.cost_one_production_well.value = (
+                self._wellfield_indirect_cost_factor
+                * calculate_cost_of_one_vertical_well(model,
+                                                      model.wellbores.vertical_section_length.value,
+                                                      self.wellcorrelation.value,
+                                                      self.Vertical_drilling_cost_per_m.value,
+                                                      self.per_production_well_cost.Name,
+                                                      self.production_well_cost_adjustment_factor.value)
+            )
 
             # If there is no injector well, then we assume we are doing a coaxial closed-loop.
             if model.wellbores.ninj.value == 0:
@@ -241,26 +244,32 @@ class SBTEconomics(Economics):
 
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
                 # now calculate the costs if we have a lateral section
-                # 1.05 for 5% indirect costs
-                self.cost_lateral_section.value = 1.05 * calculate_cost_of_lateral_section(model, model.wellbores.tot_lateral_m.value,
-                                                                                    self.wellcorrelation.value,
-                                                                                    self.Nonvertical_drilling_cost_per_m.value,
-                                                                                    model.wellbores.numnonverticalsections.value,
-                                                                                    self.per_injection_well_cost.Name,
-                                                                                    model.wellbores.NonverticalsCased.value,
-                                                                                    self.production_well_cost_adjustment_factor.value)
+                self.cost_lateral_section.value = (
+                    self._wellfield_indirect_cost_factor
+                    * calculate_cost_of_lateral_section(model,
+                                                        model.wellbores.tot_lateral_m.value,
+                                                        self.wellcorrelation.value,
+                                                        self.Nonvertical_drilling_cost_per_m.value,
+                                                        model.wellbores.numnonverticalsections.value,
+                                                        self.per_injection_well_cost.Name,
+                                                        model.wellbores.NonverticalsCased.value,
+                                                        self.production_well_cost_adjustment_factor.value)
+                )
 
                 # If it is an EavorLoop, we need to calculate the cost of the section of the well from
                 # the bottom of the vertical to the junction with the laterals.
                 # This section is not vertical, but it is cased, so we will estimate the cost
                 # of this section as if it were a vertical section.
                 if model.wellbores.Configuration.value == Configuration.EAVORLOOP:
-                    self.cost_to_junction_section.value = 1.05 * calculate_cost_of_one_vertical_well(model,
-                                                                                         model.wellbores.tot_to_junction_m.value,
-                                                                                         self.wellcorrelation.value,
-                                                                                         self.Vertical_drilling_cost_per_m.value,
-                                                                                         self.per_injection_well_cost.Name,
-                                                                                         self.injection_well_cost_adjustment_factor.value)
+                    self.cost_to_junction_section.value = (
+                        self._wellfield_indirect_cost_factor
+                        * calculate_cost_of_one_vertical_well(model,
+                                                              model.wellbores.tot_to_junction_m.value,
+                                                              self.wellcorrelation.value,
+                                                              self.Vertical_drilling_cost_per_m.value,
+                                                              self.per_injection_well_cost.Name,
+                                                              self.injection_well_cost_adjustment_factor.value)
+                    )
             else:
                 self.cost_lateral_section.value = 0.0
                 self.cost_to_junction_section.value = 0.0
@@ -270,11 +279,7 @@ class SBTEconomics(Economics):
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                 self.cost_lateral_section.value + self.cost_to_junction_section.value)
 
-        # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
-        if self.ccstimfixed.Valid:
-            self.Cstim.value = self.ccstimfixed.value
-        else:
-            self.Cstim.value = 1.05 * 1.15 * self.ccstimadjfactor.value * model.wellbores.ninj.value * 1.25  # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+        self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:

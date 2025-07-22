@@ -814,7 +814,7 @@ Print Output to Console, 1"""
         drilling cost per well and the raw value calculated by the curve.
         """
 
-        indirect_cost_factor = 1.05  # See TODO re:parameterizing at src/geophires_x/Economics.py:652
+        indirect_cost_factor = 1.05
 
         for test_case in WellDrillingCostCorrelationTestCase.COST_CORRELATION_TEST_CASES:
             correlation: WellDrillingCostCorrelation = test_case[0]

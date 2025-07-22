@@ -2416,14 +2416,9 @@ class Economics:
                 )
             else:
                 self.cost_lateral_section.value = 0.0
+
             # cost of the well field
-
-            indirect_cost_factor = (
-                1 +
-                self.wellfield_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
-            )
-
-            self.Cwell.value = indirect_cost_factor * (
+            self.Cwell.value = self._wellfield_indirect_cost_factor * (
                 self.cost_one_production_well.value * model.wellbores.nprod.value +
                 self.cost_one_injection_well.value * model.wellbores.ninj.value +
                 self.cost_lateral_section.value
@@ -2737,6 +2732,14 @@ class Economics:
     def _indirect_cost_factor(self) -> float:
         return 1 + self.indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
 
+    @property
+    def _wellfield_indirect_cost_factor(self) -> float:
+        return 1 + self.wellfield_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
+    @property
+    def _stimulation_indirect_cost_factor(self) -> float:
+        return 1 + self.stimulation_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
     def calculate_stimulation_costs(self, model: Model) -> PlainQuantity:
         if self.ccstimfixed.Valid:
             stimulation_costs = self.ccstimfixed.quantity().to(self.Cstim.CurrentUnits).magnitude
@@ -2746,15 +2749,13 @@ class Economics:
             stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
                 self.Cstim.CurrentUnits).magnitude
 
-            stimulation_indirect_cost_fraction = (self.stimulation_indirect_capital_cost_percentage.quantity()
-                                                  .to('dimensionless').magnitude)
             stimulation_costs = (
                 (
                     stim_cost_per_injection_well * model.wellbores.ninj.value
                     + stim_cost_per_production_well * model.wellbores.nprod.value
                 )
                 * self.ccstimadjfactor.value
-                * (1 + stimulation_indirect_cost_fraction)
+                * self._stimulation_indirect_cost_factor
                 * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
             )
 

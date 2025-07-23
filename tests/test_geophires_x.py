@@ -1092,3 +1092,70 @@ Print Output to Console, 1"""
             # Note this is not necessarily true for all cases, but generally would be expected,
             # and is true for Fervo_Project_Cape-4 specifically.
         )
+
+    def test_contingency(self):
+        def _get_result(
+            contingency_percentage: Optional[int] = None,
+            input_file_path: str = 'geophires_x_tests/generic-egs-case.txt',
+        ) -> float:
+            p = {}
+
+            if contingency_percentage is not None:
+                p['Contingency Percentage'] = contingency_percentage
+
+            return (
+                GeophiresXClient()
+                .get_geophires_result(
+                    ImmutableGeophiresInputParameters(
+                        from_file_path=self._get_test_file_path(input_file_path),
+                        params=p,
+                    )
+                )
+                .result['CAPITAL COSTS (M$)']
+            )
+
+        def capex(result_cap_costs):
+            if result_cap_costs.get('Total CAPEX') is not None:
+                return result_cap_costs['Total CAPEX']['value']
+
+            return result_cap_costs['Total capital costs']['value']
+
+        default_contingency_percent = 15
+        result_default = _get_result()
+
+        self.assertEqual(
+            # Test assumption check, update default_contingency_percent if GEOPHIRES default value is changed
+            capex(result_default),
+            capex(_get_result(contingency_percentage=default_contingency_percent)),
+        )
+
+        for higher_contingency in range(20, 30, 5):
+            assert higher_contingency > default_contingency_percent  # test assumption check
+            result_higher_contingency = _get_result(contingency_percentage=higher_contingency)
+
+            self.assertGreater(
+                capex(result_higher_contingency),
+                capex(result_default),
+            )
+            self.assertEqual(
+                # Contingency is not applied to drilling costs
+                result_default['Drilling and completion costs']['value'],
+                result_higher_contingency['Drilling and completion costs']['value'],
+            )
+
+            default_contingency_factor = 1.0 - (default_contingency_percent / 100.0)
+            higher_contingency_factor = 1 + (higher_contingency / 100.0)
+            for cost_category in [
+                'Stimulation costs',
+                'Surface power plant costs',
+                'Field gathering system costs',
+                'Total surface equipment costs',
+                'Exploration costs',
+            ]:
+                self.assertAlmostEqualWithinPercentage(
+                    result_default[cost_category]['value'] * default_contingency_factor * higher_contingency_factor,
+                    result_higher_contingency[cost_category]['value'],
+                    percent=min(  # Rounding throws off by a few percent
+                        2.5, (higher_contingency - default_contingency_percent) / 2.0
+                    ),
+                )

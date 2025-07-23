@@ -993,30 +993,102 @@ Print Output to Console, 1"""
             places=1,
         )
 
-    def test_stimulation_indirect_cost(self):
-        def _get_result(indirect_cost_percent: Optional[int] = None) -> float:
+    def test_indirect_costs(self):
+        def _get_result(
+            indirect_cost_percent: Optional[int] = None,
+            stimulation_indirect_cost_percent: Optional[int] = None,
+            wellfield_indirect_cost_percent: Optional[int] = None,
+            input_file_path: str = 'geophires_x_tests/generic-egs-case.txt',
+        ) -> float:
             p = {}
+
             if indirect_cost_percent is not None:
-                p['Reservoir Stimulation Indirect Capital Cost Percentage'] = indirect_cost_percent
+                p['Indirect Capital Cost Percentage'] = indirect_cost_percent
+
+            if stimulation_indirect_cost_percent is not None:
+                p['Reservoir Stimulation Indirect Capital Cost Percentage'] = stimulation_indirect_cost_percent
+
+            if wellfield_indirect_cost_percent is not None:
+                p['Well Drilling and Completion Indirect Capital Cost Percentage'] = wellfield_indirect_cost_percent
 
             return (
                 GeophiresXClient()
                 .get_geophires_result(
                     ImmutableGeophiresInputParameters(
-                        from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                        from_file_path=self._get_test_file_path(input_file_path),
                         params=p,
                     )
                 )
-                .result['CAPITAL COSTS (M$)']['Stimulation costs']['value']
+                .result['CAPITAL COSTS (M$)']
             )
 
         result_default_indirect_cost: GeophiresXResult = _get_result()
 
-        higher_indirect = 12
-        result_higher_indirect_cost: GeophiresXResult = _get_result(higher_indirect)
+        def capex(result_cap_costs):
+            if result_cap_costs.get('Total CAPEX') is not None:
+                return result_cap_costs['Total CAPEX']['value']
+
+            return result_cap_costs['Total capital costs']['value']
+
+        lower_indirect = 10
+        result_lower_indirect_cost: GeophiresXResult = _get_result(indirect_cost_percent=lower_indirect)
+        self.assertGreater(
+            capex(result_default_indirect_cost),
+            capex(result_lower_indirect_cost),
+        )
+
+        def stim_cost(result_cap_costs):
+            return result_cap_costs['Stimulation costs']['value']
+
+        higher_stim_indirect = 12
+        result_higher_stim_indirect_cost: GeophiresXResult = _get_result(
+            stimulation_indirect_cost_percent=higher_stim_indirect
+        )
 
         self.assertAlmostEqual(
-            result_default_indirect_cost / 1.05,
-            result_higher_indirect_cost / (1 + (higher_indirect / 100)),
+            stim_cost(result_default_indirect_cost) / 1.05,
+            stim_cost(result_higher_stim_indirect_cost) / (1 + (higher_stim_indirect / 100)),
             places=1,
+        )
+
+        self.assertAlmostEqual(
+            stim_cost(result_default_indirect_cost) / 1.05,
+            stim_cost(result_higher_stim_indirect_cost) / (1 + (higher_stim_indirect / 100)),
+            places=1,
+        )
+
+        def wellfield_cost(result_cap_costs):
+            return result_cap_costs['Drilling and completion costs']['value']
+
+        result_default_indirect_cost_2: GeophiresXResult = _get_result(
+            input_file_path='examples/Fervo_Project_Cape-4.txt'
+        )
+
+        higher_wellfield_indirect = 15
+        result_higher_wellfield_indirect_cost: GeophiresXResult = _get_result(
+            wellfield_indirect_cost_percent=higher_wellfield_indirect,
+            input_file_path='examples/Fervo_Project_Cape-4.txt',
+        )
+        self.assertGreater(
+            wellfield_cost(result_higher_wellfield_indirect_cost), wellfield_cost(result_default_indirect_cost_2)
+        )
+
+        self.assertGreater(capex(result_higher_wellfield_indirect_cost), capex(result_default_indirect_cost_2))
+
+        self.assertEqual(stim_cost(result_higher_wellfield_indirect_cost), stim_cost(result_default_indirect_cost_2))
+
+        result_higher_wellfield_lower_default: GeophiresXResult = _get_result(
+            indirect_cost_percent=lower_indirect,
+            wellfield_indirect_cost_percent=higher_wellfield_indirect,
+            input_file_path='examples/Fervo_Project_Cape-4.txt',
+        )
+
+        self.assertEqual(
+            wellfield_cost(result_higher_wellfield_indirect_cost), wellfield_cost(result_higher_wellfield_lower_default)
+        )
+        self.assertLess(
+            capex(result_higher_wellfield_lower_default),
+            capex(result_higher_wellfield_indirect_cost),
+            # Note this is not necessarily true for all cases, but generally would be expected,
+            # and is true for Fervo_Project_Cape-4 specifically.
         )

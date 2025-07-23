@@ -1129,7 +1129,7 @@ Print Output to Console, 1"""
             capex(_get_result(contingency_percentage=default_contingency_percent)),
         )
 
-        for higher_contingency in range(20, 30, 5):
+        for higher_contingency in range(20, 35, 5):
             assert higher_contingency > default_contingency_percent  # test assumption check
             result_higher_contingency = _get_result(contingency_percentage=higher_contingency)
 

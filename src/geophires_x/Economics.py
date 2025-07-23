@@ -2356,80 +2356,7 @@ class Economics:
         model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # capital costs
-        # well costs (using GeoVision drilling correlations). These are calculated whether totalcapcostvalid = 1
-        # start with the cost of one well
-        # C1well is well drilling and completion cost in M$/well
-        if self.per_production_well_cost.Valid:
-            self.cost_one_production_well.value = self.per_production_well_cost.value
-            if not self.per_injection_well_cost.Provided:
-                self.cost_one_injection_well.value = self.per_production_well_cost.value
-            else:
-                self.cost_one_injection_well.value = self.per_injection_well_cost.value
-            self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
-                                (self.cost_one_injection_well.value * model.wellbores.ninj.value))
-        else:
-            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = 0.0
-                if not model.wellbores.IsAGS.value:
-                    input_vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
-                    output_vert_depth_km = 0.0
-                else:
-                    input_vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
-                    output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
-                model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
-
-                tot_m, tot_vert_m, tot_horiz_m, _ = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
-                                                                                    model.wellbores.numnonverticalsections.value,
-                                                                                    model.wellbores.Nonvertical_length.value / 1000.0,
-                                                                                    input_vert_depth_km,
-                                                                                    output_vert_depth_km,
-                                                                                    model.wellbores.nprod.value,
-                                                                                    model.wellbores.ninj.value)
-
-            else:
-                tot_m = tot_vert_m = model.reserv.depth.quantity().to('km').magnitude
-                tot_horiz_m = 0.0
-                if not model.wellbores.injection_reservoir_depth.Provided:
-                    model.wellbores.injection_reservoir_depth.value = model.reserv.depth.quantity().to('km').magnitude
-                else:
-                    model.wellbores.injection_reservoir_depth.value = model.wellbores.injection_reservoir_depth.quantity().to('km').magnitude
-
-            self.cost_one_production_well.value = calculate_cost_of_one_vertical_well(model, model.reserv.depth.quantity().to('m').magnitude,
-                                                                                      self.wellcorrelation.value,
-                                                                                      self.Vertical_drilling_cost_per_m.value,
-                                                                                      self.per_production_well_cost.Name,
-                                                                                      self.production_well_cost_adjustment_factor.value)
-            if model.wellbores.ninj.value == 0:
-                self.cost_one_injection_well.value = -1.0
-            else:
-                self.cost_one_injection_well.value = calculate_cost_of_one_vertical_well(model,
-                                                                                         model.wellbores.injection_reservoir_depth.value * 1000.0,
-                                                                                         self.wellcorrelation.value,
-                                                                                         self.Vertical_drilling_cost_per_m.value,
-                                                                                         self.per_injection_well_cost.Name,
-                                                                                         self.injection_well_cost_adjustment_factor.value)
-
-            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
-                    model,
-                    tot_horiz_m,
-                    self.wellcorrelation.value,
-                    self.Nonvertical_drilling_cost_per_m.value,
-                    model.wellbores.numnonverticalsections.value,
-                    self.Nonvertical_drilling_cost_per_m.Name,
-                    model.wellbores.NonverticalsCased.value,
-                    self.production_well_cost_adjustment_factor.value
-                )
-            else:
-                self.cost_lateral_section.value = 0.0
-
-            # cost of the well field
-            self.Cwell.value = self._wellfield_indirect_cost_factor * (
-                self.cost_one_production_well.value * model.wellbores.nprod.value +
-                self.cost_one_injection_well.value * model.wellbores.ninj.value +
-                self.cost_lateral_section.value
-            )
-
+        self.calculate_wellfield_costs(model)
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
         # field gathering system costs (M$)
@@ -2745,6 +2672,82 @@ class Economics:
     @property
     def _stimulation_indirect_cost_factor(self) -> float:
         return 1 + self.stimulation_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
+    def calculate_wellfield_costs(self, model: Model) -> None:
+        if self.per_production_well_cost.Valid:
+            self.cost_one_production_well.value = self.per_production_well_cost.value
+            if not self.per_injection_well_cost.Provided:
+                self.cost_one_injection_well.value = self.per_production_well_cost.value
+            else:
+                self.cost_one_injection_well.value = self.per_injection_well_cost.value
+            self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
+                                (self.cost_one_injection_well.value * model.wellbores.ninj.value))
+        else:
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                self.cost_lateral_section.value = 0.0
+                if not model.wellbores.IsAGS.value:
+                    input_vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
+                    output_vert_depth_km = 0.0
+                else:
+                    input_vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
+                    output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
+                model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
+
+                tot_m, tot_vert_m, tot_horiz_m, _ = calculate_total_drilling_lengths_m(
+                    model.wellbores.Configuration.value,
+                    model.wellbores.numnonverticalsections.value,
+                    model.wellbores.Nonvertical_length.value / 1000.0,
+                    input_vert_depth_km,
+                    output_vert_depth_km,
+                    model.wellbores.nprod.value,
+                    model.wellbores.ninj.value)
+
+            else:
+                tot_m = tot_vert_m = model.reserv.depth.quantity().to('km').magnitude
+                tot_horiz_m = 0.0
+                if not model.wellbores.injection_reservoir_depth.Provided:
+                    model.wellbores.injection_reservoir_depth.value = model.reserv.depth.quantity().to('km').magnitude
+                else:
+                    model.wellbores.injection_reservoir_depth.value = model.wellbores.injection_reservoir_depth.quantity().to(
+                        'km').magnitude
+
+            self.cost_one_production_well.value = calculate_cost_of_one_vertical_well(model,
+                                                                                      model.reserv.depth.quantity().to(
+                                                                                          'm').magnitude,
+                                                                                      self.wellcorrelation.value,
+                                                                                      self.Vertical_drilling_cost_per_m.value,
+                                                                                      self.per_production_well_cost.Name,
+                                                                                      self.production_well_cost_adjustment_factor.value)
+            if model.wellbores.ninj.value == 0:
+                self.cost_one_injection_well.value = -1.0
+            else:
+                self.cost_one_injection_well.value = calculate_cost_of_one_vertical_well(model,
+                                                                                         model.wellbores.injection_reservoir_depth.value * 1000.0,
+                                                                                         self.wellcorrelation.value,
+                                                                                         self.Vertical_drilling_cost_per_m.value,
+                                                                                         self.per_injection_well_cost.Name,
+                                                                                         self.injection_well_cost_adjustment_factor.value)
+
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
+                    model,
+                    tot_horiz_m,
+                    self.wellcorrelation.value,
+                    self.Nonvertical_drilling_cost_per_m.value,
+                    model.wellbores.numnonverticalsections.value,
+                    self.Nonvertical_drilling_cost_per_m.Name,
+                    model.wellbores.NonverticalsCased.value,
+                    self.production_well_cost_adjustment_factor.value
+                )
+            else:
+                self.cost_lateral_section.value = 0.0
+
+            # cost of the well field
+            self.Cwell.value = self._wellfield_indirect_cost_factor * (
+                self.cost_one_production_well.value * model.wellbores.nprod.value +
+                self.cost_one_injection_well.value * model.wellbores.ninj.value +
+                self.cost_lateral_section.value
+            )
 
     def calculate_stimulation_costs(self, model: Model) -> PlainQuantity:
         if self.ccstimfixed.Valid:

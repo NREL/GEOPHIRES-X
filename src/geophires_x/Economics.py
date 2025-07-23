@@ -600,7 +600,7 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
-            ToolTipText='Reservoir stimulation capital cost per injection well'
+            ToolTipText='Reservoir stimulation capital cost per injection well before indirect costs and contingency'
         )
 
         stimulation_cost_per_production_well_default_value_MUSD = 0
@@ -616,7 +616,7 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Reservoir stimulation capital cost per production well'
+            ToolTipText=f'Reservoir stimulation capital cost per production well before indirect costs and contingency'
                         f'{stimulation_cost_per_production_well_default_value_note}'
         )
 
@@ -1120,17 +1120,21 @@ class Economics:
                         f'calculated as a percentage of the direct cost.'
         )
 
+        default_indirect_capital_cost_percentage = 12
         self.indirect_capital_cost_percentage = \
           self.ParameterDict[self.indirect_capital_cost_percentage.Name] = floatParameter(
             'Indirect Capital Cost Percentage',
-            DefaultValue=12,
+            DefaultValue=default_indirect_capital_cost_percentage,
             Min=0,
             Max=100,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
-            ToolTipText=f'The default indirect cost percentage applied to capital costs. This value is used for all '
-                        f'cost categories unless a more specific indirect cost parameter is defined or provided. '
+            ToolTipText=f'The indirect cost percentage applied to capital costs '
+                        f'(default {default_indirect_capital_cost_percentage}%). '
+                        f'This value is used for all cost categories including surface plant, field gathering system, '
+                        f'and exploration except when a category-specific indirect cost parameter is defined or '
+                        f'provided. '
                         f'Wellfield costs use {self.wellfield_indirect_capital_cost_percentage.Name} '
                         f'(default {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%). '
                         f'Stimulation costs use {self.stimulation_indirect_capital_cost_percentage.Name} '

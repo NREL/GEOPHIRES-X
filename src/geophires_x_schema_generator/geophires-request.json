@@ -1396,7 +1396,7 @@
       "maximum": 1000
     },
     "Reservoir Stimulation Capital Cost per Injection Well": {
-      "description": "Reservoir stimulation capital cost per injection well",
+      "description": "Reservoir stimulation capital cost per injection well before indirect costs and contingency",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1405,7 +1405,7 @@
       "maximum": 100
     },
     "Reservoir Stimulation Capital Cost per Production Well": {
-      "description": "Reservoir stimulation capital cost per production well. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.",
+      "description": "Reservoir stimulation capital cost per production well before indirect costs and contingency. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1870,7 +1870,7 @@
       "maximum": 100
     },
     "Indirect Capital Cost Percentage": {
-      "description": "The default indirect cost percentage applied to capital costs. This value is used for all cost categories unless a more specific indirect cost parameter is defined or provided. Wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%). Stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
+      "description": "The indirect cost percentage applied to capital costs (default 12%). This value is used for all cost categories including surface plant, field gathering system, and exploration except when a category-specific indirect cost parameter is defined or provided. Wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%). Stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
       "type": "number",
       "units": "%",
       "category": "Economics",

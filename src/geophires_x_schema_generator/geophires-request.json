@@ -1387,7 +1387,7 @@
       ]
     },
     "Reservoir Stimulation Capital Cost": {
-      "description": "Total reservoir stimulation capital cost",
+      "description": "Total reservoir stimulation capital cost, including contingency and indirect costs.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1396,7 +1396,7 @@
       "maximum": 1000
     },
     "Reservoir Stimulation Capital Cost per Injection Well": {
-      "description": "Reservoir stimulation capital cost per injection well",
+      "description": "Reservoir stimulation capital cost per injection well before indirect costs and contingency",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1405,7 +1405,7 @@
       "maximum": 100
     },
     "Reservoir Stimulation Capital Cost per Production Well": {
-      "description": "Reservoir stimulation capital cost per production well. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.",
+      "description": "Reservoir stimulation capital cost per production well before indirect costs and contingency. By default, only the injection wells are assumed to be stimulated unless this parameter is provided.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
@@ -1421,6 +1421,15 @@
       "default": 1.0,
       "minimum": 0,
       "maximum": 10
+    },
+    "Reservoir Stimulation Indirect Capital Cost Percentage": {
+      "description": "The indirect capital cost for reservoir stimulation, calculated as a percentage of the direct cost. (Not applied if Reservoir Stimulation Capital Cost is provided.)",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
     },
     "Exploration Capital Cost": {
       "description": "Total exploration capital cost",
@@ -1441,20 +1450,20 @@
       "maximum": 10
     },
     "Well Drilling and Completion Capital Cost": {
-      "description": "Well Drilling and Completion Capital Cost",
+      "description": "Well drilling and completion capital cost per well including indirect costs and contingency. Applied to production wells; also applied to injection wells unless Injection Well Drilling and Completion Capital Cost is provided.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
-      "default": -1.0,
+      "default": -1,
       "minimum": 0,
       "maximum": 200
     },
     "Injection Well Drilling and Completion Capital Cost": {
-      "description": "Injection Well Drilling and Completion Capital Cost",
+      "description": "Injection well drilling and completion capital cost per well including indirect costs and contingency",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
-      "default": -1.0,
+      "default": -1,
       "minimum": 0,
       "maximum": 200
     },
@@ -1850,6 +1859,24 @@
       "default": 1300.0,
       "minimum": 0.0,
       "maximum": 15000.0
+    },
+    "Well Drilling and Completion Indirect Capital Cost Percentage": {
+      "description": "The indirect capital cost for well drilling and completion of all wells (the wellfield), calculated as a percentage of the direct cost.",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "Indirect Capital Cost Percentage": {
+      "description": "The indirect cost percentage applied to capital costs (default 12%). This value is used for all cost categories including surface plant, field gathering system, and exploration except when a category-specific indirect cost parameter is defined or provided. Wellfield costs use Well Drilling and Completion Indirect Capital Cost Percentage (default 5%). Stimulation costs use Reservoir Stimulation Indirect Capital Cost Percentage (default 5%).",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 12,
+      "minimum": 0,
+      "maximum": 100
     },
     "Absorption Chiller Capital Cost": {
       "description": "Absorption chiller capital cost",

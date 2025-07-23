@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import json
 from pathlib import Path
@@ -5,19 +7,14 @@ from pathlib import Path
 from geophires_x_schema_generator import GeophiresXSchemaGenerator
 from geophires_x_schema_generator import HipRaXSchemaGenerator
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--build-in-src', required=False, choices=[True, False], default=True)
-    parser.add_argument('--build-path', required=False)
-    args = parser.parse_args()
-    build_in_src = args.build_in_src
 
+def generate_schemas(build_in_src: bool, build_path: str | Path) -> None:
     build_dir = Path(Path(__file__).parent)
-    if not args.build_in_src:
+    if not build_in_src:
         build_dir = Path(Path(__file__).parent.parent.parent, 'build')
 
-    if args.build_path:
-        build_dir = Path(args.build_path)
+    if build_path:
+        build_dir = Path(build_path)
 
     build_dir.mkdir(exist_ok=True)
 
@@ -44,3 +41,13 @@ if __name__ == '__main__':
 
     build('geophires-', GeophiresXSchemaGenerator(), 'parameters.rst')
     build('hip-ra-x-', HipRaXSchemaGenerator(), 'hip_ra_x_parameters.rst')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--build-in-src', required=False, choices=[True, False], default=True)
+    parser.add_argument('--build-path', required=False)
+    args = parser.parse_args()
+    build_in_src_ = args.build_in_src
+    build_path_ = args.build_path if args.build_path else None
+    generate_schemas(build_in_src_, build_path_)

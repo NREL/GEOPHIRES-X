@@ -106,6 +106,10 @@ class EconomicsTestCase(BaseTestCase):
             'Intermediate and ideal correlations (6-17) are from GeoVision.',
         )
 
+    def test_indirect_cost_factor(self) -> None:
+        self.assertEqual(1.12, self._new_model().economics._indirect_cost_factor)
+
+    # noinspection PyMethodMayBeStatic
     def _new_model(self) -> Model:
         stash_cwd = Path.cwd()
         stash_sys_argv = sys.argv

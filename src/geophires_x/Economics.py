@@ -2358,45 +2358,7 @@ class Economics:
         # capital costs
         self.calculate_wellfield_costs(model)
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
-
-        # field gathering system costs (M$)
-        if self.ccgathfixed.Valid:
-            self.Cgath.value = self.ccgathfixed.value
-        else:
-            self.Cgath.value = self.ccgathadjfactor.value * 50 - 6 * np.max(
-                model.surfaceplant.HeatExtracted.value) * 1000.  # (GEOPHIRES v1 correlation)
-            if model.wellbores.impedancemodelused.value:
-                pumphp = np.max(model.wellbores.PumpingPower.value) * 1341
-                numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofpumps == 0:
-                    self.Cpumps = 0.0
-                else:
-                    pumphpcorrected = pumphp / numberofpumps
-                    self.Cpumps = numberofpumps * 1.5 * (
-                            (1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
-            else:
-                if model.wellbores.productionwellpumping.value:
-                    prodpumphp = np.max(model.wellbores.PumpingPowerProd.value) / model.wellbores.nprod.value * 1341
-                    Cpumpsprod = model.wellbores.nprod.value * 1.5 * (1750 * prodpumphp ** 0.7 + 5750 *
-                                                                      prodpumphp ** 0.2 + 10000 + np.max(
-                            model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
-                else:
-                    Cpumpsprod = 0
-
-                injpumphp = np.max(model.wellbores.PumpingPowerInj.value) * 1341
-                numberofinjpumps = np.ceil(injpumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofinjpumps == 0:
-                    Cpumpsinj = 0
-                else:
-                    injpumphpcorrected = injpumphp / numberofinjpumps
-                    Cpumpsinj = numberofinjpumps * 1.5 * (
-                            1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
-                self.Cpumps = Cpumpsinj + Cpumpsprod
-
-            # Based on GETEM 2016: 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
-                    (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
-
+        self.calculate_field_gathering_costs(model)
         self.calculate_plant_costs(model)
 
         if not self.totalcapcost.Valid:
@@ -2769,6 +2731,44 @@ class Economics:
             )
 
         return quantity(stimulation_costs, self.Cstim.CurrentUnits)
+
+    def calculate_field_gathering_costs(self, model: Model) -> None:
+        if self.ccgathfixed.Valid:
+            self.Cgath.value = self.ccgathfixed.value
+        else:
+            self.Cgath.value = self.ccgathadjfactor.value * 50 - 6 * np.max(
+                model.surfaceplant.HeatExtracted.value) * 1000.  # (GEOPHIRES v1 correlation)
+            if model.wellbores.impedancemodelused.value:
+                pumphp = np.max(model.wellbores.PumpingPower.value) * 1341
+                numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
+                if numberofpumps == 0:
+                    self.Cpumps = 0.0
+                else:
+                    pumphpcorrected = pumphp / numberofpumps
+                    self.Cpumps = numberofpumps * 1.5 * (
+                            (1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
+            else:
+                if model.wellbores.productionwellpumping.value:
+                    prodpumphp = np.max(model.wellbores.PumpingPowerProd.value) / model.wellbores.nprod.value * 1341
+                    Cpumpsprod = model.wellbores.nprod.value * 1.5 * (1750 * prodpumphp ** 0.7 + 5750 *
+                                                                      prodpumphp ** 0.2 + 10000 + np.max(
+                            model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
+                else:
+                    Cpumpsprod = 0
+
+                injpumphp = np.max(model.wellbores.PumpingPowerInj.value) * 1341
+                numberofinjpumps = np.ceil(injpumphp / 2000)  # pump can be maximum 2,000 hp
+                if numberofinjpumps == 0:
+                    Cpumpsinj = 0
+                else:
+                    injpumphpcorrected = injpumphp / numberofinjpumps
+                    Cpumpsinj = numberofinjpumps * 1.5 * (
+                            1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
+                self.Cpumps = Cpumpsinj + Cpumpsprod
+
+            # Based on GETEM 2016: 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
+                    (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
     def calculate_plant_costs(self, model: Model) -> None:
         # plant costs

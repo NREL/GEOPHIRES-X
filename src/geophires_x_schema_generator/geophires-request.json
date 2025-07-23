@@ -1449,21 +1449,21 @@
       "minimum": 0,
       "maximum": 10
     },
-    "Injection Well Drilling and Completion Capital Cost": {
-      "description": "Injection Well Drilling and Completion Capital Cost",
+    "Well Drilling and Completion Capital Cost": {
+      "description": "Well drilling and completion capital cost per well including indirect costs and contingency. Applied to production wells; also applied to injection wells unless Injection Well Drilling and Completion Capital Cost is provided.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
-      "default": -1.0,
+      "default": -1,
       "minimum": 0,
       "maximum": 200
     },
-    "Well Drilling and Completion Capital Cost": {
-      "description": "Well Drilling and Completion Capital Cost per well. Applied to production wells, and injection wells unless Injection Well Drilling and Completion Capital Cost is provided.",
+    "Injection Well Drilling and Completion Capital Cost": {
+      "description": "Injection well drilling and completion capital cost per well including indirect costs and contingency",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",
-      "default": -1.0,
+      "default": -1,
       "minimum": 0,
       "maximum": 200
     },

@@ -671,21 +671,10 @@ class Economics:
             ToolTipText="Multiplier for built-in exploration capital cost correlation"
         )
 
-        self.per_injection_well_cost = self.ParameterDict[self.per_injection_well_cost.Name] = floatParameter(
-            "Injection Well Drilling and Completion Capital Cost",
-            DefaultValue=-1.0,
-            Min=0,
-            Max=200,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-            Provided=False,
-            Valid=False,
-            ToolTipText="Injection Well Drilling and Completion Capital Cost"
-        )
+        per_injection_well_cost_name = 'Injection Well Drilling and Completion Capital Cost'
         self.per_production_well_cost = self.ParameterDict[self.per_production_well_cost.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost",
-            DefaultValue=self.per_injection_well_cost.value,
+            DefaultValue=-1,
             Min=0,
             Max=200,
             UnitType=Units.CURRENCY,
@@ -693,11 +682,25 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText=f'Well Drilling and Completion Capital Cost per well. Applied to production wells, '
-                        f'and injection wells unless {self.per_injection_well_cost.Name} is provided.'
+            ToolTipText=f'Well drilling and completion capital cost per well including indirect costs and contingency. '
+                        f'Applied to production wells; also applied to injection wells unless '
+                        f'{per_injection_well_cost_name} is provided.'
+        )
+        self.per_injection_well_cost = self.ParameterDict[self.per_injection_well_cost.Name] = floatParameter(
+            per_injection_well_cost_name,
+            DefaultValue=self.per_production_well_cost.DefaultValue,
+            Min=0,
+            Max=200,
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            Provided=False,
+            Valid=False,
+            ToolTipText='Injection well drilling and completion capital cost per well '
+                        'including indirect costs and contingency'
         )
 
-        injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
+        inj_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
             DefaultValue=1.0,
@@ -708,12 +711,12 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; "
-                        f"also applies to injection wells unless a value is provided for "
-                        f"{injection_well_cost_adjustment_factor_name}."
+            ToolTipText=f'Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; '
+                        f'also applies to injection wells unless a value is provided for '
+                        f'{inj_well_cost_adjustment_factor_name}.'
         )
         self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
-            injection_well_cost_adjustment_factor_name,
+            inj_well_cost_adjustment_factor_name,
             DefaultValue=self.production_well_cost_adjustment_factor.DefaultValue,
             Min=self.production_well_cost_adjustment_factor.Min,
             Max=self.production_well_cost_adjustment_factor.Max,

@@ -67,7 +67,7 @@ class MPFReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().Calculate(model)  # run calculate for the parent.
 
         # convert flowrate to volumetric rate
@@ -90,9 +90,10 @@ class MPFReservoir(Reservoir):
             for t in range(1, len(model.reserv.timevector.value)):
                 Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
         except:
-            print(
-                "Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1. Simulation will abort.")
-            sys.exit()
+            msg = ('Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1. '
+                   'Simulation will abort.')
+            print(msg)
+            raise RuntimeError(msg)
 
         Twnd = np.asarray(Twnd)
 
@@ -100,4 +101,4 @@ class MPFReservoir(Reservoir):
         model.reserv.Tresoutput.value = model.reserv.Trock.value - (Twnd * (model.reserv.Trock.value - model.wellbores.Tinj.value))
         model.reserv.Tresoutput.value = np.append([model.reserv.Trock.value], model.reserv.Tresoutput.value)
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')

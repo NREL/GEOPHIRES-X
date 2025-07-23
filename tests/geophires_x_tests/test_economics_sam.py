@@ -388,7 +388,7 @@ class EconomicsSamTestCase(BaseTestCase):
         with self.assertLogs(level='INFO') as logs:
             gtr_provided_result = self._get_result({'Gross Revenue Tax Rate': 0.5})
 
-        is_github_actions = 'CI' in os.environ
+        is_github_actions = 'CI' in os.environ or 'TOXPYTHON' in os.environ
         try:
             self.assertHasLogRecordWithMessage(
                 logs,

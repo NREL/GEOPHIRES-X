@@ -586,7 +586,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost, including contingency and indirect costs."
+            ToolTipText="Total reservoir stimulation capital cost, including indirect costs and contingency."
         )
 
         max_stimulation_cost_per_well_MUSD = 100
@@ -1044,6 +1044,21 @@ class Economics:
             ErrMessage="assume default inflation rate during construction (0)",
             ToolTipText='For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.'
         )
+
+        self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(
+            'Contingency Percentage',
+            DefaultValue=15.,
+            Min=0.,
+            Max=100.,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='The contingency percentage applied to the direct capital costs for stimulation, '
+                        'field gathering system, exploration, and surface plant. '
+                        '(Note: well drilling and completion costs do not have contingency applied and are not '
+                        'affected by this parameter.)'
+        )
+
         self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
             "Well Drilling Cost Correlation",
             DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1.int_value,
@@ -2358,45 +2373,7 @@ class Economics:
         # capital costs
         self.calculate_wellfield_costs(model)
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
-
-        # field gathering system costs (M$)
-        if self.ccgathfixed.Valid:
-            self.Cgath.value = self.ccgathfixed.value
-        else:
-            self.Cgath.value = self.ccgathadjfactor.value * 50 - 6 * np.max(
-                model.surfaceplant.HeatExtracted.value) * 1000.  # (GEOPHIRES v1 correlation)
-            if model.wellbores.impedancemodelused.value:
-                pumphp = np.max(model.wellbores.PumpingPower.value) * 1341
-                numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofpumps == 0:
-                    self.Cpumps = 0.0
-                else:
-                    pumphpcorrected = pumphp / numberofpumps
-                    self.Cpumps = numberofpumps * 1.5 * (
-                            (1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
-            else:
-                if model.wellbores.productionwellpumping.value:
-                    prodpumphp = np.max(model.wellbores.PumpingPowerProd.value) / model.wellbores.nprod.value * 1341
-                    Cpumpsprod = model.wellbores.nprod.value * 1.5 * (1750 * prodpumphp ** 0.7 + 5750 *
-                                                                      prodpumphp ** 0.2 + 10000 + np.max(
-                            model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
-                else:
-                    Cpumpsprod = 0
-
-                injpumphp = np.max(model.wellbores.PumpingPowerInj.value) * 1341
-                numberofinjpumps = np.ceil(injpumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofinjpumps == 0:
-                    Cpumpsinj = 0
-                else:
-                    injpumphpcorrected = injpumphp / numberofinjpumps
-                    Cpumpsinj = numberofinjpumps * 1.5 * (
-                            1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
-                self.Cpumps = Cpumpsinj + Cpumpsprod
-
-            # Based on GETEM 2016: 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
-                    (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
-
+        self.calculate_field_gathering_costs(model)
         self.calculate_plant_costs(model)
 
         if not self.totalcapcost.Valid:
@@ -2404,8 +2381,8 @@ class Economics:
             if self.ccexplfixed.Valid:
                 self.Cexpl.value = self.ccexplfixed.value
             else:
-                self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * self._indirect_cost_factor * (
-                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
+                    1. + self.cost_one_production_well.value * 0.6)
 
             # Surface Piping Length Costs (M$) #assumed $750k/km
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
@@ -2673,6 +2650,10 @@ class Economics:
     def _stimulation_indirect_cost_factor(self) -> float:
         return 1 + self.stimulation_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
 
+    @property
+    def _contingency_factor(self) -> float:
+        return 1 + self.contingency_percentage.quantity().to('dimensionless').magnitude
+
     def calculate_wellfield_costs(self, model: Model) -> None:
         if self.per_production_well_cost.Valid:
             self.cost_one_production_well.value = self.per_production_well_cost.value
@@ -2765,10 +2746,48 @@ class Economics:
                 )
                 * self.ccstimadjfactor.value
                 * self._stimulation_indirect_cost_factor
-                * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                * self._contingency_factor
             )
 
         return quantity(stimulation_costs, self.Cstim.CurrentUnits)
+
+    def calculate_field_gathering_costs(self, model: Model) -> None:
+        if self.ccgathfixed.Valid:
+            self.Cgath.value = self.ccgathfixed.value
+        else:
+            self.Cgath.value = self.ccgathadjfactor.value * 50 - 6 * np.max(
+                model.surfaceplant.HeatExtracted.value) * 1000.  # (GEOPHIRES v1 correlation)
+            if model.wellbores.impedancemodelused.value:
+                pumphp = np.max(model.wellbores.PumpingPower.value) * 1341
+                numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
+                if numberofpumps == 0:
+                    self.Cpumps = 0.0
+                else:
+                    pumphpcorrected = pumphp / numberofpumps
+                    self.Cpumps = numberofpumps * 1.5 * (
+                            (1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
+            else:
+                if model.wellbores.productionwellpumping.value:
+                    prodpumphp = np.max(model.wellbores.PumpingPowerProd.value) / model.wellbores.nprod.value * 1341
+                    Cpumpsprod = model.wellbores.nprod.value * 1.5 * (1750 * prodpumphp ** 0.7 + 5750 *
+                                                                      prodpumphp ** 0.2 + 10000 + np.max(
+                            model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
+                else:
+                    Cpumpsprod = 0
+
+                injpumphp = np.max(model.wellbores.PumpingPowerInj.value) * 1341
+                numberofinjpumps = np.ceil(injpumphp / 2000)  # pump can be maximum 2,000 hp
+                if numberofinjpumps == 0:
+                    Cpumpsinj = 0
+                else:
+                    injpumphpcorrected = injpumphp / numberofinjpumps
+                    Cpumpsinj = numberofinjpumps * 1.5 * (
+                            1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
+                self.Cpumps = Cpumpsinj + Cpumpsprod
+
+            # Based on GETEM 2016
+            self.Cgath.value = self._contingency_factor * self.ccgathadjfactor.value * self._indirect_cost_factor * (
+                    (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
     def calculate_plant_costs(self, model: Model) -> None:
         # plant costs
@@ -2777,9 +2796,12 @@ class Economics:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.
+                self.Cplant.value = (self._indirect_cost_factor
+                                     * self._contingency_factor
+                                     * self.ccplantadjfactor.value
+                                     * 250E-6
+                                     * np.max(model.surfaceplant.HeatExtracted.value)
+                                     * 1000.)
 
         # absorption chiller
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
@@ -2787,11 +2809,19 @@ class Economics:
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the absorption chiller
-                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                self.Cplant.value = (self._indirect_cost_factor
+                                     * self._contingency_factor
+                                     * self.ccplantadjfactor.value
+                                     * 250E-6
+                                     * np.max(model.surfaceplant.HeatExtracted.value)
+                                     * 1000.)
                 if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
-                    self.chillercapex.value = self._indirect_cost_factor * 1.15 * np.max(
-                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                    self.chillercapex.value = (
+                        self._indirect_cost_factor
+                        * self._contingency_factor
+                        * np.max(model.surfaceplant.cooling_produced.value)
+                        * 1000 / 3.517 * 2500 / 1e6 # $2,500/ton of cooling.
+                    )
 
                 # now add chiller cost to surface plant cost
                 self.Cplant.value += self.chillercapex.value
@@ -2802,11 +2832,11 @@ class Economics:
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the heat pump
-                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
+                self.Cplant.value = self._indirect_cost_factor * self._contingency_factor * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.
                 if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
-                    self.heatpumpcapex.value = self._indirect_cost_factor * 1.15 * np.max(
-                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency  TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                    self.heatpumpcapex.value = self._indirect_cost_factor * self._contingency_factor * np.max(
+                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW - TODO parameterize
 
                 # now add heat pump cost to surface plant cost
                 self.Cplant.value += self.heatpumpcapex.value
@@ -2816,8 +2846,7 @@ class Economics:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.Cplant.value = self._indirect_cost_factor * self._contingency_factor * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
                 # add 65$/KW for peaking boiler
@@ -2986,23 +3015,28 @@ class Economics:
                     # factor 1.10 to convert from 2016 to 2022
                     direct_plant_cost_MUSD = self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
 
-                # factor 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-                self.Cplant.value = self._indirect_cost_factor * 1.15 * direct_plant_cost_MUSD
+                self.Cplant.value = self._indirect_cost_factor * self._contingency_factor * direct_plant_cost_MUSD
                 self.CAPEX_cost_electricity_plant = self.Cplant.value
 
         # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
-        if not self.ccplantfixed.Valid:  # 1.15 below for contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+        if not self.ccplantfixed.Valid:
             if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
                                                           EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduse_option = 3: cogen topping cycle
-                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
+                self.CAPEX_cost_heat_plant = (
+                    self._indirect_cost_factor
+                    * self._contingency_factor
+                    * self.ccplantadjfactor.value
+                    * 250E-6
+                    * np.max(model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value)
+                    * 1000.
+                )
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                             EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:  # enduse_option = 4: cogen bottoming cycle
-                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * self._contingency_factor * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY,
                                                             EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
-                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * self._contingency_factor * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
 
             self.Cplant.value = self.Cplant.value + self.CAPEX_cost_heat_plant

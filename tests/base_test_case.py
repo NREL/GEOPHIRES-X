@@ -27,7 +27,11 @@ class BaseTestCase(unittest.TestCase):
             raise ValueError(f'msg must be a string (you may have meant to pass percent={msg})')
 
         if isinstance(expected, numbers.Real):
-            self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
+            try:
+                self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
+            except AssertionError as ae:
+                difference_percent = abs(100.0 * (actual - expected) / expected)
+                raise AssertionError(f'{actual} != {expected} within {percent}% ({difference_percent:.2f}%)') from ae
         else:
             if isinstance(expected, list) and isinstance(actual, list):
                 suggest = f'self.assertListAlmostEqual({expected}, {actual}, msg={msg}, percent={percent})'

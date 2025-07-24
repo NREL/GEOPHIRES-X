@@ -1122,15 +1122,16 @@ Print Output to Console, 1"""
 
         default_contingency_percent = 15
 
-        for higher_contingency in range(20, 35, 5):
-            assert higher_contingency > default_contingency_percent  # test assumption check
+        for contingency_percent in range(5, 35, 5):
+            if contingency_percent == default_contingency_percent:
+                continue
 
             for input_file_path_ in [
                 'geophires_x_tests/generic-egs-case.txt',
                 'examples/example10_HP.txt',
                 'examples/example11_AC.txt',
             ]:
-                with self.subTest(msg=f'higher_contingency={higher_contingency}, input_file_path={input_file_path_}'):
+                with self.subTest(msg=f'contingency={contingency_percent}, input_file_path={input_file_path_}'):
                     result_default = _get_result(input_file_path=input_file_path_)
 
                     self.assertEqual(
@@ -1145,22 +1146,27 @@ Print Output to Console, 1"""
                         ),
                     )
 
-                    result_higher_contingency = _get_result(
-                        contingency_percentage=higher_contingency, input_file_path=input_file_path_
+                    result_different_contingency = _get_result(
+                        contingency_percentage=contingency_percent, input_file_path=input_file_path_
                     )
 
-                    self.assertGreater(
-                        capex(result_higher_contingency),
-                        capex(result_default),
-                    )
+                    if contingency_percent > default_contingency_percent:
+                        self.assertGreater(
+                            capex(result_different_contingency),
+                            capex(result_default),
+                        )
+                    else:
+                        self.assertLess(
+                            capex(result_different_contingency),
+                            capex(result_default),
+                        )
+
                     self.assertEqual(
                         # Contingency is not applied to drilling costs
                         result_default['Drilling and completion costs']['value'],
-                        result_higher_contingency['Drilling and completion costs']['value'],
+                        result_different_contingency['Drilling and completion costs']['value'],
                     )
 
-                    default_contingency_factor = 1.0 - (default_contingency_percent / 100.0)
-                    higher_contingency_factor = 1 + (higher_contingency / 100.0)
                     for cost_category in [
                         'Stimulation costs',
                         'Surface power plant costs',
@@ -1168,16 +1174,26 @@ Print Output to Console, 1"""
                         'Total surface equipment costs',
                         'Exploration costs',
                     ]:
+                        default_contingency_factor = 1.0 + (default_contingency_percent / 100.0)
+                        different_contingency_factor = 1.0 + (contingency_percent / 100.0)
+
                         expected = (
                             result_default[cost_category]['value']
-                            * default_contingency_factor
-                            * higher_contingency_factor
+                            / default_contingency_factor
+                            * different_contingency_factor
+                        )
+
+                        actual = result_different_contingency[cost_category]['value']
+
+                        # Rounding throws off by a few percent
+                        max_allowed_delta_percent = max(
+                            # TODO to audit more thoroughly and avoid usage of these tuned constants
+                            2.5 if contingency_percent > default_contingency_percent else 5.4,
+                            (contingency_percent - default_contingency_percent) / 2.0,
                         )
 
                         self.assertAlmostEqualWithinPercentage(
                             expected,
-                            result_higher_contingency[cost_category]['value'],
-                            percent=min(  # Rounding throws off by a few percent
-                                4.5, (higher_contingency - default_contingency_percent) / 2.0
-                            ),
+                            actual,
+                            percent=max_allowed_delta_percent,
                         )

@@ -216,13 +216,7 @@ class SBTEconomics(Economics):
                                 self.cost_lateral_section.value + self.cost_to_junction_section.value)
 
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
-
         self.calculate_field_gathering_costs(model)
-
-        # Based on GETEM 2016 #1.15 for 15% contingency
-        self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
-                (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
-
         self.calculate_plant_costs(model)
 
         if not self.totalcapcost.Valid:

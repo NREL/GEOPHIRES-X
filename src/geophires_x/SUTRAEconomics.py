@@ -143,8 +143,11 @@ class SUTRAEconomics(Economics.Economics):
 
         # Boiler
         self.peakingboilercost.value = (
-            65 * model.surfaceplant.max_peaking_boiler_demand.value / self.peakingboilerefficiency.value / 1000
-        )  # add 65$/KW for peaking boiler
+            self.peaking_boiler_cost_per_kW.quantity().to('USD/kW').magnitude
+            * model.surfaceplant.max_peaking_boiler_demand.value
+            / self.peakingboilerefficiency.value
+            / 1000
+        )
 
         # Circulation Pump
         pumphp = np.max(model.wellbores.PumpingPower.value) * 1.341

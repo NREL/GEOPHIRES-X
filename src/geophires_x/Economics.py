@@ -586,7 +586,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost, including contingency and indirect costs."
+            ToolTipText="Total reservoir stimulation capital cost, including indirect costs and contingency."
         )
 
         max_stimulation_cost_per_well_MUSD = 100

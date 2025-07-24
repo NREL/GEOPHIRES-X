@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import sys
 from pathlib import Path
@@ -28,8 +27,12 @@ from geophires_x.SUTRAReservoir import SUTRAReservoir
 from geophires_x.SUTRAWellBores import SUTRAWellBores
 from geophires_x.TDPReservoir import TDPReservoir
 from geophires_x.TOUGH2Reservoir import TOUGH2Reservoir
-from geophires_x_client import GeophiresXResult
+
+# noinspection PyProtectedMember
+from geophires_x_client import GeophiresXResult, _get_logger
 from hip_ra_x.hip_ra_x import HIP_RA_X
+
+_log = _get_logger()
 
 
 class GeophiresXSchemaGenerator:
@@ -421,20 +424,3 @@ class HipRaXSchemaGenerator(GeophiresXSchemaGenerator):
 
     def get_output_schema_reference(self) -> str:
         return None
-
-
-def _get_logger(logger_name=None):
-    sh = logging.StreamHandler(sys.stdout)
-    sh.setLevel(logging.INFO)
-    sh.setFormatter(logging.Formatter(fmt='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
-
-    if logger_name is None:
-        logger_name = __name__
-
-    _l = logging.getLogger(logger_name)
-    _l.addHandler(sh)
-
-    return _l
-
-
-_log = _get_logger()

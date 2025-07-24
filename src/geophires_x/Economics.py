@@ -2,12 +2,15 @@ import math
 import sys
 import numpy as np
 import numpy_financial as npf
+from pint.facets.plain import PlainQuantity
+
 import geophires_x.Model as Model
 from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter
+from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
@@ -583,7 +586,7 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost"
+            ToolTipText="Total reservoir stimulation capital cost, including contingency and indirect costs."
         )
 
         max_stimulation_cost_per_well_MUSD = 100
@@ -597,7 +600,7 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
-            ToolTipText='Reservoir stimulation capital cost per injection well'
+            ToolTipText='Reservoir stimulation capital cost per injection well before indirect costs and contingency'
         )
 
         stimulation_cost_per_production_well_default_value_MUSD = 0
@@ -613,7 +616,7 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Reservoir stimulation capital cost per production well'
+            ToolTipText=f'Reservoir stimulation capital cost per production well before indirect costs and contingency'
                         f'{stimulation_cost_per_production_well_default_value_note}'
         )
 
@@ -629,6 +632,20 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for reservoir stimulation capital cost correlation"
         )
+        self.stimulation_indirect_capital_cost_percentage = \
+          self.ParameterDict[self.stimulation_indirect_capital_cost_percentage.Name] = floatParameter(
+            'Reservoir Stimulation Indirect Capital Cost Percentage',
+            DefaultValue=5,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The indirect capital cost for reservoir stimulation, '
+                        f'calculated as a percentage of the direct cost. '
+                        f'(Not applied if {self.ccstimfixed.Name} is provided.)'
+        )
+
         self.ccexplfixed = self.ParameterDict[self.ccexplfixed.Name] = floatParameter(
             "Exploration Capital Cost",
             DefaultValue=-1.0,
@@ -653,9 +670,11 @@ class Economics:
             Valid=True,
             ToolTipText="Multiplier for built-in exploration capital cost correlation"
         )
+
+        per_injection_well_cost_name = 'Injection Well Drilling and Completion Capital Cost'
         self.per_production_well_cost = self.ParameterDict[self.per_production_well_cost.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost",
-            DefaultValue=-1.0,
+            DefaultValue=-1,
             Min=0,
             Max=200,
             UnitType=Units.CURRENCY,
@@ -663,11 +682,13 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Well Drilling and Completion Capital Cost"
+            ToolTipText=f'Well drilling and completion capital cost per well including indirect costs and contingency. '
+                        f'Applied to production wells; also applied to injection wells unless '
+                        f'{per_injection_well_cost_name} is provided.'
         )
         self.per_injection_well_cost = self.ParameterDict[self.per_injection_well_cost.Name] = floatParameter(
-            "Injection Well Drilling and Completion Capital Cost",
-            DefaultValue=self.per_production_well_cost.value,
+            per_injection_well_cost_name,
+            DefaultValue=self.per_production_well_cost.DefaultValue,
             Min=0,
             Max=200,
             UnitType=Units.CURRENCY,
@@ -675,12 +696,11 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Injection Well Drilling and Completion Capital Cost"
+            ToolTipText='Injection well drilling and completion capital cost per well '
+                        'including indirect costs and contingency'
         )
 
-        # TODO parameterize/document default 5% indirect cost factor that is applied when neither of the well
-        #  drilling/completion capital cost adjustment factors are provided
-        injection_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
+        inj_well_cost_adjustment_factor_name = "Injection Well Drilling and Completion Capital Cost Adjustment Factor"
         self.production_well_cost_adjustment_factor = self.ParameterDict[self.production_well_cost_adjustment_factor.Name] = floatParameter(
             "Well Drilling and Completion Capital Cost Adjustment Factor",
             DefaultValue=1.0,
@@ -691,12 +711,12 @@ class Economics:
             CurrentUnits=PercentUnit.TENTH,
             Provided=False,
             Valid=True,
-            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; "
-                        f"also applies to injection wells unless a value is provided for "
-                        f"{injection_well_cost_adjustment_factor_name}."
+            ToolTipText=f'Well Drilling and Completion Capital Cost Adjustment Factor. Applies to production wells; '
+                        f'also applies to injection wells unless a value is provided for '
+                        f'{inj_well_cost_adjustment_factor_name}.'
         )
         self.injection_well_cost_adjustment_factor = self.ParameterDict[self.injection_well_cost_adjustment_factor.Name] = floatParameter(
-            injection_well_cost_adjustment_factor_name,
+            inj_well_cost_adjustment_factor_name,
             DefaultValue=self.production_well_cost_adjustment_factor.DefaultValue,
             Min=self.production_well_cost_adjustment_factor.Min,
             Max=self.production_well_cost_adjustment_factor.Max,
@@ -709,6 +729,7 @@ class Economics:
                         f"If not provided, this value will be set automatically to the same value as "
                         f"{self.production_well_cost_adjustment_factor.Name}."
         )
+
         self.oamwellfixed = self.ParameterDict[self.oamwellfixed.Name] = floatParameter(
             "Wellfield O&M Cost",
             DefaultValue=-1.0,
@@ -1064,6 +1085,7 @@ class Economics:
             ErrMessage="assume default: no S-DAC-GT calculations",
             ToolTipText="Set to true if you want the S-DAC-GT economics calculations to be made"
         )
+
         self.Vertical_drilling_cost_per_m = self.ParameterDict[self.Vertical_drilling_cost_per_m.Name] = floatParameter(
             "All-in Vertical Drilling Costs",
             DefaultValue=1000.0,
@@ -1088,6 +1110,38 @@ class Economics:
             ErrMessage="assume default all-in cost for drill non-vertical well segment(s) ($1300/m)",
             ToolTipText="Set user specified all-in cost per meter of non-vertical drilling, including drilling, "
                         "casing, cement, insulated insert"
+        )
+        self.wellfield_indirect_capital_cost_percentage = self.ParameterDict[self.wellfield_indirect_capital_cost_percentage.Name] = floatParameter(
+            'Well Drilling and Completion Indirect Capital Cost Percentage',
+            DefaultValue=5,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The indirect capital cost for well drilling and completion of all wells (the wellfield), '
+                        f'calculated as a percentage of the direct cost.'
+        )
+
+        default_indirect_capital_cost_percentage = 12
+        self.indirect_capital_cost_percentage = \
+          self.ParameterDict[self.indirect_capital_cost_percentage.Name] = floatParameter(
+            'Indirect Capital Cost Percentage',
+            DefaultValue=default_indirect_capital_cost_percentage,
+            Min=0,
+            Max=100,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText=f'The indirect cost percentage applied to capital costs '
+                        f'(default {default_indirect_capital_cost_percentage}%). '
+                        f'This value is used for all cost categories including surface plant, field gathering system, '
+                        f'and exploration except when a category-specific indirect cost parameter is defined or '
+                        f'provided. '
+                        f'Wellfield costs use {self.wellfield_indirect_capital_cost_percentage.Name} '
+                        f'(default {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%). '
+                        f'Stimulation costs use {self.stimulation_indirect_capital_cost_percentage.Name} '
+                        f'(default {self.stimulation_indirect_capital_cost_percentage.DefaultValue}%).'
         )
 
         # absorption chiller
@@ -1638,8 +1692,11 @@ class Economics:
             CurrentUnits=EnergyCostUnit.DOLLARSPERMMBTU
         )
 
-        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-        stimulation_contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 5% indirect costs'
+        stimulation_contingency_and_indirect_costs_tooltip = (
+            f'plus 15% contingency ' # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus {self.stimulation_indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
+            f'indirect costs'
+        )
 
         # noinspection SpellCheckingInspection
         self.Cstim = self.OutputParameterDict[self.Cstim.Name] = OutputParameter(
@@ -1657,11 +1714,11 @@ class Economics:
                         f'total stimulation cost.'
         )
 
-        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-        contingency_and_indirect_costs_tooltip = 'plus 15% contingency plus 12% indirect costs'
+        contingency_and_indirect_costs_tooltip = (
+            f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% indirect costs'
+        )
 
-        # See TODO re:parameterizing indirect costs at src/geophires_x/Economics.py:652
-        #    (https://github.com/NREL/GEOPHIRES-X/issues/383)
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
             Name="Exploration cost",
             display_name='Exploration costs',
@@ -2299,97 +2356,8 @@ class Economics:
         model.logger.info(f'Init {__class__!s}: {sys._getframe().f_code.co_name}')
 
         # capital costs
-        # well costs (using GeoVision drilling correlations). These are calculated whether totalcapcostvalid = 1
-        # start with the cost of one well
-        # C1well is well drilling and completion cost in M$/well
-        if self.per_production_well_cost.Valid:
-            self.cost_one_production_well.value = self.per_production_well_cost.value
-            if not self.per_injection_well_cost.Provided:
-                self.cost_one_injection_well.value = self.per_production_well_cost.value
-            else:
-                self.cost_one_injection_well.value = self.per_injection_well_cost.value
-            self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
-                                (self.cost_one_injection_well.value * model.wellbores.ninj.value))
-        else:
-            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = 0.0
-                if not model.wellbores.IsAGS.value:
-                    input_vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
-                    output_vert_depth_km = 0.0
-                else:
-                    input_vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
-                    output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
-                model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
-
-                tot_m, tot_vert_m, tot_horiz_m, _ = calculate_total_drilling_lengths_m(model.wellbores.Configuration.value,
-                                                                                    model.wellbores.numnonverticalsections.value,
-                                                                                    model.wellbores.Nonvertical_length.value / 1000.0,
-                                                                                    input_vert_depth_km,
-                                                                                    output_vert_depth_km,
-                                                                                    model.wellbores.nprod.value,
-                                                                                    model.wellbores.ninj.value)
-
-            else:
-                tot_m = tot_vert_m = model.reserv.depth.quantity().to('km').magnitude
-                tot_horiz_m = 0.0
-                if not model.wellbores.injection_reservoir_depth.Provided:
-                    model.wellbores.injection_reservoir_depth.value = model.reserv.depth.quantity().to('km').magnitude
-                else:
-                    model.wellbores.injection_reservoir_depth.value = model.wellbores.injection_reservoir_depth.quantity().to('km').magnitude
-
-            self.cost_one_production_well.value = calculate_cost_of_one_vertical_well(model, model.reserv.depth.quantity().to('m').magnitude,
-                                                                                      self.wellcorrelation.value,
-                                                                                      self.Vertical_drilling_cost_per_m.value,
-                                                                                      self.per_production_well_cost.Name,
-                                                                                      self.production_well_cost_adjustment_factor.value)
-            if model.wellbores.ninj.value == 0:
-                self.cost_one_injection_well.value = -1.0
-            else:
-                self.cost_one_injection_well.value = calculate_cost_of_one_vertical_well(model,
-                                                                                         model.wellbores.injection_reservoir_depth.value * 1000.0,
-                                                                                         self.wellcorrelation.value,
-                                                                                         self.Vertical_drilling_cost_per_m.value,
-                                                                                         self.per_injection_well_cost.Name,
-                                                                                         self.injection_well_cost_adjustment_factor.value)
-
-            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
-                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
-                    model,
-                    tot_horiz_m,
-                    self.wellcorrelation.value,
-                    self.Nonvertical_drilling_cost_per_m.value,
-                    model.wellbores.numnonverticalsections.value,
-                    self.Nonvertical_drilling_cost_per_m.Name,
-                    model.wellbores.NonverticalsCased.value,
-                    self.production_well_cost_adjustment_factor.value
-                )
-            else:
-                self.cost_lateral_section.value = 0.0
-            # cost of the well field
-
-            # 1.05 for 5% indirect costs
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cwell.value = 1.05 * ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
-                                          (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
-                                          self.cost_lateral_section.value)
-
-        # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
-        if self.ccstimfixed.Valid:
-            self.Cstim.value = self.ccstimfixed.value
-        else:
-            stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
-                self.Cstim.CurrentUnits).magnitude
-            stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
-                self.Cstim.CurrentUnits).magnitude
-
-            # 1.15 for 15% contingency and 1.05 for 5% indirect costs
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cstim.value = ((
-                                 stim_cost_per_injection_well * model.wellbores.ninj.value
-                                 + stim_cost_per_production_well * model.wellbores.nprod.value
-                                )
-                                * self.ccstimadjfactor.value
-                                * 1.05 * 1.15)
+        self.calculate_wellfield_costs(model)
+        self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:
@@ -2425,9 +2393,8 @@ class Economics:
                             1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
                 self.Cpumps = Cpumpsinj + Cpumpsprod
 
-            # Based on GETEM 2016: 1.15 for 15% contingency and 1.12 for 12% indirect costs
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * 1.12 * (
+            # Based on GETEM 2016: 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
                     (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
         self.calculate_plant_costs(model)
@@ -2437,8 +2404,8 @@ class Economics:
             if self.ccexplfixed.Valid:
                 self.Cexpl.value = self.ccexplfixed.value
             else:
-                self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * 1.12 * (
-                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * self._indirect_cost_factor * (
+                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
 
             # Surface Piping Length Costs (M$) #assumed $750k/km
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
@@ -2694,16 +2661,124 @@ class Economics:
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
-    def calculate_plant_costs(self, model:Model) -> None:
+    @property
+    def _indirect_cost_factor(self) -> float:
+        return 1 + self.indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
+    @property
+    def _wellfield_indirect_cost_factor(self) -> float:
+        return 1 + self.wellfield_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
+    @property
+    def _stimulation_indirect_cost_factor(self) -> float:
+        return 1 + self.stimulation_indirect_capital_cost_percentage.quantity().to('dimensionless').magnitude
+
+    def calculate_wellfield_costs(self, model: Model) -> None:
+        if self.per_production_well_cost.Valid:
+            self.cost_one_production_well.value = self.per_production_well_cost.value
+            if not self.per_injection_well_cost.Provided:
+                self.cost_one_injection_well.value = self.per_production_well_cost.value
+            else:
+                self.cost_one_injection_well.value = self.per_injection_well_cost.value
+            self.Cwell.value = ((self.cost_one_production_well.value * model.wellbores.nprod.value) +
+                                (self.cost_one_injection_well.value * model.wellbores.ninj.value))
+        else:
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                self.cost_lateral_section.value = 0.0
+                if not model.wellbores.IsAGS.value:
+                    input_vert_depth_km = model.reserv.depth.quantity().to('km').magnitude
+                    output_vert_depth_km = 0.0
+                else:
+                    input_vert_depth_km = model.reserv.InputDepth.quantity().to('km').magnitude
+                    output_vert_depth_km = model.reserv.OutputDepth.quantity().to('km').magnitude
+                model.wellbores.injection_reservoir_depth.value = input_vert_depth_km
+
+                tot_m, tot_vert_m, tot_horiz_m, _ = calculate_total_drilling_lengths_m(
+                    model.wellbores.Configuration.value,
+                    model.wellbores.numnonverticalsections.value,
+                    model.wellbores.Nonvertical_length.value / 1000.0,
+                    input_vert_depth_km,
+                    output_vert_depth_km,
+                    model.wellbores.nprod.value,
+                    model.wellbores.ninj.value)
+
+            else:
+                tot_m = tot_vert_m = model.reserv.depth.quantity().to('km').magnitude
+                tot_horiz_m = 0.0
+                if not model.wellbores.injection_reservoir_depth.Provided:
+                    model.wellbores.injection_reservoir_depth.value = model.reserv.depth.quantity().to('km').magnitude
+                else:
+                    model.wellbores.injection_reservoir_depth.value = model.wellbores.injection_reservoir_depth.quantity().to(
+                        'km').magnitude
+
+            self.cost_one_production_well.value = calculate_cost_of_one_vertical_well(model,
+                                                                                      model.reserv.depth.quantity().to(
+                                                                                          'm').magnitude,
+                                                                                      self.wellcorrelation.value,
+                                                                                      self.Vertical_drilling_cost_per_m.value,
+                                                                                      self.per_production_well_cost.Name,
+                                                                                      self.production_well_cost_adjustment_factor.value)
+            if model.wellbores.ninj.value == 0:
+                self.cost_one_injection_well.value = -1.0
+            else:
+                self.cost_one_injection_well.value = calculate_cost_of_one_vertical_well(model,
+                                                                                         model.wellbores.injection_reservoir_depth.value * 1000.0,
+                                                                                         self.wellcorrelation.value,
+                                                                                         self.Vertical_drilling_cost_per_m.value,
+                                                                                         self.per_injection_well_cost.Name,
+                                                                                         self.injection_well_cost_adjustment_factor.value)
+
+            if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
+                self.cost_lateral_section.value = calculate_cost_of_non_vertical_section(
+                    model,
+                    tot_horiz_m,
+                    self.wellcorrelation.value,
+                    self.Nonvertical_drilling_cost_per_m.value,
+                    model.wellbores.numnonverticalsections.value,
+                    self.Nonvertical_drilling_cost_per_m.Name,
+                    model.wellbores.NonverticalsCased.value,
+                    self.production_well_cost_adjustment_factor.value
+                )
+            else:
+                self.cost_lateral_section.value = 0.0
+
+            # cost of the well field
+            self.Cwell.value = self._wellfield_indirect_cost_factor * (
+                self.cost_one_production_well.value * model.wellbores.nprod.value +
+                self.cost_one_injection_well.value * model.wellbores.ninj.value +
+                self.cost_lateral_section.value
+            )
+
+    def calculate_stimulation_costs(self, model: Model) -> PlainQuantity:
+        if self.ccstimfixed.Valid:
+            stimulation_costs = self.ccstimfixed.quantity().to(self.Cstim.CurrentUnits).magnitude
+        else:
+            stim_cost_per_injection_well = self.stimulation_cost_per_injection_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
+            stim_cost_per_production_well = self.stimulation_cost_per_production_well.quantity().to(
+                self.Cstim.CurrentUnits).magnitude
+
+            stimulation_costs = (
+                (
+                    stim_cost_per_injection_well * model.wellbores.ninj.value
+                    + stim_cost_per_production_well * model.wellbores.nprod.value
+                )
+                * self.ccstimadjfactor.value
+                * self._stimulation_indirect_cost_factor
+                * 1.15  # 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            )
+
+        return quantity(stimulation_costs, self.Cstim.CurrentUnits)
+
+    def calculate_plant_costs(self, model: Model) -> None:
         # plant costs
         if (model.surfaceplant.enduse_option.value == EndUseOptions.HEAT
             and model.surfaceplant.plant_type.value not in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]):  # direct-use
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
         # absorption chiller
@@ -2712,11 +2787,11 @@ class Economics:
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the absorption chiller
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
                 if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
-                    self.chillercapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    self.chillercapex.value = self._indirect_cost_factor * 1.15 * np.max(
+                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
 
                 # now add chiller cost to surface plant cost
                 self.Cplant.value += self.chillercapex.value
@@ -2727,11 +2802,11 @@ class Economics:
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the heat pump
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
                 if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
-                    self.heatpumpcapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    self.heatpumpcapex.value = self._indirect_cost_factor * 1.15 * np.max(
+                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency  TODO https://github.com/NREL/GEOPHIRES-X/issues/383
 
                 # now add heat pump cost to surface plant cost
                 self.Cplant.value += self.heatpumpcapex.value
@@ -2741,9 +2816,8 @@ class Economics:
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                # 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatExtracted.value) * 1000.
 
                 # add 65$/KW for peaking boiler
@@ -2912,24 +2986,23 @@ class Economics:
                     # factor 1.10 to convert from 2016 to 2022
                     direct_plant_cost_MUSD = self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
 
-                # factor 1.15 for 15% contingency and 1.12 for 12% indirect costs.
-                # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-                self.Cplant.value = 1.12 * 1.15 * direct_plant_cost_MUSD
+                # factor 1.15 for 15% contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * direct_plant_cost_MUSD
                 self.CAPEX_cost_electricity_plant = self.Cplant.value
 
         # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
-        if not self.ccplantfixed.Valid:  # 1.15 below for contingency and 1.12 for indirect costs
+        if not self.ccplantfixed.Valid:  # 1.15 below for contingency TODO https://github.com/NREL/GEOPHIRES-X/issues/383
             if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
                                                           EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduse_option = 3: cogen topping cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                             EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:  # enduse_option = 4: cogen bottoming cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY,
                                                             EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
 
             self.Cplant.value = self.Cplant.value + self.CAPEX_cost_heat_plant

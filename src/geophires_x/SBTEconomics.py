@@ -224,12 +224,15 @@ class SBTEconomics(Economics):
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value))
         else:
             # calculate the cost of one vertical production well
-            # 1.05 for 5% indirect costs
-            self.cost_one_production_well.value = 1.05 * calculate_cost_of_one_vertical_well(model, model.wellbores.vertical_section_length.value,
-                                                                                      self.wellcorrelation.value,
-                                                                                      self.Vertical_drilling_cost_per_m.value,
-                                                                                      self.per_production_well_cost.Name,
-                                                                                      self.production_well_cost_adjustment_factor.value)
+            self.cost_one_production_well.value = (
+                self._wellfield_indirect_cost_factor
+                * calculate_cost_of_one_vertical_well(model,
+                                                      model.wellbores.vertical_section_length.value,
+                                                      self.wellcorrelation.value,
+                                                      self.Vertical_drilling_cost_per_m.value,
+                                                      self.per_production_well_cost.Name,
+                                                      self.production_well_cost_adjustment_factor.value)
+            )
 
             # If there is no injector well, then we assume we are doing a coaxial closed-loop.
             if model.wellbores.ninj.value == 0:
@@ -241,26 +244,32 @@ class SBTEconomics(Economics):
 
             if hasattr(model.wellbores, 'numnonverticalsections') and model.wellbores.numnonverticalsections.Provided:
                 # now calculate the costs if we have a lateral section
-                # 1.05 for 5% indirect costs
-                self.cost_lateral_section.value = 1.05 * calculate_cost_of_lateral_section(model, model.wellbores.tot_lateral_m.value,
-                                                                                    self.wellcorrelation.value,
-                                                                                    self.Nonvertical_drilling_cost_per_m.value,
-                                                                                    model.wellbores.numnonverticalsections.value,
-                                                                                    self.per_injection_well_cost.Name,
-                                                                                    model.wellbores.NonverticalsCased.value,
-                                                                                    self.production_well_cost_adjustment_factor.value)
+                self.cost_lateral_section.value = (
+                    self._wellfield_indirect_cost_factor
+                    * calculate_cost_of_lateral_section(model,
+                                                        model.wellbores.tot_lateral_m.value,
+                                                        self.wellcorrelation.value,
+                                                        self.Nonvertical_drilling_cost_per_m.value,
+                                                        model.wellbores.numnonverticalsections.value,
+                                                        self.per_injection_well_cost.Name,
+                                                        model.wellbores.NonverticalsCased.value,
+                                                        self.production_well_cost_adjustment_factor.value)
+                )
 
                 # If it is an EavorLoop, we need to calculate the cost of the section of the well from
                 # the bottom of the vertical to the junction with the laterals.
                 # This section is not vertical, but it is cased, so we will estimate the cost
                 # of this section as if it were a vertical section.
                 if model.wellbores.Configuration.value == Configuration.EAVORLOOP:
-                    self.cost_to_junction_section.value = 1.05 * calculate_cost_of_one_vertical_well(model,
-                                                                                         model.wellbores.tot_to_junction_m.value,
-                                                                                         self.wellcorrelation.value,
-                                                                                         self.Vertical_drilling_cost_per_m.value,
-                                                                                         self.per_injection_well_cost.Name,
-                                                                                         self.injection_well_cost_adjustment_factor.value)
+                    self.cost_to_junction_section.value = (
+                        self._wellfield_indirect_cost_factor
+                        * calculate_cost_of_one_vertical_well(model,
+                                                              model.wellbores.tot_to_junction_m.value,
+                                                              self.wellcorrelation.value,
+                                                              self.Vertical_drilling_cost_per_m.value,
+                                                              self.per_injection_well_cost.Name,
+                                                              self.injection_well_cost_adjustment_factor.value)
+                    )
             else:
                 self.cost_lateral_section.value = 0.0
                 self.cost_to_junction_section.value = 0.0
@@ -270,11 +279,7 @@ class SBTEconomics(Economics):
                                 (self.cost_one_injection_well.value * model.wellbores.ninj.value) +
                                 self.cost_lateral_section.value + self.cost_to_junction_section.value)
 
-        # reservoir stimulation costs (M$/injection well). These are calculated whether totalcapcost.Valid = 1
-        if self.ccstimfixed.Valid:
-            self.Cstim.value = self.ccstimfixed.value
-        else:
-            self.Cstim.value = 1.05 * 1.15 * self.ccstimadjfactor.value * model.wellbores.ninj.value * 1.25  # 1.15 for 15% contingency and 1.05 for 5% indirect costs
+        self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
         # field gathering system costs (M$)
         if self.ccgathfixed.Valid:
@@ -310,8 +315,8 @@ class SBTEconomics(Economics):
                             1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
                 self.Cpumps = Cpumpsinj + Cpumpsprod
 
-        # Based on GETEM 2016 #1.15 for 15% contingency and 1.12 for 12% indirect costs
-        self.Cgath.value = 1.15 * self.ccgathadjfactor.value * 1.12 * (
+        # Based on GETEM 2016 #1.15 for 15% contingency
+        self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (
                 (model.wellbores.nprod.value + model.wellbores.ninj.value) * 750 * 500. + self.Cpumps) / 1E6
 
         # plant costs
@@ -320,8 +325,8 @@ class SBTEconomics(Economics):
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
 
         # absorption chiller
         elif model.surfaceplant.enduse_option.value == EndUseOptions.HEAT and model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller
@@ -329,11 +334,11 @@ class SBTEconomics(Economics):
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the absorption chiller
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
                 if self.chillercapex.value == -1:  # no value provided by user, use built-in correlation ($2500/ton)
-                    self.chillercapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    self.chillercapex.value = self._indirect_cost_factor * 1.15 * np.max(
+                        model.surfaceplant.cooling_produced.value) * 1000 / 3.517 * 2500 / 1e6  # $2,500/ton of cooling. 1.15 for 15% contingency
 
                 # now add chiller cost to surface plant cost
                 self.Cplant.value += self.chillercapex.value
@@ -344,11 +349,11 @@ class SBTEconomics(Economics):
                 self.Cplant.value = self.ccplantfixed.value
             else:
                 # this is for the direct-use part all the way up to the heat pump
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
                 if self.heatpumpcapex.value == -1:  # no value provided by user, use built-in correlation ($150/kWth)
-                    self.heatpumpcapex.value = 1.12 * 1.15 * np.max(
-                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                    self.heatpumpcapex.value = self._indirect_cost_factor * 1.15 * np.max(
+                        model.surfaceplant.HeatProduced.value) * 1000 * 150 / 1e6  # $150/kW. 1.15 for 15% contingency
 
                 # now add heat pump cost to surface plant cost
                 self.Cplant.value += self.heatpumpcapex.value
@@ -358,9 +363,14 @@ class SBTEconomics(Economics):
             if self.ccplantfixed.Valid:
                 self.Cplant.value = self.ccplantfixed.value
             else:
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
-                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
-                self.peakingboilercost.value = 65 * model.surfaceplant.max_peaking_boiler_demand.value / 1000  # add 65$/KW for peaking boiler
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                    model.surfaceplant.HeatExtracted.value) * 1000.  # 1.15 for 15% contingency
+
+                self.peakingboilercost.value = (self.peaking_boiler_cost_per_kW.quantity()
+                                                .to('USD / kilowatt').magnitude
+                                                * model.surfaceplant.max_peaking_boiler_demand.value
+                                                / 1000)
+
                 self.Cplant.value += self.peakingboilercost.value  # add peaking boiler cost to surface plant cost
 
 
@@ -511,23 +521,23 @@ class SBTEconomics(Economics):
                 self.CAPEX_cost_electricity_plant = self.Cplant.value * self.CAPEX_heat_electricity_plant_ratio.value
                 self.CAPEX_cost_heat_plant = self.Cplant.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
             else:
-                # 1.02 to convert cost from 2012 to 2016 #factor 1.15 for 15% contingency and 1.12 for 12% indirect costs. factor 1.10 to convert from 2016 to 2022
-                self.Cplant.value = 1.12 * 1.15 * self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
+                # 1.02 to convert cost from 2012 to 2016 #factor 1.15 for 15% contingency and factor 1.10 to convert from 2016 to 2022
+                self.Cplant.value = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * self.Cplantcorrelation * 1.02 * 1.10
                 self.CAPEX_cost_electricity_plant = self.Cplant.value
 
         # add direct-use plant cost of co-gen system to Cplant (only of no total Cplant was provided)
-        if not self.ccplantfixed.Valid:  # 1.15 below for contingency and 1.12 for indirect costs
+        if not self.ccplantfixed.Valid:  # 1.15 below for contingency
             if model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY,
                                                           EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT]:  # enduse_option = 3: cogen topping cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT,
                                                             EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY]:  # enduse_option = 4: cogen bottoming cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
             elif model.surfaceplant.enduse_option.value in [EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY,
                                                             EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT]:  # cogen parallel cycle
-                self.CAPEX_cost_heat_plant = 1.12 * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
+                self.CAPEX_cost_heat_plant = self._indirect_cost_factor * 1.15 * self.ccplantadjfactor.value * 250E-6 * np.max(
                     model.surfaceplant.HeatProduced.value / model.surfaceplant.enduse_efficiency_factor.value) * 1000.
 
             self.Cplant.value = self.Cplant.value + self.CAPEX_cost_heat_plant
@@ -539,8 +549,8 @@ class SBTEconomics(Economics):
             if self.ccexplfixed.Valid:
                 self.Cexpl.value = self.ccexplfixed.value
             else:
-                self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * 1.12 * (
-                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency and 1.12 for 12% indirect costs
+                self.Cexpl.value = 1.15 * self.ccexpladjfactor.value * self._indirect_cost_factor * (
+                    1. + self.cost_one_production_well.value * 0.6)  # 1.15 for 15% contingency
 
             # Surface Piping Length Costs (M$) #assumed $750k/km
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value

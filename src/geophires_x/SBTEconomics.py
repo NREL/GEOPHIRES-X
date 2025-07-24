@@ -101,67 +101,7 @@ class SBTEconomics(Economics):
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
-        #self.Electricity_rate = None
-        #self.Discount_rate = None
-        #self.error = 0
-        #self.AverageOPEX_Plant = 0
-        #self.OPEX_Plant = 0
-        #self.TotalCAPEX = 0
-        #self.CAPEX_Surface_Plant = 0
-        #self.CAPEX_Drilling = 0
 
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.)
-        # and Unit Name of that value, sets it as required (or not), sets allowable range,
-        # the error message if that range is exceeded, the ToolTip Text, and the name of the class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add
-        # and set all these parameters to your class.
-        # NB: inputs we already have ("already have it") need to be set at ReadParameter time so values
-        # are set at the last possible time
-
-        """
-        self.O_and_M_cost_plant = self.ParameterDict[self.O_and_M_cost_plant.Name] = floatParameter(
-            "Operation & Maintenance Cost of Surface Plant",
-            DefaultValue=0.015,
-            Min=0.0,
-            Max=0.2,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Required=True,
-            ErrMessage="assume default Operation & Maintenance cost of surface plant expressed as fraction of total surface plant capital cost (0.015)"
-        )
-        self.Direct_use_heat_cost_per_kWth = self.ParameterDict[
-            self.Direct_use_heat_cost_per_kWth.Name] = floatParameter(
-            "Capital Cost for Surface Plant for Direct-use System",
-            DefaultValue=100.0,
-            Min=0.0,
-            Max=10000.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
-            Required=False,
-            ErrMessage="assume default Capital cost for surface plant for direct-use system (100 $/kWth)"
-        )
-        self.Power_plant_cost_per_kWe = self.ParameterDict[self.Power_plant_cost_per_kWe.Name] = floatParameter(
-            "Capital Cost for Power Plant for Electricity Generation",
-            DefaultValue=3000.0,
-            Min=0.0,
-            Max=10000.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERKW,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKW,
-            Required=True,
-            ErrMessage="assume default Power plant capital cost per kWe (3000 USD/kWe)"
-        )
-
-        # results are stored here and in the parent ProducedTemperature array
-
-"""
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
@@ -182,10 +122,6 @@ class SBTEconomics(Economics):
         # just deal with the special cases for the variables in this class
         # because the call to the super.readparameters will set all the variables,
         # including the ones that are specific to this class
-
-        # inputs we already have - needs to be set at ReadParameter time so values set at the latest possible time
-   #     self.Discount_rate = model.economics.discountrate.value  # same units are GEOPHIRES
-   #     self.Electricity_rate = model.surfaceplant.electricity_cost_to_buy.value  # same units are GEOPHIRES
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
@@ -281,39 +217,7 @@ class SBTEconomics(Economics):
 
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
 
-        # field gathering system costs (M$)
-        if self.ccgathfixed.Valid:
-            self.Cgath.value = self.ccgathfixed.value
-        else:
-            self.Cgath.value = self.ccgathadjfactor.value * 50 - 6 * np.max(
-                model.surfaceplant.HeatExtracted.value) * 1000.  # (GEOPHIRES v1 correlation)
-            if model.wellbores.impedancemodelused.value:
-                pumphp = np.max(model.wellbores.PumpingPower.value) * 1341
-                numberofpumps = np.ceil(pumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofpumps == 0:
-                    self.Cpumps = 0.0
-                else:
-                    pumphpcorrected = pumphp / numberofpumps
-                    self.Cpumps = numberofpumps * 1.5 * (
-                            (1750 * pumphpcorrected ** 0.7) * 3 * pumphpcorrected ** (-0.11))
-            else:
-                if model.wellbores.productionwellpumping.value:
-                    prodpumphp = np.max(model.wellbores.PumpingPowerProd.value) / model.wellbores.nprod.value * 1341
-                    Cpumpsprod = model.wellbores.nprod.value * 1.5 * (1750 * prodpumphp ** 0.7 + 5750 *
-                                                                      prodpumphp ** 0.2 + 10000 + np.max(
-                            model.wellbores.pumpdepth.value) * 50 * 3.281)  # see page 46 in user's manual assuming rental of rig for 1 day.
-                else:
-                    Cpumpsprod = 0
-
-                injpumphp = np.max(model.wellbores.PumpingPowerInj.value) * 1341
-                numberofinjpumps = np.ceil(injpumphp / 2000)  # pump can be maximum 2,000 hp
-                if numberofinjpumps == 0:
-                    Cpumpsinj = 0
-                else:
-                    injpumphpcorrected = injpumphp / numberofinjpumps
-                    Cpumpsinj = numberofinjpumps * 1.5 * (
-                            1750 * injpumphpcorrected ** 0.7) * 3 * injpumphpcorrected ** (-0.11)
-                self.Cpumps = Cpumpsinj + Cpumpsprod
+        self.calculate_field_gathering_costs(model)
 
         # Based on GETEM 2016 #1.15 for 15% contingency
         self.Cgath.value = 1.15 * self.ccgathadjfactor.value * self._indirect_cost_factor * (

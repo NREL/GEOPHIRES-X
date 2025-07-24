@@ -2,7 +2,7 @@
 Changelog
 =========
 
-GEOPHIRES-X (2023-2025)
+GEOPHIRES v3 (2023-2025)
 ------------------------
 
 3.9
@@ -108,8 +108,8 @@ Bug fixes
 Internal changes to support unit testing
 
 
-3.0
-^^^
+3.0: GEOPHIRES-X
+^^^^^^^^^^^^^^^^
 `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.0.0>`__
 
 - New repository: https://github.com/NREL/GEOPHIRES-X (Originally https://github.com/NREL/python-geophires-x, renamed to GEOPHIRES-X 2023-12-15 per https://github.com/NREL/GEOPHIRES-X/issues/48.)

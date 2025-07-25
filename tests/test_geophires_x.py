@@ -160,19 +160,29 @@ class GeophiresXTestCase(BaseTestCase):
         def get_output_file_for_example(example_file: str):
             return self._get_test_file_path(Path('examples', f'{example_file.split(".txt")[0]}.out'))
 
+        # fmt:off
         # @formatter:off
         example_files = list(
             filter(
-                lambda example_file_path: example_file_path.startswith(
-                    ('example', 'Beckers_et_al', 'SUTRA', 'Wanju', 'Fervo', 'S-DAC-GT')
+                lambda example_file_path_: example_file_path_.startswith(
+                    (
+                        'example',
+                        'Beckers_et_al',
+                        'SUTRA',
+                        'Wanju',
+                        'Fervo',
+                        'S-DAC-GT'
+                    )
                 )
                 # TOUGH not enabled for testing - see https://github.com/NREL/GEOPHIRES-X/issues/318
-                and not example_file_path.startswith(('example6.txt', 'example7.txt'))
-                and '.out' not in example_file_path,
+                and not example_file_path_.startswith(('example6.txt', 'example7.txt'))
+                and '.out' not in example_file_path_,
                 self._list_test_files_dir(test_files_dir='examples'),
             )
         )
         # @formatter:on
+        # fmt:on
+        # (2 types of formatting control markers above to prevent both ruff/black and PyCharm from applying formatting)
 
         # Run SBT examples last because they take an inordinately long time (tens of seconds even on a fast machine).
         # This reduces time spent waiting for tests to run if you are iterating on changes that affect non-SBT examples.

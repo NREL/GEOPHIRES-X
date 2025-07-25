@@ -1219,3 +1219,49 @@ Print Output to Console, 1"""
 
             self.assertEqual(exploration_cost_MUSD, result.result['CAPITAL COSTS (M$)']['Exploration costs']['value'])
             self.assertEqual('MUSD', result.result['CAPITAL COSTS (M$)']['Exploration costs']['unit'])
+
+    def test_redrilling_costs(self):
+        total_capex_specified_result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=self._get_test_file_path('examples/Fervo_Project_Cape-4.txt'),
+                params={'Total Capital Cost': 2500},
+            )
+        )
+
+        for result in [
+            GeophiresXResult(self._get_test_file_path('examples/Fervo_Project_Cape-4.out')),
+            total_capex_specified_result,
+        ]:
+            result_redrills = result.result['ENGINEERING PARAMETERS']['Number of times redrilling']['value']
+            self.assertGreater(result_redrills, 0)
+
+            result_opex = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+            opex_sum = 0
+            expected_opex_line_items = [
+                'Wellfield maintenance costs',
+                'Power plant maintenance costs',
+                'Water costs',
+                'Redrilling costs',
+            ]
+            for opex_line_item in expected_opex_line_items:
+                opex_sum += result_opex[opex_line_item]['value']
+
+            self.assertAlmostEqual(result_opex['Total operating and maintenance costs']['value'], opex_sum, places=1)
+
+            result_capex = result.result['CAPITAL COSTS (M$)']
+            if result_capex.get('Drilling and completion costs') is not None:
+                expected_annual_redrilling_cost = (
+                    (
+                        result_capex['Drilling and completion costs']['value']
+                        + result_capex['Stimulation costs']['value']
+                    )
+                    * result_redrills
+                ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+
+                self.assertAlmostEqual(
+                    expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2
+                )
+            else:
+                # Individual capex line items are not calculated when user provides Total Capital Cost.
+                # FIXME WIP output/check
+                pass

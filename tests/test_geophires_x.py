@@ -1249,19 +1249,15 @@ Print Output to Console, 1"""
             self.assertAlmostEqual(result_opex['Total operating and maintenance costs']['value'], opex_sum, places=1)
 
             result_capex = result.result['CAPITAL COSTS (M$)']
-            if result_capex.get('Drilling and completion costs') is not None:
-                expected_annual_redrilling_cost = (
-                    (
-                        result_capex['Drilling and completion costs']['value']
-                        + result_capex['Stimulation costs']['value']
-                    )
-                    * result_redrills
-                ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
-
-                self.assertAlmostEqual(
-                    expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2
+            capex_field_suffix = (
+                '' if result_capex.get('Drilling and completion costs') is not None else ' (for redrilling)'
+            )
+            expected_annual_redrilling_cost = (
+                (
+                    result_capex[f'Drilling and completion costs{capex_field_suffix}']['value']
+                    + result_capex[f'Stimulation costs{capex_field_suffix}']['value']
                 )
-            else:
-                # Individual capex line items are not calculated when user provides Total Capital Cost.
-                # FIXME WIP output/check
-                pass
+                * result_redrills
+            ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+
+            self.assertAlmostEqual(expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2)

@@ -14,193 +14,8 @@ class SUTRAEconomics(Economics.Economics):
     """
 
     def __init__(self, model: Model):
-        """
-        The __init__ function is called automatically when a class is instantiated.
-        It initializes the attributes of an object, and sets default values for certain arguments that can be overridden
-        by user input.
-        The __init__ function is used to set up all the parameters in Economics.
-        :param model: The container class of the application, giving access to everything else, including the logger
-        :type model: :class:`~geophires_x.Model.Model`
-        :return: None
-        """
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().__init__(model)
-
-        # Set up all the Parameters that will be predefined by this class using the different types of parameter classes.
-        # Setting up includes giving it a name, a default value, The Unit Type (length, volume, temperature, etc.) and
-        # Unit Name of that value, sets it as required (or not), sets allowable range, the error message if that range
-        # is exceeded, the ToolTip Text, and the name of teh class that created it.
-        # This includes setting up temporary variables that will be available to all the class but noy read in by user,
-        # or used for Output
-        # This also includes all Parameters that are calculated and then published using the Printouts function.
-        # If you choose to subclass this master class, you can do so before or after you create your own parameters.
-        # If you do, you can also choose to call this method from you class, which will effectively add and set all
-        # these parameters to your class.
-
-        # These dictionaries contain a list of all the parameters set in this object, stored as "Parameter" and
-        # "OutputParameter" Objects.  This will allow us later to access them in a user interface and get that list,
-        # along with unit type, preferred units, etc.
-        self.ParameterDict = {}
-        self.OutputParameterDict = {}
-
-        # Note: setting Valid to False for any of the cost parameters forces GEOPHIRES to use it's builtin cost engine.
-        # This is the default.
-        self.econmodel = self.ParameterDict[self.econmodel.Name] = intParameter(
-            "Economic Model",
-            value=EconomicModel.STANDARDIZED_LEVELIZED_COST,
-            DefaultValue=EconomicModel.STANDARDIZED_LEVELIZED_COST,
-            ValuesEnum=EconomicModel,
-            AllowableRange=[1, 2, 3],
-            Required=True,
-            ErrMessage="assume default economic model (2)",
-            ToolTipText="Specify the economic model to calculate the levelized cost of energy. " +
-                        '; '.join([f'{it.int_value}: {it.value}' for it in EconomicModel])
-        )
-
-        self.ccwellfixed = self.ParameterDict[self.ccwellfixed.Name] = floatParameter(
-            "Well Drilling and Completion Capital Cost",
-            value=-1.0,
-            DefaultValue=-1.0,
-            Min=0,
-            Max=200,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-            Provided=False,
-            Valid=False,
-            ToolTipText="Well Drilling and Completion Capital Cost",
-        )
-        self.ccwelladjfactor = self.ParameterDict[self.ccwelladjfactor.Name] = floatParameter(
-            "Well Drilling and Completion Capital Cost Adjustment Factor",
-            value=1.0,
-            DefaultValue=1.0,
-            Min=0,
-            Max=10,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Provided=False,
-            Valid=True,
-            ToolTipText="Well Drilling and Completion Capital Cost Adjustment Factor",
-        )
-
-        self.ccplantfixed = self.ParameterDict[self.ccplantfixed.Name] = floatParameter(
-            "Surface Plant Capital Cost",
-            value=-1.0,
-            DefaultValue=-1.0,
-            Min=0,
-            Max=1000,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-            Provided=False,
-            Valid=False,
-            ToolTipText="Total surface plant capital cost",
-        )
-        self.ccplantadjfactor = self.ParameterDict[self.ccplantadjfactor.Name] = floatParameter(
-            "Surface Plant Capital Cost Adjustment Factor",
-            value=1.0,
-            DefaultValue=1.0,
-            Min=0,
-            Max=10,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Provided=False,
-            Valid=True,
-            ToolTipText="Multiplier for built-in surface plant capital cost correlation",
-        )
-
-        self.inflrateconstruction = self.ParameterDict[self.inflrateconstruction.Name] = floatParameter(
-            "Inflation Rate During Construction",
-            value=0.0,
-            DefaultValue=0.0,
-            Min=0.0,
-            Max=1.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default inflation rate during construction (0)",
-        )
-        self.wellcorrelation = self.ParameterDict[self.wellcorrelation.Name] = intParameter(
-            "Well Drilling Cost Correlation",
-            DefaultValue=WellDrillingCostCorrelation.VERTICAL_LARGE_INT1.int_value,
-            AllowableRange=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-            ValuesEnum=WellDrillingCostCorrelation,
-            UnitType=Units.NONE,
-            ErrMessage="assume default well drilling cost correlation (10)",
-            ToolTipText="Select the built-in well drilling and completion cost correlation: " +
-                        '; '.join([f'{it.int_value}: {it.value}' for it in WellDrillingCostCorrelation])
-        )
-
-        self.timestepsperyear = self.ParameterDict[self.timestepsperyear.Name] = intParameter(
-            "Time steps per year",
-            value=4,
-            DefaultValue=4,
-            AllowableRange=list(range(1, 101, 1)),
-            UnitType=Units.NONE,
-            Required=True,
-            ErrMessage="assume default number of time steps per year (4)",
-            ToolTipText="Number of internal simulation time steps per year",
-        )
-
-        self.DoAddOnCalculations = self.ParameterDict[self.DoAddOnCalculations.Name] = boolParameter(
-            "Do AddOn Calculations",
-            value=False,
-            DefaultValue=False,
-            UnitType=Units.NONE,
-            Required=False,
-            ErrMessage="assume default: no economics calculations",
-            ToolTipText="Set to true if you want the add-on economics calculations to be made",
-        )
-        self.DoSDACGTCalculations = self.ParameterDict[self.DoSDACGTCalculations.Name] = boolParameter(
-            "Do S-DAC-GT Calculations",
-            value=False,
-            DefaultValue=False,
-            UnitType=Units.NONE,
-            Required=False,
-            ErrMessage="assume default: no S-DAC-GT calculations",
-            ToolTipText="Set to true if you want the S-DAC-GT economics calculations to be made",
-        )
-
-        # heat pump
-        self.heatpumpcapex = self.ParameterDict[self.heatpumpcapex.Name] = floatParameter(
-            "Heat Pump Capital Cost",
-            value=-1.0,
-            Min=0,
-            Max=100,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-            Provided=False,
-            Valid=False,
-            ToolTipText="Heat pump capital cost",
-        )
-
-        self.ngprice = self.ParameterDict[self.ngprice.Name] = floatParameter(
-            "Peaking Fuel Cost Rate",
-            value=0.034,
-            Min=0.0,
-            Max=1.0,
-            UnitType=Units.ENERGYCOST,
-            PreferredUnits=EnergyCostUnit.DOLLARSPERKWH,
-            CurrentUnits=EnergyCostUnit.DOLLARSPERKWH,
-            ErrMessage="assume default peaking fuel rate ($0.034/kWh)",
-            ToolTipText="Price of peaking fuel for peaking boilers",
-        )
-        self.peakingboilerefficiency = self.ParameterDict[self.peakingboilerefficiency.Name] = floatParameter(
-            "Peaking Boiler Efficiency",
-            value=0.85,
-            Min=0,
-            Max=1,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.TENTH,
-            CurrentUnits=PercentUnit.TENTH,
-            Provided=False,
-            Valid=False,
-            ErrMessage="assume default peaking boiler efficiency (85%)",
-            ToolTipText="Peaking boiler efficiency",
-        )
 
         self.LCOH = self.OutputParameterDict[self.LCOH.Name] = OutputParameter(
             "Heat Sale Price Model",
@@ -219,22 +34,6 @@ class SUTRAEconomics(Economics.Economics):
         self.MyClass = sclass.replace("\'>", "")
         self.MyPath = os.path.abspath(__file__)
 
-        # results
-        self.Cwell = self.OutputParameterDict[self.Cwell.Name] = OutputParameter(
-            Name="Wellfield cost",
-            value=-999.9,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-        )
-
-        self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
-            Name="Total Capital Cost",
-            value=-999.9,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-        )
         self.Coam = self.OutputParameterDict[self.Coam.Name] = OutputParameter(
             Name="Total O&M Cost",
             value=-999.9,
@@ -249,26 +48,6 @@ class SUTRAEconomics(Economics.Economics):
             PreferredUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.KDOLLARSPERYEAR,
         )
-
-        # heat pump
-        self.averageannualheatpumpelectricitycost = self.OutputParameterDict[
-            self.averageannualheatpumpelectricitycost.Name
-        ] = OutputParameter(
-            Name="Average Annual Heat Pump Electricity Cost",
-            value=0.0,
-            UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-        )
-
-        self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
-            Name="Peaking boiler cost",
-            value=0,
-            UnitType=Units.CURRENCY,
-            PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-        )
-
         self.annualngcost = self.OutputParameterDict[self.annualngcost.Name] = OutputParameter(
             Name="Annual Peaking Fuel Cost",
             value=0,
@@ -347,7 +126,7 @@ class SUTRAEconomics(Economics.Economics):
         # Drilling
 
         self.C1well = 0
-        if self.ccwellfixed.Valid:
+        if self.per_production_well_cost.Valid:
             self.C1well = self.ccwellfixed.value
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
         else:
@@ -359,13 +138,16 @@ class SUTRAEconomics(Economics.Economics):
 
             self.C1well = self.wellcorrelation.value.calculate_cost_MUSD(model.reserv.depth.value)
 
-            self.C1well = self.C1well * self.ccwelladjfactor.value
+            self.C1well = self.C1well * self.production_well_cost_adjustment_factor.value
             self.Cwell.value = self.C1well * (model.wellbores.nprod.value + model.wellbores.ninj.value)
 
         # Boiler
         self.peakingboilercost.value = (
-            65 * model.surfaceplant.max_peaking_boiler_demand.value / self.peakingboilerefficiency.value / 1000
-        )  # add 65$/KW for peaking boiler
+            self.peaking_boiler_cost_per_kW.quantity().to('USD/kW').magnitude
+            * model.surfaceplant.max_peaking_boiler_demand.value
+            / self.peakingboilerefficiency.value
+            / 1000
+        )
 
         # Circulation Pump
         pumphp = np.max(model.wellbores.PumpingPower.value) * 1.341

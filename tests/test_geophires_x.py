@@ -1197,3 +1197,15 @@ Print Output to Console, 1"""
                             actual,
                             percent=max_allowed_delta_percent,
                         )
+
+    def test_exploration_cost(self):
+        for exploration_cost_MUSD in [0, 500, 1000]:
+            result = GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                    params={'Exploration Capital Cost': exploration_cost_MUSD},
+                )
+            )
+
+            self.assertEqual(exploration_cost_MUSD, result.result['CAPITAL COSTS (M$)']['Exploration costs']['value'])
+            self.assertEqual('MUSD', result.result['CAPITAL COSTS (M$)']['Exploration costs']['unit'])

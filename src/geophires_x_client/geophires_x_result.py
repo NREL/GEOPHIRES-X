@@ -284,14 +284,14 @@ class GeophiresXResult:
                 'Annual District Heating O&M Cost',
                 'Average Annual Peaking Fuel Cost',
                 'Average annual pumping costs',
-                'Total operating and maintenance costs',
-                # AGS/CLGS
-                'OPEX',
                 # SUTRA
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',
                 'Redrilling costs',
                 'Total average annual O&M costs',
+                'Total operating and maintenance costs',
+                # AGS/CLGS
+                'OPEX',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [
                 'Initial geofluid availability',

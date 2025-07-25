@@ -436,12 +436,6 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
-        "Total operating and maintenance costs": {
-          "type": "number",
-          "description": "Total O&M Cost",
-          "units": "MUSD/yr"
-        },
-        "OPEX": {},
         "Average annual auxiliary fuel cost": {},
         "Average annual pumping cost": {},
         "Redrilling costs": {
@@ -449,7 +443,13 @@
           "description": "Total redrilling costs over the Plant Lifetime are calculated as (Drilling and completion costs + Stimulation costs) \u00d7 Number of times redrilling. The total is then divided over Plant Lifetime years to calculate Redrilling costs per year.",
           "units": "MUSD/yr"
         },
-        "Total average annual O&M costs": {}
+        "Total average annual O&M costs": {},
+        "Total operating and maintenance costs": {
+          "type": "number",
+          "description": "Total O&M Cost",
+          "units": "MUSD/yr"
+        },
+        "OPEX": {}
       }
     },
     "SURFACE EQUIPMENT SIMULATION RESULTS": {

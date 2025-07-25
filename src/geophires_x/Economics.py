@@ -868,7 +868,8 @@ class Economics:
             "Total Capital Cost",
             DefaultValue=-1.0,
             Min=0,
-            Max=1000,
+            # pint treats GUSD as billions of dollars (G for giga)
+            Max=quantity(100, 'GUSD').to('MUSD').magnitude,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,

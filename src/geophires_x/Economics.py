@@ -1782,7 +1782,11 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            # FIXME WIP TooltipText
+            ToolTipText=f'Total redrilling costs over the {model.surfaceplant.plant_lifetime.Name} are calculated as '
+                        f'({self.Cwell.display_name} + {self.Cstim.display_name}) '
+                        f'× {model.wellbores.redrill.display_name}. '
+                        f'The total is then divided over {model.surfaceplant.plant_lifetime.Name} years to calculate '
+                        f'Redrilling costs per year.'
         )
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",

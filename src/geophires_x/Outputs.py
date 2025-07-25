@@ -325,7 +325,7 @@ class Outputs:
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} ' + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
                 f.write(f'      Injection well casing ID:                          {model.wellbores.injwelldiam.value:10.3f} ' + model.wellbores.injwelldiam.CurrentUnits.value + NL)
                 f.write(f'      Production well casing ID:                         {model.wellbores.prodwelldiam.value:10.3f} ' + model.wellbores.prodwelldiam.CurrentUnits.value + NL)
-                f.write(f'      Number of times redrilling:                    {model.wellbores.redrill.value:10.0f}'+NL)
+                f.write(f'      {model.wellbores.redrill.display_name}:                    {model.wellbores.redrill.value:10.0f}\n')
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
                     f.write('      Power plant type:                                       ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 f.write(NL)

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.28
- Simulation Date: 2025-07-02
- Simulation Time:  12:19
- Calculation Time:      1.773 sec
+ GEOPHIRES Version: 3.9.36
+ Simulation Date: 2025-07-25
+ Simulation Time:  10:59
+ Calculation Time:      1.734 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -113,6 +113,7 @@ Simulation Metadata
          Wellfield maintenance costs:                         6.20 MUSD/yr
          Power plant maintenance costs:                      25.43 MUSD/yr
          Water costs:                                        24.86 MUSD/yr
+         Redrilling costs:                                   70.46 MUSD/yr
       Total operating and maintenance costs:                126.95 MUSD/yr
 
 

@@ -290,6 +290,7 @@ class GeophiresXResult:
                 # SUTRA
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',
+                'Redrilling costs',
                 'Total average annual O&M costs',
             ],
             'SURFACE EQUIPMENT SIMULATION RESULTS': [

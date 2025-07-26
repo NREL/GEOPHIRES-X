@@ -1966,6 +1966,14 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+        self.accrued_financing_during_construction_percentage = self.OutputParameterDict[
+          self.accrued_financing_during_construction_percentage.Name] = OutputParameter(
+            Name='Accrued financing during construction',
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            # TODO TooltipText
+        )
 
         self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
             after_tax_irr_parameter())
@@ -2327,6 +2335,12 @@ class Economics:
         coerce_int_params_to_enum_values(self.ParameterDict)
         self.sync_interest_rate(model)
         self.sync_well_drilling_and_completion_capital_cost_adjustment_factor(model)
+
+        # SAM Economic Models recalculate accrued financing value based on construction years.
+        # TODO to determine whether the same logic should be applied for other economic models.
+        self.accrued_financing_during_construction_percentage.value = self.inflrateconstruction.quantity().to(
+            convertible_unit(self.accrued_financing_during_construction_percentage.CurrentUnits)
+        ).magnitude
 
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

@@ -38,7 +38,7 @@ from geophires_x.EconomicsUtils import (
     project_vir_parameter,
     project_payback_period_parameter,
 )
-from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs
+from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
@@ -357,11 +357,17 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
-    ret['total_installed_cost'] = (
-        (total_capex * math.pow(1 + econ.inflrateconstruction.value, model.surfaceplant.construction_years.value))
-        .to('USD')
+
+    inflation_during_construction_factor = math.pow(
+        1 + econ.inflrateconstruction.value, model.surfaceplant.construction_years.value
+    )
+    econ.accrued_financing_during_construction_percentage.value = (
+        quantity(inflation_during_construction_factor - 1, 'dimensionless')
+        .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
         .magnitude
     )
+
+    ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]

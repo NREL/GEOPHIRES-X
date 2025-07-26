@@ -3043,7 +3043,7 @@ class Economics:
                 self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
                     1. + self.cost_one_production_well.value * 0.6)
 
-            # Surface Piping Length Costs (M$) #assumed $750k/km
+            # Surface Piping Length Costs (M$) #assumed $750k/km  # TODO parameterize
             self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
 
             # district heating network costs

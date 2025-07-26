@@ -358,9 +358,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
 
-    inflation_during_construction_factor = math.pow(
-        1 + econ.inflrateconstruction.value, model.surfaceplant.construction_years.value
-    )
+    if econ.inflrateconstruction.Provided:
+        inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    else:
+        inflation_during_construction_factor = math.pow(
+            1.0 + econ.RINFL.value, model.surfaceplant.construction_years.value
+        )
     econ.accrued_financing_during_construction_percentage.value = (
         quantity(inflation_during_construction_factor - 1, 'dimensionless')
         .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))

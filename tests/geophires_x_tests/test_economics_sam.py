@@ -522,6 +522,28 @@ class EconomicsSamTestCase(BaseTestCase):
         r: GeophiresXResult = self._get_result(never_pays_back_params)
         self.assertIsNone(_payback_period(r))
 
+    def test_accrued_financing_during_construction(self):
+        def _accrued_financing(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['Accrued financing during construction']['value']
+
+        params1 = {
+            'Construction Years': 3,
+            'Inflation Rate': 0.04769,
+        }
+        r1: GeophiresXResult = self._get_result(
+            params1, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+        self.assertEqual(15.0, _accrued_financing(r1))
+
+        params2 = {
+            'Construction Years': 3,
+            'Inflation Rate During Construction': 0.15,
+        }
+        r2: GeophiresXResult = self._get_result(
+            params2, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+        self.assertEqual(15.0, _accrued_financing(r2))
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

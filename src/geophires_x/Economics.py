@@ -2337,7 +2337,8 @@ class Economics:
         self.sync_interest_rate(model)
         self.sync_well_drilling_and_completion_capital_cost_adjustment_factor(model)
 
-        # SAM Economic Models recalculate accrued financing value based on construction years.
+        # SAM Economic Models recalculate accrued financing value based on construction years and inflation rate if
+        # inflation rate during construction is not provided.
         # TODO to determine whether the same logic should be applied for other economic models.
         self.accrued_financing_during_construction_percentage.value = self.inflrateconstruction.quantity().to(
             convertible_unit(self.accrued_financing_during_construction_percentage.CurrentUnits)

@@ -17,7 +17,7 @@ Fraction of Investment in Bonds, .6, -- Based on fraction of CAPEX with $1 billi
 Inflated Bond Interest Rate, .056
 
 Inflation Rate, .023, -- US inflation as of April 2025
-Inflation Rate During Construction, 0.15, -- Corresponds to a higher inflation rate (4.769%) over the construction period to hedge against short-term inflation volatility.
+Inflation Rate During Construction, 0.15, -- Models a higher annual inflation rate (4.769%) over the 3-year construction period as a hedge against short-term inflation volatility.
 Construction Years, 3, -- Calibrated to a 2-6 year construction time for a 1 GW plant (Yusifov & Enriquez, 2025)
 
 

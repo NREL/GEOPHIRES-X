@@ -23,6 +23,9 @@ Geothermal_district_heating_system_with_peaking_boilers.png
 *.html
 !docs/*.html
 
+# TODO may want to add this to source
+regenerate-schemas.sh
+
 # C extensions
 *.so
 

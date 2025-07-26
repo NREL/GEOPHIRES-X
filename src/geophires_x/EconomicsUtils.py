@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from geophires_x.Parameter import OutputParameter
-from geophires_x.Units import Units, PercentUnit, TimeUnit
+from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit
 
 
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
@@ -120,4 +120,14 @@ def wacc_output_parameter() -> OutputParameter:
         UnitType=Units.PERCENT,
         CurrentUnits=PercentUnit.PERCENT,
         PreferredUnits=PercentUnit.PERCENT,
+    )
+
+
+def inflation_cost_during_construction_output_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='Inflation Cost During Construction',
+        UnitType=Units.CURRENCY,
+        PreferredUnits=CurrencyUnit.MDOLLARS,
+        CurrentUnits=CurrencyUnit.MDOLLARS,
+        ToolTipText='The calculated amount of cost escalation due to inflation over the construction period.'
     )

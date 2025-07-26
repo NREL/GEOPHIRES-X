@@ -9,7 +9,7 @@ from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
-    project_payback_period_parameter
+    project_payback_period_parameter, inflation_cost_during_construction_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1979,6 +1979,9 @@ class Economics:
                         f'{self.RINFL.Name} over Construction Years '
                         f'if {self.inflrateconstruction.Name} is not provided.'
         )
+
+        self.inflation_cost_during_construction = self.OutputParameterDict[
+            self.inflation_cost_during_construction.Name] = inflation_cost_during_construction_output_parameter()
 
         self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
             after_tax_irr_parameter())

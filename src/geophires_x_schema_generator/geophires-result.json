@@ -92,7 +92,7 @@
         },
         "Accrued financing during construction": {
           "type": "number",
-          "description": "The total accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
+          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
           "units": "%"
         },
         "Project lifetime": {},

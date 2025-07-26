@@ -37,6 +37,7 @@ from geophires_x.EconomicsUtils import (
     moic_parameter,
     project_vir_parameter,
     project_payback_period_parameter,
+    inflation_cost_during_construction_output_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -370,6 +371,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         .magnitude
     )
 
+    econ.inflation_cost_during_construction.value = (
+        (total_capex * (inflation_during_construction_factor - 1))
+        .to(econ.inflation_cost_during_construction.CurrentUnits)
+        .magnitude
+    )
     ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
     opex_musd = econ.Coam.value

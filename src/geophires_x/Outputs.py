@@ -495,6 +495,11 @@ class Outputs:
                         #  expenditure.
                         pass
 
+                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    # TODO calculate & display for other economic models
+                    icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 48)
+                    f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
+
                 capex_label = Outputs._field_label(econ.CCap.display_name, 50)
                 f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
 

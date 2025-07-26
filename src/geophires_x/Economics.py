@@ -1044,9 +1044,11 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)",
-            ToolTipText='For SAM Economic Models, total installed cost is calculated as '
-                        '{Total CAPEX before inflation} × '
-                        '(1 + Inflation Rate During Construction) ^ Construction Years.'
+            ToolTipText='The total inflation rate applied to capital costs over the entire construction period, '
+                        'entered as a fraction (e.g., 0.15 for 15%). '
+                        'This value defines the Accrued financing during construction output. '
+                        'Note: For SAM Economic Models, if this parameter is not provided, inflation costs will be '
+                        'calculated automatically by compounding Inflation Rate over Construction Years.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

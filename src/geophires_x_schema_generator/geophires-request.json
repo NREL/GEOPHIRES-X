@@ -1711,7 +1711,7 @@
       "maximum": 1.0
     },
     "Inflation Rate During Construction": {
-      "description": "For SAM Economic Models, total installed cost is calculated as {Total CAPEX before inflation} \u00d7 (1 + Inflation Rate During Construction) ^ Construction Years.",
+      "description": "The total inflation rate applied to capital costs over the entire construction period, entered as a fraction (e.g., 0.15 for 15%). This value defines the Accrued financing during construction output. Note: For SAM Economic Models, if this parameter is not provided, inflation costs will be calculated automatically by compounding Inflation Rate over Construction Years.",
       "type": "number",
       "units": "",
       "category": "Economics",

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.28
- Simulation Date: 2025-07-02
- Simulation Time:  12:19
- Calculation Time:      0.975 sec
+ GEOPHIRES Version: 3.9.39
+ Simulation Date: 2025-07-25
+ Simulation Time:  14:32
+ Calculation Time:      0.983 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -105,7 +105,6 @@ Simulation Metadata
          Field gathering system costs:                       70.43 MUSD
          Total surface equipment costs:                     969.26 MUSD
          Exploration costs:                                  30.00 MUSD
-         Investment Tax Credit:                            -459.83 MUSD
       Total CAPEX:                                         1609.42 MUSD
 
 

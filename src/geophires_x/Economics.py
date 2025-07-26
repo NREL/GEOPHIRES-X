@@ -868,7 +868,8 @@ class Economics:
             "Total Capital Cost",
             DefaultValue=-1.0,
             Min=0,
-            Max=1000,
+            # pint treats GUSD as billions of dollars (G for giga)
+            Max=quantity(100, 'GUSD').to('MUSD').magnitude,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
@@ -1775,6 +1776,18 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            # TODO TooltipText to document how this is calculated
+        )
+        self.redrilling_annual_cost = self.OutputParameterDict[self.redrilling_annual_cost.Name] = OutputParameter(
+            Name="Redrilling costs",
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText=f'Total redrilling costs over the {model.surfaceplant.plant_lifetime.Name} are calculated as '
+                        f'({self.Cwell.display_name} + {self.Cstim.display_name}) '
+                        f'× {model.wellbores.redrill.display_name}. '
+                        f'The total is then divided over {model.surfaceplant.plant_lifetime.Name} years to calculate '
+                        f'Redrilling costs per year.'
         )
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",
@@ -1809,7 +1822,7 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText='Assumes $3.5/1,000 gallons of water'
+            ToolTipText='Assumes $3.5/1,000 gallons of water'  # TODO parameterize
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
@@ -2521,8 +2534,10 @@ class Economics:
 
         if model.wellbores.redrill.value > 0:
             # account for well redrilling
-            self.Coam.value = self.Coam.value + \
-                              (self.Cwell.value + self.Cstim.value) * model.wellbores.redrill.value / model.surfaceplant.plant_lifetime.value
+            redrilling_costs: PlainQuantity = self.calculate_redrilling_costs(model)
+            self.redrilling_annual_cost.value = redrilling_costs.to(self.redrilling_annual_cost.CurrentUnits).magnitude
+            self.Coam.value += redrilling_costs.to(self.Coam.CurrentUnits).magnitude
+
 
         # Add in the AnnualLicenseEtc and TaxRelief
         self.Coam.value = self.Coam.value + self.AnnualLicenseEtc.value - self.TaxRelief.value
@@ -2750,6 +2765,11 @@ class Economics:
             )
 
         return quantity(stimulation_costs, self.Cstim.CurrentUnits)
+
+    def calculate_redrilling_costs(self, model) -> PlainQuantity:
+        return ((self.Cwell.quantity() + self.Cstim.quantity())
+                * model.wellbores.redrill.quantity()
+                / model.surfaceplant.plant_lifetime.quantity())
 
     def calculate_field_gathering_costs(self, model: Model) -> None:
         if self.ccgathfixed.Valid:
@@ -3163,6 +3183,8 @@ class Economics:
                 self.Cwell.value /
                 (model.wellbores.nprod.value + model.wellbores.ninj.value)
             )
+
+
 
     def __str__(self):
         return "Economics"

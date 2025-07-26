@@ -325,7 +325,7 @@ class Outputs:
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} ' + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
                 f.write(f'      Injection well casing ID:                          {model.wellbores.injwelldiam.value:10.3f} ' + model.wellbores.injwelldiam.CurrentUnits.value + NL)
                 f.write(f'      Production well casing ID:                         {model.wellbores.prodwelldiam.value:10.3f} ' + model.wellbores.prodwelldiam.CurrentUnits.value + NL)
-                f.write(f'      Number of times redrilling:                    {model.wellbores.redrill.value:10.0f}'+NL)
+                f.write(f'      {model.wellbores.redrill.display_name}:                    {model.wellbores.redrill.value:10.0f}\n')
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
                     f.write('      Power plant type:                                       ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 f.write(NL)
@@ -475,12 +475,23 @@ class Outputs:
                         f.write(f'         District Heating System Cost:                  {model.economics.dhdistrictcost.value:10.2f} {model.economics.dhdistrictcost.CurrentUnits.value}\n')
                     f.write(f'         Total surface equipment costs:                 {(model.economics.Cplant.value+model.economics.Cgath.value):10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
                     f.write(f'         {model.economics.Cexpl.display_name}:                             {model.economics.Cexpl.value:10.2f} {model.economics.Cexpl.CurrentUnits.value}\n')
+
                 if model.economics.totalcapcost.Valid and model.wellbores.redrill.value > 0:
-                    f.write(f'         Drilling and completion costs (for redrilling):{model.economics.Cwell.value:10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
-                    f.write(f'      Drilling and completion costs per redrilled well: {(model.economics.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value)):10.2f} ' + model.economics.Cwell.CurrentUnits.value + NL)
+                    f.write(f'         Drilling and completion costs (for redrilling):{econ.Cwell.value:10.2f} {econ.Cwell.CurrentUnits.value}\n')
+                    f.write(f'      Drilling and completion costs per redrilled well: {(econ.Cwell.value/(model.wellbores.nprod.value+model.wellbores.ninj.value)):10.2f} {econ.Cwell.CurrentUnits.value}\n')
                     f.write(f'         Stimulation costs (for redrilling):            {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
+
                 if model.economics.RITCValue.value:
-                    f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
+                    if model.economics.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                        f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
+                    else:
+                        # TODO Extract value from SAM Cash Flow Profile per
+                        #  https://github.com/NREL/GEOPHIRES-X/issues/404.
+                        #  For now we skip displaying the value because it can be/probably is usually mathematically
+                        #  inaccurate, and even if it's not, it's redundant with the cash flow profile and also
+                        #  misleading/confusing/wrong to display it as a capital cost since it is not a capital
+                        #  expenditure.
+                        pass
 
                 capex_label = Outputs._field_label(econ.CCap.display_name, 50)
                 f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
@@ -505,6 +516,10 @@ class Outputs:
                     if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:
                         f.write(f'         Annual District Heating O&M Cost:              {model.economics.dhdistrictoandmcost.value:10.2f} {model.economics.dhdistrictoandmcost.CurrentUnits.value}\n')
                         f.write(f'         Average Annual Peaking Fuel Cost:              {model.economics.averageannualngcost.value:10.2f} {model.economics.averageannualngcost.CurrentUnits.value}\n')
+
+                    if model.wellbores.redrill.value > 0:
+                        redrill_label = Outputs._field_label(econ.redrilling_annual_cost.display_name, 47)
+                        f.write(f'         {redrill_label}{econ.redrilling_annual_cost.value:10.2f} {econ.redrilling_annual_cost.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:

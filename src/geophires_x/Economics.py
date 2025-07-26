@@ -2412,60 +2412,7 @@ class Economics:
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
         self.calculate_field_gathering_costs(model)
         self.calculate_plant_costs(model)
-
-        if not self.totalcapcost.Valid:
-            # exploration costs (same as in Geophires v1.2) (M$)
-            if self.ccexplfixed.Valid:
-                self.Cexpl.value = self.ccexplfixed.value
-            else:
-                self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
-                    1. + self.cost_one_production_well.value * 0.6)
-
-            # Surface Piping Length Costs (M$) #assumed $750k/km
-            self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
-
-            # district heating network costs
-            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heat
-                if self.dhtotaldistrictnetworkcost.Provided:
-                    self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
-                elif self.dhpipinglength.Provided:
-                    self.dhdistrictcost.value = self.dhpipinglength.value * self.dhpipingcostrate.value / 1000  # M$
-                elif self.dhroadlength.Provided:  # check if road length is provided to calculate cost
-                    self.dhdistrictcost.value = self.dhroadlength.value * 0.75 * self.dhpipingcostrate.value / 1000  # M$ (assuming 75% of road length is used for district network piping)
-                else:  # calculate district network cost based on population density
-                    if self.dhlandarea.Provided == False:
-                        model.logger.warning("District heating network cost calculated based on default district area")
-                    if self.dhpopulation.Provided:
-                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
-                    elif model.surfaceplant.dh_number_of_housing_units.Provided:
-                        self.populationdensity.value = model.surfaceplant.dh_number_of_housing_units.value * 2.6 / self.dhlandarea.value  # estimate population based on 2.6 number of people per household
-                    else:
-                        model.logger.warning(
-                            "District heating network cost calculated based on default number of people in district")
-                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
-
-                    if self.populationdensity.value > 1000:
-                        self.dhpipinglength.value = 7.5 * self.dhlandarea.value  # using constant 7.5km of pipe per km^2 when population density is >1500
-                    else:
-                        self.dhpipinglength.value = max(
-                            self.populationdensity.value / 1000 * 7.5 * self.dhlandarea.value,
-                            self.dhlandarea.value)  # scale the piping length based on population density, but with a minimum of 1 km of piping per km^2 of area
-                    self.dhdistrictcost.value = self.dhpipingcostrate.value * self.dhpipinglength.value / 1000
-
-            else:
-                self.dhdistrictcost.value = 0
-
-            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value + self.dhdistrictcost.value
-        else:
-            self.CCap.value = self.totalcapcost.value
-
-        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        if self.RITC.Provided:
-            self.RITCValue.value = self.RITC.value * self.CCap.value
-            self.CCap.value = self.CCap.value - self.RITCValue.value
-
-        # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
-        self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
+        self.calculate_total_capital_costs(model)
 
         # O&M costs
         # calculate first O&M costs independent of whether oamtotalfixed is provided or not
@@ -3087,7 +3034,60 @@ class Economics:
             if not self.CAPEX_heat_electricity_plant_ratio.Provided:
                 self.CAPEX_heat_electricity_plant_ratio.value = self.CAPEX_cost_electricity_plant/self.Cplant.value
 
+    def calculate_total_capital_costs(self, model):
+        if not self.totalcapcost.Valid:
+            # exploration costs (same as in Geophires v1.2) (M$)
+            if self.ccexplfixed.Valid:
+                self.Cexpl.value = self.ccexplfixed.value
+            else:
+                self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
+                    1. + self.cost_one_production_well.value * 0.6)
 
+            # Surface Piping Length Costs (M$) #assumed $750k/km
+            self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
+
+            # district heating network costs
+            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heat
+                if self.dhtotaldistrictnetworkcost.Provided:
+                    self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
+                elif self.dhpipinglength.Provided:
+                    self.dhdistrictcost.value = self.dhpipinglength.value * self.dhpipingcostrate.value / 1000  # M$
+                elif self.dhroadlength.Provided:  # check if road length is provided to calculate cost
+                    self.dhdistrictcost.value = self.dhroadlength.value * 0.75 * self.dhpipingcostrate.value / 1000  # M$ (assuming 75% of road length is used for district network piping)
+                else:  # calculate district network cost based on population density
+                    if self.dhlandarea.Provided == False:
+                        model.logger.warning("District heating network cost calculated based on default district area")
+                    if self.dhpopulation.Provided:
+                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
+                    elif model.surfaceplant.dh_number_of_housing_units.Provided:
+                        self.populationdensity.value = model.surfaceplant.dh_number_of_housing_units.value * 2.6 / self.dhlandarea.value  # estimate population based on 2.6 number of people per household
+                    else:
+                        model.logger.warning(
+                            "District heating network cost calculated based on default number of people in district")
+                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
+
+                    if self.populationdensity.value > 1000:
+                        self.dhpipinglength.value = 7.5 * self.dhlandarea.value  # using constant 7.5km of pipe per km^2 when population density is >1500
+                    else:
+                        self.dhpipinglength.value = max(
+                            self.populationdensity.value / 1000 * 7.5 * self.dhlandarea.value,
+                            self.dhlandarea.value)  # scale the piping length based on population density, but with a minimum of 1 km of piping per km^2 of area
+                    self.dhdistrictcost.value = self.dhpipingcostrate.value * self.dhpipinglength.value / 1000
+
+            else:
+                self.dhdistrictcost.value = 0
+
+            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value + self.dhdistrictcost.value
+        else:
+            self.CCap.value = self.totalcapcost.value
+
+        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
+        if self.RITC.Provided:
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            self.CCap.value = self.CCap.value - self.RITCValue.value
+
+        # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
+        self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
     def calculate_cashflow(self, model: Model) -> None:
             """
@@ -3212,3 +3212,5 @@ class Economics:
 
     def __str__(self):
         return "Economics"
+
+

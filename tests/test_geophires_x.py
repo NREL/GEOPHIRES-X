@@ -166,12 +166,7 @@ class GeophiresXTestCase(BaseTestCase):
             filter(
                 lambda example_file_path_: example_file_path_.startswith(
                     (
-                        'example',
-                        'Beckers_et_al',
-                        'SUTRA',
-                        'Wanju',
-                        'Fervo',
-                        'S-DAC-GT'
+                        'example', 'Beckers_et_al', 'SUTRA', 'Wanju', 'Fervo', 'S-DAC-GT'
                     )
                 )
                 # TOUGH not enabled for testing - see https://github.com/NREL/GEOPHIRES-X/issues/318

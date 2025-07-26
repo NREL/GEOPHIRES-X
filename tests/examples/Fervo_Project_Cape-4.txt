@@ -17,7 +17,9 @@ Fraction of Investment in Bonds, .6, -- Based on fraction of CAPEX with $1 billi
 Inflated Bond Interest Rate, .056
 
 Inflation Rate, .023, -- US inflation as of April 2025
-Inflation Rate During Construction, 0.15, -- Treated as indirect EPC capital cost percentage
+Inflation Rate During Construction, 0.04769, -- Results in 15% increase in total CAPEX over construction period.
+Construction Years, 3
+
 
 Combined Income Tax Rate, .28
 Investment Tax Credit Rate, 0.3

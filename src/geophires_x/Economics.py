@@ -1043,7 +1043,8 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)",
-            ToolTipText='For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.'
+            ToolTipText='For SAM Economic Models, total installed cost is calculated as Total CAPEX × '
+                        '(1 + Inflation Rate During Construction) ^ Construction Years.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

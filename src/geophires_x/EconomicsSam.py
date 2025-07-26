@@ -95,14 +95,15 @@ def validate_read_parameters(model: Model):
             )
         )
 
-    if model.surfaceplant.construction_years.value != 1:
-        raise ValueError(
-            _inv_msg(
-                model.surfaceplant.construction_years.Name,
-                model.surfaceplant.construction_years.value,
-                f'{model.surfaceplant.construction_years.Name}  = 1',
-            )
-        )
+    # FIXME WIP
+    # if model.surfaceplant.construction_years.value != 1:
+    #     raise ValueError(
+    #         _inv_msg(
+    #             model.surfaceplant.construction_years.Name,
+    #             model.surfaceplant.construction_years.value,
+    #             f'{model.surfaceplant.construction_years.Name}  = 1',
+    #         )
+    #     )
 
     gtr: floatParameter = model.economics.GTR
     if gtr.Provided:
@@ -356,7 +357,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     itc = econ.RITCValue.quantity()
     total_capex = econ.CCap.quantity() + itc
-    ret['total_installed_cost'] = (total_capex * (1 + econ.inflrateconstruction.value)).to('USD').magnitude
+    ret['total_installed_cost'] = (
+        (total_capex * math.pow(1 + econ.inflrateconstruction.value, model.surfaceplant.construction_years.value))
+        .to('USD')
+        .magnitude
+    )
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]

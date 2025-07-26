@@ -482,7 +482,16 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
 
                 if model.economics.RITCValue.value:
-                    f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
+                    if model.economics.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                        f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
+                    else:
+                        # TODO Extract value from SAM Cash Flow Profile per
+                        #  https://github.com/NREL/GEOPHIRES-X/issues/404.
+                        #  For now we skip displaying the value because it can be/probably is usually mathematically
+                        #  inaccurate, and even if it's not, it's redundant with the cash flow profile and also
+                        #  misleading/confusing/wrong to display it as a capital cost since it is not a capital
+                        #  expenditure.
+                        pass
 
                 capex_label = Outputs._field_label(econ.CCap.display_name, 50)
                 f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')

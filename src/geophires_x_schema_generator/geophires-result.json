@@ -393,6 +393,11 @@
           "description": "Investment Tax Credit Value",
           "units": "MUSD"
         },
+        "Inflation costs during construction": {
+          "type": "number",
+          "description": "The calculated amount of cost escalation due to inflation over the construction period.",
+          "units": "MUSD"
+        },
         "Total capital costs": {
           "type": "number",
           "description": "Total Capital Cost",

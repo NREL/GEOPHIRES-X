@@ -125,7 +125,7 @@ def wacc_output_parameter() -> OutputParameter:
 
 def inflation_cost_during_construction_output_parameter() -> OutputParameter:
     return OutputParameter(
-        Name='Inflation Cost During Construction',
+        Name='Inflation costs during construction',
         UnitType=Units.CURRENCY,
         PreferredUnits=CurrencyUnit.MDOLLARS,
         CurrentUnits=CurrencyUnit.MDOLLARS,

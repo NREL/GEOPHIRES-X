@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.39
- Simulation Date: 2025-07-25
- Simulation Time:  14:32
- Calculation Time:      1.177 sec
+ GEOPHIRES Version: 3.9.40
+ Simulation Date: 2025-07-26
+ Simulation Time:  14:13
+ Calculation Time:      1.146 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -28,7 +28,7 @@ Simulation Metadata
       Real Discount Rate:                                    8.00 %
       Nominal Discount Rate:                                10.16 %
       WACC:                                                  7.57 %
-      Accrued financing during construction:                  5.00 %
+      Accrued financing during construction:                 5.00 %
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                         146.15 MUSD
@@ -106,6 +106,7 @@ Simulation Metadata
          Field gathering system costs:                        5.80 MUSD
          Total surface equipment costs:                     150.23 MUSD
          Exploration costs:                                   3.89 MUSD
+         Inflation costs during construction:                10.62 MUSD
       Total CAPEX:                                          222.97 MUSD
 
 

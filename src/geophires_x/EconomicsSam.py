@@ -346,8 +346,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
     ret['flip_target_year'] = model.surfaceplant.plant_lifetime.value
 
-    itc = econ.RITCValue.quantity()
-    total_capex = econ.CCap.quantity() + itc
+    total_capex = econ.CCap.quantity()
 
     if econ.inflrateconstruction.Provided:
         inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude

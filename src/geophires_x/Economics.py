@@ -3081,8 +3081,9 @@ class Economics:
         else:
             self.CCap.value = self.totalcapcost.value
 
-        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        if self.RITC.Provided:
+        if self.RITC.Provided and self.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+            # update the capital costs, assuming the entire ITC is used to reduce the capital costs
+            # (not applied for SAM Economic Models since they handle ITC in cash flow, not capex)
             self.RITCValue.value = self.RITC.value * self.CCap.value
             self.CCap.value = self.CCap.value - self.RITCValue.value
 

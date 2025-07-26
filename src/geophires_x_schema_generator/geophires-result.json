@@ -17,7 +17,11 @@
           "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
-        "Total CAPEX": {},
+        "Total CAPEX": {
+          "type": "number",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "units": "MUSD"
+        },
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
         "Direct-Use heat breakeven price (LCOH)": {
@@ -404,7 +408,11 @@
           "units": "MUSD"
         },
         "Annualized capital costs": {},
-        "Total CAPEX": {},
+        "Total CAPEX": {
+          "type": "number",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "units": "MUSD"
+        },
         "Drilling Cost": {},
         "Drilling and Completion Costs": {},
         "Drilling and Completion Costs per Well": {},

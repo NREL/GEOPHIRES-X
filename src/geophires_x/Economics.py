@@ -9,7 +9,8 @@ from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
-    project_payback_period_parameter, inflation_cost_during_construction_output_parameter
+    project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
+    total_capex_parameter_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1831,8 +1832,10 @@ class Economics:
             display_name='Total capital costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
         )
+        self.capex_total = self.OutputParameterDict[self.capex_total.Name] = total_capex_parameter_output_parameter()
+
         # noinspection SpellCheckingInspection
         self.Coam = self.OutputParameterDict[self.Coam.Name] = OutputParameter(
             Name="Total O&M Cost",
@@ -2583,10 +2586,12 @@ class Economics:
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics_calculations = calculate_sam_economics(model)
 
-            # Distinguish capex from default display name of 'Total capital costs' since SAM Economic Model doesn't
-            # subtract ITC from this value.
-            self.CCap.display_name = 'Total CAPEX'
-            self.CCap.value = self.sam_economics_calculations.capex.quantity().to(self.CCap.CurrentUnits.value).magnitude
+            # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
+            # since SAM Economic Model doesn't subtract ITC from this value.
+            self.capex_total.value = (self.sam_economics_calculations.capex.quantity()
+                                .to(self.capex_total.CurrentUnits.value).magnitude)
+            self.CCap.value = (self.sam_economics_calculations.capex.quantity()
+                               .to(self.CCap.CurrentUnits.value).magnitude)
 
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value

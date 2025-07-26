@@ -38,6 +38,7 @@ from geophires_x.EconomicsUtils import (
     project_vir_parameter,
     project_payback_period_parameter,
     inflation_cost_during_construction_output_parameter,
+    total_capex_parameter_output_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -56,12 +57,7 @@ class SamEconomicsCalculations:
         )
     )
 
-    capex: OutputParameter = field(
-        default_factory=lambda: OutputParameter(
-            UnitType=Units.CURRENCY,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-        )
-    )
+    capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
 
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(
@@ -329,7 +325,6 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     """
     TODO:
-        - Construction years
         - Break out indirect costs (instead of lumping all into direct cost):
             https://github.com/NREL/GEOPHIRES-X/issues/383
     """

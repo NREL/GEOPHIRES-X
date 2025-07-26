@@ -222,7 +222,7 @@ class Outputs:
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
                 if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    f.write(f'      {Outputs._field_label(econ.CCap.display_name, 50)}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+                    f.write(f'      {Outputs._field_label(econ.capex_total.display_name, 50)}{econ.capex_total.value:10.2f} {econ.capex_total.CurrentUnits.value}\n')
 
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
@@ -500,8 +500,9 @@ class Outputs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
-                capex_label = Outputs._field_label(econ.CCap.display_name, 50)
-                f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+                capex_param = econ.CCap if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.capex_total
+                capex_label = Outputs._field_label(capex_param.display_name, 50)
+                f.write(f'      {capex_label}{capex_param.value:10.2f} {capex_param.CurrentUnits.value}\n')
 
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)

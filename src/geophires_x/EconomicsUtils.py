@@ -131,3 +131,16 @@ def inflation_cost_during_construction_output_parameter() -> OutputParameter:
         CurrentUnits=CurrencyUnit.MDOLLARS,
         ToolTipText='The calculated amount of cost escalation due to inflation over the construction period.'
     )
+
+
+def total_capex_parameter_output_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='Total CAPEX',
+        UnitType=Units.CURRENCY,
+        CurrentUnits=CurrencyUnit.MDOLLARS,
+        PreferredUnits=CurrencyUnit.MDOLLARS,
+        ToolTipText="The total capital expenditure (CAPEX) required to construct the plant. "
+                    "This value includes all direct and indirect costs, contingency, and any cost escalation from "
+                    "inflation during construction. It is used as the total installed cost input for "
+                    "SAM Economic Models."
+    )

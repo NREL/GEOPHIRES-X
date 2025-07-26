@@ -1120,6 +1120,7 @@ class WellBores:
         )
         self.redrill = self.OutputParameterDict[self.redrill.Name] = OutputParameter(
             Name="redrill",
+            display_name='Number of times redrilling',
             UnitType=Units.NONE
         )
         self.PumpingPowerProd = self.OutputParameterDict[self.PumpingPowerProd.Name] = OutputParameter(

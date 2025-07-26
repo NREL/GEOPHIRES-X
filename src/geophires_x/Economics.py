@@ -1043,7 +1043,8 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)",
-            ToolTipText='For SAM Economic Models, total installed cost is calculated as Total CAPEX × '
+            ToolTipText='For SAM Economic Models, total installed cost is calculated as '
+                        '{Total CAPEX before inflation} × '
                         '(1 + Inflation Rate During Construction) ^ Construction Years.'
         )
 

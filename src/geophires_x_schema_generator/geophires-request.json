@@ -1711,7 +1711,7 @@
       "maximum": 1.0
     },
     "Inflation Rate During Construction": {
-      "description": "For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.",
+      "description": "For SAM Economic Models, total installed cost is calculated as {Total CAPEX before inflation} \u00d7 (1 + Inflation Rate During Construction) ^ Construction Years.",
       "type": "number",
       "units": "",
       "category": "Economics",

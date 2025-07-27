@@ -37,8 +37,10 @@ from geophires_x.EconomicsUtils import (
     moic_parameter,
     project_vir_parameter,
     project_payback_period_parameter,
+    inflation_cost_during_construction_output_parameter,
+    total_capex_parameter_output_parameter,
 )
-from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs
+from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
@@ -55,12 +57,7 @@ class SamEconomicsCalculations:
         )
     )
 
-    capex: OutputParameter = field(
-        default_factory=lambda: OutputParameter(
-            UnitType=Units.CURRENCY,
-            CurrentUnits=CurrencyUnit.MDOLLARS,
-        )
-    )
+    capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
 
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(
@@ -337,7 +334,6 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     """
     TODO:
-        - Construction years
         - Break out indirect costs (instead of lumping all into direct cost):
             https://github.com/NREL/GEOPHIRES-X/issues/383
     """
@@ -354,9 +350,26 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
     ret['flip_target_year'] = model.surfaceplant.plant_lifetime.value
 
-    itc = econ.RITCValue.quantity()
-    total_capex = econ.CCap.quantity() + itc
-    ret['total_installed_cost'] = (total_capex * (1 + econ.inflrateconstruction.value)).to('USD').magnitude
+    total_capex = econ.CCap.quantity()
+
+    if econ.inflrateconstruction.Provided:
+        inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    else:
+        inflation_during_construction_factor = math.pow(
+            1.0 + econ.RINFL.value, model.surfaceplant.construction_years.value
+        )
+    econ.accrued_financing_during_construction_percentage.value = (
+        quantity(inflation_during_construction_factor - 1, 'dimensionless')
+        .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
+        .magnitude
+    )
+
+    econ.inflation_cost_during_construction.value = (
+        (total_capex * (inflation_during_construction_factor - 1))
+        .to(econ.inflation_cost_during_construction.CurrentUnits)
+        .magnitude
+    )
+    ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6]

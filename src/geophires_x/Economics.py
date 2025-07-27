@@ -1714,7 +1714,7 @@ class Economics:
         )
 
         stimulation_contingency_and_indirect_costs_tooltip = (
-            f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
             f'plus {self.stimulation_indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
         )
@@ -1736,8 +1736,9 @@ class Economics:
         )
 
         contingency_and_indirect_costs_tooltip = (
-            f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% indirect costs'
+            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
+            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
+            f'indirect costs'
         )
 
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(

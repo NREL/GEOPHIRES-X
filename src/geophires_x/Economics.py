@@ -1714,7 +1714,7 @@ class Economics:
         )
 
         stimulation_contingency_and_indirect_costs_tooltip = (
-            f'plus 15% contingency ' # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
             f'plus {self.stimulation_indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
         )
@@ -1759,10 +1759,9 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
-                        "laterals, plus 5% indirect costs."
+            ToolTipText=f'Includes total drilling and completion cost of all injection and production wells and '
+                        f'laterals, plus indirect costs '
+                        f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
         self.drilling_and_completion_costs_per_well = self.OutputParameterDict[
             self.drilling_and_completion_costs_per_well.Name] = OutputParameter(
@@ -1770,10 +1769,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            ToolTipText='Includes total drilling and completion cost per well, '
-                        'including injection and production wells and laterals, plus 5% indirect costs.'
+            ToolTipText='Drilling and completion cost per well, including indirect costs '
+                        f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",

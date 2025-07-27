@@ -92,6 +92,15 @@ def validate_read_parameters(model: Model):
             )
         )
 
+    if model.surfaceplant.construction_years.value != 1:
+        raise ValueError(
+            _inv_msg(
+                model.surfaceplant.construction_years.Name,
+                model.surfaceplant.construction_years.value,
+                f'{model.surfaceplant.construction_years.Name}  = 1',
+            )
+        )
+
     gtr: floatParameter = model.economics.GTR
     if gtr.Provided:
         model.logger.warning(

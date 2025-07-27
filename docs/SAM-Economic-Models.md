@@ -48,6 +48,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 ### Limitations
 
 1. Only Electricity end-use is supported
+2. Only 1 construction year is supported. Note that the `Inflation Rate During Construction` parameter can be used to partially account for longer construction periods.
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 

@@ -39,9 +39,7 @@ Electricity Escalation Rate Per Year, 0.004053223
 Electricity Escalation Start Year, 1
 Fraction of Investment in Bonds, .5
 Combined Income Tax Rate, .3
-Gross Revenue Tax Rate, 0
 Inflated Bond Interest Rate, .05
-Inflated Equity Interest Rate, .08
 Inflation Rate, .02
 Investment Tax Credit Rate, .3, -- https://programs.dsireusa.org/system/program/detail/658
 Production Tax Credit Electricity, 0.0275, -- https://programs.dsireusa.org/system/program/detail/734

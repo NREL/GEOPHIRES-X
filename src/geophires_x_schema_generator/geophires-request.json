@@ -1252,7 +1252,7 @@
       "maximum": 1.0
     },
     "Construction Years": {
-      "description": "Number of years spent in construction (assumes whole years, no fractions). Capital costs are spread evenly over constructions years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years.",
+      "description": "Number of years spent in construction (assumes whole years, no fractions). Capital costs are spread evenly over construction years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years.",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",

@@ -17,7 +17,11 @@
           "description": "LCOE. For SAM economic models, this is the nominal LCOE value (as opposed to real).",
           "units": "cents/kWh"
         },
-        "Total CAPEX": {},
+        "Total CAPEX": {
+          "type": "number",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "units": "MUSD"
+        },
         "Average Direct-Use Heat Production": {},
         "Direct-Use heat breakeven price": {},
         "Direct-Use heat breakeven price (LCOH)": {
@@ -90,7 +94,11 @@
           "description": "Weighted Average Cost of Capital displayed for SAM Economic Models. It is calculated per https://samrepo.nrelcloud.org/help/fin_commercial.html?q=wacc: WACC = [ Nominal Discount Rate \u00f7 100 \u00d7 (1 - Debt Percent \u00f7 100) + Debt Percent \u00f7 100 \u00d7 Loan Rate \u00f7 100 \u00d7  (1 - Effective Tax Rate \u00f7 100 ) ] \u00d7 100; Effective Tax Rate = [ Federal Tax Rate \u00f7 100 \u00d7 ( 1 - State Tax Rate \u00f7 100 ) + State Tax Rate \u00f7 100 ] \u00d7 100; ",
           "units": "%"
         },
-        "Accrued financing during construction": {},
+        "Accrued financing during construction": {
+          "type": "number",
+          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
+          "units": "%"
+        },
         "Project lifetime": {},
         "Capacity factor": {},
         "Project NPV": {
@@ -334,12 +342,12 @@
       "properties": {
         "Drilling and completion costs": {
           "type": "number",
-          "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus 5% indirect costs.",
+          "description": "Wellfield cost. Includes total drilling and completion cost of all injection and production wells and laterals, plus indirect costs (default: 5%).",
           "units": "MUSD"
         },
         "Drilling and completion costs per well": {
           "type": "number",
-          "description": "Includes total drilling and completion cost per well, including injection and production wells and laterals, plus 5% indirect costs.",
+          "description": "Drilling and completion cost per well, including indirect costs (default: 5%).",
           "units": "MUSD"
         },
         "Drilling and completion costs per production well": {},
@@ -389,13 +397,22 @@
           "description": "Investment Tax Credit Value",
           "units": "MUSD"
         },
+        "Inflation costs during construction": {
+          "type": "number",
+          "description": "The calculated amount of cost escalation due to inflation over the construction period.",
+          "units": "MUSD"
+        },
         "Total capital costs": {
           "type": "number",
           "description": "Total Capital Cost",
           "units": "MUSD"
         },
         "Annualized capital costs": {},
-        "Total CAPEX": {},
+        "Total CAPEX": {
+          "type": "number",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "units": "MUSD"
+        },
         "Drilling Cost": {},
         "Drilling and Completion Costs": {},
         "Drilling and Completion Costs per Well": {},

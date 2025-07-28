@@ -9,7 +9,8 @@ from geophires_x import EconomicsSam
 from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalculations
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
-    project_payback_period_parameter
+    project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
+    total_capex_parameter_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1043,7 +1044,11 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.TENTH,
             ErrMessage="assume default inflation rate during construction (0)",
-            ToolTipText='For SAM Economic Models, this value is treated as an indirect EPC capital cost percentage.'
+            ToolTipText='The total inflation rate applied to capital costs over the entire construction period, '
+                        'entered as a fraction (e.g., 0.15 for 15%). '
+                        'This value defines the Accrued financing during construction output. '
+                        'Note: For SAM Economic Models, if this parameter is not provided, inflation costs will be '
+                        'calculated automatically by compounding Inflation Rate over Construction Years.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(
@@ -1709,7 +1714,7 @@ class Economics:
         )
 
         stimulation_contingency_and_indirect_costs_tooltip = (
-            f'plus 15% contingency ' # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
+            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
             f'plus {self.stimulation_indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
         )
@@ -1731,8 +1736,9 @@ class Economics:
         )
 
         contingency_and_indirect_costs_tooltip = (
-            f'plus 15% contingency '  # TODO https://github.com/NREL/GEOPHIRES-X/issues/383
-            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% indirect costs'
+            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
+            f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
+            f'indirect costs'
         )
 
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
@@ -1754,10 +1760,9 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            ToolTipText="Includes total drilling and completion cost of all injection and production wells and "
-                        "laterals, plus 5% indirect costs."
+            ToolTipText=f'Includes total drilling and completion cost of all injection and production wells and '
+                        f'laterals, plus indirect costs '
+                        f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
         self.drilling_and_completion_costs_per_well = self.OutputParameterDict[
             self.drilling_and_completion_costs_per_well.Name] = OutputParameter(
@@ -1765,10 +1770,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-
-            # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-            ToolTipText='Includes total drilling and completion cost per well, '
-                        'including injection and production wells and laterals, plus 5% indirect costs.'
+            ToolTipText='Drilling and completion cost per well, including indirect costs '
+                        f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
@@ -1829,8 +1832,10 @@ class Economics:
             display_name='Total capital costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
         )
+        self.capex_total = self.OutputParameterDict[self.capex_total.Name] = total_capex_parameter_output_parameter()
+
         # noinspection SpellCheckingInspection
         self.Coam = self.OutputParameterDict[self.Coam.Name] = OutputParameter(
             Name="Total O&M Cost",
@@ -1965,6 +1970,21 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+        self.accrued_financing_during_construction_percentage = self.OutputParameterDict[
+          self.accrued_financing_during_construction_percentage.Name] = OutputParameter(
+            Name='Accrued financing during construction',
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='The accrued inflation on total capital costs over the construction period, '
+                        f'as defined by {self.inflrateconstruction.Name}. '
+                        'For SAM Economic Models, this is calculated automatically by compounding '
+                        f'{self.RINFL.Name} over Construction Years '
+                        f'if {self.inflrateconstruction.Name} is not provided.'
+        )
+
+        self.inflation_cost_during_construction = self.OutputParameterDict[
+            self.inflation_cost_during_construction.Name] = inflation_cost_during_construction_output_parameter()
 
         self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
             after_tax_irr_parameter())
@@ -2327,6 +2347,13 @@ class Economics:
         self.sync_interest_rate(model)
         self.sync_well_drilling_and_completion_capital_cost_adjustment_factor(model)
 
+        # SAM Economic Models recalculate accrued financing value based on construction years and inflation rate if
+        # inflation rate during construction is not provided.
+        # TODO to determine whether the same logic should be applied for other economic models.
+        self.accrued_financing_during_construction_percentage.value = self.inflrateconstruction.quantity().to(
+            convertible_unit(self.accrued_financing_during_construction_percentage.CurrentUnits)
+        ).magnitude
+
         model.logger.info(f'complete {__class__!s}: {sys._getframe().f_code.co_name}')
 
     def sync_interest_rate(self, model):
@@ -2388,60 +2415,7 @@ class Economics:
         self.Cstim.value = self.calculate_stimulation_costs(model).to(self.Cstim.CurrentUnits).magnitude
         self.calculate_field_gathering_costs(model)
         self.calculate_plant_costs(model)
-
-        if not self.totalcapcost.Valid:
-            # exploration costs (same as in Geophires v1.2) (M$)
-            if self.ccexplfixed.Valid:
-                self.Cexpl.value = self.ccexplfixed.value
-            else:
-                self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
-                    1. + self.cost_one_production_well.value * 0.6)
-
-            # Surface Piping Length Costs (M$) #assumed $750k/km
-            self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
-
-            # district heating network costs
-            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heat
-                if self.dhtotaldistrictnetworkcost.Provided:
-                    self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
-                elif self.dhpipinglength.Provided:
-                    self.dhdistrictcost.value = self.dhpipinglength.value * self.dhpipingcostrate.value / 1000  # M$
-                elif self.dhroadlength.Provided:  # check if road length is provided to calculate cost
-                    self.dhdistrictcost.value = self.dhroadlength.value * 0.75 * self.dhpipingcostrate.value / 1000  # M$ (assuming 75% of road length is used for district network piping)
-                else:  # calculate district network cost based on population density
-                    if self.dhlandarea.Provided == False:
-                        model.logger.warning("District heating network cost calculated based on default district area")
-                    if self.dhpopulation.Provided:
-                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
-                    elif model.surfaceplant.dh_number_of_housing_units.Provided:
-                        self.populationdensity.value = model.surfaceplant.dh_number_of_housing_units.value * 2.6 / self.dhlandarea.value  # estimate population based on 2.6 number of people per household
-                    else:
-                        model.logger.warning(
-                            "District heating network cost calculated based on default number of people in district")
-                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
-
-                    if self.populationdensity.value > 1000:
-                        self.dhpipinglength.value = 7.5 * self.dhlandarea.value  # using constant 7.5km of pipe per km^2 when population density is >1500
-                    else:
-                        self.dhpipinglength.value = max(
-                            self.populationdensity.value / 1000 * 7.5 * self.dhlandarea.value,
-                            self.dhlandarea.value)  # scale the piping length based on population density, but with a minimum of 1 km of piping per km^2 of area
-                    self.dhdistrictcost.value = self.dhpipingcostrate.value * self.dhpipinglength.value / 1000
-
-            else:
-                self.dhdistrictcost.value = 0
-
-            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value + self.dhdistrictcost.value
-        else:
-            self.CCap.value = self.totalcapcost.value
-
-        # update the capital costs, assuming the entire ITC is used to reduce the capital costs
-        if self.RITC.Provided:
-            self.RITCValue.value = self.RITC.value * self.CCap.value
-            self.CCap.value = self.CCap.value - self.RITCValue.value
-
-        # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
-        self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
+        self.calculate_total_capital_costs(model)
 
         # O&M costs
         # calculate first O&M costs independent of whether oamtotalfixed is provided or not
@@ -2612,10 +2586,12 @@ class Economics:
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
             self.sam_economics_calculations = calculate_sam_economics(model)
 
-            # Distinguish capex from default display name of 'Total capital costs' since SAM Economic Model doesn't
-            # subtract ITC from this value.
-            self.CCap.display_name = 'Total CAPEX'
-            self.CCap.value = self.sam_economics_calculations.capex.quantity().to(self.CCap.CurrentUnits.value).magnitude
+            # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
+            # since SAM Economic Model doesn't subtract ITC from this value.
+            self.capex_total.value = (self.sam_economics_calculations.capex.quantity()
+                                .to(self.capex_total.CurrentUnits.value).magnitude)
+            self.CCap.value = (self.sam_economics_calculations.capex.quantity()
+                               .to(self.CCap.CurrentUnits.value).magnitude)
 
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
@@ -3063,7 +3039,61 @@ class Economics:
             if not self.CAPEX_heat_electricity_plant_ratio.Provided:
                 self.CAPEX_heat_electricity_plant_ratio.value = self.CAPEX_cost_electricity_plant/self.Cplant.value
 
+    def calculate_total_capital_costs(self, model):
+        if not self.totalcapcost.Valid:
+            # exploration costs (same as in Geophires v1.2) (M$)
+            if self.ccexplfixed.Valid:
+                self.Cexpl.value = self.ccexplfixed.value
+            else:
+                self.Cexpl.value = self._contingency_factor * self.ccexpladjfactor.value * self._indirect_cost_factor * (
+                    1. + self.cost_one_production_well.value * 0.6)
 
+            # Surface Piping Length Costs (M$) #assumed $750k/km  # TODO parameterize
+            self.Cpiping.value = 750 / 1000 * model.surfaceplant.piping_length.value
+
+            # district heating network costs
+            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heat
+                if self.dhtotaldistrictnetworkcost.Provided:
+                    self.dhdistrictcost.value = self.dhtotaldistrictnetworkcost.value
+                elif self.dhpipinglength.Provided:
+                    self.dhdistrictcost.value = self.dhpipinglength.value * self.dhpipingcostrate.value / 1000  # M$
+                elif self.dhroadlength.Provided:  # check if road length is provided to calculate cost
+                    self.dhdistrictcost.value = self.dhroadlength.value * 0.75 * self.dhpipingcostrate.value / 1000  # M$ (assuming 75% of road length is used for district network piping)
+                else:  # calculate district network cost based on population density
+                    if self.dhlandarea.Provided == False:
+                        model.logger.warning("District heating network cost calculated based on default district area")
+                    if self.dhpopulation.Provided:
+                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
+                    elif model.surfaceplant.dh_number_of_housing_units.Provided:
+                        self.populationdensity.value = model.surfaceplant.dh_number_of_housing_units.value * 2.6 / self.dhlandarea.value  # estimate population based on 2.6 number of people per household
+                    else:
+                        model.logger.warning(
+                            "District heating network cost calculated based on default number of people in district")
+                        self.populationdensity.value = self.dhpopulation.value / self.dhlandarea.value
+
+                    if self.populationdensity.value > 1000:
+                        self.dhpipinglength.value = 7.5 * self.dhlandarea.value  # using constant 7.5km of pipe per km^2 when population density is >1500
+                    else:
+                        self.dhpipinglength.value = max(
+                            self.populationdensity.value / 1000 * 7.5 * self.dhlandarea.value,
+                            self.dhlandarea.value)  # scale the piping length based on population density, but with a minimum of 1 km of piping per km^2 of area
+                    self.dhdistrictcost.value = self.dhpipingcostrate.value * self.dhpipinglength.value / 1000
+
+            else:
+                self.dhdistrictcost.value = 0
+
+            self.CCap.value = self.Cexpl.value + self.Cwell.value + self.Cstim.value + self.Cgath.value + self.Cplant.value + self.Cpiping.value + self.dhdistrictcost.value
+        else:
+            self.CCap.value = self.totalcapcost.value
+
+        if self.RITC.Provided and self.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+            # update the capital costs, assuming the entire ITC is used to reduce the capital costs
+            # (not applied for SAM Economic Models since they handle ITC in cash flow, not capex)
+            self.RITCValue.value = self.RITC.value * self.CCap.value
+            self.CCap.value = self.CCap.value - self.RITCValue.value
+
+        # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
+        self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
     def calculate_cashflow(self, model: Model) -> None:
             """
@@ -3188,3 +3218,5 @@ class Economics:
 
     def __str__(self):
         return "Economics"
+
+

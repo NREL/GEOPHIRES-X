@@ -415,7 +415,7 @@ class SurfacePlant:
             UnitType=Units.NONE,
             ErrMessage="assume default number of years in construction (1)",
             ToolTipText='Number of years spent in construction (assumes whole years, no fractions). '
-                        'Capital costs are spread evenly over constructions years e.g. if total capital costs are '
+                        'Capital costs are spread evenly over construction years e.g. if total capital costs are '
                         '$500M and there are 2 construction years, '
                         'then $250M will be spent in both the first and second construction years.'
         )

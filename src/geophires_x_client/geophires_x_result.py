@@ -260,6 +260,7 @@ class GeophiresXResult:
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Investment Tax Credit',
+                'Inflation costs during construction',
                 'Total capital costs',
                 'Annualized capital costs',
                 # AGS/CLGS

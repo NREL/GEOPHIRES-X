@@ -762,12 +762,13 @@ class Outputs:
                     f.write(NL)
 
             addon_df = pd.DataFrame()
-            sdac_df = pd.DataFrame()
             addon_results = []
-            sdac_results = []
-
-            if model.economics.DoAddOnCalculations.value:
+            if model.economics.DoAddOnCalculations.value and not is_sam_econ_model:
+                # SAM econ models incorporate add-on economics into main economics, not as separate extended economics.
                 addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+
+            sdac_df = pd.DataFrame()
+            sdac_results = []
             if model.economics.DoSDACGTCalculations.value:
                 sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 

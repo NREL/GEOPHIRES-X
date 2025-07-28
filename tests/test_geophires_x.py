@@ -232,7 +232,7 @@ class GeophiresXTestCase(BaseTestCase):
                         self.assertDictAlmostEqual(
                             expected_result.result,
                             geophires_result.result,
-                            places=1,
+                            percent=1e-5,
                             msg=f'Example test: {example_file_path}',
                         )
                         regenerate_cmds.pop()

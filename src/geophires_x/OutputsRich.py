@@ -1,4 +1,3 @@
-import dataclasses
 import datetime
 import string
 import time
@@ -20,6 +19,7 @@ from geophires_x.GeoPHIRESUtils import UpgradeSymbologyOfUnits, render_default, 
 from geophires_x.MatplotlibUtils import plt_subplots
 from geophires_x.OptionList import EndUseOptions, PlantType, EconomicModel, ReservoirModel, FractureShape, \
     ReservoirVolume
+from geophires_x.OutputsUtils import OutputTableItem
 
 from geophires_x.Parameter import intParameter, strParameter
 
@@ -28,20 +28,6 @@ validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 
 # Duplicative of Outputs.VERTICAL_WELL_DEPTH_OUTPUT_NAME to avoid circular import
 VERTICAL_WELL_DEPTH_OUTPUT_NAME = 'Well depth'
-
-
-@dataclasses.dataclass
-class OutputTableItem:
-    parameter: str = ''
-    value: str = ''
-    units: str = ''
-
-    def __init__(self, parameter: str, value: str = '', units: str = ''):
-        self.parameter = parameter
-        self.value = value
-        self.units = units
-        if self.units:
-            self.units = UpgradeSymbologyOfUnits(self.units)
 
 
 def print_outputs_rich(output_file: str, text_output_file: strParameter, html_output_file: strParameter, model: Model):

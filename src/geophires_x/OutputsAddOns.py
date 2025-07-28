@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from geophires_x.Outputs import Outputs
-from geophires_x.OutputsRich import OutputTableItem
+from geophires_x.OutputsUtils import OutputTableItem
 
 NL = "\n"
 
@@ -10,13 +10,13 @@ class OutputsAddOns(Outputs):
     """
     Class to handle output of the AddOns values
     """
-    def PrintOutputs(self, model) -> tuple:
+    def PrintOutputs(self, model) -> tuple[pd.DataFrame, list]:
 
         """
         The PrintOutputs function prints the results of the AddOns to a text file and to the screen.
         :param model: Model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
-        :return: tuple of addon_df, addon_results: list[OutputTableItem]
+        :return: tuple of addon_df, addon_results
         """
         model.logger.info(f'Init {str(__class__)}: {__name__}')
 

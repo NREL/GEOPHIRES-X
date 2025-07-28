@@ -317,9 +317,9 @@ class EconomicsAddOns(Economics.Economics):
         self.AdjustedProjectOPEX.value = model.economics.Coam.value + self.AddOnOPEXTotalPerYear.value
 
         if is_sam_em:
+            # SAM econ models incorporate add-ons into main economics, not as separate extended economics
             model.economics.CCap.value = self.AdjustedProjectCAPEX.value
             model.economics.Coam.value = self.AdjustedProjectOPEX.value
-            # FIXME WIP
 
         AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.construction_years.value
         ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.construction_years.value

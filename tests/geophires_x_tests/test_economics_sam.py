@@ -581,20 +581,24 @@ class EconomicsSamTestCase(BaseTestCase):
         )
         self.assertIsNotNone(add_ons_result)
 
-        with open(add_ons_result.output_file_path, encoding='utf-8') as f:
-            print('With Add-Ons:\n')
-            print(f.read())
-            print('\n------------\n')
-
-        with open(no_add_ons_result.output_file_path, encoding='utf-8') as f:
-            print('Without Add-Ons:\n')
-            print(f.read())
-            print('\n------------\n')
-
-        # FIXME WIP
-        self.assertLess(
-            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        self.assertGreater(
             add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+
+        self.assertGreater(add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'], 0)
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total operating and maintenance costs'][
+                'value'
+            ],
+            no_add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'][
+                'Total operating and maintenance costs'
+            ]['value'],
+        )
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total Add-on OPEX']['value'], 0
         )
 
     @staticmethod

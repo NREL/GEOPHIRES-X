@@ -261,6 +261,7 @@ class GeophiresXResult:
                 'Exploration costs',
                 'Investment Tax Credit',
                 'Inflation costs during construction',
+                'Total Add-on CAPEX',
                 'Total capital costs',
                 'Annualized capital costs',
                 # AGS/CLGS
@@ -289,6 +290,7 @@ class GeophiresXResult:
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',
                 'Redrilling costs',
+                'Total Add-on OPEX',
                 'Total average annual O&M costs',
                 'Total operating and maintenance costs',
                 # AGS/CLGS

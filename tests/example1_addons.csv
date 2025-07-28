@@ -79,11 +79,13 @@ CAPITAL COSTS (M$),Surface power plant costs,,20.8,MUSD
 CAPITAL COSTS (M$),Field gathering system costs,,2.3,MUSD
 CAPITAL COSTS (M$),Total surface equipment costs,,23.1,MUSD
 CAPITAL COSTS (M$),Exploration costs,,4.49,MUSD
+CAPITAL COSTS (M$),Total Add-on CAPEX,,70.0,MUSD
 CAPITAL COSTS (M$),Total capital costs,,25.67,MUSD
 CAPITAL COSTS (M$),Annualized capital costs,,1.28,MUSD
 OPERATING AND MAINTENANCE COSTS (M$/yr),Wellfield maintenance costs,,0.39,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Power plant maintenance costs,,0.9,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Water costs,,0.06,MUSD/yr
+OPERATING AND MAINTENANCE COSTS (M$/yr),Total Add-on OPEX,,1.7,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Total operating and maintenance costs,,-0.86,MUSD/yr
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial geofluid availability,,0.11,MW/(kg/s)
 SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Total Electricity Generation,,5.62,MW
@@ -99,7 +101,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
 SURFACE EQUIPMENT SIMULATION RESULTS,Heat to Power Conversion Efficiency,,10.07,%
-Simulation Metadata,GEOPHIRES Version,,3.9.28,
+Simulation Metadata,GEOPHIRES Version,,3.9.44,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

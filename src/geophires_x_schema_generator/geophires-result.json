@@ -402,6 +402,7 @@
           "description": "The calculated amount of cost escalation due to inflation over the construction period.",
           "units": "MUSD"
         },
+        "Total Add-on CAPEX": {},
         "Total capital costs": {
           "type": "number",
           "description": "Total Capital Cost",
@@ -460,6 +461,7 @@
           "description": "Total redrilling costs over the Plant Lifetime are calculated as (Drilling and completion costs + Stimulation costs) \u00d7 Number of times redrilling. The total is then divided over Plant Lifetime years to calculate Redrilling costs per year.",
           "units": "MUSD/yr"
         },
+        "Total Add-on OPEX": {},
         "Total average annual O&M costs": {},
         "Total operating and maintenance costs": {
           "type": "number",

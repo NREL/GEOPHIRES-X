@@ -503,7 +503,9 @@ class Outputs:
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
                     if econ.DoAddOnCalculations.value:
-                        aoc_label = Outputs._field_label('Total Add-on CAPEX', 47)  # TODO define dedicated OutputParameter
+                        # Non-SAM econ models print this in Extended Economics profile
+                        # TODO define dedicated OutputParameter
+                        aoc_label = Outputs._field_label('Total Add-on CAPEX', 47)
                         f.write(
                             f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
 
@@ -535,6 +537,13 @@ class Outputs:
                     if model.wellbores.redrill.value > 0:
                         redrill_label = Outputs._field_label(econ.redrilling_annual_cost.display_name, 47)
                         f.write(f'         {redrill_label}{econ.redrilling_annual_cost.value:10.2f} {econ.redrilling_annual_cost.CurrentUnits.value}\n')
+
+                    if econ.DoAddOnCalculations.value and is_sam_econ_model:
+                        # Non-SAM econ models print this in Extended Economics profile
+                        # TODO define dedicated OutputParameter
+                        aoc_label = Outputs._field_label('Total Add-on OPEX', 47)
+                        f.write(
+                            f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:

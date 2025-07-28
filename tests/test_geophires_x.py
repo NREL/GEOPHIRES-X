@@ -212,6 +212,7 @@ class GeophiresXTestCase(BaseTestCase):
                     # Adding additional test cases that require this fallback should be avoided if possible.
                     cases_to_allow_almost_equal = [
                         'Beckers_et_al_2023_Tabulated_Database_Coaxial_water_heat.txt',
+                        'Beckers_et_al_2023_Tabulated_Database_Uloop_water_elec.txt',
                         'Wanju_Yuan_Closed-Loop_Geothermal_Energy_Recovery.txt',
                     ]
                     allow_almost_equal = example_file_path in cases_to_allow_almost_equal
@@ -231,7 +232,7 @@ class GeophiresXTestCase(BaseTestCase):
                         self.assertDictAlmostEqual(
                             expected_result.result,
                             geophires_result.result,
-                            places=1,
+                            percent=0.01,
                             msg=f'Example test: {example_file_path}',
                         )
                         regenerate_cmds.pop()

@@ -222,6 +222,8 @@ class EconomicsAddOns(Economics.Economics):
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the parameters for the parent.
 
+        is_sam_econ_model = model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
+
         # Deal with all the parameter values that the user has provided that relate to this extension.
         # super.read_parameter will have already dealt with all the regular values, but anything unusual
         # may not be dealt with, so check.
@@ -244,12 +246,21 @@ class EconomicsAddOns(Economics.Economics):
             if key.startswith("AddOn OPEX"):
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnOPEXPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Electricity Gained"):
+                if is_sam_econ_model:
+                    raise NotImplementedError('AddOn Electricity is not supported for SAM Economic Models')
+
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnElecGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Heat Gained"):
+                if is_sam_econ_model:
+                    raise NotImplementedError('AddOn Heat is not supported for SAM Economic Models')
+
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnHeatGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Profit Gained"):
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnProfitGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion

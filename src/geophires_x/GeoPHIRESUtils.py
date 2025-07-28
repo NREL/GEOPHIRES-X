@@ -95,7 +95,6 @@ _ureg = get_unit_registry()
 
 
 def InsertImagesIntoHTML(html_path: str, short_names: set, full_names: set) -> None:
-
     # Write a reference to the image(s) into the HTML file by inserting before the "</body>" tag
     # build the string to be inserted first
     insert_string = ''
@@ -144,7 +143,7 @@ def render_default(p: float, unit: str = '', fmt: str = '') -> str:
     :type fmt: str
     :return: the string representation of the float
     """
-    if not np.can_cast(p, float):
+    if not is_float(p):
         raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
 
     unit = UpgradeSymbologyOfUnits(unit)
@@ -176,7 +175,7 @@ def render_scientific(p: float, unit: str = '', fmt: str = '') -> str:
     :rtype: str
     """
 
-    if not np.can_cast(p, float):
+    if not is_float(p):
         raise ValueError(f'Parameter ({p}) must be a float or convertible to float.')
 
     unit = UpgradeSymbologyOfUnits(unit)
@@ -197,7 +196,7 @@ def render_Parameter_default(p: Parameter, fmt: str = '') -> str:
     :type fmt: str
     :return: the string representation of the float
     """
-    if not np.can_cast(p.value, float):
+    if not is_float(p.value):
         raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
 
     return render_default(p.value, p.CurrentUnits.value)
@@ -214,7 +213,7 @@ def render_parameter_scientific(p: Parameter, fmt: str = '') -> str:
     :return: the string representation of the float
     """
 
-    if not np.can_cast(p.value, float):
+    if not is_float(p.value):
         raise ValueError(f'Parameter ({p.value}) must be a float or convertible to float.')
 
     return render_scientific(p.value, p.CurrentUnits.value)
@@ -241,7 +240,7 @@ def density_water_kg_per_m3(Twater_degC: float, pressure: Optional[PlainQuantity
     Raises:
         ValueError: If Twater_degC is not a float or convertible to float.
     """
-    if not np.can_cast(Twater_degC, float):
+    if not is_float(Twater_degC):
         raise ValueError(f'Twater_degC ({Twater_degC}) must be a float or convertible to float.')
 
     try:
@@ -276,7 +275,7 @@ def celsius_to_kelvin(celsius: float) -> float:
 
 @lru_cache
 def viscosity_water_Pa_sec(
-        Twater_degC: float,
+    Twater_degC: float,
     pressure: Optional[PlainQuantity] = None) -> float:
     """
     Calculate the dynamic viscosity of water as a function of temperature and pressure.
@@ -390,7 +389,7 @@ def vapor_pressure_water_kPa(temperature_degC: float) -> float:
 
     try:
         return (quantity(CP.PropsSI('P', 'T', celsius_to_kelvin(temperature_degC), 'Q', 0, 'Water'), 'Pa')
-                    .to('kPa').magnitude)
+                .to('kPa').magnitude)
 
     except (NotImplementedError, ValueError) as e:
         raise ValueError(f'Input temperature ({temperature_degC}C) is out of range or otherwise not implemented') from e

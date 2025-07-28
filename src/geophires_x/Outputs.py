@@ -176,6 +176,7 @@ class Outputs:
             with open(self.output_file, 'w', encoding='UTF-8') as f:
 
                 econ: Economics = model.economics
+                is_sam_econ_model = econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
 
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
@@ -222,7 +223,7 @@ class Outputs:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     f.write(f'      {Outputs._field_label(econ.capex_total.display_name, 50)}{econ.capex_total.value:10.2f} {econ.capex_total.CurrentUnits.value}\n')
 
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
@@ -255,10 +256,10 @@ class Outputs:
                     #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
-                elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
+                elif is_sam_econ_model or model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
 
-                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     sam_econ_fields: list[OutputParameter] = [
                         econ.real_discount_rate,
                         econ.nominal_discount_rate,
@@ -282,7 +283,7 @@ class Outputs:
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
                 irr_output_param: OutputParameter = econ.ProjectIRR \
-                    if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.after_tax_irr
+                    if not is_sam_econ_model else econ.after_tax_irr
                 irr_field_label = Outputs._field_label(irr_output_param.display_name, 49)
                 irr_display_value = f'{irr_output_param.value:10.2f}' \
                     if not math.isnan(irr_output_param.value) else 'NaN'
@@ -485,7 +486,7 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
 
                 if model.economics.RITCValue.value:
-                    if model.economics.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    if not is_sam_econ_model:
                         f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
                     else:
                         # TODO Extract value from SAM Cash Flow Profile per
@@ -496,12 +497,12 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     # TODO calculate & display for other economic models
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
-                capex_param = econ.CCap if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.capex_total
+                capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
                 capex_label = Outputs._field_label(capex_param.display_name, 50)
                 f.write(f'      {capex_label}{capex_param.value:10.2f} {capex_param.CurrentUnits.value}\n')
 
@@ -733,10 +734,10 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if not is_sam_econ_model:
                     self.write_revenue_and_cashflow_profile_output(model, f)
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     f.write(self.get_sam_cash_flow_profile_output(model))
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values

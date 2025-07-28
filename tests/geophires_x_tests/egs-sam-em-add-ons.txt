@@ -60,7 +60,6 @@ Production Flow Rate per Well, 80
 
 
 # AddOns
-Do AddOn Calculations, True
 AddOn Nickname 1, Desalinization
 AddOn CAPEX 1, 562
 AddOn OPEX 1, 0.1

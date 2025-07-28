@@ -573,7 +573,9 @@ class EconomicsSamTestCase(BaseTestCase):
         # self.assertEqual(15.0, _accrued_financing(r4))
 
     def test_add_ons(self):
-        add_ons_result = self._get_result({}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'))
+        add_ons_result = self._get_result(
+            {'Do AddOn Calculations': True}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
         no_add_ons_result = self._get_result(
             {'Do AddOn Calculations': False}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
         )

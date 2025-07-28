@@ -601,6 +601,18 @@ class EconomicsSamTestCase(BaseTestCase):
             add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total Add-on OPEX']['value'], 0
         )
 
+        with self.assertRaises(RuntimeError, msg='AddOn Electricity is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Electricity Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Heat is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Heat Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

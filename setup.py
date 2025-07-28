@@ -74,7 +74,7 @@ setup(
         'pandas',
         'matplotlib',
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
-        'h5py==3.10.0',  # TODO resolve apparent h5py==3.11.0 build compatibility issues on some platforms
+        'h5py',
         'scipy',
         'iapws',
         'coolprop; python_version > "3.8"',

@@ -16,7 +16,7 @@ class OutputsAddOns(Outputs):
         The PrintOutputs function prints the results of the AddOns to a text file and to the screen.
         :param model: Model: The container class of the application, giving access to everything else, including the logger
         :type model: :class:`~geophires_x.Model.Model`
-        :return: None
+        :return: tuple of addon_df, addon_results: list[OutputTableItem]
         """
         model.logger.info(f'Init {str(__class__)}: {__name__}')
 

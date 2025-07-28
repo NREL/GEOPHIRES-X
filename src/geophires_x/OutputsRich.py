@@ -30,7 +30,14 @@ validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 VERTICAL_WELL_DEPTH_OUTPUT_NAME = 'Well depth'
 
 
-def print_outputs_rich(output_file: str, text_output_file: strParameter, html_output_file: strParameter, model: Model):
+def print_outputs_rich(
+        text_output_file: strParameter,
+        html_output_file: strParameter,
+        model: Model,
+        sdac_results: list,
+        addon_results: list,
+        sdac_df: pd.DataFrame,
+        addon_df: pd.DataFrame):
     """
     TODO Implementation of rich output in this method/file is duplicative of Outputs.PrintOutputs. This adds undue
       code complexity, maintenance overhead, inconsistency, and potential for bugs. Rich output should instead be
@@ -49,9 +56,7 @@ def print_outputs_rich(output_file: str, text_output_file: strParameter, html_ou
     CAPEX = []
     OPEX = []
     surface_equipment_results = []
-    addon_results = []
-    sdac_resa_results = []
-    pumping_power_results = []
+    # addon_results = []
 
     simulation_metadata.append(OutputTableItem('GEOPHIRES Version', geophires_x.__version__))
     simulation_metadata.append(OutputTableItem('Simulation Date', datetime.datetime.now().strftime('%Y-%m-%d')))
@@ -878,18 +883,8 @@ def print_outputs_rich(output_file: str, text_output_file: strParameter, html_ou
 
     pumping_power_profiles = pumping_power_profiles.reset_index()
 
-    addon_df = pd.DataFrame()
-    sdac_df = pd.DataFrame()
-    addon_results: list[OutputTableItem] = []
-    sdac_results: list[OutputTableItem] = []
-
-    if model.economics.DoAddOnCalculations.value:
-        addon_df, addon_results = model.addoutputs.PrintOutputs(model)
-    if model.economics.DoSDACGTCalculations.value:
-        sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
-
     if text_output_file.Provided:
-        Write_Text_Output(output_file, simulation_metadata, summary, economic_parameters,
+        Write_Text_Output(text_output_file.value, simulation_metadata, summary, economic_parameters,
                           engineering_parameters,
                           resource_characteristics, reservoir_parameters, reservoir_stimulation_results, CAPEX,
                           OPEX,
@@ -897,7 +892,7 @@ def print_outputs_rich(output_file: str, text_output_file: strParameter, html_ou
                           pumping_power_profiles, sdac_df, addon_df)
 
         # Get rid of any trailing spaces in that output file - they are confusing the testing code
-        with open(output_file, 'r+') as fp:
+        with open(text_output_file.value, 'r+') as fp:
             lines = fp.readlines()
             fp.seek(0)
             fp.truncate()

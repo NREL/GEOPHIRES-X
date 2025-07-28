@@ -6,6 +6,7 @@ from pathlib import Path
 
 # noinspection PyPackageRequirements
 import numpy as np
+import pandas as pd
 
 import geophires_x
 import geophires_x.Model as Model
@@ -759,6 +760,15 @@ class Outputs:
                         f.write(NL)
                     f.write(NL)
 
+            addon_df = pd.DataFrame()
+            sdac_df = pd.DataFrame()
+            addon_results = []
+            sdac_results = []
+
+            if model.economics.DoAddOnCalculations.value:
+                addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+            if model.economics.DoSDACGTCalculations.value:
+                sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -769,7 +779,15 @@ class Outputs:
             model.logger.critical(msg)
             raise RuntimeError(msg) from ex
 
-        print_outputs_rich(self.output_file, self.text_output_file, self.html_output_file, model)
+        print_outputs_rich(
+            self.text_output_file,
+            self.html_output_file,
+            model,
+            sdac_results,
+            addon_results,
+            sdac_df,
+            addon_df
+        )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

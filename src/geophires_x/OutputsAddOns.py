@@ -114,7 +114,7 @@ class OutputsAddOns(Outputs):
             print(err_msg)
             model.logger.critical(str(ex))
             model.logger.critical(err_msg)
-            sys.exit()
+            raise RuntimeError(err_msg) from ex
 
         model.logger.info(f'Complete {str(__class__)}: {__name__}')
 

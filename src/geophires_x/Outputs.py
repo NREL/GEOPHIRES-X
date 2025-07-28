@@ -502,6 +502,11 @@ class Outputs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
+                    if econ.DoAddOnCalculations.value:
+                        aoc_label = Outputs._field_label('Total Add-on CAPEX', 47)  # TODO define dedicated OutputParameter
+                        f.write(
+                            f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
+
                 capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
                 capex_label = Outputs._field_label(capex_param.display_name, 50)
                 f.write(f'      {capex_label}{capex_param.value:10.2f} {capex_param.CurrentUnits.value}\n')

@@ -307,7 +307,7 @@ class EconomicsAddOns(Economics.Economics):
 
         if is_sam_em:
             model.economics.CCap.value = self.AdjustedProjectCAPEX.value
-            model.economics.Coam.value = self.AdjustedProjectOPEX.value
+            model.economics.Coam.value = self.AdjustedProjectOPEX.value - np.sum(self.AddOnProfitGainedPerYear.value)
             # FIXME WIP
 
         AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.construction_years.value

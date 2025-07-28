@@ -574,10 +574,26 @@ class EconomicsSamTestCase(BaseTestCase):
 
     def test_add_ons(self):
         add_ons_result = self._get_result({}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'))
+        no_add_ons_result = self._get_result(
+            {'Do AddOn Calculations': False}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
         self.assertIsNotNone(add_ons_result)
 
         with open(add_ons_result.output_file_path, encoding='utf-8') as f:
+            print('With Add-Ons:\n')
             print(f.read())
+            print('\n------------\n')
+
+        with open(no_add_ons_result.output_file_path, encoding='utf-8') as f:
+            print('Without Add-Ons:\n')
+            print(f.read())
+            print('\n------------\n')
+
+        # FIXME WIP
+        self.assertLess(
+            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

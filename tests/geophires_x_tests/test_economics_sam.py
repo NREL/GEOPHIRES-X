@@ -572,6 +572,13 @@ class EconomicsSamTestCase(BaseTestCase):
         # )
         # self.assertEqual(15.0, _accrued_financing(r4))
 
+    def test_add_ons(self):
+        add_ons_result = self._get_result({}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'))
+        self.assertIsNotNone(add_ons_result)
+
+        with open(add_ons_result.output_file_path, encoding='utf-8') as f:
+            print(f.read())
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

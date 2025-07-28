@@ -5,7 +5,7 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Economics as Economics
 import geophires_x.Model as Model
-from geophires_x.OptionList import EndUseOptions
+from geophires_x.OptionList import EndUseOptions, EconomicModel
 from geophires_x.Parameter import listParameter, OutputParameter
 from geophires_x.Units import *
 
@@ -271,7 +271,9 @@ class EconomicsAddOns(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+
+        is_sam_em = model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
 
         # sum all the AddOn values together, so we can treat all AddOns together. If an AddOn slot is not used,
         # it has zeros for the values, so this won't create problems
@@ -302,6 +304,12 @@ class EconomicsAddOns(Economics.Economics):
         # Calculate the adjusted OPEX and CAPEX
         self.AdjustedProjectCAPEX.value = model.economics.CCap.value + self.AddOnCAPEXTotal.value
         self.AdjustedProjectOPEX.value = model.economics.Coam.value + self.AddOnOPEXTotalPerYear.value
+
+        if is_sam_em:
+            model.economics.CCap.value = self.AdjustedProjectCAPEX.value
+            model.economics.Coam.value = self.AdjustedProjectOPEX.value
+            # FIXME WIP
+
         AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.construction_years.value
         ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.construction_years.value
 
@@ -386,8 +394,9 @@ class EconomicsAddOns(Economics.Economics):
                 self.AdjustedProjectCAPEX.value + (
                     self.AdjustedProjectOPEX.value * model.surfaceplant.plant_lifetime.value))
 
-        # recalculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
+        if not is_sam_em:
+            # recalculate LCOE/LCOH
+            self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
 
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

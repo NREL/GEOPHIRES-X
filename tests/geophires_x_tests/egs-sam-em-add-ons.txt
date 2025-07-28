@@ -1,0 +1,69 @@
+                    Reservoir Model, 1
+Reservoir Volume Option, 1
+Reservoir Density, 2800
+Reservoir Heat Capacity, 790
+Reservoir Thermal Conductivity, 3.05
+Reservoir Porosity, 0.0118
+Reservoir Impedance, 0.001
+
+Number of Fractures, 149
+Fracture Shape, 4
+Fracture Height, 2000
+Fracture Width, 10000
+Fracture Separation, 30
+
+Number of Segments, 1
+
+Production Well Diameter, 7
+Injection Well Diameter, 7
+Well Separation, 365 feet
+Injection Temperature, 60 degC
+Injection Wellbore Temperature Gain, 3
+Plant Outlet Pressure, 1000 psi
+Ramey Production Wellbore Model, 1
+Utilization Factor, .9
+Water Loss Fraction, 0.05
+Maximum Drawdown, 1
+Ambient Temperature, 10 degC
+#Surface Temperature, 10 degC
+End-Use Option, 1
+
+Plant Lifetime, 25
+
+Circulation Pump Efficiency, 0.80
+
+Economic Model, 5
+Starting Electricity Sale Price, 0.15
+Ending Electricity Sale Price, 1.00
+Electricity Escalation Rate Per Year, 0.004053223
+Electricity Escalation Start Year, 1
+Fraction of Investment in Bonds, .5
+Combined Income Tax Rate, .3
+Inflated Bond Interest Rate, .05
+Inflation Rate, .02
+Investment Tax Credit Rate, .3, -- https://programs.dsireusa.org/system/program/detail/658
+Production Tax Credit Electricity, 0.0275, -- https://programs.dsireusa.org/system/program/detail/734
+Property Tax Rate, 0
+Time steps per year, 10
+Maximum Temperature, 500
+
+
+Print Output to Console, 0
+Surface Temperature, 12
+Reservoir Depth, 5.4
+Gradient 1, 36.7
+Power Plant Type, 4
+
+Number of Injection Wells, 54
+Number of Production Wells, 54
+Production Flow Rate per Well, 80
+
+
+# AddOns
+Do AddOn Calculations, True
+AddOn Nickname 1, Desalinization
+AddOn CAPEX 1, 10
+AddOn OPEX 1, 10
+AddOn Electricity Gained 1, -100
+AddOn Heat Gained 1, 0.0
+AddOn Profit Gained 1, 0.05

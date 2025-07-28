@@ -30,6 +30,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 | `Fraction of Investment in Bonds`                                                                                                               | Financial Parameters → Project Term Debt               | `Debt percent`                                                                                               | `Singleowner`                     | `debt_percent`                                               | .. N/A                                                                                                                                                                                                                                                                                                                    |
 | `Inflated Bond Interest Rate`                                                                                                                   | Financial Parameters → Project Term Debt               | `Annual interest rate`                                                                                       | `Singleowner`                     | `term_int_rate`                                              | .. N/A                                                                                                                                                                                                                                                                                                                    |
 | `Starting Electricity Sale Price`, `Ending Electricity Sale Price`, `Electricity Escalation Rate Per Year`, `Electricity Escalation Start Year` | Revenue                                                | `PPA price`                                                                                                  | `Singleowner`                     | `ppa_price_input`                                            | GEOPHIRES's pricing model is used to create a PPA price schedule that is passed to SAM.                                                                                                                                                                                                                                   |
+| `Total AddOn Profit Gained`                                                                                                                     | Revenue → Capacity Payments                            | `Fixed amount`, `Capacity payment amount`                                                                    | `Singleowner`                     | `cp_capacity_payment_type = 1`, `cp_capacity_payment_amount` |                                                                                                                                                                                                                                                                                                                           |
 | `Investment Tax Credit Rate`                                                                                                                    | Incentives → Investment Tax Credit (ITC)               | `Federal` → `Percentage (%)`                                                                                 | `Singleowner`                     | `itc_fed_percent`                                            | Note that unlike the BICYCLE Economic Model's `Total capital costs`, SAM Economic Model's `Total CAPEX` is the total installed cost and does not subtract ITC value (if present).                                                                                                                                         |
 | `Production Tax Credit Electricity`                                                                                                             | Incentives → Production Tax Credit (PTC)               | `Federal` → `Amount ($/kWh)`                                                                                 | `Singleowner`                     | `ptc_fed_amount`                                             | .. N/A                                                                                                                                                                                                                                                                                                                    |
 | `Production Tax Credit Duration`                                                                                                                | Incentives → Production Tax Credit (PTC)               | `Federal` → `Term (years)`                                                                                   | `Singleowner`                     | `ptc_fed_term`                                               | .. N/A                                                                                                                                                                                                                                                                                                                    |
@@ -48,7 +49,9 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 ### Limitations
 
 1. Only Electricity end-use is supported
-2. Only 1 construction year is supported. Note that the `Inflation Rate During Construction` parameter can be used to partially account for longer construction periods.
+2. Only 1 construction year is supported. Note that the `Inflation Rate During Construction` parameter can be used to
+   partially account for longer construction periods.
+3. Add-ons electricity and heat are not currently supported. (Add-ons CAPEX, OPEX, and profit are supported.)
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 
@@ -134,6 +137,14 @@ Single Owner       ibi_oth_amount        0.0
 You can then manually enter the parameters from the logged mapping into the SAM desktop app.
 
 ![](sam-desktop-app-manually-enter-system-capacity-from-geophires-log.png)
+
+## Add-Ons
+
+SAM Economic Models incorporate add-ons directly, unlike other GEOPHIRES economic models, which calculate separate
+extended economics.
+Total Add-on CAPEX is added to Total CAPEX.
+Total Add-on OPEX is added to Total operating and maintenance costs.
+Total AddOn Profit Gained per year is treated as fixed amount Capacity payment revenue.
 
 ## Examples
 

@@ -11,6 +11,7 @@
         "End-Use Option": {},
         "End-Use": {},
         "Surface Application": {},
+        "Reservoir Model": {},
         "Average Net Electricity Production": {},
         "Electricity breakeven price": {
           "type": "number",

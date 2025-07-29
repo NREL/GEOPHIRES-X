@@ -8,8 +8,6 @@ GEOPHIRES v3 (2023-2025)
 3.9
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.7>`__
-
 `3.9.47 <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.47>`__: `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__
 
 `3.9.43 <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.43>`__: `Inflation costs <https://github.com/NREL/GEOPHIRES-X/pull/409>`__

@@ -16,5 +16,5 @@ rm examples/$1.json
 if [[ $1 == "example1_addons" ]]
 then
     echo "Updating CSV..."
-    python regenerate_example_result_csv.py
+    python regenerate_example_result_csv.py example1_addons
 fi

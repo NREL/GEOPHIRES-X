@@ -504,10 +504,8 @@ class Outputs:
 
                     if econ.DoAddOnCalculations.value:
                         # Non-SAM econ models print this in Extended Economics profile
-                        # TODO define dedicated OutputParameter
-                        aoc_label = Outputs._field_label('Total Add-on CAPEX', 47)
-                        f.write(
-                            f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnCAPEXTotal.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
 
                 capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
                 capex_label = Outputs._field_label(capex_param.display_name, 50)
@@ -540,10 +538,8 @@ class Outputs:
 
                     if econ.DoAddOnCalculations.value and is_sam_econ_model:
                         # Non-SAM econ models print this in Extended Economics profile
-                        # TODO define dedicated OutputParameter
-                        aoc_label = Outputs._field_label('Total Add-on OPEX', 47)
-                        f.write(
-                            f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:

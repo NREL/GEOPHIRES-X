@@ -152,8 +152,16 @@
         "Project VIR=PI=PIR   (including AddOns)": {},
         "Project MOIC  (including AddOns)": {},
         "Project Payback Period       (including AddOns)": {},
-        "Total Add-on CAPEX": {},
-        "Total Add-on OPEX": {},
+        "Total Add-on CAPEX": {
+          "type": "number",
+          "description": "AddOn CAPEX Total",
+          "units": "MUSD"
+        },
+        "Total Add-on OPEX": {
+          "type": "number",
+          "description": "AddOn OPEX Total Per Year",
+          "units": "MUSD/yr"
+        },
         "Total Add-on Net Elec": {},
         "Total Add-on Net Heat": {},
         "Total Add-on Profit": {},
@@ -402,7 +410,11 @@
           "description": "The calculated amount of cost escalation due to inflation over the construction period.",
           "units": "MUSD"
         },
-        "Total Add-on CAPEX": {},
+        "Total Add-on CAPEX": {
+          "type": "number",
+          "description": "AddOn CAPEX Total",
+          "units": "MUSD"
+        },
         "Total capital costs": {
           "type": "number",
           "description": "Total Capital Cost",
@@ -461,7 +473,11 @@
           "description": "Total redrilling costs over the Plant Lifetime are calculated as (Drilling and completion costs + Stimulation costs) \u00d7 Number of times redrilling. The total is then divided over Plant Lifetime years to calculate Redrilling costs per year.",
           "units": "MUSD/yr"
         },
-        "Total Add-on OPEX": {},
+        "Total Add-on OPEX": {
+          "type": "number",
+          "description": "AddOn OPEX Total Per Year",
+          "units": "MUSD/yr"
+        },
         "Total average annual O&M costs": {},
         "Total operating and maintenance costs": {
           "type": "number",

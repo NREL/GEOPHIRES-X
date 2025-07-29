@@ -16,6 +16,12 @@ class GeophiresXResultTestCase(BaseTestCase):
                 actual = GeophiresXResult._get_sam_cash_flow_row_name_unit_split(case[0])
                 self.assertListEqual(actual, case[1])
 
+    def test_get_lines_by_category(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('../examples/example2.out'))
+        lines_by_cat = r._get_lines_by_category()
+        res_params_lines = lines_by_cat['RESERVOIR PARAMETERS']
+        self.assertGreater(len(res_params_lines), 0)
+
     def test_reservoir_volume_calculation_note(self) -> None:
         r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('../examples/example2.out'))
         field_name = 'Reservoir volume calculation note'
@@ -37,3 +43,12 @@ class GeophiresXResultTestCase(BaseTestCase):
         r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('sam-em-csv-test.out'))
         as_csv = r.as_csv()
         self.assertIsNotNone(as_csv)
+
+    def test_multicategory_fields_only_in_case_report_category(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(
+            self._get_test_file_path('../examples/example_SAM-single-owner-PPA-3.out')
+        )
+        self.assertIsNone(r.result['EXTENDED ECONOMICS']['Total Add-on CAPEX'])
+        self.assertIsNone(r.result['EXTENDED ECONOMICS']['Total Add-on OPEX'])
+        self.assertIn('Total Add-on CAPEX', r.result['CAPITAL COSTS (M$)'])
+        self.assertIn('Total Add-on OPEX', r.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'])

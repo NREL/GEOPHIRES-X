@@ -71,7 +71,6 @@ RESERVOIR SIMULATION RESULTS,Production Wellbore Heat Transmission Model,,Ramey 
 RESERVOIR SIMULATION RESULTS,Average Production Well Temperature Drop,,3.0,degC
 RESERVOIR SIMULATION RESULTS,Average Injection Well Pump Pressure Drop,,217.9,kPa
 RESERVOIR SIMULATION RESULTS,Average Production Well Pump Pressure Drop,,1112.0,kPa
-RESERVOIR SIMULATION RESULTS,Average Net Electricity Production,,5.39,MW
 CAPITAL COSTS (M$),Drilling and completion costs,,17.38,MUSD
 CAPITAL COSTS (M$),Drilling and completion costs per well,,4.35,MUSD
 CAPITAL COSTS (M$),Stimulation costs,,3.02,MUSD
@@ -79,13 +78,11 @@ CAPITAL COSTS (M$),Surface power plant costs,,20.8,MUSD
 CAPITAL COSTS (M$),Field gathering system costs,,2.3,MUSD
 CAPITAL COSTS (M$),Total surface equipment costs,,23.1,MUSD
 CAPITAL COSTS (M$),Exploration costs,,4.49,MUSD
-CAPITAL COSTS (M$),Total Add-on CAPEX,,70.0,MUSD
 CAPITAL COSTS (M$),Total capital costs,,25.67,MUSD
 CAPITAL COSTS (M$),Annualized capital costs,,1.28,MUSD
 OPERATING AND MAINTENANCE COSTS (M$/yr),Wellfield maintenance costs,,0.39,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Power plant maintenance costs,,0.9,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Water costs,,0.06,MUSD/yr
-OPERATING AND MAINTENANCE COSTS (M$/yr),Total Add-on OPEX,,1.7,MUSD/yr
 OPERATING AND MAINTENANCE COSTS (M$/yr),Total operating and maintenance costs,,-0.86,MUSD/yr
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial geofluid availability,,0.11,MW/(kg/s)
 SURFACE EQUIPMENT SIMULATION RESULTS,Maximum Total Electricity Generation,,5.62,MW

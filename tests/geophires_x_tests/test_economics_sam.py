@@ -572,6 +572,47 @@ class EconomicsSamTestCase(BaseTestCase):
         # )
         # self.assertEqual(15.0, _accrued_financing(r4))
 
+    def test_add_ons(self):
+        add_ons_result = self._get_result(
+            {'Do AddOn Calculations': True}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        no_add_ons_result = self._get_result(
+            {'Do AddOn Calculations': False}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        self.assertIsNotNone(add_ons_result)
+
+        self.assertGreater(
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+
+        self.assertGreater(add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'], 0)
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total operating and maintenance costs'][
+                'value'
+            ],
+            no_add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'][
+                'Total operating and maintenance costs'
+            ]['value'],
+        )
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total Add-on OPEX']['value'], 0
+        )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Electricity is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Electricity Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Heat is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Heat Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

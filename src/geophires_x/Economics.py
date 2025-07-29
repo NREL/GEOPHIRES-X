@@ -2334,7 +2334,7 @@ class Economics:
 
         # we can determine on-the-fly if Addons, CCUS, or S-DAC-GT are being used in the user input file
         for key in model.InputParameters.keys():
-            if key.startswith("AddOn"):
+            if key.startswith("AddOn") and not self.DoAddOnCalculations.Provided:
                 self.DoAddOnCalculations.value = True
                 break
 

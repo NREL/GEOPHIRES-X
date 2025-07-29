@@ -6,6 +6,7 @@ from pathlib import Path
 
 # noinspection PyPackageRequirements
 import numpy as np
+import pandas as pd
 
 import geophires_x
 import geophires_x.Model as Model
@@ -175,6 +176,7 @@ class Outputs:
             with open(self.output_file, 'w', encoding='UTF-8') as f:
 
                 econ: Economics = model.economics
+                is_sam_econ_model = econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
 
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
@@ -221,7 +223,7 @@ class Outputs:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     f.write(f'      {Outputs._field_label(econ.capex_total.display_name, 50)}{econ.capex_total.value:10.2f} {econ.capex_total.CurrentUnits.value}\n')
 
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
@@ -254,10 +256,10 @@ class Outputs:
                     #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
-                elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
+                elif is_sam_econ_model or model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
 
-                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     sam_econ_fields: list[OutputParameter] = [
                         econ.real_discount_rate,
                         econ.nominal_discount_rate,
@@ -281,7 +283,7 @@ class Outputs:
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
                 irr_output_param: OutputParameter = econ.ProjectIRR \
-                    if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.after_tax_irr
+                    if not is_sam_econ_model else econ.after_tax_irr
                 irr_field_label = Outputs._field_label(irr_output_param.display_name, 49)
                 irr_display_value = f'{irr_output_param.value:10.2f}' \
                     if not math.isnan(irr_output_param.value) else 'NaN'
@@ -484,7 +486,7 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
 
                 if model.economics.RITCValue.value:
-                    if model.economics.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    if not is_sam_econ_model:
                         f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
                     else:
                         # TODO Extract value from SAM Cash Flow Profile per
@@ -495,12 +497,17 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     # TODO calculate & display for other economic models
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
-                capex_param = econ.CCap if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.capex_total
+                    if econ.DoAddOnCalculations.value:
+                        # Non-SAM econ models print this in Extended Economics profile
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnCAPEXTotal.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
+
+                capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
                 capex_label = Outputs._field_label(capex_param.display_name, 50)
                 f.write(f'      {capex_label}{capex_param.value:10.2f} {capex_param.CurrentUnits.value}\n')
 
@@ -528,6 +535,11 @@ class Outputs:
                     if model.wellbores.redrill.value > 0:
                         redrill_label = Outputs._field_label(econ.redrilling_annual_cost.display_name, 47)
                         f.write(f'         {redrill_label}{econ.redrilling_annual_cost.value:10.2f} {econ.redrilling_annual_cost.CurrentUnits.value}\n')
+
+                    if econ.DoAddOnCalculations.value and is_sam_econ_model:
+                        # Non-SAM econ models print this in Extended Economics profile
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:
@@ -732,10 +744,10 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if not is_sam_econ_model:
                     self.write_revenue_and_cashflow_profile_output(model, f)
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     f.write(self.get_sam_cash_flow_profile_output(model))
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
@@ -759,6 +771,16 @@ class Outputs:
                         f.write(NL)
                     f.write(NL)
 
+            addon_df = pd.DataFrame()
+            addon_results = []
+            if model.economics.DoAddOnCalculations.value and not is_sam_econ_model:
+                # SAM econ models incorporate add-on economics into main economics, not as separate extended economics.
+                addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+
+            sdac_df = pd.DataFrame()
+            sdac_results = []
+            if model.economics.DoSDACGTCalculations.value:
+                sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -769,7 +791,15 @@ class Outputs:
             model.logger.critical(msg)
             raise RuntimeError(msg) from ex
 
-        print_outputs_rich(self.output_file, self.text_output_file, self.html_output_file, model)
+        print_outputs_rich(
+            self.text_output_file,
+            self.html_output_file,
+            model,
+            sdac_results,
+            addon_results,
+            sdac_df,
+            addon_df
+        )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

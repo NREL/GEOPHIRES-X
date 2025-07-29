@@ -1,6 +1,6 @@
 # Example: SAM Single Owner PPA Economic Model: 50 MWe with Add-Ons
 # This example models example_SAM-single-owner with a Waste Heat Absorption Chiller Add-on
-# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html
+# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons
 
 # *** ADD-ONS ***
 # ***************

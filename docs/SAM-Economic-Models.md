@@ -51,7 +51,7 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 1. Only Electricity end-use is supported
 2. Only 1 construction year is supported. Note that the `Inflation Rate During Construction` parameter can be used to
    partially account for longer construction periods.
-3. Add-ons electricity and heat are not currently supported. (Add-ons CAPEX, OPEX, and profit are supported.)
+3. Add-ons with electricity and heat are not currently supported. (Add-ons CAPEX, OPEX, and profit are supported.)
 
 ## Using SAM Economic Models with Existing GEOPHIRES Inputs
 
@@ -145,6 +145,9 @@ extended economics.
 Total Add-on CAPEX is added to Total CAPEX.
 Total Add-on OPEX is added to Total operating and maintenance costs.
 Total AddOn Profit Gained per year is treated as fixed amount Capacity payment revenue.
+
+Add-ons CAPEX, OPEX, and profit are supported.
+Add-ons with electricity and heat are not currently supported, but may be supported in the future.
 
 ## Examples
 

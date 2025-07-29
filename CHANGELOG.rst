@@ -12,6 +12,8 @@ GEOPHIRES v3 (2023-2025)
 
 v3.9 adds the `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__
 
+v3.9.45 adds `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__
+
 
 3.8
 ^^^

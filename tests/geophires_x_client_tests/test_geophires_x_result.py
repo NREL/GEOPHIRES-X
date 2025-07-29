@@ -63,3 +63,7 @@ class GeophiresXResultTestCase(BaseTestCase):
             self._get_test_file_path('../examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out')
         )
         self.assertIsNotNone(r.result['SUMMARY OF RESULTS']['LCOE'])
+
+    def test_sutra_reservoir_model_in_summary(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(self._get_test_file_path('../examples/SUTRAExample1.out'))
+        self.assertEqual('SUTRA Model', r.result['SUMMARY OF RESULTS']['Reservoir Model'])

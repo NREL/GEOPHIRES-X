@@ -40,6 +40,7 @@ class GeophiresXResult:
                 _StringValueField('End-Use Option'),
                 _StringValueField('End-Use'),
                 _StringValueField('Surface Application'),
+                _EqualSignDelimitedField('Reservoir Model'),  # SUTRA only
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Total CAPEX',

@@ -10,9 +10,31 @@ GEOPHIRES v3 (2023-2025)
 
 `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.7>`__
 
-v3.9.47 adds `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__
+3.9.47: `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__
 
-v3.9 adds the `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__
+3.9.43: `Inflation costs <https://github.com/NREL/GEOPHIRES-X/pull/409>`__
+
+3.9.40: `Redrilling costs fixup; Don't display incorrect SAM-EM ITC <https://github.com/NREL/GEOPHIRES-X/pull/405>`__
+
+3.9.36: `Increase max exploration cost <https://github.com/NREL/GEOPHIRES-X/pull/403>`__
+
+3.39.35: `Parameterize contingency <https://github.com/NREL/GEOPHIRES-X/pull/402>`__
+
+3.9.34: `Parameterize indirect costs <https://github.com/NREL/GEOPHIRES-X/pull/401>`__
+
+3.9.33: `Parameterize Reservoir Stimulation Capital Cost per well <https://github.com/NREL/GEOPHIRES-X/pull/399>`__, `Allow input parameters in CSV <https://github.com/NREL/GEOPHIRES-X/pull/398>`__
+
+3.9.31: `Fix client cwd stashing regression <https://github.com/NREL/GEOPHIRES-X/pull/397>`__
+
+3.9.29: `Move Getting Started to separate documentation page; MPF Gringarten name <https://github.com/NREL/GEOPHIRES-X/pull/396>`__
+
+3.9.28: `Peaking Boiler Cost per kW; Increase allowed fractures; Honor Capital Cost for Power Plant; Client caching fix; Cape-4 laterals & res. vol.; Doublets parameter <https://github.com/NREL/GEOPHIRES-X/pull/394>`__
+
+3.9.16: `Fervo Cape Station 500 MWe Update + 50 MWe SAM Example <https://github.com/NREL/GEOPHIRES-X/pull/389>`__
+
+3.9.8: `Missing percent unit fixes <https://github.com/NREL/GEOPHIRES-X/pull/388>`__
+
+3.9: `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__
 
 3.8
 ^^^

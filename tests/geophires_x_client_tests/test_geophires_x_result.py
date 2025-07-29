@@ -50,5 +50,10 @@ class GeophiresXResultTestCase(BaseTestCase):
         )
         self.assertIsNone(r.result['EXTENDED ECONOMICS']['Total Add-on CAPEX'])
         self.assertIsNone(r.result['EXTENDED ECONOMICS']['Total Add-on OPEX'])
+
         self.assertIn('Total Add-on CAPEX', r.result['CAPITAL COSTS (M$)'])
         self.assertIn('Total Add-on OPEX', r.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'])
+
+        self.assertIsNone(r.result['RESERVOIR SIMULATION RESULTS']['Average Net Electricity Production'])
+        self.assertIsNotNone(r.result['SUMMARY OF RESULTS']['Average Net Electricity Production'])
+        self.assertIsNotNone(r.result['SURFACE EQUIPMENT SIMULATION RESULTS']['Average Net Electricity Generation'])

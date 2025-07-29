@@ -383,6 +383,9 @@ class GeophiresXResult:
 
         with open(self.output_file_path, encoding='utf-8') as f:
             self._lines = list(f.readlines())
+
+        self.is_ags_clgs_style_output = '***AGS/CLGS STYLE OUTPUT***' in [_l.strip() for _l in self._lines]
+
         self._lines_by_category = self._get_lines_by_category()
 
         # TODO generic-er result value map
@@ -394,15 +397,16 @@ class GeophiresXResult:
 
             self.result[category] = {}
             category_lines = self._lines_by_category.get(category, [])
+            search_lines = category_lines if not self.is_ags_clgs_style_output else self._lines
 
             for field in fields:
                 if isinstance(field, _EqualSignDelimitedField):
                     self.result[category][field.field_name] = self._get_equal_sign_delimited_field(
-                        field.field_name, search_lines=category_lines
+                        field.field_name, search_lines=search_lines
                     )
                 elif isinstance(field, _UnlabeledStringField):
                     self.result[category][field.field_name] = self._get_unlabeled_string_field(
-                        field.field_name, field.marker_prefixes, search_lines=category_lines
+                        field.field_name, field.marker_prefixes, search_lines=search_lines
                     )
                 else:
                     is_string_field = isinstance(field, _StringValueField)
@@ -412,7 +416,7 @@ class GeophiresXResult:
                         field_name,
                         is_string_value_field=is_string_field,
                         min_indentation_spaces=indent,
-                        search_lines=category_lines,
+                        search_lines=search_lines,
                     )
 
         try:
@@ -465,6 +469,12 @@ class GeophiresXResult:
         for line in self._lines:
 
             def get_header_content(h_: str) -> str:
+                """
+                TODO adjust this to also work with AGS/CLGS-style headers like '### Cost Results ###'
+                    For now, AGS-style results are parsed from all lines according to the categories defined in
+                    _RESULT_FIELDS_BY_CATEGORY.
+                """
+
                 if h_ == 'Simulation Metadata':
                     return h_
                 return f'***{h_}***'

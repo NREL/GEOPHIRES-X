@@ -57,3 +57,9 @@ class GeophiresXResultTestCase(BaseTestCase):
         self.assertIsNone(r.result['RESERVOIR SIMULATION RESULTS']['Average Net Electricity Production'])
         self.assertIsNotNone(r.result['SUMMARY OF RESULTS']['Average Net Electricity Production'])
         self.assertIsNotNone(r.result['SURFACE EQUIPMENT SIMULATION RESULTS']['Average Net Electricity Generation'])
+
+    def test_ags_clgs_style_output(self) -> None:
+        r: GeophiresXResult = GeophiresXResult(
+            self._get_test_file_path('../examples/Beckers_et_al_2023_Tabulated_Database_Uloop_sCO2_elec.out')
+        )
+        self.assertIsNotNone(r.result['SUMMARY OF RESULTS']['LCOE'])

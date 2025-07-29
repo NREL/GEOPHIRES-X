@@ -37,7 +37,7 @@ GEOPHIRES v3 (2023-2025)
 3.8
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.8.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.7.0...v3.8.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.8.14>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.7.23...v3.8.14>`__
 
 Revenue & Cashflow Profile period output aligned with NREL convention used to calculate NPV.
 See https://github.com/NREL/GEOPHIRES-X/discussions/344

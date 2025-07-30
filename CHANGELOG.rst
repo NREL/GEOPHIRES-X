@@ -72,7 +72,7 @@ DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f6
 3.6
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.9>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.0...v3.6.9>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.9>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.7...v3.6.9>`__
 
 Changes default output file path to the original working directory instead of the the GEOPHIRES module source directory (usually ``geophires-x`` or ``src/geophires_x``, depending on package installation type).
 This affects:
@@ -92,7 +92,7 @@ Affected users who do not want the new behavior can specify absolute output path
 3.5
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.5.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...v3.5.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.5.7>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...v3.5.7>`__
 
 Milestone version for case studies, SHR temperatures, and other changes since 3.0.
 An overview is given in the July 2024 NREL GEOPHIRES Workshop `Version 3.5 Announcement session recording <https://youtu.be/Bi_l6y6_LQk>`__.

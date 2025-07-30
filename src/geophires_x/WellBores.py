@@ -1554,14 +1554,19 @@ class WellBores:
             # negative pumping power values become zero (b/c we are not generating electricity)
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
-        # Injection/production well casing ID have same value as inputs but exist as separate output parameters due to
-        # having a different display name.
-        self._set_output_param_from_input_param(self.injwelldiam, self.injection_well_casing_inner_diameter)
-        self._set_output_param_from_input_param(self.prodwelldiam, self.production_well_casing_inner_diameter)
+        self._sync_output_params_from_input_params()
 
         model.logger.info(f'complete {self.__class__.__name__}: {__name__}')
 
-    # noinspection PyMethodMayBeStatic
-    def _set_output_param_from_input_param(self, input_param: Parameter, output_param: OutputParameter) -> None:
-        output_param.value = input_param.value
-        output_param.CurrentUnits = input_param.CurrentUnits
+    def _sync_output_params_from_input_params(self) -> None:
+        """
+        Handles setting output parameters whose values are based on 1:1 corresponding input parameters.
+        """
+
+        def _set_output_param_from_input_param(input_param: Parameter, output_param: OutputParameter) -> None:
+            output_param.value = input_param.quantity().to(output_param.CurrentUnits).magnitude
+
+        # Injection/production well casing ID have same value as inputs but exist as separate output parameters due to
+        # having a different display name.
+        _set_output_param_from_input_param(self.injwelldiam, self.injection_well_casing_inner_diameter)
+        _set_output_param_from_input_param(self.prodwelldiam, self.production_well_casing_inner_diameter)

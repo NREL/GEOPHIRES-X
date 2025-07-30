@@ -51,7 +51,7 @@ DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f6
 3.7
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.7.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.6.0...v3.7.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.7.23>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.6.9...v3.7.23>`__
 
 "Well depth (or total length, if not vertical)" output field renamed to "Well depth" per https://github.com/NREL/GEOPHIRES-X/issues/321
 
@@ -72,7 +72,7 @@ DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f6
 3.6
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.0...v3.6.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.9>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.0...v3.6.9>`__
 
 Changes default output file path to the original working directory instead of the the GEOPHIRES module source directory (usually ``geophires-x`` or ``src/geophires_x``, depending on package installation type).
 This affects:

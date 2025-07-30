@@ -2424,41 +2424,7 @@ class Economics:
             model.reserv.depth.value = model.reserv.depth.value / 1000.0
             model.reserv.depth.CurrentUnits = LengthUnit.KILOMETERS
 
-        # build the PTC price models
-        self.PTCElecPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCHeatPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
-        if self.PTCElec.Provided:
-            self.PTCElecPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
-                                              self.PTCDuration.value, self.PTCElec.value, self.PTCInflationAdjusted.value,
-                                              self.RINFL.value)
-        if self.PTCHeat.Provided:
-            self.PTCHeatPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
-                                              self.PTCDuration.value, self.PTCHeat.value, self.PTCInflationAdjusted.value,
-                                              self.RINFL.value)
-        if self.PTCCooling.Provided:
-            self.PTCCoolingPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
-                                              self.PTCDuration.value,self.PTCCooling.value, self.PTCInflationAdjusted.value,
-                                              self.RINFL.value)
-
-        # build the price models
-        self.ElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                 self.ElecStartPrice.value, self.ElecEndPrice.value,
-                                                 self.ElecEscalationStart.value, self.ElecEscalationRate.value,
-                                                 self.PTCElecPrice)
-        self.HeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                 self.HeatStartPrice.value, self.HeatEndPrice.value,
-                                                 self.HeatEscalationStart.value, self.HeatEscalationRate.value,
-                                                 self.PTCHeatPrice)
-        self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                    self.CoolingStartPrice.value, self.CoolingEndPrice.value,
-                                                    self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
-                                                    self.PTCCoolingPrice)
-        self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
-                                                   self.CarbonStartPrice.value, self.CarbonEndPrice.value,
-                                                   self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
-                                                   self.PTCCarbonPrice)
+        self.build_price_models(model)
 
         # do the additional economic calculations first, if needed, so the summaries below work.
         if self.DoAddOnCalculations.value:
@@ -2640,11 +2606,6 @@ class Economics:
             )
 
         return quantity(stimulation_costs, self.Cstim.CurrentUnits)
-
-    def calculate_redrilling_costs(self, model) -> PlainQuantity:
-        return ((self.Cwell.quantity() + self.Cstim.quantity())
-                * model.wellbores.redrill.quantity()
-                / model.surfaceplant.plant_lifetime.quantity())
 
     def calculate_field_gathering_costs(self, model: Model) -> None:
         if self.ccgathfixed.Valid:
@@ -2938,7 +2899,7 @@ class Economics:
             if not self.CAPEX_heat_electricity_plant_ratio.Provided:
                 self.CAPEX_heat_electricity_plant_ratio.value = self.CAPEX_cost_electricity_plant/self.Cplant.value
 
-    def calculate_total_capital_costs(self, model):
+    def calculate_total_capital_costs(self, model: Model) -> None:
         if not self.totalcapcost.Valid:
             # exploration costs (same as in Geophires v1.2) (M$)
             if self.ccexplfixed.Valid:
@@ -2994,7 +2955,7 @@ class Economics:
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
-    def calculate_operating_and_maintenance_costs(self, model):
+    def calculate_operating_and_maintenance_costs(self, model: Model) -> None:
         # O&M costs
         # calculate first O&M costs independent of whether oamtotalfixed is provided or not
         # additional electricity cost for heat pump as end-use
@@ -3098,6 +3059,51 @@ class Economics:
         # partition the OPEX for CHP plants based on the CAPEX ratio
         self.OPEX_cost_electricity_plant = self.Coam.value * self.CAPEX_heat_electricity_plant_ratio.value
         self.OPEX_cost_heat_plant = self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
+
+    def calculate_redrilling_costs(self, model: Model) -> PlainQuantity:
+        return ((self.Cwell.quantity() + self.Cstim.quantity())
+                * model.wellbores.redrill.quantity()
+                / model.surfaceplant.plant_lifetime.quantity())
+
+    def build_price_models(self, model: Model) -> None:
+        # build the PTC price models
+        self.PTCElecPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCHeatPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCoolingPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        self.PTCCarbonPrice = [0.0] * model.surfaceplant.plant_lifetime.value
+        if self.PTCElec.Provided:
+            self.PTCElecPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                              self.PTCDuration.value, self.PTCElec.value,
+                                              self.PTCInflationAdjusted.value,
+                                              self.RINFL.value)
+        if self.PTCHeat.Provided:
+            self.PTCHeatPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                              self.PTCDuration.value, self.PTCHeat.value,
+                                              self.PTCInflationAdjusted.value,
+                                              self.RINFL.value)
+        if self.PTCCooling.Provided:
+            self.PTCCoolingPrice = BuildPTCModel(model.surfaceplant.plant_lifetime.value,
+                                                 self.PTCDuration.value, self.PTCCooling.value,
+                                                 self.PTCInflationAdjusted.value,
+                                                 self.RINFL.value)
+
+        # build the price models
+        self.ElecPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+                                                 self.ElecStartPrice.value, self.ElecEndPrice.value,
+                                                 self.ElecEscalationStart.value, self.ElecEscalationRate.value,
+                                                 self.PTCElecPrice)
+        self.HeatPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+                                                 self.HeatStartPrice.value, self.HeatEndPrice.value,
+                                                 self.HeatEscalationStart.value, self.HeatEscalationRate.value,
+                                                 self.PTCHeatPrice)
+        self.CoolingPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+                                                    self.CoolingStartPrice.value, self.CoolingEndPrice.value,
+                                                    self.CoolingEscalationStart.value, self.CoolingEscalationRate.value,
+                                                    self.PTCCoolingPrice)
+        self.CarbonPrice.value = BuildPricingModel(model.surfaceplant.plant_lifetime.value,
+                                                   self.CarbonStartPrice.value, self.CarbonEndPrice.value,
+                                                   self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
+                                                   self.PTCCarbonPrice)
 
     def calculate_cashflow(self, model: Model) -> None:
             """

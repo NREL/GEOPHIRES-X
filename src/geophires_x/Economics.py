@@ -760,7 +760,7 @@ class Economics:
             "Surface Plant Capital Cost",
             DefaultValue=-1.0,
             Min=0,
-            Max=1000,
+            Max=10000,
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,

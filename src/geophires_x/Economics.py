@@ -2416,109 +2416,7 @@ class Economics:
         self.calculate_field_gathering_costs(model)
         self.calculate_plant_costs(model)
         self.calculate_total_capital_costs(model)
-
-        # O&M costs
-        # calculate first O&M costs independent of whether oamtotalfixed is provided or not
-        # additional electricity cost for heat pump as end-use
-        if model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:  # heat pump:
-            self.averageannualheatpumpelectricitycost.value = np.average(
-                model.surfaceplant.heat_pump_electricity_kwh_used.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
-
-        # district heating peaking fuel annual cost
-        if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
-            self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000 / self.peakingboilerefficiency.value  # array with annual O&M cost for peaking fuel
-            self.averageannualngcost.value = np.average(self.annualngcost.value)
-
-        # calculate average annual pumping costs in case no electricity is provided
-        if model.surfaceplant.plant_type.value in [PlantType.INDUSTRIAL, PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
-            self.averageannualpumpingcosts.value = np.average(model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
-
-        if not self.oamtotalfixed.Valid:
-            # labor cost
-            if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # electricity
-                if np.max(model.surfaceplant.ElectricityProduced.value) < 2.5:
-                    self.Claborcorrelation = 236. / 1E3  # M$/year
-                else:
-                    self.Claborcorrelation = (589. * math.log(
-                        np.max(model.surfaceplant.ElectricityProduced.value)) - 304.) / 1E3  # M$/year
-            else:
-                if np.max(model.surfaceplant.HeatExtracted.value) < 2.5 * 5.:
-                    self.Claborcorrelation = 236. / 1E3  # M$/year
-                else:
-                    self.Claborcorrelation = (589. * math.log(
-                        np.max(model.surfaceplant.HeatExtracted.value) / 5.) - 304.) / 1E3  # M$/year
-                # * 1.1 to convert from 2012 to 2016$ with BLS employment cost index (for utilities in March)
-            self.Claborcorrelation = self.Claborcorrelation * 1.1
-
-            # plant O&M cost
-            if self.oamplantfixed.Valid:
-                self.Coamplant.value = self.oamplantfixed.value
-            else:
-                self.Coamplant.value = self.oamplantadjfactor.value * (
-                        1.5 / 100. * self.Cplant.value + 0.75 * self.Claborcorrelation)
-
-            # wellfield O&M cost
-            if self.oamwellfixed.Valid:
-                self.Coamwell.value = self.oamwellfixed.value
-            else:
-                self.Coamwell.value = self.oamwelladjfactor.value * (
-                        1. / 100. * (self.Cwell.value + self.Cgath.value) + 0.25 * self.Claborcorrelation)
-
-            # water O&M cost
-            if self.oamwaterfixed.Valid:
-                self.Coamwater.value = self.oamwaterfixed.value
-            else:
-                # here is assumed 1 l per kg maybe correct with real temp. (M$/year) 925$/ML = 3.5$/1,000 gallon
-                # TODO parameterize
-                self.Coamwater.value = self.oamwateradjfactor.value * (model.wellbores.nprod.value *
-                                                                       model.wellbores.prodwellflowrate.value *
-                                                                       model.reserv.waterloss.value * model.surfaceplant.utilization_factor.value *
-                                                                       365. * 24. * 3600. / 1E6 * 925. / 1E6)
-
-            # additional O&M cost for absorption chiller if used
-            if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller:
-                if self.chilleropex.value == -1:
-                    self.chilleropex.value = self.chillercapex.value * 2 / 100  # assumed annual O&M for chiller is 2% of investment cost
-
-                # correct plant O&M cost as otherwise chiller opex would be counted double (subtract chiller capex from plant cost when calculating Coandmplant)
-                if self.oamplantfixed.Valid == False:
-                    self.Coamplant.value = self.oamplantadjfactor.value * (
-                        1.5 / 100. * (self.Cplant.value - self.chillercapex.value) + 0.75 * self.Claborcorrelation)
-
-            else:
-                self.chilleropex.value = 0
-
-            # district heating O&M cost
-            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
-                self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000  # array with annual O&M cost for peaking fuel
-
-                if self.dhoandmcost.Provided:
-                    self.dhdistrictoandmcost.value = self.dhoandmcost.value  # M$/yr
-                else:
-                    self.dhdistrictoandmcost.value = 0.01 * self.dhdistrictcost.value + 0.02 * sum(
-                        model.surfaceplant.daily_heating_demand.value) * model.surfaceplant.electricity_cost_to_buy.value / 1000  # [M$/year] we assume annual district OPEX equals 1% of district CAPEX and 2% of total heat demand for pumping costs
-
-            else:
-                self.dhdistrictoandmcost.value = 0
-
-            self.Coam.value = self.Coamwell.value + self.Coamplant.value + self.Coamwater.value + self.chilleropex.value + self.dhdistrictoandmcost.value  # total O&M cost (M$/year)
-
-        else:
-            self.Coam.value = self.oamtotalfixed.value  # total O&M cost (M$/year)
-
-        if model.wellbores.redrill.value > 0:
-            # account for well redrilling
-            redrilling_costs: PlainQuantity = self.calculate_redrilling_costs(model)
-            self.redrilling_annual_cost.value = redrilling_costs.to(self.redrilling_annual_cost.CurrentUnits).magnitude
-            self.Coam.value += redrilling_costs.to(self.Coam.CurrentUnits).magnitude
-
-
-        # Add in the AnnualLicenseEtc and TaxRelief
-        self.Coam.value = self.Coam.value + self.AnnualLicenseEtc.value - self.TaxRelief.value
-
-        # partition the OPEX for CHP plants based on the CAPEX ratio
-        self.OPEX_cost_electricity_plant = self.Coam.value * self.CAPEX_heat_electricity_plant_ratio.value
-        self.OPEX_cost_heat_plant = self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
+        self.calculate_operating_and_maintenance_costs(model)
 
         # The Reservoir depth measure was arbitrarily changed to meters despite being defined in the docs as kilometers.
         # For display consistency sake, we need to convert it back
@@ -2565,6 +2463,7 @@ class Economics:
         # do the additional economic calculations first, if needed, so the summaries below work.
         if self.DoAddOnCalculations.value:
             model.addeconomics.Calculate(model)
+
         if self.DoSDACGTCalculations.value:
             model.sdacgteconomics.Calculate(model)
 
@@ -3095,6 +2994,111 @@ class Economics:
         # Add in the FlatLicenseEtc, OtherIncentives, & TotalGrant
         self.CCap.value = self.CCap.value + self.FlatLicenseEtc.value - self.OtherIncentives.value - self.TotalGrant.value
 
+    def calculate_operating_and_maintenance_costs(self, model):
+        # O&M costs
+        # calculate first O&M costs independent of whether oamtotalfixed is provided or not
+        # additional electricity cost for heat pump as end-use
+        if model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:  # heat pump:
+            self.averageannualheatpumpelectricitycost.value = np.average(
+                model.surfaceplant.heat_pump_electricity_kwh_used.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
+
+        # district heating peaking fuel annual cost
+        if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
+            self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000 / self.peakingboilerefficiency.value  # array with annual O&M cost for peaking fuel
+            self.averageannualngcost.value = np.average(self.annualngcost.value)
+
+        # calculate average annual pumping costs in case no electricity is provided
+        if model.surfaceplant.plant_type.value in [PlantType.INDUSTRIAL, PlantType.ABSORPTION_CHILLER,
+                                                   PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
+            self.averageannualpumpingcosts.value = np.average(
+                model.surfaceplant.PumpingkWh.value) * model.surfaceplant.electricity_cost_to_buy.value / 1E6  # M$/year
+
+        if not self.oamtotalfixed.Valid:
+            # labor cost
+            if model.surfaceplant.enduse_option.value == EndUseOptions.ELECTRICITY:  # electricity
+                if np.max(model.surfaceplant.ElectricityProduced.value) < 2.5:
+                    self.Claborcorrelation = 236. / 1E3  # M$/year
+                else:
+                    self.Claborcorrelation = (589. * math.log(
+                        np.max(model.surfaceplant.ElectricityProduced.value)) - 304.) / 1E3  # M$/year
+            else:
+                if np.max(model.surfaceplant.HeatExtracted.value) < 2.5 * 5.:
+                    self.Claborcorrelation = 236. / 1E3  # M$/year
+                else:
+                    self.Claborcorrelation = (589. * math.log(
+                        np.max(model.surfaceplant.HeatExtracted.value) / 5.) - 304.) / 1E3  # M$/year
+                # * 1.1 to convert from 2012 to 2016$ with BLS employment cost index (for utilities in March)
+            self.Claborcorrelation = self.Claborcorrelation * 1.1
+
+            # plant O&M cost
+            if self.oamplantfixed.Valid:
+                self.Coamplant.value = self.oamplantfixed.value
+            else:
+                self.Coamplant.value = self.oamplantadjfactor.value * (
+                    1.5 / 100. * self.Cplant.value + 0.75 * self.Claborcorrelation)
+
+            # wellfield O&M cost
+            if self.oamwellfixed.Valid:
+                self.Coamwell.value = self.oamwellfixed.value
+            else:
+                self.Coamwell.value = self.oamwelladjfactor.value * (
+                    1. / 100. * (self.Cwell.value + self.Cgath.value) + 0.25 * self.Claborcorrelation)
+
+            # water O&M cost
+            if self.oamwaterfixed.Valid:
+                self.Coamwater.value = self.oamwaterfixed.value
+            else:
+                # here is assumed 1 l per kg maybe correct with real temp. (M$/year) 925$/ML = 3.5$/1,000 gallon
+                # TODO parameterize
+                self.Coamwater.value = self.oamwateradjfactor.value * (model.wellbores.nprod.value *
+                                                                       model.wellbores.prodwellflowrate.value *
+                                                                       model.reserv.waterloss.value * model.surfaceplant.utilization_factor.value *
+                                                                       365. * 24. * 3600. / 1E6 * 925. / 1E6)
+
+            # additional O&M cost for absorption chiller if used
+            if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:  # absorption chiller:
+                if self.chilleropex.value == -1:
+                    self.chilleropex.value = self.chillercapex.value * 2 / 100  # assumed annual O&M for chiller is 2% of investment cost
+
+                # correct plant O&M cost as otherwise chiller opex would be counted double (subtract chiller capex from plant cost when calculating Coandmplant)
+                if self.oamplantfixed.Valid == False:
+                    self.Coamplant.value = self.oamplantadjfactor.value * (
+                        1.5 / 100. * (self.Cplant.value - self.chillercapex.value) + 0.75 * self.Claborcorrelation)
+
+            else:
+                self.chilleropex.value = 0
+
+            # district heating O&M cost
+            if model.surfaceplant.plant_type.value == PlantType.DISTRICT_HEATING:  # district heating
+                self.annualngcost.value = model.surfaceplant.annual_ng_demand.value * self.ngprice.value / 1000  # array with annual O&M cost for peaking fuel
+
+                if self.dhoandmcost.Provided:
+                    self.dhdistrictoandmcost.value = self.dhoandmcost.value  # M$/yr
+                else:
+                    self.dhdistrictoandmcost.value = 0.01 * self.dhdistrictcost.value + 0.02 * sum(
+                        model.surfaceplant.daily_heating_demand.value) * model.surfaceplant.electricity_cost_to_buy.value / 1000  # [M$/year] we assume annual district OPEX equals 1% of district CAPEX and 2% of total heat demand for pumping costs
+
+            else:
+                self.dhdistrictoandmcost.value = 0
+
+            self.Coam.value = self.Coamwell.value + self.Coamplant.value + self.Coamwater.value + self.chilleropex.value + self.dhdistrictoandmcost.value  # total O&M cost (M$/year)
+
+        else:
+            self.Coam.value = self.oamtotalfixed.value  # total O&M cost (M$/year)
+
+        if model.wellbores.redrill.value > 0:
+            # account for well redrilling
+            redrilling_costs: PlainQuantity = self.calculate_redrilling_costs(model)
+            self.redrilling_annual_cost.value = redrilling_costs.to(self.redrilling_annual_cost.CurrentUnits).magnitude
+            self.Coam.value += redrilling_costs.to(self.Coam.CurrentUnits).magnitude
+
+        # Add in the AnnualLicenseEtc and TaxRelief
+        self.Coam.value = self.Coam.value + self.AnnualLicenseEtc.value - self.TaxRelief.value
+
+        # partition the OPEX for CHP plants based on the CAPEX ratio
+        self.OPEX_cost_electricity_plant = self.Coam.value * self.CAPEX_heat_electricity_plant_ratio.value
+        self.OPEX_cost_heat_plant = self.Coam.value * (1.0 - self.CAPEX_heat_electricity_plant_ratio.value)
+
     def calculate_cashflow(self, model: Model) -> None:
             """
             Calculate cashflow and cumulative cash flow
@@ -3218,5 +3222,6 @@ class Economics:
 
     def __str__(self):
         return "Economics"
+
 
 

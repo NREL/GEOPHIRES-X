@@ -763,7 +763,7 @@ class WellBores:
             CurrentUnits=LengthUnit.INCHES,
             Required=True,
             ErrMessage="assume default injection well diameter (8 inch)",
-            ToolTipText='Inner diameter of production wellbore (assumed constant along the wellbore) to calculate '
+            ToolTipText='Inner diameter of injection wellbore (assumed constant along the wellbore) to calculate '
                         'frictional pressure drop and wellbore heat transmission with Rameys model'
         )
         self.rameyoptionprod = self.ParameterDict[self.rameyoptionprod.Name] = boolParameter(

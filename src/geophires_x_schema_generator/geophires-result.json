@@ -212,8 +212,16 @@
         },
         "Average production well temperature drop": {},
         "Flowrate per production well": {},
-        "Injection well casing ID": {},
-        "Production well casing ID": {},
+        "Injection well casing ID": {
+          "type": "number",
+          "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate frictional pressure drop and wellbore heat transmission with Rameys model",
+          "units": "in"
+        },
+        "Production well casing ID": {
+          "type": "number",
+          "description": "Inner diameter of production wellbore (assumed constant along the wellbore) to calculate frictional pressure drop and wellbore heat transmission with Rameys model",
+          "units": "in"
+        },
         "Number of times redrilling": {
           "type": "number",
           "description": "redrill",

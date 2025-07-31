@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.7
- Simulation Date: 2025-05-15
- Simulation Time:  10:12
- Calculation Time:      0.113 sec
+ GEOPHIRES Version: 3.9.47
+ Simulation Date: 2025-07-31
+ Simulation Time:  08:38
+ Calculation Time:      0.123 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -26,7 +26,7 @@ Simulation Metadata
                            ***ECONOMIC PARAMETERS***
 
       Economic Model = BICYCLE
-      Accrued financing during construction:                  5.00 %
+      Accrued financing during construction:                 5.00 %
       Project lifetime:                                      35 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          -2.38 MUSD
@@ -66,7 +66,7 @@ Simulation Metadata
       m/A Drawdown Parameter:                                 0.00002 1/year
       Bottom-hole temperature:                              232.00 degC
       Reservoir volume calculated with fracture separation and number of fractures as input
-      Number of fractures:                                   12.00
+      Number of fractures:                                    12
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
       Reservoir hydrostatic pressure:                         29019.48 kPa
@@ -97,6 +97,7 @@ Simulation Metadata
          Field gathering system costs:                        3.17 MUSD
          Total surface equipment costs:                      67.22 MUSD
          Exploration costs:                                   4.64 MUSD
+         Inflation costs during construction:                 5.18 MUSD
       Total capital costs:                                  103.68 MUSD
 
 

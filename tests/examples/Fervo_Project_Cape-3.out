@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.47
  Simulation Date: 2025-07-31
- Simulation Time:  08:38
- Calculation Time:      0.940 sec
+ Simulation Time:  08:57
+ Calculation Time:      0.951 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -25,6 +25,7 @@ Simulation Metadata
 
       Economic Model = BICYCLE
       Accrued financing during construction:                 5.00 %
+      Inflation costs during construction:                  53.65 MUSD
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                        4580.36 MUSD
@@ -102,7 +103,6 @@ Simulation Metadata
          Total surface equipment costs:                     969.26 MUSD
          Exploration costs:                                  30.00 MUSD
          Investment Tax Credit:                            -459.83 MUSD
-         Inflation costs during construction:                53.65 MUSD
       Total capital costs:                                 1072.95 MUSD
 
 

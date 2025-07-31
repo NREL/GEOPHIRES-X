@@ -6,7 +6,7 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.9.47
  Simulation Date: 2025-07-31
- Simulation Time:  08:38
+ Simulation Time:  08:57
  Calculation Time:      0.105 sec
 
                            ***SUMMARY OF RESULTS***
@@ -27,6 +27,7 @@ Simulation Metadata
       Economic Model = Standard Levelized Cost
       Interest Rate:                                          5.00 %
       Accrued financing during construction:                 5.00 %
+      Inflation costs during construction:                   1.39 MUSD
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          15.18 MUSD
@@ -99,7 +100,6 @@ Simulation Metadata
          Field gathering system costs:                        2.55 MUSD
          Total surface equipment costs:                      10.33 MUSD
          Exploration costs:                                   3.32 MUSD
-         Inflation costs during construction:                 1.39 MUSD
       Total capital costs:                                   27.72 MUSD
 
 

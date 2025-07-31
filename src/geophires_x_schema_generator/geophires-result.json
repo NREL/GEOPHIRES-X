@@ -20,7 +20,7 @@
         },
         "Total CAPEX": {
           "type": "number",
-          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, and contingency. For SAM Economic models, it also includes any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
           "units": "MUSD"
         },
         "Average Direct-Use Heat Production": {},
@@ -99,6 +99,11 @@
           "type": "number",
           "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
           "units": "%"
+        },
+        "Inflation costs during construction": {
+          "type": "number",
+          "description": "The calculated amount of cost escalation due to inflation over the construction period.",
+          "units": "MUSD"
         },
         "Project lifetime": {},
         "Capacity factor": {},
@@ -432,7 +437,7 @@
         "Annualized capital costs": {},
         "Total CAPEX": {
           "type": "number",
-          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, contingency, and any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
+          "description": "The total capital expenditure (CAPEX) required to construct the plant. This value includes all direct and indirect costs, and contingency. For SAM Economic models, it also includes any cost escalation from inflation during construction. It is used as the total installed cost input for SAM Economic Models.",
           "units": "MUSD"
         },
         "Drilling Cost": {},

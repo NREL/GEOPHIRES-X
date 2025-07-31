@@ -3,6 +3,7 @@ import os
 import tempfile
 import uuid
 from pathlib import Path
+from typing import Any
 from typing import Optional
 
 from geophires_x.OptionList import PlantType
@@ -965,35 +966,65 @@ Print Output to Console, 1"""
         self.assertIn('SBT with coaxial configuration is not implemented', str(e.exception))
 
     def test_production_well_stimulation_cost(self):
-        def _get_result(prod_well_stim_MUSD: Optional[int] = None) -> GeophiresXResult:
+        def _get_result(
+            prod_well_stim_MUSD: Optional[int] = None,
+            inj_well_stim_MUSD: Optional[int] = None,
+            additional_params: Optional[dict[str, Any]] = None,
+        ) -> GeophiresXResult:
+            if additional_params is None:
+                additional_params = {}
+
             p = {}
             if prod_well_stim_MUSD is not None:
                 p['Reservoir Stimulation Capital Cost per Production Well'] = prod_well_stim_MUSD
+            if inj_well_stim_MUSD is not None:
+                p['Reservoir Stimulation Capital Cost per Injection Well'] = inj_well_stim_MUSD
 
-            return GeophiresXClient().get_geophires_result(
-                ImmutableGeophiresInputParameters(
-                    from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
-                    params=p,
-                )
+            input_params: ImmutableGeophiresInputParameters = ImmutableGeophiresInputParameters(
+                from_file_path=self._get_test_file_path('geophires_x_tests/generic-egs-case.txt'),
+                params={**p, **additional_params},
             )
+            return GeophiresXClient().get_geophires_result(input_params)
 
         result_no_prod_stim: GeophiresXResult = _get_result()
 
         result_prod_stim: GeophiresXResult = _get_result(1.25)
 
-        # TODO https://github.com/NREL/GEOPHIRES-X/issues/383?title=Parameterize+indirect+cost+factor
-        indirect_and_contingency = 1.05 * 1.15
+        default_contingency_factor = 1.15
+        indirect_and_contingency = 1.05 * default_contingency_factor  # default indirect cost factor and contingency
 
         self.assertAlmostEqual(
             (
                 2
                 * (
                     result_no_prod_stim.result['CAPITAL COSTS (M$)']['Stimulation costs']['value']
-                    / (indirect_and_contingency)
+                    / indirect_and_contingency
                 )
             )
             * indirect_and_contingency,
             result_prod_stim.result['CAPITAL COSTS (M$)']['Stimulation costs']['value'],
+            places=1,
+        )
+
+        doublets = 59
+        # fmt:off
+        result_4M_per_well: GeophiresXResult = _get_result(
+            4,
+            4,
+            {
+                'Reservoir Stimulation Indirect Capital Cost Percentage': 0,
+                'Number of Production Wells': doublets,
+                'Number of Injection Wells': doublets,
+
+                # offset contingency
+                'Reservoir Stimulation Capital Cost Adjustment Factor': 1/default_contingency_factor,
+            }
+        )
+        # fmt:on
+
+        self.assertAlmostEqual(
+            (4 * doublets * 2),
+            result_4M_per_well.result['CAPITAL COSTS (M$)']['Stimulation costs']['value'],
             places=1,
         )
 

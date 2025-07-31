@@ -497,8 +497,12 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                if is_sam_econ_model:
-                    # TODO calculate & display for other economic models
+                display_inflation_during_construction_in_capital_costs = is_sam_econ_model \
+                    or (econ.econmodel.value in [EconomicModel.BICYCLE, EconomicModel.FCR,
+                                                EconomicModel.STANDARDIZED_LEVELIZED_COST]
+                        and
+                        econ.inflation_cost_during_construction.value != 0.)
+                if display_inflation_during_construction_in_capital_costs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 

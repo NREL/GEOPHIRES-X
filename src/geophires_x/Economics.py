@@ -453,7 +453,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple[float, float, float]:
             capex_elec_plus_infl, capex_heat_plus_infl = _construction_inflation_cost_elec_heat()
 
             LCOE = (capex_elec_plus_infl + np.sum(Coam_elec * discount_vector)) / np.sum(model.surfaceplant.NetkWhProduced.value * discount_vector) * 1E8  # cents/kWh
-            LCOH = (capex_heat_plus_infl * CCap_heat +
+            LCOH = (capex_heat_plus_infl +
                     np.sum((Coam_heat + model.surfaceplant.PumpingkWh.value * model.surfaceplant.electricity_cost_to_buy.value / 1E6) * discount_vector)) / np.sum(model.surfaceplant.HeatkWhProduced.value * discount_vector) * 1E8  # cents/kWh
             LCOH = LCOH * 2.931  # $/MMBTU
 

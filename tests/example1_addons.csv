@@ -71,7 +71,6 @@ RESERVOIR SIMULATION RESULTS,Production Wellbore Heat Transmission Model,,Ramey 
 RESERVOIR SIMULATION RESULTS,Average Production Well Temperature Drop,,3.0,degC
 RESERVOIR SIMULATION RESULTS,Average Injection Well Pump Pressure Drop,,217.9,kPa
 RESERVOIR SIMULATION RESULTS,Average Production Well Pump Pressure Drop,,1112.0,kPa
-RESERVOIR SIMULATION RESULTS,Average Net Electricity Production,,5.39,MW
 CAPITAL COSTS (M$),Drilling and completion costs,,17.38,MUSD
 CAPITAL COSTS (M$),Drilling and completion costs per well,,4.35,MUSD
 CAPITAL COSTS (M$),Stimulation costs,,3.02,MUSD
@@ -99,7 +98,7 @@ SURFACE EQUIPMENT SIMULATION RESULTS,Average Annual Net Electricity Generation,,
 SURFACE EQUIPMENT SIMULATION RESULTS,Average Pumping Power,,0.2,MW
 SURFACE EQUIPMENT SIMULATION RESULTS,Initial pumping power/net installed power,,3.82,%
 SURFACE EQUIPMENT SIMULATION RESULTS,Heat to Power Conversion Efficiency,,10.07,%
-Simulation Metadata,GEOPHIRES Version,,3.9.28,
+Simulation Metadata,GEOPHIRES Version,,3.9.44,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,1,1.0,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,2,1.0056,
 POWER GENERATION PROFILE,THERMAL DRAWDOWN,3,1.0073,

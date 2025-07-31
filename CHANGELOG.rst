@@ -8,15 +8,36 @@ GEOPHIRES v3 (2023-2025)
 3.9
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.7>`__
+3.9.47: `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.47>`__
 
-v3.9 adds the `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__
+3.9.43: `Inflation costs <https://github.com/NREL/GEOPHIRES-X/pull/409>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.43>`__
 
+3.9.40: `Redrilling costs fixup; Don't display incorrect SAM-EM ITC <https://github.com/NREL/GEOPHIRES-X/pull/405>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.40>`__
+
+3.9.36: `Increase max exploration cost <https://github.com/NREL/GEOPHIRES-X/pull/403>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.36>`__
+
+3.39.35: `Parameterize contingency <https://github.com/NREL/GEOPHIRES-X/pull/402>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.35>`__
+
+3.9.34: `Parameterize indirect costs <https://github.com/NREL/GEOPHIRES-X/pull/401>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.34>`__
+
+3.9.33: `Parameterize Reservoir Stimulation Capital Cost per well <https://github.com/NREL/GEOPHIRES-X/pull/399>`__, `Allow input parameters in CSV <https://github.com/NREL/GEOPHIRES-X/pull/398>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.33>`__
+
+3.9.31: `Fix client cwd stashing regression <https://github.com/NREL/GEOPHIRES-X/pull/397>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.31>`__
+
+3.9.29: `Move Getting Started to separate documentation page; MPF Gringarten name <https://github.com/NREL/GEOPHIRES-X/pull/396>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.29>`__
+
+3.9.28: `Peaking Boiler Cost per kW; Increase allowed fractures; Honor Capital Cost for Power Plant; Client caching fix; Cape-4 laterals & res. vol.; Doublets parameter <https://github.com/NREL/GEOPHIRES-X/pull/394>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.28>`__
+
+3.9.16: `Fervo Cape Station 500 MWe Update + 50 MWe SAM Example <https://github.com/NREL/GEOPHIRES-X/pull/389>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.16>`__
+
+3.9.8: `Missing percent unit fixes <https://github.com/NREL/GEOPHIRES-X/pull/388>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.8>`__
+
+3.9: `SAM Single Owner PPA Economic Model <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.7>`__
 
 3.8
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.8.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.7.0...v3.8.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.8.14>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.7.23...v3.8.14>`__
 
 Revenue & Cashflow Profile period output aligned with NREL convention used to calculate NPV.
 See https://github.com/NREL/GEOPHIRES-X/discussions/344
@@ -30,7 +51,7 @@ DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f6
 3.7
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.7.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.6.0...v3.7.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.7.23>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.6.9...v3.7.23>`__
 
 "Well depth (or total length, if not vertical)" output field renamed to "Well depth" per https://github.com/NREL/GEOPHIRES-X/issues/321
 
@@ -51,7 +72,7 @@ DOE 2019. "GeoVision" p. 163. https://www.energy.gov/sites/prod/files/2019/06/f6
 3.6
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.0...v3.6.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.6.9>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.5.7...v3.6.9>`__
 
 Changes default output file path to the original working directory instead of the the GEOPHIRES module source directory (usually ``geophires-x`` or ``src/geophires_x``, depending on package installation type).
 This affects:
@@ -71,7 +92,7 @@ Affected users who do not want the new behavior can specify absolute output path
 3.5
 ^^^
 
-`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.5.0>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...v3.5.0>`__
+`release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.5.7>`__ | `diff <https://github.com/NREL/GEOPHIRES-X/compare/v3.4.0...v3.5.7>`__
 
 Milestone version for case studies, SHR temperatures, and other changes since 3.0.
 An overview is given in the July 2024 NREL GEOPHIRES Workshop `Version 3.5 Announcement session recording <https://youtu.be/Bi_l6y6_LQk>`__.

@@ -5,7 +5,7 @@ import numpy as np
 import numpy_financial as npf
 import geophires_x.Economics as Economics
 import geophires_x.Model as Model
-from geophires_x.OptionList import EndUseOptions
+from geophires_x.OptionList import EndUseOptions, EconomicModel
 from geophires_x.Parameter import listParameter, OutputParameter
 from geophires_x.Units import *
 
@@ -108,12 +108,14 @@ class EconomicsAddOns(Economics.Economics):
         # results
         self.AddOnCAPEXTotal = self.OutputParameterDict[self.AddOnCAPEXTotal.Name] = OutputParameter(
             "AddOn CAPEX Total",
+            display_name='Total Add-on CAPEX',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
         )
         self.AddOnOPEXTotalPerYear = self.OutputParameterDict[self.AddOnOPEXTotalPerYear.Name] = OutputParameter(
             "AddOn OPEX Total Per Year",
+            display_name='Total Add-on OPEX',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
@@ -222,6 +224,8 @@ class EconomicsAddOns(Economics.Economics):
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         super().read_parameters(model)  # read the parameters for the parent.
 
+        is_sam_econ_model = model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
+
         # Deal with all the parameter values that the user has provided that relate to this extension.
         # super.read_parameter will have already dealt with all the regular values, but anything unusual
         # may not be dealt with, so check.
@@ -244,12 +248,21 @@ class EconomicsAddOns(Economics.Economics):
             if key.startswith("AddOn OPEX"):
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnOPEXPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Electricity Gained"):
+                if is_sam_econ_model:
+                    raise NotImplementedError('AddOn Electricity is not supported for SAM Economic Models')
+
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnElecGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Heat Gained"):
+                if is_sam_econ_model:
+                    raise NotImplementedError('AddOn Heat is not supported for SAM Economic Models')
+
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnHeatGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
+
             if key.startswith("AddOn Profit Gained"):
                 val = float(model.InputParameters[key].sValue)
                 self.AddOnProfitGainedPerYear.value.append(val)  # this assumes they put the values in the file in consecutive fashion
@@ -271,7 +284,9 @@ class EconomicsAddOns(Economics.Economics):
         :type model: :class:`~geophires_x.Model.Model`
         :return: Nothing, but it does make calculations and set values in the model
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f"Init {str(__class__)}: {sys._getframe().f_code.co_name}")
+
+        is_sam_em = model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
 
         # sum all the AddOn values together, so we can treat all AddOns together. If an AddOn slot is not used,
         # it has zeros for the values, so this won't create problems
@@ -302,6 +317,12 @@ class EconomicsAddOns(Economics.Economics):
         # Calculate the adjusted OPEX and CAPEX
         self.AdjustedProjectCAPEX.value = model.economics.CCap.value + self.AddOnCAPEXTotal.value
         self.AdjustedProjectOPEX.value = model.economics.Coam.value + self.AddOnOPEXTotalPerYear.value
+
+        if is_sam_em:
+            # SAM econ models incorporate add-ons into main economics, not as separate extended economics
+            model.economics.CCap.value = self.AdjustedProjectCAPEX.value
+            model.economics.Coam.value = self.AdjustedProjectOPEX.value
+
         AddOnCapCostPerYear = self.AddOnCAPEXTotal.value / model.surfaceplant.construction_years.value
         ProjectCapCostPerYear = self.AdjustedProjectCAPEX.value / model.surfaceplant.construction_years.value
 
@@ -386,8 +407,9 @@ class EconomicsAddOns(Economics.Economics):
                 self.AdjustedProjectCAPEX.value + (
                     self.AdjustedProjectOPEX.value * model.surfaceplant.plant_lifetime.value))
 
-        # recalculate LCOE/LCOH
-        self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
+        if not is_sam_em:
+            # recalculate LCOE/LCOH
+            self.LCOE.value, self.LCOH.value, LCOC = Economics.CalculateLCOELCOHLCOC(self, model)
 
         self._calculate_derived_outputs(model)
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

@@ -415,6 +415,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
+    if model.economics.DoAddOnCalculations.value:
+        add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
+        add_on_profit_series = [add_on_profit_per_year]
+        ret['cp_capacity_payment_amount'] = add_on_profit_series
+        ret['cp_capacity_payment_type'] = 1
+
     return ret
 
 

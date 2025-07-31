@@ -21,7 +21,7 @@ from geophires_x.EconomicsSam import (
     _ppa_pricing_model,
     _get_fed_and_state_tax_rates,
 )
-from geophires_x.GeoPHIRESUtils import sig_figs
+from geophires_x.GeoPHIRESUtils import sig_figs, quantity
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
@@ -559,7 +559,8 @@ class EconomicsSamTestCase(BaseTestCase):
         #     'Inflation Rate': 0.04769,
         # }
         # r3: GeophiresXResult = self._get_result(
-        #     params3, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        #     params3,
+        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         # )
         # self.assertEqual(15.0, _accrued_financing(r3))
         #
@@ -568,9 +569,74 @@ class EconomicsSamTestCase(BaseTestCase):
         #     'Inflation Rate During Construction': 0.15,
         # }
         # r4: GeophiresXResult = self._get_result(
-        #     params4, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        #     params4,
+        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         # )
         # self.assertEqual(15.0, _accrued_financing(r4))
+
+    def test_add_ons(self):
+        no_add_ons_result = self._get_result(
+            {'Do AddOn Calculations': False}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        self._assert_capex_line_items_sum_to_total(no_add_ons_result)
+
+        add_ons_result = self._get_result(
+            {'Do AddOn Calculations': True}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        self.assertIsNotNone(add_ons_result)
+        self._assert_capex_line_items_sum_to_total(add_ons_result)
+
+        self.assertGreater(
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+
+        self.assertGreater(add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'], 0)
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total operating and maintenance costs'][
+                'value'
+            ],
+            no_add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'][
+                'Total operating and maintenance costs'
+            ]['value'],
+        )
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total Add-on OPEX']['value'], 0
+        )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Electricity is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Electricity Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Heat is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Heat Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+    def _assert_capex_line_items_sum_to_total(self, r: GeophiresXResult):
+        capex_line_items = {key: value for key, value in r.result['CAPITAL COSTS (M$)'].items() if value is not None}
+
+        total_capex_unit = capex_line_items['Total CAPEX']['unit']
+        total_capex = quantity(capex_line_items['Total CAPEX']['value'], total_capex_unit)
+
+        capex_line_item_sum = 0
+        for line_item_name, capex_line_item in capex_line_items.items():
+            if line_item_name not in [
+                'Total CAPEX',
+                'Total surface equipment costs',
+                'Drilling and completion costs per well',
+                'Drilling and completion costs per vertical production well',
+                'Drilling and completion costs per vertical injection well',
+                'Drilling and completion costs per non-vertical section',
+            ]:
+                capex_line_item_sum += quantity(capex_line_item['value'], capex_line_item['unit']).to(total_capex_unit)
+
+        self.assertEqual(total_capex, capex_line_item_sum)
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

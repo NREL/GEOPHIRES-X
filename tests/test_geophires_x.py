@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import math
 import os
 import tempfile
 import uuid
 from pathlib import Path
 from typing import Any
-from typing import Optional
 
 from geophires_x.OptionList import PlantType
 from geophires_x.OptionList import WellDrillingCostCorrelation
@@ -270,7 +271,7 @@ class GeophiresXTestCase(BaseTestCase):
             except TypeError:
                 pass
 
-    def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> Optional[float]:
+    def _get_unequal_dicts_approximate_percent_difference(self, d1: dict, d2: dict) -> float | None:
         for i in range(99):
             try:
                 self.assertDictAlmostEqual(d1, d2, percent=i)
@@ -967,9 +968,9 @@ Print Output to Console, 1"""
 
     def test_production_well_stimulation_cost(self):
         def _get_result(
-            prod_well_stim_MUSD: Optional[int] = None,
-            inj_well_stim_MUSD: Optional[int] = None,
-            additional_params: Optional[dict[str, Any]] = None,
+            prod_well_stim_MUSD: int | None = None,
+            inj_well_stim_MUSD: int | None = None,
+            additional_params: dict[str, Any] | None = None,
         ) -> GeophiresXResult:
             if additional_params is None:
                 additional_params = {}
@@ -1030,9 +1031,9 @@ Print Output to Console, 1"""
 
     def test_indirect_costs(self):
         def _get_result(
-            indirect_cost_percent: Optional[int] = None,
-            stimulation_indirect_cost_percent: Optional[int] = None,
-            wellfield_indirect_cost_percent: Optional[int] = None,
+            indirect_cost_percent: int | None = None,
+            stimulation_indirect_cost_percent: int | None = None,
+            wellfield_indirect_cost_percent: int | None = None,
             input_file_path: str = 'geophires_x_tests/generic-egs-case.txt',
         ) -> float:
             p = {}
@@ -1130,7 +1131,7 @@ Print Output to Console, 1"""
 
     def test_contingency(self):
         def _get_result(
-            contingency_percentage: Optional[int] = None,
+            contingency_percentage: int | None = None,
             input_file_path: str = 'geophires_x_tests/generic-egs-case.txt',
         ) -> float:
             p = {}

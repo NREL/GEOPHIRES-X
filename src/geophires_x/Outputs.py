@@ -274,6 +274,20 @@ class Outputs:
                 acf_label = Outputs._field_label(acf.display_name, 49)
                 f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
 
+                display_inflation_costs_in_economic_parameters: bool = (
+                    econ.econmodel.value in [EconomicModel.BICYCLE,
+                                             EconomicModel.FCR,
+                                             EconomicModel.STANDARDIZED_LEVELIZED_COST]
+                    and
+                    econ.inflation_cost_during_construction.value != 0.
+                )
+                if display_inflation_costs_in_economic_parameters:
+                    # Inflation cost is displayed here for economic models that don't treat inflation cost as a
+                    # capital cost
+                    icc: OutputParameter = econ.inflation_cost_during_construction
+                    icc_label = Outputs._field_label(icc.display_name, 49)
+                    f.write(f'      {icc_label}{icc.value:10.2f} {icc.CurrentUnits.value}\n')
+
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')
 
@@ -497,8 +511,8 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                if is_sam_econ_model:
-                    # TODO calculate & display for other economic models
+                display_inflation_during_construction_in_capital_costs = is_sam_econ_model
+                if display_inflation_during_construction_in_capital_costs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 

@@ -369,20 +369,23 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple[float, float, float]:
     Coam_heat = (econ.Coam.value * (1.0 - econ.CAPEX_heat_electricity_plant_ratio.value))
 
     def _capex_total_plus_construction_inflation() -> float:
-        # TODO unit conversions
         # TODO should be return value instead of mutating econ
-        econ.inflation_cost_during_construction.value = econ.CCap.value * econ.inflrateconstruction.value
+        econ.inflation_cost_during_construction.value = quantity(
+            econ.CCap.value * econ.inflrateconstruction.value,
+            econ.CCap.CurrentUnits
+        ).to(econ.inflation_cost_during_construction.CurrentUnits).magnitude
 
         return econ.CCap.value + econ.inflation_cost_during_construction.value
 
     def _construction_inflation_cost_elec_heat() -> tuple[float, float]:
-        # TODO unit conversions
         construction_inflation_cost_elec = CCap_elec * econ.inflrateconstruction.value
         construction_inflation_cost_heat = CCap_heat * econ.inflrateconstruction.value
 
         # TODO should be return value instead of mutating econ
-        econ.inflation_cost_during_construction.value = (construction_inflation_cost_elec
-                                                         + construction_inflation_cost_heat)
+        econ.inflation_cost_during_construction.value = quantity(
+            construction_inflation_cost_elec+ construction_inflation_cost_heat,
+            econ.CCap.CurrentUnits
+        ).to(econ.inflation_cost_during_construction.CurrentUnits).magnitude
 
         return CCap_elec + construction_inflation_cost_elec, CCap_heat + construction_inflation_cost_heat
 

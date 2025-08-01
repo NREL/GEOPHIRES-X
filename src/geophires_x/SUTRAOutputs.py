@@ -104,8 +104,8 @@ class SUTRAOutputs(Outputs):
                 f.write(f'      Pump efficiency:                               {pump_efficiency_display}{NL}')
 
                 f.write(f"      Lifetime Average Well Flow Rate:               {np.average(abs(model.wellbores.ProductionWellFlowRates.value)):10.1f} "  + model.wellbores.ProductionWellFlowRates.CurrentUnits.value + NL)
-                f.write(f"      Injection well casing ID:                      {model.wellbores.injwelldiam.value:10.3f} " + model.wellbores.injwelldiam.CurrentUnits.value + NL)
-                f.write(f"      Production well casing ID:                     {model.wellbores.prodwelldiam.value:10.3f} " + model.wellbores.prodwelldiam.CurrentUnits.value + NL)
+                f.write(f'      {model.wellbores.injection_well_casing_inner_diameter.display_name}:                          {model.wellbores.injection_well_casing_inner_diameter.value:10.3f} {model.wellbores.injection_well_casing_inner_diameter.CurrentUnits.value}\n')
+                f.write(f'      {model.wellbores.production_well_casing_inner_diameter.display_name}:                         {model.wellbores.production_well_casing_inner_diameter.value:10.3f} {model.wellbores.production_well_casing_inner_diameter.CurrentUnits.value}\n')
                 f.write(NL)
                 f.write(NL)
                 f.write("                           ***RESERVOIR SIMULATION RESULTS***" + NL)

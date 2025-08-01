@@ -274,6 +274,20 @@ class Outputs:
                 acf_label = Outputs._field_label(acf.display_name, 49)
                 f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
 
+                display_inflation_costs_in_economic_parameters: bool = (
+                    econ.econmodel.value in [EconomicModel.BICYCLE,
+                                             EconomicModel.FCR,
+                                             EconomicModel.STANDARDIZED_LEVELIZED_COST]
+                    and
+                    econ.inflation_cost_during_construction.value != 0.
+                )
+                if display_inflation_costs_in_economic_parameters:
+                    # Inflation cost is displayed here for economic models that don't treat inflation cost as a
+                    # capital cost
+                    icc: OutputParameter = econ.inflation_cost_during_construction
+                    icc_label = Outputs._field_label(icc.display_name, 49)
+                    f.write(f'      {icc_label}{icc.value:10.2f} {icc.CurrentUnits.value}\n')
+
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')
 
@@ -327,8 +341,8 @@ class Outputs:
                     f.write('      User-provided production well temperature drop\n')
                     f.write(f'      Constant production well temperature drop:       {model.wellbores.tempdropprod.value:10.1f} ' + model.wellbores.tempdropprod.PreferredUnits.value + NL)
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} ' + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
-                f.write(f'      Injection well casing ID:                          {model.wellbores.injwelldiam.value:10.3f} ' + model.wellbores.injwelldiam.CurrentUnits.value + NL)
-                f.write(f'      Production well casing ID:                         {model.wellbores.prodwelldiam.value:10.3f} ' + model.wellbores.prodwelldiam.CurrentUnits.value + NL)
+                f.write(f'      {model.wellbores.injection_well_casing_inner_diameter.display_name}:                          {model.wellbores.injection_well_casing_inner_diameter.value:10.3f} {model.wellbores.injection_well_casing_inner_diameter.CurrentUnits.value}\n')
+                f.write(f'      {model.wellbores.production_well_casing_inner_diameter.display_name}:                         {model.wellbores.production_well_casing_inner_diameter.value:10.3f} {model.wellbores.production_well_casing_inner_diameter.CurrentUnits.value}\n')
                 f.write(f'      {model.wellbores.redrill.display_name}:                    {model.wellbores.redrill.value:10.0f}\n')
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
                     f.write('      Power plant type:                                       ' + str(model.surfaceplant.plant_type.value.value) + NL)
@@ -497,8 +511,8 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                if is_sam_econ_model:
-                    # TODO calculate & display for other economic models
+                display_inflation_during_construction_in_capital_costs = is_sam_econ_model
+                if display_inflation_during_construction_in_capital_costs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 

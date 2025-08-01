@@ -139,8 +139,8 @@ def total_capex_parameter_output_parameter() -> OutputParameter:
         UnitType=Units.CURRENCY,
         CurrentUnits=CurrencyUnit.MDOLLARS,
         PreferredUnits=CurrencyUnit.MDOLLARS,
-        ToolTipText="The total capital expenditure (CAPEX) required to construct the plant. "
-                    "This value includes all direct and indirect costs, contingency, and any cost escalation from "
-                    "inflation during construction. It is used as the total installed cost input for "
-                    "SAM Economic Models."
+        ToolTipText='The total capital expenditure (CAPEX) required to construct the plant. '
+                    'This value includes all direct and indirect costs, and contingency. '
+                    'For SAM Economic models, it also includes any cost escalation from inflation during construction. '
+                    'It is used as the total installed cost input for SAM Economic Models.'
     )

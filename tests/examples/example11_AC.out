@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.7
- Simulation Date: 2025-05-15
- Simulation Time:  10:13
- Calculation Time:      0.096 sec
+ GEOPHIRES Version: 3.9.47
+ Simulation Date: 2025-07-31
+ Simulation Time:  08:57
+ Calculation Time:      0.107 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -27,7 +27,8 @@ Simulation Metadata
 
       Economic Model = Standard Levelized Cost
       Interest Rate:                                          5.00 %
-      Accrued financing during construction:                  5.00 %
+      Accrued financing during construction:                 5.00 %
+      Inflation costs during construction:                   1.32 MUSD
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          10.11 MUSD
@@ -65,7 +66,7 @@ Simulation Metadata
       m/A Drawdown Parameter:                                 0.00002 1/year
       Bottom-hole temperature:                              109.50 degC
       Reservoir volume calculated with fracture separation and number of fractures as input
-      Number of fractures:                                   12.00
+      Number of fractures:                                    12
       Fracture separation:                                   80.00 meter
       Reservoir volume:                               176000000 m**3
       Reservoir hydrostatic pressure:                         20488.96 kPa

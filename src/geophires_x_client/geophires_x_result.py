@@ -79,6 +79,8 @@ class GeophiresXResult:
                 'Nominal Discount Rate',
                 'WACC',
                 'Accrued financing during construction',
+                # Displayed for economic models that don't treat inflation costs as capital costs (non-SAM-EM)
+                'Inflation costs during construction',
                 'Project lifetime',
                 'Capacity factor',
                 'Project NPV',
@@ -261,6 +263,7 @@ class GeophiresXResult:
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Investment Tax Credit',
+                # Displayed for economic models that treat inflation costs as capital costs (SAM-EM)
                 'Inflation costs during construction',
                 'Total Add-on CAPEX',
                 'Total capital costs',

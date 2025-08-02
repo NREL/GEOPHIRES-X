@@ -342,4 +342,6 @@ class SUTRAWellBores(WellBores):
             / model.surfaceplant.pump_efficiency.value
         )
 
-        model.logger.info("complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        self._sync_output_params_from_input_params()
+
+        model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')

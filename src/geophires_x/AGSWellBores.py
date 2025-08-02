@@ -1028,6 +1028,8 @@ class AGSWellBores(WellBores):
             # (b/c we are not generating electricity) = thermosiphon is happening!
             self.PumpingPower.value = [max(x, 0.) for x in self.PumpingPower.value]
 
+        self._sync_output_params_from_input_params()
+
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):

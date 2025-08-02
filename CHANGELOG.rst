@@ -8,6 +8,8 @@ GEOPHIRES v3 (2023-2025)
 3.9
 ^^^
 
+3.9.48: `Well diameter outputs, surface plant cost, non-SAM-EM Inflation costs during construction <https://github.com/NREL/GEOPHIRES-X/pull/412>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.48>`__
+
 3.9.47: `Add-Ons support for SAM Economic Models <https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.47>`__
 
 3.9.43: `Inflation costs <https://github.com/NREL/GEOPHIRES-X/pull/409>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.43>`__

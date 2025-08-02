@@ -3,7 +3,7 @@ import numpy as np
 from pint.facets.plain import PlainQuantity
 
 from .Parameter import floatParameter, intParameter, boolParameter, OutputParameter, ReadParameter, \
-    coerce_int_params_to_enum_values
+    coerce_int_params_to_enum_values, Parameter
 from geophires_x.GeoPHIRESUtils import vapor_pressure_water_kPa, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 from geophires_x.GeoPHIRESUtils import viscosity_water_Pa_sec
@@ -738,6 +738,7 @@ class WellBores:
                         "same value."
         )
 
+        # noinspection SpellCheckingInspection
         self.prodwelldiam = self.ParameterDict[self.prodwelldiam.Name] = floatParameter(
             "Production Well Diameter",
             DefaultValue=8.0,
@@ -748,9 +749,10 @@ class WellBores:
             CurrentUnits=LengthUnit.INCHES,
             Required=True,
             ErrMessage="assume default production well diameter (8 inch)",
-            ToolTipText="Inner diameter of production wellbore (assumed constant along the wellbore) to calculate \
-            frictional pressure drop and wellbore heat transmission with Rameys model"
+            ToolTipText='Inner diameter of production wellbore (assumed constant along the wellbore) to calculate '
+                        'frictional pressure drop and wellbore heat transmission with Rameys model'
         )
+        # noinspection SpellCheckingInspection
         self.injwelldiam = self.ParameterDict[self.injwelldiam.Name] = floatParameter(
             "Injection Well Diameter",
             DefaultValue=8.0,
@@ -761,8 +763,8 @@ class WellBores:
             CurrentUnits=LengthUnit.INCHES,
             Required=True,
             ErrMessage="assume default injection well diameter (8 inch)",
-            ToolTipText="Inner diameter of production wellbore (assumed constant along the wellbore) to calculate "
-                        "frictional pressure drop and wellbore heat transmission with Rameys model"
+            ToolTipText='Inner diameter of injection wellbore (assumed constant along the wellbore) to calculate '
+                        'frictional pressure drop and wellbore heat transmission with Rameys model'
         )
         self.rameyoptionprod = self.ParameterDict[self.rameyoptionprod.Name] = boolParameter(
             "Ramey Production Wellbore Model",
@@ -1097,6 +1099,21 @@ class WellBores:
         self.MyPath = __file__
 
         # Results - used by other objects or printed in output downstream
+
+        self.injection_well_casing_inner_diameter = self.OutputParameterDict[self.injection_well_casing_inner_diameter.Name] = OutputParameter(
+            Name='Injection well casing ID',
+            UnitType=self.injwelldiam.UnitType,
+            PreferredUnits=self.injwelldiam.PreferredUnits,
+            CurrentUnits=self.injwelldiam.CurrentUnits,
+            ToolTipText=self.injwelldiam.ToolTipText,
+        )
+        self.production_well_casing_inner_diameter = self.OutputParameterDict[self.production_well_casing_inner_diameter.Name] = OutputParameter(
+            Name='Production well casing ID',
+            UnitType=self.prodwelldiam.UnitType,
+            PreferredUnits=self.prodwelldiam.PreferredUnits,
+            CurrentUnits=self.prodwelldiam.CurrentUnits,
+            ToolTipText=self.prodwelldiam.ToolTipText,
+        )
         self.production_reservoir_pressure = self.OutputParameterDict[self.production_reservoir_pressure.Name] = OutputParameter(
             Name="Calculated Reservoir Pressure",
             value=self.Phydrostatic.value,
@@ -1537,4 +1554,19 @@ class WellBores:
             # negative pumping power values become zero (b/c we are not generating electricity)
             self.PumpingPower.value = [0. if x < 0. else x for x in self.PumpingPower.value]
 
+        self._sync_output_params_from_input_params()
+
         model.logger.info(f'complete {self.__class__.__name__}: {__name__}')
+
+    def _sync_output_params_from_input_params(self) -> None:
+        """
+        Handles setting output parameters whose values are based on 1:1 corresponding input parameters.
+        """
+
+        def _set_output_param_from_input_param(input_param: Parameter, output_param: OutputParameter) -> None:
+            output_param.value = input_param.quantity().to(output_param.CurrentUnits).magnitude
+
+        # Injection/production well casing ID have same value as inputs but exist as separate output parameters due to
+        # having a different display name.
+        _set_output_param_from_input_param(self.injwelldiam, self.injection_well_casing_inner_diameter)
+        _set_output_param_from_input_param(self.prodwelldiam, self.production_well_casing_inner_diameter)

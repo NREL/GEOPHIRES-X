@@ -1510,7 +1510,7 @@
       "category": "Economics",
       "default": -1.0,
       "minimum": 0,
-      "maximum": 1000
+      "maximum": 10000
     },
     "Surface Plant Capital Cost Adjustment Factor": {
       "description": "Multiplier for built-in surface plant capital cost correlation",

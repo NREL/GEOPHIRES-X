@@ -383,7 +383,7 @@ def CalculateLCOELCOHLCOC(econ, model: Model) -> tuple[float, float, float]:
 
         # TODO should be return value instead of mutating econ
         econ.inflation_cost_during_construction.value = quantity(
-            construction_inflation_cost_elec+ construction_inflation_cost_heat,
+            construction_inflation_cost_elec + construction_inflation_cost_heat,
             econ.CCap.CurrentUnits
         ).to(econ.inflation_cost_during_construction.CurrentUnits).magnitude
 

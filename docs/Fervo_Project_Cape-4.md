@@ -8,7 +8,7 @@ Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $75.5/MWh and CAPEX = $4900/kW.
+Key case study results include LCOE = $79.1/MWh and CAPEX = $4800/kW.
 
 [Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
 interactively explore the case study in the GEOPHIRES web interface.
@@ -54,7 +54,7 @@ in source code for the full set of inputs.
 | Fraction of Investment in Bonds (percent debt vs. equity) | 60%                                                                                                                   | Approximate remaining percentage of CAPEX with $1 billion sponsor equity per Matson, 2024. Note that this source says that Fervo ultimately wants to target "15% sponsor equity, 15% bridge loan, and 70% construction to term loans", but this case study does not attempt to model that capital structure.                                                             |
 | Exploration Capital Cost                                  | $30M                                                                                                                  | Estimate significantly higher exploration costs than default correlation in consideration of potential risks associated with second/third/fourth-of-a-kind EGS projects                                                                                                                                                                                                  |
 | Investment Tax Credit Rate (ITC)                          | 30%                                                                                                                   | Same as 400 MWe case study (Fervo_Project_Cape-3)                                                                                                                                                                                                                                                                                                                        |
-| Inflation Rate During Construction                        | 15%                                                                                                                   | Conservatively models the equivalent of a higher annual inflation rate (4.769%) over a 3-year period as a hedge against construction delays and short-term inflation volatility.                                                                                                                                                                                         |
+| Construction Years                                        | 1                                                                                                                     | Calibrated to a 2-6 year construction time for a 1 GW plant (Yusifov & Enriquez, 2025)                                                                                                                                                                                                                                                                                   |
 
 ### Technical & Engineering Parameters
 
@@ -83,12 +83,12 @@ in source code for the complete results.
 
 | Metric                             | Result Value                                           | Reference Value(s)                 | Reference Source                                 |
 |------------------------------------|--------------------------------------------------------|------------------------------------|--------------------------------------------------|
-| LCOE                               | $75.5/MWh                                              | $80/MWh                            | Horne et al, 2025                                |
-| Project capital costs: Total CAPEX | $2.64B                                                 |                                    |                                                  |
-| Project capital costs: $/kW        | $4900/kW (based on maximum net electricity generation) | $5000/kW; $4500/kW; $3000–$6000/kW | McClure, 2024; Horne et al, 2025; Latimer, 2025. |
+| LCOE                               | $79.1/MWh                                              | $80/MWh                            | Horne et al, 2025                                |
+| Project capital costs: Total CAPEX | $2.59B                                                 |                                    |                                                  |
+| Project capital costs: $/kW        | $4800/kW (based on maximum net electricity generation) | $5000/kW; $4500/kW; $3000–$6000/kW | McClure, 2024; Horne et al, 2025; Latimer, 2025. |
 | Well Drilling and Completion Cost  | $3.96M/well (including 5% indirect costs)              | $<4M/well                          | Latimer, 2025.                                   |
 | WACC                               | 8.3%                                                   | 8.3%                               | Matson, 2024.                                    |
-| After-tax IRR                      | 31.5%                                                  | 15–25%                             | Typical levered returns for energy projects      |
+| After-tax IRR                      | 29.28%                                                 | 15–25%                             | Typical levered returns for energy projects      |
 
 ### Technical & Engineering Results
 

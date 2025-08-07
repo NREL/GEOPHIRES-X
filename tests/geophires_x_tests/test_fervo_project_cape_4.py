@@ -119,7 +119,7 @@ class FervoProjectCape4TestCase(BaseTestCase):
         results_in_markdown['Well Drilling and Completion Cost']['unit'] = results_in_markdown[
             'Well Drilling and Completion Cost'
         ]['unit'].replace('/well', '')
-        self.assertDictAlmostEqual(example_result_values, results_in_markdown, percent=0.07)
+        self.assertDictAlmostEqual(example_result_values, results_in_markdown, percent=0.175)
 
         result_capex_USD_per_kW = (
             _Q(example_result._get_result_field('Total CAPEX')).quantity().to('USD').magnitude

@@ -75,6 +75,12 @@ class FervoProjectCape4TestCase(BaseTestCase):
         self.assertEqual(3.96, results_in_markdown['Well Drilling and Completion Cost']['value'])
         self.assertEqual('MUSD/well', results_in_markdown['Well Drilling and Completion Cost']['unit'])
 
+        expected_stim_cost_MUSD_per_well = 4.83
+        self.assertEqual(
+            expected_stim_cost_MUSD_per_well, inputs_in_markdown['Reservoir Stimulation Capital Cost per Well']['value']
+        )
+        self.assertEqual('MUSD', inputs_in_markdown['Reservoir Stimulation Capital Cost per Well']['unit'])
+
         class _Q(HasQuantity):
             def __init__(self, vu: dict[str, Any]):
                 self.value = vu['value']
@@ -141,6 +147,12 @@ class FervoProjectCape4TestCase(BaseTestCase):
         self.assertEqual(
             example_result.result['RESERVOIR PARAMETERS']['Reservoir volume']['value'],
             inputs_in_markdown['Reservoir Volume']['value'],
+        )
+
+        expected_stim_cost_total_MUSD = expected_stim_cost_MUSD_per_well * num_doublets * 2
+        self.assertEqual(
+            expected_stim_cost_total_MUSD,
+            example_result.result['CAPITAL COSTS (M$)']['Stimulation costs']['value'],
         )
 
     def parse_markdown_results_structured(self, markdown_text: str) -> dict:

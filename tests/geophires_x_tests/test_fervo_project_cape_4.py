@@ -72,10 +72,13 @@ class FervoProjectCape4TestCase(BaseTestCase):
         inputs_in_markdown = self.parse_markdown_inputs_structured(documentation_file_content)
         results_in_markdown = self.parse_markdown_results_structured(documentation_file_content)
 
-        self.assertEqual(3.96, results_in_markdown['Well Drilling and Completion Cost']['value'])
-        self.assertEqual('MUSD/well', results_in_markdown['Well Drilling and Completion Cost']['unit'])
+        self.assertEqual(3.96, results_in_markdown['Well Drilling and Completion Costs']['value'])
+        self.assertEqual('MUSD/well', results_in_markdown['Well Drilling and Completion Costs']['unit'])
 
-        expected_stim_cost_MUSD_per_well = 4.83
+        expected_stim_cost_MUSD_per_well = 4.6
+        self.assertEqual(expected_stim_cost_MUSD_per_well, results_in_markdown['Stimulation Costs']['value'])
+        self.assertEqual('MUSD/well', results_in_markdown['Stimulation Costs']['unit'])
+
         self.assertEqual(
             expected_stim_cost_MUSD_per_well, inputs_in_markdown['Reservoir Stimulation Capital Cost per Well']['value']
         )
@@ -102,10 +105,16 @@ class FervoProjectCape4TestCase(BaseTestCase):
         field_mapping = {
             'LCOE': 'Electricity breakeven price',
             'Project capital costs: Total CAPEX': 'Total CAPEX',
-            'Well Drilling and Completion Cost': 'Drilling and completion costs per well',
+            'Well Drilling and Completion Costs': 'Drilling and completion costs per well',
+            'Well Drilling and Completion Costs total': 'Drilling and completion costs',
+            'Stimulation Costs total': 'Stimulation costs',
         }
 
-        ignore_keys = ['Project capital costs: $/kW', 'Total fracture surface area per production well']
+        ignore_keys = [
+            'Project capital costs: $/kW',  # See https://github.com/NREL/GEOPHIRES-X/issues/391
+            'Total fracture surface area per production well',
+            'Stimulation Costs',  # remapped to 'Stimulation Costs total'
+        ]
 
         example_result = GeophiresXResult(self._get_test_file_path('../examples/Fervo_Project_Cape-4.out'))
         example_result_values = {}
@@ -122,8 +131,8 @@ class FervoProjectCape4TestCase(BaseTestCase):
             if ignore_key in results_in_markdown:
                 del results_in_markdown[ignore_key]
 
-        results_in_markdown['Well Drilling and Completion Cost']['unit'] = results_in_markdown[
-            'Well Drilling and Completion Cost'
+        results_in_markdown['Well Drilling and Completion Costs']['unit'] = results_in_markdown[
+            'Well Drilling and Completion Costs'
         ]['unit'].replace('/well', '')
         self.assertDictAlmostEqual(example_result_values, results_in_markdown, percent=0.185)
 
@@ -204,9 +213,23 @@ class FervoProjectCape4TestCase(BaseTestCase):
                 'Project capital costs: Total CAPEX',
                 'Project capital costs: $/kW',
                 'WACC',
-                'Well Drilling and Completion Cost',
+                'Well Drilling and Completion Costs',
+                'Stimulation Costs',
             ]:
                 structured_results[key_] = self._parse_value_unit(value_)
+
+        for result_with_total_key in ['Well Drilling and Completion Costs', 'Stimulation Costs']:
+            entry = structured_results[result_with_total_key]
+
+            unit_str = entry['unit']
+            entry['unit'] = unit_str.split(';')[0]
+
+            # This probably could/should be done with some adaptation of self._parse_value_unit, but one-off parsing
+            # here is fine for now...
+            structured_results[f'{result_with_total_key} total'] = {
+                'value': float(unit_str.split('; ')[1].replace(' total', '').replace('$', '').replace('M', '')),
+                'unit': entry['unit'].split('/')[0],
+            }
 
         return structured_results
 

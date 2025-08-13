@@ -25,6 +25,7 @@ Geothermal_district_heating_system_with_peaking_boilers.png
 
 # TODO may want to add this to source
 regenerate-schemas.sh
+requirements_2025-08-11.txt
 
 # C extensions
 *.so
@@ -112,3 +113,19 @@ _site/
 /src/geophires_x/CLG Simulator/clg_tea_v3_coaxial_water_elec.py
 /src/geophires_x/CLG Simulator/clg_tea_v3_SCO2_elec.py
 /src/geophires_x/CLG Simulator/clgs_v2.py
+
+# TOUGH
+CO2TAB
+Doublet.dat
+Doublet.out
+FOFT_*.csv
+GENER
+GOFT_*.csv
+INCON
+INFILE
+MESH*
+OUTPUT_ELEME.csv
+SAVE
+TABLE
+rcc3.out
+tough_debug_output/

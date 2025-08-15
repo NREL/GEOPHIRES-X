@@ -105,11 +105,17 @@ in source code for the complete results.
 ## Uncertainty & Sensitivities
 
 Given the methodological approach, including speculative estimation of some input parameters, and lack of real-world
-reference data for comparison, the case study results are subject to uncertainty. This case study does not attempt to
-quantify uncertainties, but sensitivity analysis may be included in future updates. Users may wish to perform their own
-sensitivity analysis using [GEOPHIRES's Monte Carlo simulation module](Monte-Carlo-User-Guide.html) or other data
-analysis
-tools.
+reference data for comparison, the case study results are subject to uncertainty. Users may wish to perform their own
+sensitivity analysis using [GEOPHIRES's Monte Carlo simulation module](Monte-Carlo-User-Guide.html) or other data analysis tools.
+
+### Stimulation & Construction Inflation Costs
+
+The following heatmaps visualize Electricity breakeven price (LCOE) and NPV sensitivity to stimulation cost and inflation costs during construction (a proxy for construction delays and cost overruns).
+Stimulation costs were tested from $2.3M/well (Reservoir Stimulation Capital Cost Adjustment Factor = 0.5) to $9.2M/well (Reservoir Stimulation Capital Cost Adjustment Factor = 2).
+Construction inflation costs were tested from $53.58M (Inflation Rate During Construction = 2.3%) to $340.13M (Inflation Rate During Construction = 14.6%).
+
+![](_images/fervo_project_cape-4_stim-infl-lcoe-heatmap_2025-08-13.png)
+![](_images/fervo_project_cape-4_stim-infl-npv-heatmap_2025-08-13.png)
 
 ## References
 

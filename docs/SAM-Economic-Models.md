@@ -136,7 +136,7 @@ Single Owner       ibi_oth_amount        0.0
 
 You can then manually enter the parameters from the logged mapping into the SAM desktop app.
 
-![](sam-desktop-app-manually-enter-system-capacity-from-geophires-log.png)
+![](_images/sam-desktop-app-manually-enter-system-capacity-from-geophires-log.png)
 
 ## Add-Ons
 

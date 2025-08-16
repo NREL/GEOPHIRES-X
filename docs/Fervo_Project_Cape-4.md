@@ -114,8 +114,8 @@ The following heatmaps visualize Electricity breakeven price (LCOE) and NPV sens
 Stimulation costs were tested from $2.3M/well (Reservoir Stimulation Capital Cost Adjustment Factor = 0.5) to $9.2M/well (Reservoir Stimulation Capital Cost Adjustment Factor = 2).
 Construction inflation costs were tested from $53.58M (Inflation Rate During Construction = 2.3%) to $340.13M (Inflation Rate During Construction = 14.6%).
 
-![](_images/fervo_project_cape-4_stim-infl-lcoe-heatmap_2025-08-13.png)
-![](_images/fervo_project_cape-4_stim-infl-npv-heatmap_2025-08-13.png)
+<img src="_images/fervo_project_cape-4_stim-infl-lcoe-heatmap_2025-08-13.png" style="width:75%;"/>
+<img src="_images/fervo_project_cape-4_stim-infl-npv-heatmap_2025-08-13.png" style="width:75%;"/>
 
 ## References
 

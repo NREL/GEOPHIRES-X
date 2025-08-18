@@ -36,7 +36,7 @@ geophires_x
 .. automodule:: geophires_x.AGSWellBores
     :members:
 
-.. automodule:: geophires_x.SBTWellBores
+.. automodule:: geophires_x.SBTWellbores
     :members:
 
 .. automodule:: geophires_x.SUTRAWellBores
@@ -62,9 +62,6 @@ geophires_x
     :members:
 
 .. automodule:: geophires_x.SUTRAEconomics
-    :members:
-
-.. automodule:: geophires_x.EconomicsCCUS
     :members:
 
 .. automodule:: geophires_x.EconomicsAddOns

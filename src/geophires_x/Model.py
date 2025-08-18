@@ -134,7 +134,7 @@ class Model(object):
             elif self.InputParameters['Reservoir Model'].sValue in ['8', 'SBT']:
                 self.logger.info('Setup the SBT elements of the Model and instantiate new attributes as needed')
                 self.reserv: SBTReservoir = SBTReservoir(self)
-                self.wellbores: SBTWellBores = SBTWellbores(self)
+                self.wellbores: SBTWellbores = SBTWellbores(self)
                 self.economics: SBTEconomics = SBTEconomics(self)
 
         # Now handle the special cases for all AGS cases (CLGS, SBT, or CLGS)

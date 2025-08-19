@@ -13,7 +13,7 @@ def read(*names, **kwargs):
 
 setup(
     name='geophires-x',
-    version='3.9.40',
+    version='3.9.49',
     license='MIT',
     description='GEOPHIRES is a free and open-source geothermal techno-economic simulator.',
     long_description='{}\n{}'.format(
@@ -62,7 +62,7 @@ setup(
     python_requires='>=3.8',
     install_requires=[
         'numpy==1.24; python_version == "3.8"',  # Last version compatible with Python 3.8
-        'numpy==1.26; python_version > "3.8"',
+        'numpy; python_version > "3.8"',
         'numpy-financial',
         'pint',
         'forex_python',
@@ -74,10 +74,12 @@ setup(
         'pandas',
         'matplotlib',
         # Used by Adv*/AGS extensions; may break tox pypy jobs if those are re-enabled
-        'h5py==3.10.0',  # TODO resolve apparent h5py==3.11.0 build compatibility issues on some platforms
+        'h5py',
         'scipy',
         'iapws',
-        'coolprop; python_version > "3.8"',
+        # coolprop 7.0.0 fails on macOS + Python > 3.8, see
+        # https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/16888333182/job/47841807973
+        'coolprop == 6.8.0; python_version > "3.8"',
         # coolprop > 6.7.0 fails on Python 3.8, see
         # https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/14599234458/job/40952924048?pr=69#step:5:302
         'coolprop==6.7.0; python_version == "3.8"',

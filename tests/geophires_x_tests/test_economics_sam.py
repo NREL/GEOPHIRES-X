@@ -21,7 +21,7 @@ from geophires_x.EconomicsSam import (
     _ppa_pricing_model,
     _get_fed_and_state_tax_rates,
 )
-from geophires_x.GeoPHIRESUtils import sig_figs
+from geophires_x.GeoPHIRESUtils import sig_figs, quantity
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
@@ -199,11 +199,16 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(e.exception))
 
     def test_only_1_construction_year_supported(self):
+        # TODO remove this test and uncomment test_multiple_construction_years_supported below once multiple
+        #  construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
         with self.assertRaises(RuntimeError) as e:
             self._get_result({'Construction Years': 2})
 
         self.assertIn('Invalid Construction Years (2)', str(e.exception))
         self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
+
+    # def test_multiple_construction_years_supported(self):
+    #     self.assertIsNotNone(self._get_result({'Construction Years': 2}))
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(
@@ -525,6 +530,113 @@ class EconomicsSamTestCase(BaseTestCase):
         }
         r: GeophiresXResult = self._get_result(never_pays_back_params)
         self.assertIsNone(_payback_period(r))
+
+    def test_accrued_financing_during_construction(self):
+        def _accrued_financing(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['Accrued financing during construction']['value']
+
+        params1 = {
+            'Construction Years': 1,
+            'Inflation Rate': 0.04769,
+        }
+        r1: GeophiresXResult = self._get_result(
+            params1, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+        self.assertAlmostEqual(4.769, _accrued_financing(r1), places=1)
+
+        params2 = {
+            'Construction Years': 1,
+            'Inflation Rate During Construction': 0.15,
+        }
+        r2: GeophiresXResult = self._get_result(
+            params2, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+        self.assertEqual(15.0, _accrued_financing(r2))
+
+        # TODO enable when multiple construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
+        # params3 = {
+        #     'Construction Years': 3,
+        #     'Inflation Rate': 0.04769,
+        # }
+        # r3: GeophiresXResult = self._get_result(
+        #     params3,
+        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        # )
+        # self.assertEqual(15.0, _accrued_financing(r3))
+        #
+        # params4 = {
+        #     'Construction Years': 3,
+        #     'Inflation Rate During Construction': 0.15,
+        # }
+        # r4: GeophiresXResult = self._get_result(
+        #     params4,
+        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        # )
+        # self.assertEqual(15.0, _accrued_financing(r4))
+
+    def test_add_ons(self):
+        no_add_ons_result = self._get_result(
+            {'Do AddOn Calculations': False}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        self._assert_capex_line_items_sum_to_total(no_add_ons_result)
+
+        add_ons_result = self._get_result(
+            {'Do AddOn Calculations': True}, file_path=self._get_test_file_path('egs-sam-em-add-ons.txt')
+        )
+        self.assertIsNotNone(add_ons_result)
+        self._assert_capex_line_items_sum_to_total(add_ons_result)
+
+        self.assertGreater(
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            no_add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+
+        self.assertGreater(add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'], 0)
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total operating and maintenance costs'][
+                'value'
+            ],
+            no_add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)'][
+                'Total operating and maintenance costs'
+            ]['value'],
+        )
+
+        self.assertGreater(
+            add_ons_result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']['Total Add-on OPEX']['value'], 0
+        )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Electricity is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Electricity Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+        with self.assertRaises(RuntimeError, msg='AddOn Heat is not supported for SAM Economic Models'):
+            self._get_result(
+                {'Do AddOn Calculations': True, 'AddOn Heat Gained 1': 100},
+                file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+            )
+
+    def _assert_capex_line_items_sum_to_total(self, r: GeophiresXResult):
+        capex_line_items = {key: value for key, value in r.result['CAPITAL COSTS (M$)'].items() if value is not None}
+
+        total_capex_unit = capex_line_items['Total CAPEX']['unit']
+        total_capex = quantity(capex_line_items['Total CAPEX']['value'], total_capex_unit)
+
+        capex_line_item_sum = 0
+        for line_item_name, capex_line_item in capex_line_items.items():
+            if line_item_name not in [
+                'Total CAPEX',
+                'Total surface equipment costs',
+                'Drilling and completion costs per well',
+                'Drilling and completion costs per vertical production well',
+                'Drilling and completion costs per vertical injection well',
+                'Drilling and completion costs per non-vertical section',
+            ]:
+                capex_line_item_sum += quantity(capex_line_item['value'], capex_line_item['unit']).to(total_capex_unit)
+
+        self.assertEqual(total_capex, capex_line_item_sum)
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

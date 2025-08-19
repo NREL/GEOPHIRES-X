@@ -40,6 +40,7 @@ class GeophiresXResult:
                 _StringValueField('End-Use Option'),
                 _StringValueField('End-Use'),
                 _StringValueField('Surface Application'),
+                _EqualSignDelimitedField('Reservoir Model'),  # SUTRA only
                 'Average Net Electricity Production',
                 'Electricity breakeven price',
                 'Total CAPEX',
@@ -78,6 +79,8 @@ class GeophiresXResult:
                 'Nominal Discount Rate',
                 'WACC',
                 'Accrued financing during construction',
+                # Displayed for economic models that don't treat inflation costs as capital costs (non-SAM-EM)
+                'Inflation costs during construction',
                 'Project lifetime',
                 'Capacity factor',
                 'Project NPV',
@@ -260,6 +263,9 @@ class GeophiresXResult:
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Investment Tax Credit',
+                # Displayed for economic models that treat inflation costs as capital costs (SAM-EM)
+                'Inflation costs during construction',
+                'Total Add-on CAPEX',
                 'Total capital costs',
                 'Annualized capital costs',
                 # AGS/CLGS
@@ -288,6 +294,7 @@ class GeophiresXResult:
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',
                 'Redrilling costs',
+                'Total Add-on OPEX',
                 'Total average annual O&M costs',
                 'Total operating and maintenance costs',
                 # AGS/CLGS
@@ -378,9 +385,12 @@ class GeophiresXResult:
         self._logger = _get_logger(logger_name)
         self.output_file_path = output_file_path
 
-        f = open(self.output_file_path)
-        self._lines = list(f.readlines())
-        f.close()
+        with open(self.output_file_path, encoding='utf-8') as f:
+            self._lines = list(f.readlines())
+
+        self.is_ags_clgs_style_output = '***AGS/CLGS STYLE OUTPUT***' in [_l.strip() for _l in self._lines]
+
+        self._lines_by_category = self._get_lines_by_category()
 
         # TODO generic-er result value map
 
@@ -390,19 +400,27 @@ class GeophiresXResult:
             fields = category_fields[1]
 
             self.result[category] = {}
+            category_lines = self._lines_by_category.get(category, [])
+            search_lines = category_lines if not self.is_ags_clgs_style_output else self._lines
+
             for field in fields:
                 if isinstance(field, _EqualSignDelimitedField):
-                    self.result[category][field.field_name] = self._get_equal_sign_delimited_field(field.field_name)
+                    self.result[category][field.field_name] = self._get_equal_sign_delimited_field(
+                        field.field_name, search_lines=search_lines
+                    )
                 elif isinstance(field, _UnlabeledStringField):
                     self.result[category][field.field_name] = self._get_unlabeled_string_field(
-                        field.field_name, field.marker_prefixes
+                        field.field_name, field.marker_prefixes, search_lines=search_lines
                     )
                 else:
                     is_string_field = isinstance(field, _StringValueField)
                     field_name = field.field_name if is_string_field else field
                     indent = 4 if category != 'Simulation Metadata' else 1
                     self.result[category][field_name] = self._get_result_field(
-                        field_name, is_string_value_field=is_string_field, min_indentation_spaces=indent
+                        field_name,
+                        is_string_value_field=is_string_field,
+                        min_indentation_spaces=indent,
+                        search_lines=search_lines,
                     )
 
         try:
@@ -442,6 +460,41 @@ class GeophiresXResult:
 
         if self._get_end_use_option() is not None:
             self.result['metadata']['End-Use Option'] = self._get_end_use_option().name
+
+    def _get_lines_by_category(self) -> dict[str, list[str]]:
+        """
+        Parses the raw output file lines into a dictionary where keys are
+        category headers and values are the lines belonging to that category.
+        """
+        lines_by_category = {}
+        current_category = None
+        known_headers = list(self._RESULT_FIELDS_BY_CATEGORY.keys())
+
+        for line in self._lines:
+
+            def get_header_content(h_: str) -> str:
+                """
+                TODO adjust this to also work with AGS/CLGS-style headers like '### Cost Results ###'
+                    For now, AGS-style results are parsed from all lines according to the categories defined in
+                    _RESULT_FIELDS_BY_CATEGORY.
+                """
+
+                if h_ == 'Simulation Metadata':
+                    return h_
+                return f'***{h_}***'
+
+            # Check if the line is a category header
+            found_header = next((h for h in known_headers if get_header_content(h) == line.strip()), None)
+
+            if found_header:
+                current_category = found_header
+                if current_category not in lines_by_category:
+                    lines_by_category[current_category] = []
+            elif current_category:
+                # Append the line to the current category if one has been found
+                lines_by_category[current_category].append(line)
+
+        return lines_by_category
 
     @property
     def direct_use_heat_breakeven_price_USD_per_MMBTU(self):
@@ -549,9 +602,18 @@ class GeophiresXResult:
         except FileNotFoundError:
             return {}
 
-    def _get_result_field(self, field_name: str, is_string_value_field: bool = False, min_indentation_spaces: int = 4):
+    def _get_result_field(
+        self,
+        field_name: str,
+        is_string_value_field: bool = False,
+        min_indentation_spaces: int = 4,
+        search_lines: list[str] | None = None,
+    ):
+        if search_lines is None:
+            search_lines = self._lines
+
         # TODO make this less fragile with proper regex
-        matching_lines = set(filter(lambda line: f'{min_indentation_spaces * " "}{field_name}: ' in line, self._lines))
+        matching_lines = set(filter(lambda line: f'{min_indentation_spaces * " "}{field_name}: ' in line, search_lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Field not found: {field_name}')
@@ -589,14 +651,17 @@ class GeophiresXResult:
 
         return {'value': self._parse_number(str_val, field=f'field "{field_name}"'), 'unit': unit}
 
-    def _get_equal_sign_delimited_field(self, field_name):
+    def _get_equal_sign_delimited_field(self, field_name, search_lines: list[str] | None = None):
+        if search_lines is None:
+            search_lines = self._lines
+
         metadata_markers = (
             f'  {field_name} = ',
             # Previous versions of GEOPHIRES erroneously included an extra space after the field name so we include
             # the pattern for it for backwards compatibility with existing .out files.
             f'  {field_name}  = ',
         )
-        matching_lines = set(filter(lambda line: any(m in line for m in metadata_markers), self._lines))
+        matching_lines = set(filter(lambda line: any(m in line for m in metadata_markers), search_lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Equal sign-delimited field not found: {field_name}')
@@ -616,8 +681,13 @@ class GeophiresXResult:
         self._logger.error(f'Unexpected error extracting equal sign-delimited field {field_name}')  # Shouldn't happen
         return None
 
-    def _get_unlabeled_string_field(self, field_name: str, marker_prefixes: list[str]):
-        matching_lines = set(filter(lambda line: any(m in line for m in marker_prefixes), self._lines))
+    def _get_unlabeled_string_field(
+        self, field_name: str, marker_prefixes: list[str], search_lines: list[str] | None = None
+    ):
+        if search_lines is None:
+            search_lines = self._lines
+
+        matching_lines = set(filter(lambda line: any(m in line for m in marker_prefixes), search_lines))
 
         if len(matching_lines) == 0:
             self._logger.debug(f'Unlabeled string field not found: {field_name}')

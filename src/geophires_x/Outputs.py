@@ -6,6 +6,7 @@ from pathlib import Path
 
 # noinspection PyPackageRequirements
 import numpy as np
+import pandas as pd
 
 import geophires_x
 import geophires_x.Model as Model
@@ -175,6 +176,7 @@ class Outputs:
             with open(self.output_file, 'w', encoding='UTF-8') as f:
 
                 econ: Economics = model.economics
+                is_sam_econ_model = econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA
 
                 f.write('                               *****************\n')
                 f.write('                               ***CASE REPORT***\n')
@@ -221,8 +223,8 @@ class Outputs:
                     f.write(f'      {model.economics.LCOE.display_name}:                      {model.economics.LCOE.value:10.2f} {model.economics.LCOE.CurrentUnits.value}\n')
                     f.write(f'      {model.economics.LCOH.display_name}:           {model.economics.LCOH.value:10.2f} {model.economics.LCOH.CurrentUnits.value}\n')
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-                    f.write(f'      {Outputs._field_label(econ.CCap.display_name, 50)}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+                if is_sam_econ_model:
+                    f.write(f'      {Outputs._field_label(econ.capex_total.display_name, 50)}{econ.capex_total.value:10.2f} {econ.capex_total.CurrentUnits.value}\n')
 
                 f.write(f'      Number of production wells:                    {model.wellbores.nprod.value:10.0f}'+NL)
                 f.write(f'      Number of injection wells:                     {model.wellbores.ninj.value:10.0f}'+NL)
@@ -254,10 +256,10 @@ class Outputs:
                     #  https://github.com/softwareengineerprogrammer/GEOPHIRES/commit/535c02d4adbeeeca553b61e9b996fccf00016529
                     f.write(f'      {model.economics.interest_rate.Name}:                                    {model.economics.interest_rate.value:10.2f} {model.economics.interest_rate.CurrentUnits.value}\n')
 
-                elif model.economics.econmodel.value in (EconomicModel.BICYCLE, EconomicModel.SAM_SINGLE_OWNER_PPA):
+                elif is_sam_econ_model or model.economics.econmodel.value == EconomicModel.BICYCLE:
                     f.write(f'      Economic Model = {model.economics.econmodel.value.value}\n')
 
-                if model.economics.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     sam_econ_fields: list[OutputParameter] = [
                         econ.real_discount_rate,
                         econ.nominal_discount_rate,
@@ -268,7 +270,23 @@ class Outputs:
                         label = Outputs._field_label(field.Name, 49)
                         f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
 
-                f.write(f'      Accrued financing during construction:            {econ.inflrateconstruction.value:10.2f} {econ.inflrateconstruction.CurrentUnits.value}\n')
+                acf: OutputParameter = econ.accrued_financing_during_construction_percentage
+                acf_label = Outputs._field_label(acf.display_name, 49)
+                f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
+
+                display_inflation_costs_in_economic_parameters: bool = (
+                    econ.econmodel.value in [EconomicModel.BICYCLE,
+                                             EconomicModel.FCR,
+                                             EconomicModel.STANDARDIZED_LEVELIZED_COST]
+                    and
+                    econ.inflation_cost_during_construction.value != 0.
+                )
+                if display_inflation_costs_in_economic_parameters:
+                    # Inflation cost is displayed here for economic models that don't treat inflation cost as a
+                    # capital cost
+                    icc: OutputParameter = econ.inflation_cost_during_construction
+                    icc_label = Outputs._field_label(icc.display_name, 49)
+                    f.write(f'      {icc_label}{icc.value:10.2f} {icc.CurrentUnits.value}\n')
 
                 f.write(f'      Project lifetime:                              {model.surfaceplant.plant_lifetime.value:10.0f} {model.surfaceplant.plant_lifetime.CurrentUnits.value}\n')
                 f.write(f'      Capacity factor:                                 {model.surfaceplant.utilization_factor.value * 100:10.1f} %\n')
@@ -279,7 +297,7 @@ class Outputs:
                 f.write(f'      {npv_field_label}{e_npv.value:10.2f} {e_npv.PreferredUnits.value}\n')
 
                 irr_output_param: OutputParameter = econ.ProjectIRR \
-                    if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA else econ.after_tax_irr
+                    if not is_sam_econ_model else econ.after_tax_irr
                 irr_field_label = Outputs._field_label(irr_output_param.display_name, 49)
                 irr_display_value = f'{irr_output_param.value:10.2f}' \
                     if not math.isnan(irr_output_param.value) else 'NaN'
@@ -323,8 +341,8 @@ class Outputs:
                     f.write('      User-provided production well temperature drop\n')
                     f.write(f'      Constant production well temperature drop:       {model.wellbores.tempdropprod.value:10.1f} ' + model.wellbores.tempdropprod.PreferredUnits.value + NL)
                 f.write(f'      Flowrate per production well:                    {model.wellbores.prodwellflowrate.value:10.1f} ' + model.wellbores.prodwellflowrate.CurrentUnits.value + NL)
-                f.write(f'      Injection well casing ID:                          {model.wellbores.injwelldiam.value:10.3f} ' + model.wellbores.injwelldiam.CurrentUnits.value + NL)
-                f.write(f'      Production well casing ID:                         {model.wellbores.prodwelldiam.value:10.3f} ' + model.wellbores.prodwelldiam.CurrentUnits.value + NL)
+                f.write(f'      {model.wellbores.injection_well_casing_inner_diameter.display_name}:                          {model.wellbores.injection_well_casing_inner_diameter.value:10.3f} {model.wellbores.injection_well_casing_inner_diameter.CurrentUnits.value}\n')
+                f.write(f'      {model.wellbores.production_well_casing_inner_diameter.display_name}:                         {model.wellbores.production_well_casing_inner_diameter.value:10.3f} {model.wellbores.production_well_casing_inner_diameter.CurrentUnits.value}\n')
                 f.write(f'      {model.wellbores.redrill.display_name}:                    {model.wellbores.redrill.value:10.0f}\n')
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]:
                     f.write('      Power plant type:                                       ' + str(model.surfaceplant.plant_type.value.value) + NL)
@@ -482,7 +500,7 @@ class Outputs:
                     f.write(f'         Stimulation costs (for redrilling):            {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
 
                 if model.economics.RITCValue.value:
-                    if model.economics.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                    if not is_sam_econ_model:
                         f.write(f'         {model.economics.RITCValue.display_name}:                         {-1*model.economics.RITCValue.value:10.2f} {model.economics.RITCValue.CurrentUnits.value}\n')
                     else:
                         # TODO Extract value from SAM Cash Flow Profile per
@@ -493,8 +511,19 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                capex_label = Outputs._field_label(econ.CCap.display_name, 50)
-                f.write(f'      {capex_label}{econ.CCap.value:10.2f} {econ.CCap.CurrentUnits.value}\n')
+                display_inflation_during_construction_in_capital_costs = is_sam_econ_model
+                if display_inflation_during_construction_in_capital_costs:
+                    icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
+                    f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
+
+                    if econ.DoAddOnCalculations.value:
+                        # Non-SAM econ models print this in Extended Economics profile
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnCAPEXTotal.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
+
+                capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
+                capex_label = Outputs._field_label(capex_param.display_name, 50)
+                f.write(f'      {capex_label}{capex_param.value:10.2f} {capex_param.CurrentUnits.value}\n')
 
                 if model.economics.econmodel.value == EconomicModel.FCR:
                     f.write(f'      Annualized capital costs:                         {(model.economics.CCap.value*(1+model.economics.inflrateconstruction.value)*model.economics.FCR.value):10.2f} ' + model.economics.CCap.CurrentUnits.value + NL)
@@ -520,6 +549,11 @@ class Outputs:
                     if model.wellbores.redrill.value > 0:
                         redrill_label = Outputs._field_label(econ.redrilling_annual_cost.display_name, 47)
                         f.write(f'         {redrill_label}{econ.redrilling_annual_cost.value:10.2f} {econ.redrilling_annual_cost.CurrentUnits.value}\n')
+
+                    if econ.DoAddOnCalculations.value and is_sam_econ_model:
+                        # Non-SAM econ models print this in Extended Economics profile
+                        aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
+                        f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:
@@ -724,10 +758,10 @@ class Outputs:
                                                                                                     model.surfaceplant.RemainingReservoirHeatContent.value[i],
                                                                                                                             (model.reserv.InitialReservoirHeatContent.value-model.surfaceplant.RemainingReservoirHeatContent.value[i])*100/model.reserv.InitialReservoirHeatContent.value)+NL)
 
-                if econ.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if not is_sam_econ_model:
                     self.write_revenue_and_cashflow_profile_output(model, f)
 
-                if econ.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
+                if is_sam_econ_model:
                     f.write(self.get_sam_cash_flow_profile_output(model))
 
                 # if we are dealing with overpressure and two different reservoirs, show a table reporting the values
@@ -751,6 +785,16 @@ class Outputs:
                         f.write(NL)
                     f.write(NL)
 
+            addon_df = pd.DataFrame()
+            addon_results = []
+            if model.economics.DoAddOnCalculations.value and not is_sam_econ_model:
+                # SAM econ models incorporate add-on economics into main economics, not as separate extended economics.
+                addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+
+            sdac_df = pd.DataFrame()
+            sdac_results = []
+            if model.economics.DoSDACGTCalculations.value:
+                sdac_df, sdac_results = model.sdacgtoutputs.PrintOutputs(model)
 
         except BaseException as ex:
             tb = sys.exc_info()[2]
@@ -761,7 +805,15 @@ class Outputs:
             model.logger.critical(msg)
             raise RuntimeError(msg) from ex
 
-        print_outputs_rich(self.output_file, self.text_output_file, self.html_output_file, model)
+        print_outputs_rich(
+            self.text_output_file,
+            self.html_output_file,
+            model,
+            sdac_results,
+            addon_results,
+            sdac_df,
+            addon_df
+        )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
 

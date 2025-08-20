@@ -282,8 +282,9 @@ class GeophiresXSchemaGenerator:
                 f'<{schema_ref_base_url}{self.get_output_schema_reference()}>`__'
             )
 
-        rst = f"""{self.get_schema_title()} Parameters
-==========
+        display_title = f'{self.get_schema_title()} Parameters'
+        rst = f"""{display_title}
+{'=' * len(display_title)}
 
 .. contents::
 
@@ -293,7 +294,7 @@ Input Parameters
 {input_rst}
 
 Outputs
-#################
+#######
 {output_schema_ref_rst}
 {output_rst}
 """

@@ -1,8 +1,12 @@
 import sys
+
+import mpmath
 import numpy as np
 from mpmath import *
 import geophires_x.Model as Model
+from .Parameter import intParameter
 from .Reservoir import Reservoir
+from .Units import Units
 
 
 class MPFReservoir(Reservoir):
@@ -12,6 +16,7 @@ class MPFReservoir(Reservoir):
     It also has its own methods and attributes that are unique to this class.
     """
 
+    # noinspection PyUnresolvedReferences,PyProtectedMember
     def __init__(self, model: Model):
         """
         The __init__ function is called automatically when a class is instantiated.
@@ -31,15 +36,30 @@ class MPFReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
+
         super().__init__(model)  # initialize the parent parameters and variables
         sclass = str(__class__).replace("<class \'", "")
         self.MyClass = sclass.replace("\'>", "")
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+
+        max_allowed_precision = 15
+        self.gringarten_stehfest_precision = self.ParameterDict[self.gringarten_stehfest_precision.Name] = intParameter(
+            'Gringarten-Stehfest Precision',
+            DefaultValue=15,
+            AllowableRange=list(range(8, max_allowed_precision + 1)),
+            UnitType=Units.NONE,
+            Required=False,
+            ToolTipText='Sets the numerical precision (decimal places) for the Stehfest '
+                        'algorithm used for the inverse Laplace transform.'
+        )
+
+
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
     def __str__(self):
         return "MPFReservoir"
 
+    # noinspection PyUnresolvedReferences,PyProtectedMember
     def read_parameters(self, model: Model) -> None:
         """
         The read_parameters function reads in the parameters from a dictionary created by reading the user-provided file
@@ -51,15 +71,16 @@ class MPFReservoir(Reservoir):
         :type model: :class:`~geophires_x.Model.Model`
         :return: None
         """
-        model.logger.info("Init " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
         # if we call super, we don't need to deal with setting the parameters here,
         # just deal with the special cases for the variables in this class
         # because the call to the super.readparameters will set all the variables,
         # including the ones that are specific to this class
         super().read_parameters(model)  # read the parameters for the parent.
 
-        model.logger.info("Complete " + str(__class__) + ": " + sys._getframe().f_code.co_name)
+        model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
+    # noinspection SpellCheckingInspection,PyUnresolvedReferences,PyProtectedMember
     def Calculate(self, model: Model):
         """
         The Calculate function calculates the values of all the parameters that are calculated by this object.
@@ -87,13 +108,22 @@ class MPFReservoir(Reservoir):
         # calculate non-dimensional temperature array
         Twnd = []
         try:
+            stash_dps = mpmath.dps
+            if self.gringarten_stehfest_precision.Provided:
+                mpmath.dps = self.gringarten_stehfest_precision.value
+
             for t in range(1, len(model.reserv.timevector.value)):
                 Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
-        except:
-            msg = ('Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1. '
+        except Exception as e_:
+            mpmath.dps = stash_dps
+
+            msg = (f'Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1 '
+                   f'({self.gringarten_stehfest_precision.Name} = {mpmath.dps}). '
                    'Simulation will abort.')
             print(msg)
-            raise RuntimeError(msg)
+            raise RuntimeError(msg) from e_
+
+        mpmath.dps = stash_dps
 
         Twnd = np.asarray(Twnd)
 

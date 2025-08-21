@@ -412,6 +412,15 @@
       "minimum": 0,
       "maximum": 0.2
     },
+    "Gringarten-Stehfest Precision": {
+      "description": "Sets the numerical precision (decimal places) for the Stehfest algorithm used for the inverse Laplace transform.",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": 15,
+      "minimum": 8,
+      "maximum": 15
+    },
     "Cylindrical Reservoir Input Depth": {
       "description": "Depth of the inflow end of a cylindrical reservoir",
       "type": "number",

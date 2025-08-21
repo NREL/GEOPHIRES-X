@@ -65,7 +65,7 @@ and
 
 ![Equation (10)](theoretical-basis-10.png)
 
-with _V_ being the mean volume of the rock block (m<sup>3</sup>) and _h_ being the rock surface heat transfer coefficient (W m<sup>−2</sup> K<sup>−1</sup>). The factor 0.83 in Eq. (9) is the Kuo sphericity and represents the typical mean sphericity of a distribution of irregularly shaped rock blocks found in geothermal reservoirs (Hunsbedt et al. 1984{^3]). More information on default/assumed values for various parameters, including the heat transfer coefficient (_h_), was provided by Beckers (2016[^4]).
+with _V_ being the mean volume of the rock block (m<sup>3</sup>) and _h_ being the rock surface heat transfer coefficient (W m<sup>−2</sup> K<sup>−1</sup>). The factor 0.83 in Eq. (9) is the Kuo sphericity and represents the typical mean sphericity of a distribution of irregularly shaped rock blocks found in geothermal reservoirs (Hunsbedt et al. 1984[^3]). More information on default/assumed values for various parameters, including the heat transfer coefficient (_h_), was provided by Beckers (2016[^4]).
 
 The third model—the _m/A Thermal Drawdown Parameter Model_—is discussed in detail by Armstead and Tester (1987[^5]). This model represents the reservoir as a single rectangular fracture of specified area with a uniform flow of fluid passing over the fracture surface. The mass loading parameter (_m/A_) is defined as the mass flow rate per unit area of a single side of the fracture (kg s<sup>−1</sup> m<sup>−2</sup>) and is provided by the user, along with other rock properties. The dimensionless temperature is defined and calculated as:
 
@@ -107,7 +107,7 @@ GEOPHIRES calculates at each time step the frictional pressure drop in each well
 
 ![Equation (16)](theoretical-basis-16.png)
 
-with _f_ as the Darcy friction factor (−), _ρ_<sub>_w_,well</sub>as the temperature-averaged density of the water in each well (kg m<sup>−3</sup>), _v_ as the average water velocity in the well (m s<sup>−1</sup>), and _d_<sub>well</sub> as the wellbore diameter (m). For turbulent flow, the Darcy friction factor is calculated using the Colebrook–White equation (Fox et al. 2004[^10]):
+with _f_ as the Darcy friction factor (−), _ρ_<sub>_w_,well</sub> as the temperature-averaged density of the water in each well (kg m<sup>−3</sup>), _v_ as the average water velocity in the well (m s<sup>−1</sup>), and _d_<sub>well</sub> as the wellbore diameter (m). For turbulent flow, the Darcy friction factor is calculated using the Colebrook–White equation (Fox et al. 2004[^10]):
 
 ![Equation (17)](theoretical-basis-17.png)
 
@@ -151,7 +151,7 @@ with _C_<sub>wells</sub>, _C_<sub>stim</sub>, _C_<sub>gath</sub>, _C_<sub>plant<
 
 * The built-in cost correlation for stimulating EGS-type reservoirs (_C_<sub>stim</sub>) is $1.25 M per injection well (Beckers and Young 2017[^16]) plus 15% contingency and 5% for indirect costs (DOE 2016[^8]). For traditional hydrothermal reservoirs, this cost parameter is set to $0.
 * The built-in cost correlation for estimating the field gathering system cost (_C_<sub>gath</sub>) follows the same approach as GETEM (DOE 2016[^8]). _C_<sub>gath</sub> includes the cost for surface piping from each well to the plant and pumps for production and injection wells. The length of the surface piping is assumed 750 m per well at a cost of $500 per meter (DOE 2016[^8]). The pumping cost for each pump in the production wells (line-shaft pumps) and a single pump for the injection wells is calculated with the same correlation as GETEM (DOE 2016[^8]). An additional 15% is added for contingency and 12% for indirect costs (DOE 2016[^8]). _C_<sub>gath</sub> does not include the cost of pipelines to an off-site heat user or a district-heating system. These costs are estimated at $750 per meter pipeline length (Beckers and Young 2017[^16]) and can be manually added by the user to the pipeline distribution costs.
-* The built-in power plant cost correlations (_C_<sub>plant</sub>) are based on the original correlations developed by Beckers (2016[^4]), indexed to 2017 using the IHS Markit North American Power Capital Costs Index (NAPCCI) excluding nuclear plants (IHS 2018[^17]). The ORC power plant cost data have been updated with data from the 2016 GETEM tool (DOE 2016[^8]) and the geothermal binary power plants study by Verkís (2014[^18]). Figure 4 shows the power plant capital cost expressed in $ kW<sub>e<sub><sup>−1</sup> as a function of plant size and initial production temperature for subcritical ORC and double-flash power plants. The correlations in GEOPHIRES include 12% for indirect costs and 15% contingency. For the same plant size and production temperature, double-flash power plants are considered about 25% more expensive than single-flash power plants (Zeyghami 2010[^19]), and supercritical ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014[^20]). A wide range in power plant specific cost values is reported in academic and popular literature. The GEOPHIRES built-in surface plant cost correlations represent typical values. However, the user is recommended to provide their own power plant cost data if available for their case study. The ORC plant specific cost decreases only moderately at higher temperatures. The reasons are that when increasing the temperature, the ORC plant design also changes: (1) a different organic fluid is selected, (2) piping, pump, heat exchangers, and other equipment are designed to handle the higher temperature (and potentially also pressure), requiring thicker walls, potentially different materials, etc., and (3) additional components may be implemented, such as a heat recuperator, making the design and operation more complex. Unlike flash power plants, ORC plants are a small, niche market, typically case specific, and rely on relatively young technology, which has not been subject yet to decades of technological advancement. The cost for direct-use heat applications is highly dependent on the type of application. A generic cost of $250 kW<sub>th</sub><sup>−1</sup> plus 15% contingency and 12% indirect costs is assumed in GEOPHIRES. However, users are encouraged to provide their own cost figures for their specific application. Beckers and Young (2017[^16]) collected several cost figures to estimate the surface equipment cost for geothermal district-heating systems.
+* The built-in power plant cost correlations (_C_<sub>plant</sub>) are based on the original correlations developed by Beckers (2016[^4]), indexed to 2017 using the IHS Markit North American Power Capital Costs Index (NAPCCI) excluding nuclear plants (IHS 2018[^17]). The ORC power plant cost data have been updated with data from the 2016 GETEM tool (DOE 2016[^8]) and the geothermal binary power plants study by Verkís (2014[^18]). Figure 4 shows the power plant capital cost expressed in $ kW<sub>e</sub><sup>−1</sup> as a function of plant size and initial production temperature for subcritical ORC and double-flash power plants. The correlations in GEOPHIRES include 12% for indirect costs and 15% contingency. For the same plant size and production temperature, double-flash power plants are considered about 25% more expensive than single-flash power plants (Zeyghami 2010[^19]), and supercritical ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014[^20]). A wide range in power plant specific cost values is reported in academic and popular literature. The GEOPHIRES built-in surface plant cost correlations represent typical values. However, the user is recommended to provide their own power plant cost data if available for their case study. The ORC plant specific cost decreases only moderately at higher temperatures. The reasons are that when increasing the temperature, the ORC plant design also changes: (1) a different organic fluid is selected, (2) piping, pump, heat exchangers, and other equipment are designed to handle the higher temperature (and potentially also pressure), requiring thicker walls, potentially different materials, etc., and (3) additional components may be implemented, such as a heat recuperator, making the design and operation more complex. Unlike flash power plants, ORC plants are a small, niche market, typically case specific, and rely on relatively young technology, which has not been subject yet to decades of technological advancement. The cost for direct-use heat applications is highly dependent on the type of application. A generic cost of $250 kW<sub>th</sub><sup>−1</sup> plus 15% contingency and 12% indirect costs is assumed in GEOPHIRES. However, users are encouraged to provide their own cost figures for their specific application. Beckers and Young (2017[^16]) collected several cost figures to estimate the surface equipment cost for geothermal district-heating systems.
 
 ![Figure 4](theoretical-basis-fig-4.png)
 
@@ -220,29 +220,33 @@ Other case studies providing additional validation by comparing GEOPHIRES output
 
 ## Abbreviations
 
-| CHP       | combined heat and power                                                         |
-| DOE       | Department of Energy                                                            |
-| EGS       | enhanced geothermal system                                                      |
-| FCR       | fixed charge rate                                                               |
-| GEOPHIRES | Geothermal Energy for Production of Heat and Electricity Economically Simulated |
-| GETEM     | Geothermal Energy Technology Evaluation Model                                   |
-| IRR       | internal rate of return                                                         |
-| LBNL      | Lawrence Berkeley National Laboratory                                           |
-| LCOE      | levelized cost of electricity                                                   |
-| LCOH      | levelized cost of heat                                                          |
-| MD        | measured depth                                                                  |
-| NAPCCI    | North American Power Capital Costs Index                                        |
-| NPV       | net present value                                                               |
-| NREL      | National Renewable Energy Laboratory                                            |
-| NTU       | Number of Transfer Units                                                        |
-| O&M       | operation and maintenance                                                       |
-| ORC       | organic Rankine cycle                                                           |
-| TOUGH2    | Transport Of Unsaturated Groundwater and Heat v2                                |
-| TVD       | total vertical depth                                                            |
-| UCRF      | uniform capital recovery factor                                                 |
+| Abbreviation | Definition                                                                      |
+|:------------:|---------------------------------------------------------------------------------|
+| CHP          | combined heat and power                                                         |
+| DOE          | Department of Energy                                                            |
+| EGS          | enhanced geothermal system                                                      |
+| FCR          | fixed charge rate                                                               |
+| GEOPHIRES    | Geothermal Energy for Production of Heat and Electricity Economically Simulated |
+| GETEM        | Geothermal Energy Technology Evaluation Model                                   |
+| IRR          | internal rate of return                                                         |
+| LBNL         | Lawrence Berkeley National Laboratory                                           |
+| LCOE         | levelized cost of electricity                                                   |
+| LCOH         | levelized cost of heat                                                          |
+| MD           | measured depth                                                                  |
+| NAPCCI       | North American Power Capital Costs Index                                        |
+| NPV          | net present value                                                               |
+| NREL         | National Renewable Energy Laboratory                                            |
+| NTU          | Number of Transfer Units                                                        |
+| O&M          | operation and maintenance                                                       |
+| ORC          | organic Rankine cycle                                                           |
+| TOUGH2       | Transport Of Unsaturated Groundwater and Heat v2                                |
+| TVD          | total vertical depth                                                            |
+| UCRF         | uniform capital recovery factor                                                 |
 
-### List of symbols
+### Symbols
 
+| Symbol                                             | Units                            | Definition                                                                      |
+|:--------------------------------------------------:|:--------------------------------:|---------------------------------------------------------------------------------|
 | _B_                                                | MW                               | geofluid energy                                                                 |
 | _Bi_                                               | –                                | Biot number in 1-Dimensional Linear Heat Sweep model                            |
 | _c_                                                | J kg<sup>−1</sup> K<sup>−1</sup> | specific heat capacity                                                          |
@@ -284,41 +288,43 @@ Other case studies providing additional validation by comparing GEOPHIRES output
 | _α_                                                | m<sup>2</sup> s<sup>−1</sup>     | thermal diffusivity                                                             |
 | _γ_                                                | –                                | heat storage ratio parameter in 1-Dimensional Linear Heat Sweep Model           |
 | _Γ_                                                | m                                | parameter in Ramey’s model                                                      |
-| &Delta;_T_                                         | °C                               | temperature drop                                                                |
-| &Delta;_P_                                         | Pa                               | pressure drop                                                                   |
+| &Delta;_T_                                         | °C                               | temperature drop                                                                |
+| &Delta;_P_                                         | Pa                               | pressure drop                                                                   |
 | _η_                                                | –                                | efficiency                                                                      |
 | _ρ_                                                | kg m<sup>−3</sup>                | density                                                                         |
 | _τ_                                                | s                                | time constant                                                                   |
 | _φ_                                                | –                                | rock porosity                                                                   |
 | _ω_                                                | °C m<sup>−1</sup>                | average geothermal gradient                                                     |
 
-### List of subscripts
+### Subscripts
 
-| 0     | initial or ambient                           |
-| cap   | capital                                      |
-| D     | dimensionless                                |
-| ef    | effective                                    |
-| expl  | exploration                                  |
-| fr    | friction                                     |
-| gath  | field fluid gathering system                 |
-| hydro | hydrostatic                                  |
-| inlet | reservoir inlet                              |
-| O&M   | operation and maintenance                    |
-| plant | surface plant                                |
-| prod  | production conditions or production wellbore |
-| pump  | geofluid circulating pumping                 |
-| _r_   | rock                                         |
-| _R_   | reservoir                                    |
-| res   | residence                                    |
-| stim  | reservoir stimulation                        |
-| _t_   | year t                                       |
-| tot   | total                                        |
-| _u_   | utilization                                  |
-| _w_   | water                                        |
-| water | make-up water                                |
-| well  | wellbore                                     |
+| Subscript | Definition                                   |
+|:---------:|----------------------------------------------|
+| 0         | initial or ambient                           |
+| cap       | capital                                      |
+| D         | dimensionless                                |
+| ef        | effective                                    |
+| expl      | exploration                                  |
+| fr        | friction                                     |
+| gath      | field fluid gathering system                 |
+| hydro     | hydrostatic                                  |
+| inlet     | reservoir inlet                              |
+| O&M       | operation and maintenance                    |
+| plant     | surface plant                                |
+| prod      | production conditions or production wellbore |
+| pump      | geofluid circulating pumping                 |
+| _r_       | rock                                         |
+| _R_       | reservoir                                    |
+| res       | residence                                    |
+| stim      | reservoir stimulation                        |
+| _t_       | year t                                       |
+| tot       | total                                        |
+| _u_       | utilization                                  |
+| _w_       | water                                        |
+| water     | make-up water                                |
+| well      | wellbore                                     |
 
-## References
+### References
 
 [^1]: Gringarten AC, Witherspoon PA, Ohnishi Y. Theory of heat extraction from fractured hot dry rock. J Geophys Res. 1975;80(8):1120–4.
 [^2]: Johansson F. mpmath: a Python library for arbitrary-precision floating-point arithmetic (version 1.0.0). [http://mpmath.org/](http://mpmath.org/). 2017.

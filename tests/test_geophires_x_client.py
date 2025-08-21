@@ -440,36 +440,44 @@ class GeophiresXClientTestCase(BaseTestCase):
         self.assertNotEqual(hash(input1), hash(input3))
 
     def test_input_with_non_default_units(self):
-        client = GeophiresXClient()
-        result_default_units = client.get_geophires_result(
-            GeophiresInputParameters(
-                {
-                    'Print Output to Console': 0,
-                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
-                    'Reservoir Model': 1,
-                    'Time steps per year': 1,
-                    'Reservoir Depth': 3,
-                    'Gradient 1': 50,
-                    'Maximum Temperature': 250,
-                }
-            )
-        ).result
-        del result_default_units['metadata']
+        def delete_metadata(r: GeophiresXResult) -> GeophiresXResult:
+            del r.result['metadata']
+            del r.result['Simulation Metadata']['Calculation Time']
 
-        result_non_default_units = client.get_geophires_result(
-            GeophiresInputParameters(
-                {
-                    'Print Output to Console': 0,
-                    'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
-                    'Reservoir Model': 1,
-                    'Time steps per year': 1,
-                    'Reservoir Depth': '3000 meter',
-                    'Gradient 1': 50,
-                    'Maximum Temperature': 250,
-                }
+            return r
+
+        client = GeophiresXClient()
+        result_default_units = delete_metadata(
+            client.get_geophires_result(
+                GeophiresInputParameters(
+                    {
+                        'Print Output to Console': 0,
+                        'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                        'Reservoir Model': 1,
+                        'Time steps per year': 1,
+                        'Reservoir Depth': 3,
+                        'Gradient 1': 50,
+                        'Maximum Temperature': 250,
+                    }
+                )
             )
         ).result
-        del result_non_default_units['metadata']
+
+        result_non_default_units = delete_metadata(
+            client.get_geophires_result(
+                GeophiresInputParameters(
+                    {
+                        'Print Output to Console': 0,
+                        'End-Use Option': EndUseOption.DIRECT_USE_HEAT.value,
+                        'Reservoir Model': 1,
+                        'Time steps per year': 1,
+                        'Reservoir Depth': '3000 meter',
+                        'Gradient 1': 50,
+                        'Maximum Temperature': 250,
+                    }
+                )
+            )
+        ).result
 
         self.assertDictEqual(result_default_units, result_non_default_units)
 

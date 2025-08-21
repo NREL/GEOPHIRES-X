@@ -1,6 +1,6 @@
 import sys
 
-import mpmath
+from mpmath import mp
 import numpy as np
 from mpmath import *
 import geophires_x.Model as Model
@@ -108,14 +108,14 @@ class MPFReservoir(Reservoir):
         # calculate non-dimensional temperature array
         Twnd = []
         try:
-            stash_dps = mpmath.dps
+            stash_dps = mp.dps
             if self.gringarten_stehfest_precision.Provided:
-                mpmath.dps = self.gringarten_stehfest_precision.value
+                mp.dps = self.gringarten_stehfest_precision.value
 
             for t in range(1, len(model.reserv.timevector.value)):
                 Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
         except Exception as e_:
-            mpmath.dps = stash_dps
+            mp.dps = stash_dps
 
             msg = (f'Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1 '
                    f'({self.gringarten_stehfest_precision.Name} = {mpmath.dps}). '
@@ -123,7 +123,7 @@ class MPFReservoir(Reservoir):
             print(msg)
             raise RuntimeError(msg) from e_
 
-        mpmath.dps = stash_dps
+        mp.dps = stash_dps
 
         Twnd = np.asarray(Twnd)
 

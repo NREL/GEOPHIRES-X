@@ -12,10 +12,12 @@ from geophires_x.Reservoir import Reservoir
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+from geophires_x_client import ImmutableGeophiresInputParameters
 from tests.base_test_case import BaseTestCase
 
 
 class ReservoirTestCase(BaseTestCase):
+
     def test_lithostatic_pressure(self):
         p = static_pressure_MPa(2700, 3000)
         self.assertEqual(79.433865, p)
@@ -31,6 +33,30 @@ class ReservoirTestCase(BaseTestCase):
 
         self.assertAlmostEqual(79.433865, p.magnitude, places=3)
         self.assertEqual('megapascal', p.units)
+
+    def test_gringarten_stehfest_precision(self):
+        def _get_result(gringarten_stehfest_precision: int) -> GeophiresXResult:
+            return GeophiresXClient(enable_caching=False).get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('generic-egs-case.txt'),
+                    params={'Gringarten-Stehfest Precision': gringarten_stehfest_precision},
+                )
+            )
+
+        _ = _get_result(15)  # warm up any caching
+        result_15 = _get_result(15)
+        result_8 = _get_result(8)
+
+        def calc_time(r: GeophiresXResult) -> float:
+            return r.result['Simulation Metadata']['Calculation Time']['value']
+
+        calc_time_15_sec = calc_time(result_15)
+        calc_time_8_sec = calc_time(result_8)
+
+        msg = f'calc_time_15_sec={calc_time_15_sec}, calc_time_8_sec={calc_time_8_sec}'
+        print(f'[DEBUG] {msg}')
+
+        self.assertLess(calc_time_8_sec, calc_time_15_sec)
 
     # noinspection PyMethodMayBeStatic
     def _new_model(self, input_file=None) -> Model:

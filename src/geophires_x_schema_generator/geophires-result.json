@@ -555,7 +555,8 @@
     "Simulation Metadata": {
       "type": "object",
       "properties": {
-        "GEOPHIRES Version": {}
+        "GEOPHIRES Version": {},
+        "Calculation Time": {}
       }
     }
   }

@@ -346,7 +346,10 @@ class GeophiresXResult:
                 'Average Annual Total Heating Production',
                 'Average Annual Electricity Use for Pumping',
             ],
-            'Simulation Metadata': [_StringValueField('GEOPHIRES Version')],
+            'Simulation Metadata': [
+                _StringValueField('GEOPHIRES Version'),
+                'Calculation Time',
+            ],
         }
     )
 

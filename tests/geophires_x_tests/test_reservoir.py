@@ -35,6 +35,9 @@ class ReservoirTestCase(BaseTestCase):
         self.assertEqual('megapascal', p.units)
 
     def test_gringarten_stehfest_precision(self):
+        def _log(msg) -> None:
+            print(f'[DEBUG][test_gringarten_stehfest_precision] {msg}')
+
         def _get_result(gringarten_stehfest_precision: int) -> GeophiresXResult:
             return GeophiresXClient(enable_caching=False).get_geophires_result(
                 ImmutableGeophiresInputParameters(
@@ -53,10 +56,12 @@ class ReservoirTestCase(BaseTestCase):
         calc_time_15_sec = calc_time(result_15)
         calc_time_8_sec = calc_time(result_8)
 
-        msg = f'calc_time_15_sec={calc_time_15_sec}, calc_time_8_sec={calc_time_8_sec}'
-        print(f'[DEBUG] {msg}')
+        _log(f'calc_time_15_sec={calc_time_15_sec}, calc_time_8_sec={calc_time_8_sec}')
 
         self.assertLess(calc_time_8_sec, calc_time_15_sec)
+
+        speedup_pct = ((calc_time_15_sec - calc_time_8_sec) / calc_time_15_sec) * 100
+        _log(f'Speedup: {speedup_pct:.2f}%')
 
     # noinspection PyMethodMayBeStatic
     def _new_model(self, input_file=None) -> Model:

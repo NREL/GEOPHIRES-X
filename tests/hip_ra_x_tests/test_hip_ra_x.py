@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 import re
@@ -5,6 +6,7 @@ import sys
 import tempfile
 import unittest
 import uuid
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from geophires_x.Parameter import OutputParameter
@@ -57,20 +59,26 @@ class HipRaXTestCase(BaseTestCase):
         example_files = self._list_test_files_dir(test_files_dir='./examples')
         assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
 
-        params = {
-            'Reservoir Temperature': 250.0,
-            'Rejection Temperature': 60.0,
-            'Reservoir Porosity': 10.0,
-            'Reservoir Area': 55.0,
-            'Reservoir Thickness': 0.25,
-            'Reservoir Life Cycle': 25,
-            'Print Output to Console': False,
-        }
+        def get_stdout_from_running(print_output_to_console: bool) -> str:
+            params = {
+                'Reservoir Temperature': 250.0,
+                'Rejection Temperature': 60.0,
+                'Reservoir Porosity': 10.0,
+                'Reservoir Area': 55.0,
+                'Reservoir Thickness': 0.25,
+                'Reservoir Life Cycle': 25,
+                'Print Output to Console': print_output_to_console,
+            }
 
-        result: HipRaResult = HipRaXClient().get_hip_ra_result(HipRaInputParameters(params))
-        self.assertIsNotNone(result)
+            f = io.StringIO()
+            with redirect_stdout(f):
+                result: HipRaResult = HipRaXClient().get_hip_ra_result(HipRaInputParameters(params))
 
-        # FIXME WIP verify output not printed to console
+            self.assertIsNotNone(result)
+            return f.getvalue()
+
+        self.assertIn('***HIP CASE REPORT***', get_stdout_from_running(True))
+        self.assertNotIn('***HIP CASE REPORT***', get_stdout_from_running(False))
 
     def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))

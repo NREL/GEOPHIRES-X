@@ -53,6 +53,25 @@ class HipRaXTestCase(BaseTestCase):
                     # TODO
                     # self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
 
+    def test_print_output_to_console(self):
+        example_files = self._list_test_files_dir(test_files_dir='./examples')
+        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
+
+        params = {
+            'Reservoir Temperature': 250.0,
+            'Rejection Temperature': 60.0,
+            'Reservoir Porosity': 10.0,
+            'Reservoir Area': 55.0,
+            'Reservoir Thickness': 0.25,
+            'Reservoir Life Cycle': 25,
+            'Print Output to Console': False,
+        }
+
+        result: HipRaResult = HipRaXClient().get_hip_ra_result(HipRaInputParameters(params))
+        self.assertIsNotNone(result)
+
+        # FIXME WIP verify output not printed to console
+
     def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))
         self.assertIsNotNone(result.result)

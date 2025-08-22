@@ -27,6 +27,7 @@ from geophires_x.Parameter import OutputParameter
 from geophires_x.Parameter import Parameter
 from geophires_x.Parameter import ParameterEntry
 from geophires_x.Parameter import ReadParameter
+from geophires_x.Parameter import boolParameter
 from geophires_x.Parameter import floatParameter
 from geophires_x.Parameter import intParameter
 from geophires_x.Parameter import strParameter
@@ -350,6 +351,15 @@ class HIP_RA_X:
                 Provided=False,
                 ErrMessage='assume no HTML output',
                 ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
+            )
+        )
+
+        self.print_output_to_console = parameter_dict_entry(
+            boolParameter(
+                'Print Output to Console',
+                DefaultValue=True,
+                UnitType=Units.NONE,
+                ToolTipText='Whether to print output to the console ',
             )
         )
 
@@ -925,7 +935,7 @@ class HIP_RA_X:
         if self.html_output_file.Provided:
             # write the outputs to the output file as HTML and the screen as a table
             self.PrintOutputsHTML(case_data_inputs, case_data_results, self.html_output_file.value)
-        else:
+        elif self.print_output_to_console.value:
             # copy the output file to the screen
             with open(outputfile, encoding='UTF-8') as f:
                 content = f.readlines()  # store all output in one long list

@@ -359,7 +359,7 @@ class HIP_RA_X:
                 'Print Output to Console',
                 DefaultValue=True,
                 UnitType=Units.NONE,
-                ToolTipText='Whether to print output to the console ',
+                ToolTipText='Provide False if you do not want to print output to the console',
             )
         )
 

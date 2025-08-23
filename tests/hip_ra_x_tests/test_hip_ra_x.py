@@ -56,10 +56,7 @@ class HipRaXTestCase(BaseTestCase):
                     # self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
 
     def test_print_output_to_console(self):
-        example_files = self._list_test_files_dir(test_files_dir='./examples')
-        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
-
-        def get_stdout_from_running(print_output_to_console: bool) -> str:
+        def get_stdout_from_running(print_output_to_console: bool | int) -> str:
             params = {
                 'Reservoir Temperature': 250.0,
                 'Rejection Temperature': 60.0,
@@ -79,6 +76,8 @@ class HipRaXTestCase(BaseTestCase):
 
         self.assertIn('***HIP CASE REPORT***', get_stdout_from_running(True))
         self.assertNotIn('***HIP CASE REPORT***', get_stdout_from_running(False))
+        self.assertIn('***HIP CASE REPORT***', get_stdout_from_running(1))
+        self.assertNotIn('***HIP CASE REPORT***', get_stdout_from_running(0))
 
     def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))

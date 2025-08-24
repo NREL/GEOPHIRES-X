@@ -7,6 +7,7 @@ GEOPHIRES v3 (2023-2025)
 
 3.9
 ^^^
+3.9.50: `HIP-RA-X Print Output to Console parameter <https://github.com/NREL/GEOPHIRES-X/pull/416>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.50>`__
 
 3.9.49: `Fervo_Project_Cape-4 Stimulation Costs Update <https://github.com/NREL/GEOPHIRES-X/pull/414>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.49>`__
 

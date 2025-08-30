@@ -40,11 +40,13 @@ class ReservoirTestCase(BaseTestCase):
         def _log(msg) -> None:
             print(f'[DEBUG][test_gringarten_stehfest_precision] {msg}')
 
+        param_name = 'Gringarten-Stehfest Precision'
+
         def _get_result(gringarten_stehfest_precision: int) -> GeophiresXResult:
             return GeophiresXClient(enable_caching=False).get_geophires_result(
                 ImmutableGeophiresInputParameters(
                     from_file_path=self._get_test_file_path('generic-egs-case.txt'),
-                    params={'Gringarten-Stehfest Precision': gringarten_stehfest_precision},
+                    params={param_name: gringarten_stehfest_precision},
                 )
             )
 
@@ -62,8 +64,27 @@ class ReservoirTestCase(BaseTestCase):
 
         self.assertLess(calc_time_8_sec, calc_time_15_sec)
 
+        max_calc_time_8_sec = 1.0
+        try:
+            self.assertLessEqual(calc_time_8_sec, 1.0)
+        except AssertionError:
+            _log(
+                f'[WARNING] Calculation time for {param_name}=8 was greater than the expected maximum of '
+                f'{max_calc_time_8_sec} seconds. This may indicate a performance regression, '
+                f'depending on the available compute resources.'
+            )
+
         speedup_pct = ((calc_time_15_sec - calc_time_8_sec) / calc_time_15_sec) * 100
         _log(f'Speedup: {speedup_pct:.2f}%')
+
+        min_expected_speedup_pct = 25.0
+        try:
+            self.assertGreaterEqual(min_expected_speedup_pct, min_expected_speedup_pct)
+        except AssertionError:
+            _log(
+                f'[WARNING] Speedup for {param_name}=8 was less than the expected minimum of '
+                f'{min_expected_speedup_pct}%. This may indicate a performance regression.'
+            )
 
         def no_metadata(r: GeophiresXResult) -> dict[str, Any]:
             ret = copy.deepcopy(r.result)

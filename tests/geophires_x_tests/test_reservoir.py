@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import copy
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from pint.facets.plain import PlainQuantity
 
@@ -62,6 +64,22 @@ class ReservoirTestCase(BaseTestCase):
 
         speedup_pct = ((calc_time_15_sec - calc_time_8_sec) / calc_time_15_sec) * 100
         _log(f'Speedup: {speedup_pct:.2f}%')
+
+        def no_metadata(r: GeophiresXResult) -> dict[str, Any]:
+            ret = copy.deepcopy(r.result)
+            del ret['Simulation Metadata']
+            del ret['metadata']
+            return ret
+
+        result_12_nm = no_metadata(_get_result(12))
+        result_15_nm = no_metadata(result_15)
+        try:
+            self.assertDictAlmostEqual(result_15_nm, result_12_nm, percent=1)
+        except AssertionError as ae:
+            try:
+                self.assertDictEqual(result_15_nm, result_12_nm)
+            except AssertionError as ae_with_dict_diff:
+                raise ae from ae_with_dict_diff
 
     # noinspection PyMethodMayBeStatic
     def _new_model(self, input_file=None) -> Model:

@@ -1,6 +1,6 @@
 import sys
 
-from mpmath import mp, MPContext, exp, sqrt, tanh
+from mpmath import mp, exp, invertlaplace, sqrt, tanh, workdps
 import numpy as np
 
 import geophires_x.Model as Model
@@ -108,18 +108,29 @@ class MPFReservoir(Reservoir):
         # calculate non-dimensional temperature array
         Twnd = []
         try:
-            dps = mp.dps
-            if self.gringarten_stehfest_precision.Provided:
-                dps = self.gringarten_stehfest_precision.value
+            # Determine the required precision for this calculation.
+            precision = (
+                self.gringarten_stehfest_precision.value
+                if self.gringarten_stehfest_precision.Provided
+                else mp.dps
+            )
 
-            for t in range(1, len(model.reserv.timevector.value)):
-                # Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
-                Twnd = Twnd + [float(_thread_safe_invertlaplace_stehfest(fp, td[t], dps))]
+            # Use the workdps context manager for a robust, thread-safe solution.
+            # It temporarily sets mp.dps for this block and restores it automatically.
+            with workdps(precision):
+                # A list comprehension is a more concise way to build the list.
+                twnd_list = [
+                    float(invertlaplace(fp, td[t], method='stehfest'))
+                    for t in range(1, len(model.reserv.timevector.value))
+                ]
+                Twnd = np.asarray(twnd_list)
 
         except Exception as e_:
-            msg = (f'Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1 '
-                   f'({self.gringarten_stehfest_precision.Name} = {dps}). '
-                   'Simulation will abort.')
+            msg = (
+                f'Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1 '
+                f'({self.gringarten_stehfest_precision.Name} = {precision}). '
+                'Simulation will abort.'
+            )
             print(msg)
             raise RuntimeError(msg) from e_
 
@@ -131,27 +142,3 @@ class MPFReservoir(Reservoir):
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-
-# noinspection SpellCheckingInspection
-def _thread_safe_invertlaplace_stehfest(fp, t, dps):
-    """
-    Calculates the inverse Laplace transform at a specific precision
-    without modifying the global mpmath context.
-
-    Args:
-        fp: The Laplace-space function.
-        t: The time at which to evaluate the inverse transform.
-        dps: The desired decimal places of precision for this calculation.
-
-    Returns:
-        The result of the inverse Laplace transform.
-    """
-    # Create a local, temporary context object.
-    local_ctx = MPContext()
-
-    # Set the desired precision *only* on this local context.
-    local_ctx.dps = dps
-
-    # Call invertlaplace from the local_ctx object. It will use its own
-    # precision when instantiating the stehfest method internally.
-    return local_ctx.invertlaplace(fp, t, method='stehfest')

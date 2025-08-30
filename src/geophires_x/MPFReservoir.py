@@ -49,8 +49,11 @@ class MPFReservoir(Reservoir):
             AllowableRange=list(range(8, max_allowed_precision + 1)),
             UnitType=Units.NONE,
             Required=False,
-            ToolTipText='Sets the numerical precision (decimal places) for the Stehfest '
-                        'algorithm used for the inverse Laplace transform.'
+            ToolTipText='Sets the numerical precision (decimal places) for the inverse Laplace transform '
+                        '(Stehfest algorithm) used in the Gringarten calculation for the Multiple Parallel Fractures '
+                        'Reservoir Model. '
+                        'The default value provides maximum result stability; '
+                        'lower values calculate faster but may reduce consistency.'
         )
 
 
@@ -118,11 +121,11 @@ class MPFReservoir(Reservoir):
             # Use the workdps context manager for a robust, thread-safe solution.
             # It temporarily sets mp.dps for this block and restores it automatically.
             with workdps(precision):
-                # A list comprehension is a more concise way to build the list.
                 twnd_list = [
                     float(invertlaplace(fp, td[t], method='stehfest'))
                     for t in range(1, len(model.reserv.timevector.value))
                 ]
+
                 Twnd = np.asarray(twnd_list)
 
         except Exception as e_:

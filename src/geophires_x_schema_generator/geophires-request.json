@@ -413,7 +413,7 @@
       "maximum": 0.2
     },
     "Gringarten-Stehfest Precision": {
-      "description": "Sets the numerical precision (decimal places) for the Stehfest algorithm used for the inverse Laplace transform.",
+      "description": "Sets the numerical precision (decimal places) for the inverse Laplace transform (Stehfest algorithm) used in the Gringarten calculation for the Multiple Parallel Fractures Reservoir Model. The default value provides maximum result stability; lower values calculate faster but may reduce consistency.",
       "type": "integer",
       "units": null,
       "category": "Reservoir",

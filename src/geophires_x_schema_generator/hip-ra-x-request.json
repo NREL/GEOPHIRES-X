@@ -168,6 +168,15 @@
       "default": "HIP.html",
       "minimum": null,
       "maximum": null
+    },
+    "Print Output to Console": {
+      "description": "Provide False if you do not want to print output to the console",
+      "type": "boolean",
+      "units": null,
+      "category": null,
+      "default": true,
+      "minimum": null,
+      "maximum": null
     }
   }
 }

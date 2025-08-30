@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import io
 import logging
 import os
 import re
@@ -5,6 +8,7 @@ import sys
 import tempfile
 import unittest
 import uuid
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from geophires_x.Parameter import OutputParameter
@@ -52,6 +56,30 @@ class HipRaXTestCase(BaseTestCase):
 
                     # TODO
                     # self.assertFileContentsEqual(expected_result_output_file_path, result.output_file_path)
+
+    def test_print_output_to_console(self):
+        def get_stdout_from_running(print_output_to_console: bool | int) -> str:
+            params = {
+                'Reservoir Temperature': 250.0,
+                'Rejection Temperature': 60.0,
+                'Reservoir Porosity': 10.0,
+                'Reservoir Area': 55.0,
+                'Reservoir Thickness': 0.25,
+                'Reservoir Life Cycle': 25,
+                'Print Output to Console': print_output_to_console,
+            }
+
+            f = io.StringIO()
+            with redirect_stdout(f):
+                result: HipRaResult = HipRaXClient().get_hip_ra_result(HipRaInputParameters(params))
+
+            self.assertIsNotNone(result)
+            return f.getvalue()
+
+        self.assertIn('***HIP CASE REPORT***', get_stdout_from_running(True))
+        self.assertNotIn('***HIP CASE REPORT***', get_stdout_from_running(False))
+        self.assertIn('***HIP CASE REPORT***', get_stdout_from_running(1))
+        self.assertNotIn('***HIP CASE REPORT***', get_stdout_from_running(0))
 
     def test_result_parsing_1(self):
         result = HipRaResult(self._get_test_file_path('hip-result_example-1.out'))

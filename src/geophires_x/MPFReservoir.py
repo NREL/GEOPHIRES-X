@@ -1,8 +1,8 @@
 import sys
 
-from mpmath import mp
+from mpmath import mp, MPContext, exp, sqrt, tanh
 import numpy as np
-from mpmath import *
+
 import geophires_x.Model as Model
 from .Parameter import intParameter
 from .Reservoir import Reservoir
@@ -108,22 +108,20 @@ class MPFReservoir(Reservoir):
         # calculate non-dimensional temperature array
         Twnd = []
         try:
-            stash_dps = mp.dps
+            dps = mp.dps
             if self.gringarten_stehfest_precision.Provided:
-                mp.dps = self.gringarten_stehfest_precision.value
+                dps = self.gringarten_stehfest_precision.value
 
             for t in range(1, len(model.reserv.timevector.value)):
-                Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
-        except Exception as e_:
-            mp.dps = stash_dps
+                # Twnd = Twnd + [float(invertlaplace(fp, td[t], method='stehfest'))]
+                Twnd = Twnd + [float(_thread_safe_invertlaplace_stehfest(fp, td[t], dps))]
 
+        except Exception as e_:
             msg = (f'Error: GEOPHIRES could not execute numerical inverse laplace calculation for reservoir model 1 '
-                   f'({self.gringarten_stehfest_precision.Name} = {mpmath.dps}). '
+                   f'({self.gringarten_stehfest_precision.Name} = {dps}). '
                    'Simulation will abort.')
             print(msg)
             raise RuntimeError(msg) from e_
-
-        mp.dps = stash_dps
 
         Twnd = np.asarray(Twnd)
 
@@ -132,3 +130,28 @@ class MPFReservoir(Reservoir):
         model.reserv.Tresoutput.value = np.append([model.reserv.Trock.value], model.reserv.Tresoutput.value)
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
+
+
+# noinspection SpellCheckingInspection
+def _thread_safe_invertlaplace_stehfest(fp, t, dps):
+    """
+    Calculates the inverse Laplace transform at a specific precision
+    without modifying the global mpmath context.
+
+    Args:
+        fp: The Laplace-space function.
+        t: The time at which to evaluate the inverse transform.
+        dps: The desired decimal places of precision for this calculation.
+
+    Returns:
+        The result of the inverse Laplace transform.
+    """
+    # Create a local, temporary context object.
+    local_ctx = MPContext()
+
+    # Set the desired precision *only* on this local context.
+    local_ctx.dps = dps
+
+    # Call invertlaplace from the local_ctx object. It will use its own
+    # precision when instantiating the stehfest method internally.
+    return local_ctx.invertlaplace(fp, t, method='stehfest')

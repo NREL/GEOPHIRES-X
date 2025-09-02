@@ -67,6 +67,9 @@ class GeophiresXTestCase(BaseTestCase):
         if 'metadata' in result_same_input.result:
             del result_same_input.result['metadata']
 
+        del result.result['Simulation Metadata']['Calculation Time']
+        del result_same_input.result['Simulation Metadata']['Calculation Time']
+
         self.assertDictEqual(result.result, result_same_input.result)
 
     # noinspection PyMethodMayBeStatic
@@ -362,6 +365,10 @@ Print Output to Console, 1"""
         self.assertEqual(PlantType.RTES.value, 'Reservoir Thermal Energy Storage')
 
     def test_input_unit_conversion(self):
+        def delete_metadata(r: GeophiresXResult) -> None:
+            del r.result['metadata']
+            del r.result['Simulation Metadata']['Calculation Time']
+
         client = GeophiresXClient()
 
         result_meters_input = client.get_geophires_result(
@@ -371,7 +378,7 @@ Print Output to Console, 1"""
                 )
             )
         )
-        del result_meters_input.result['metadata']
+        delete_metadata(result_meters_input)
 
         result_kilometers_input = client.get_geophires_result(
             GeophiresInputParameters(
@@ -380,7 +387,7 @@ Print Output to Console, 1"""
                 )
             )
         )
-        del result_kilometers_input.result['metadata']
+        delete_metadata(result_kilometers_input)
 
         self.assertDictEqual(result_kilometers_input.result, result_meters_input.result)
 

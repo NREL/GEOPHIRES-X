@@ -104,6 +104,9 @@ _site/
 /Useful sites for Sphinx docstrings.txt
 /.github/workflows/workflows.7z
 
+# TODO unignore once favicon is correctly configured
+docs/_images/geophires-favicon.png
+
 # Mypy Cache
 .mypy_cache/
 

@@ -606,7 +606,14 @@ class Reservoir:
                     elif ParameterToModify.Name.startswith('Thickness '):
                         parts = ParameterReadIn.Name.split(' ')
                         position = int(parts[1]) - 1
-                        model.reserv.layerthickness.value[position] = ParameterToModify.value
+                        num_segments = len(model.reserv.layerthickness.value)
+                        if position < num_segments:
+                            model.reserv.layerthickness.value[position] = ParameterToModify.value
+                        else:
+                            model.logger.error(f'Cannot set {ParameterToModify.Name} to {ParameterToModify.value} '
+                                               f'because only {num_segments} segments are defined.')
+                            # Don't raise exception since we can ignore and the user will see the incorrectly configured
+                            # segment(s) in the result.
 
                     elif ParameterToModify.Name.startswith("Fracture Separation"):
                         self.fracsepcalc.value = self.fracsep.value

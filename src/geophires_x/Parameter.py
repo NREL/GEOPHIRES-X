@@ -412,6 +412,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None
                                    if x.strip() != '']
 
         # FIXME WIP TODO validate entries comply with min/max (as implemented in commented code below)
+        # FIXME WIP TODO set ParamToModify.Valid/Provided
 
         # def _read_list_parameter():
         #     read_list = []

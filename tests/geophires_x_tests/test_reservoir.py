@@ -171,22 +171,22 @@ class ReservoirTestCase(BaseTestCase):
                     from_file_path=self._get_test_file_path('generic-egs-case.txt'),
                     params={
                         'Number of Segments': 3,
-                        'Gradient 2': '30',
-                        'Gradient 3': '30',
-                        'Thicknesses': '1.75,0.56,0.65',
+                        'Gradient 2': '40',
+                        'Gradient 3': '40',
+                        'Thicknesses': '2.5,0.49,0.87',
                     },
                 )
             )
 
         r = _get_result()
-
         summary = r.result['SUMMARY OF RESULTS']
+
         expected = {
             'Segment 1   Geothermal gradient': {'unit': 'degC/km', 'value': 36.7},
-            'Segment 1   Thickness': {'unit': 'kilometer', 'value': 1.75},
-            'Segment 2   Geothermal gradient': {'unit': 'degC/km', 'value': 30},
-            'Segment 2   Thickness': {'unit': 'kilometer', 'value': 0.56},
-            'Segment 3   Geothermal gradient': {'unit': 'degC/km', 'value': 30},
+            'Segment 1   Thickness': {'unit': 'kilometer', 'value': 2.5},
+            'Segment 2   Geothermal gradient': {'unit': 'degC/km', 'value': 40},
+            'Segment 2   Thickness': {'unit': 'kilometer', 'value': 0.49},
+            'Segment 3   Geothermal gradient': {'unit': 'degC/km', 'value': 40},
             'Segment 3   Thickness': None,
             'Segment 4   Geothermal gradient': None,
         }
@@ -195,20 +195,18 @@ class ReservoirTestCase(BaseTestCase):
             self.assertEqual(summary[k], v)
 
     def test_number_of_segments(self):
-        """FIXME WIP"""
-
         def _get_result() -> GeophiresXResult:
             return GeophiresXClient().get_geophires_result(
                 GeophiresInputParameters(
                     from_file_path=self._get_test_file_path('generic-egs-case.txt'),
                     params={
                         'Number of Segments': 3,
-                        'Gradient 2': '30',
-                        'Gradient 3': '30',
-                        'Gradient 4': '30',
-                        'Thickness 1': '1.75',
-                        'Thickness 2': '0.56',
-                        'Thicknesses': '1.75,0.56,0.65',
+                        'Gradient 2': '40',
+                        'Gradient 3': '40',
+                        'Gradient 4': '40',
+                        'Thickness 1': '2.5',
+                        'Thickness 2': '0.49',
+                        'Thicknesses': '2.5,0.49,0.87',
                         'Thickness 3': '0.65',
                         'Thickness 4': '0.85',
                     },
@@ -216,4 +214,17 @@ class ReservoirTestCase(BaseTestCase):
             )
 
         r = _get_result()
-        self.assertIsNotNone(r)  # FIXME WIP
+        summary = r.result['SUMMARY OF RESULTS']
+
+        expected = {
+            'Segment 1   Geothermal gradient': {'unit': 'degC/km', 'value': 36.7},
+            'Segment 1   Thickness': {'unit': 'kilometer', 'value': 2.5},
+            'Segment 2   Geothermal gradient': {'unit': 'degC/km', 'value': 40},
+            'Segment 2   Thickness': {'unit': 'kilometer', 'value': 0.49},
+            'Segment 3   Geothermal gradient': {'unit': 'degC/km', 'value': 40},
+            'Segment 3   Thickness': None,
+            'Segment 4   Geothermal gradient': None,
+        }
+
+        for k, v in expected.items():
+            self.assertEqual(summary[k], v)

@@ -393,79 +393,8 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None
             ParamToModify.Provided = True  # set provided to true because we are using a user provide value now
             ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
     elif isinstance(ParamToModify, listParameter):
-        if ' ' in ParamToModify.Name:
-            New_val = float(ParameterReadIn.sValue)
-            # Some list parameters are read in with enumerated parameter names;  in these cases we use the last
-            # character of the description to get the position i.e., "Gradient 1" is position 0.
-            parts = ParameterReadIn.Name.split(' ')
-            position = int(parts[1]) - 1
-            if position >= len(ParamToModify.value):
-                ParamToModify.value.append(New_val)  # we are adding to the list, so use append
-            else:  # we are replacing a value, so pop the value we want to replace, then insert a new one
-                ParamToModify.value.pop(position)
-                ParamToModify.value.insert(position, New_val)
-        else:
-            # In an ideal world this would be handled in ParameterEntry such that its sValue and Comment are
-            # correct; however that would only be practical if ParameterEntry had typing information to know
-            # whether to treat text after a second comma as a comment or list entry.
-            ParamToModify.value = [float(x.strip()) for x in ParameterReadIn.raw_entry.split('--')[0].split(',')[1:]
-                                   if x.strip() != '']
+        _read_list_parameter(ParameterReadIn, ParamToModify, model)
 
-        # FIXME WIP TODO validate entries comply with min/max (as implemented in commented code below)
-        # FIXME WIP TODO set ParamToModify.Valid/Provided
-
-        # def _read_list_parameter():
-        #     read_list = []
-        #     if ParameterReadIn.raw_entry is None:
-        #         # Shouldn't happen...
-        #         model.logger.error(f'Invalid parameter entry for {ParamToModify.Name}: {ParameterReadIn.sValue}')
-        #         return
-        #
-        #     raw_split = ParameterReadIn.raw_entry.split(',')
-        #     for i in range(len(raw_split)):
-        #         raw_entry = raw_split[i].strip()
-        #         read_entry = raw_entry
-        #         try:
-        #             read_entry = float(raw_entry)
-        #         except ValueError:
-        #             if i == len(raw_split) - 1:
-        #                 pass # assumed to be comment
-        #             else:
-        #                 model.logger.error(f'Invalid parameter entry for {ParamToModify.Name}: {raw_entry}')
-        #
-        #         read_list.append(read_entry)
-
-        # _read_list_parameter()
-
-        # New_val = float(ParameterReadIn.sValue)
-        # if (New_val < float(ParamToModify.Min)) or (New_val > float(ParamToModify.Max)):
-        #     # user provided value is out of range, so announce it, leave set to whatever it was set to (default value)
-        #     if len(ParamToModify.ErrMessage) > 0:
-        #         msg = (
-        #             f'Parameter given ({str(New_val)}) for {ParamToModify.Name} outside of valid range.'
-        #             f'GEOPHIRES will {ParamToModify.ErrMessage}'
-        #         )
-        #         print(f'Warning: {msg}')
-        #         model.logger.warning(msg)
-        #     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
-        #     return
-        # else:
-        #     if ' ' in ParamToModify.Name:
-        #         # Some list parameters are read in with enumerated parameter names;  in these cases we use the last
-        #         # character of the description to get the position i.e., "Gradient 1" is position 0.
-        #         parts = ParameterReadIn.Name.split(' ')
-        #         position = int(parts[1]) - 1
-        #         if position >= len(ParamToModify.value):
-        #             ParamToModify.value.append(New_val)  # we are adding to the list, so use append
-        #         else:  # we are replacing a value, so pop the value we want to replace, then insert a new one
-        #             ParamToModify.value.pop(position)
-        #             ParamToModify.value.insert(position, New_val)
-        #     else:
-        #         # In an ideal world this would be handled in ParameterEntry such that its sValue and Comment are
-        #         # correct; however that would only be practical if ParameterEntry had typing information to know
-        #         # whether to treat text after a second comma as a comment or list entry.
-        #         ParamToModify.value = [float(x.strip()) for x in ParameterReadIn.raw_entry.split('--')[0].split(',')[1:]
-        #                                if x.strip() != '']
     elif isinstance(ParamToModify, boolParameter):
         if ParameterReadIn.sValue == "0":
             New_val = False
@@ -491,6 +420,46 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None
         ParamToModify.Valid = True  # set Valid to true because it passed the validation tests
 
     model.logger.info(f'Complete {str(__name__)}: {sys._getframe().f_code.co_name}')
+
+
+def _read_list_parameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None:
+    """
+    :type model: :class:`~geophires_x.Model.Model`
+    """
+
+    if ' ' in ParamToModify.Name:
+        New_val = float(ParameterReadIn.sValue)
+        # Some list parameters are read in with enumerated parameter names;  in these cases we use the last
+        # character of the description to get the position i.e., "Gradient 1" is position 0.
+        parts = ParameterReadIn.Name.split(' ')
+        position = int(parts[1]) - 1
+        if position >= len(ParamToModify.value):
+            ParamToModify.value.append(New_val)  # we are adding to the list, so use append
+        else:  # we are replacing a value, so pop the value we want to replace, then insert a new one
+            ParamToModify.value.pop(position)
+            ParamToModify.value.insert(position, New_val)
+    else:
+        # In an ideal world this would be handled in ParameterEntry such that its sValue and Comment are
+        # correct; however that would only be practical if ParameterEntry had typing information to know
+        # whether to treat text after a second comma as a comment or list entry.
+        ParamToModify.value = [float(x.strip()) for x in ParameterReadIn.raw_entry.split('--')[0].split(',')[1:]
+                               if x.strip() != '']
+
+    ParamToModify.Provided = True
+
+    valid = True
+    for i in range(len(ParamToModify.value)):
+        New_val = ParamToModify.value[i]
+        if (New_val < float(ParamToModify.Min)) or (New_val > float(ParamToModify.Max)):
+            msg = (
+                f'Value given ({str(New_val)}) for {ParamToModify.Name} outside of valid range '
+                f'({ParamToModify.Min}–{ParamToModify.Max}).'
+            )
+            print(f'Warning: {msg}')
+            model.logger.warning(msg)
+            valid = False
+
+    ParamToModify.Valid = valid
 
 
 def ConvertUnits(ParamToModify, strUnit: str, model) -> str:

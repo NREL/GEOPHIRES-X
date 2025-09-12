@@ -424,6 +424,7 @@ def ReadParameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None
 
 def _read_list_parameter(ParameterReadIn: ParameterEntry, ParamToModify, model) -> None:
     """
+    :type ParamToModify: :class:`~geophires_x.Parameter.Parameter`
     :type model: :class:`~geophires_x.Model.Model`
     """
 

@@ -7,6 +7,8 @@ GEOPHIRES v3 (2023-2025)
 
 3.9
 ^^^
+3.9.54: `List parameter read fix <https://github.com/NREL/GEOPHIRES-X/pull/418>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.54>`__
+
 3.9.53: `Gringarten-Stehfest Precision <https://github.com/NREL/GEOPHIRES-X/pull/417>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.53>`__
 
 3.9.50: `HIP-RA-X Print Output to Console parameter <https://github.com/NREL/GEOPHIRES-X/pull/416>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.50>`__

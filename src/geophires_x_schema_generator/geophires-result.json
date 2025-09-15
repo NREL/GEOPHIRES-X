@@ -480,6 +480,11 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
+        "Royalties": {
+          "type": "number",
+          "description": "Average annual royalties paid (operating expense)",
+          "units": "MUSD/yr"
+        },
         "Average annual auxiliary fuel cost": {},
         "Average annual pumping cost": {},
         "Redrilling costs": {

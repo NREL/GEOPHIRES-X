@@ -152,5 +152,5 @@ def royalties_opex_parameter_output_parameter() -> OutputParameter:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText='Average annual royalties'  # TODO WIP clarify
+            ToolTipText='Average annual royalties paid (operating expense)'
         )

@@ -39,7 +39,7 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     inflation_cost_during_construction_output_parameter,
     total_capex_parameter_output_parameter,
-    royalties_opex_parameter_output_parameter,
+    royalty_cost_output_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -60,7 +60,7 @@ class SamEconomicsCalculations:
 
     capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
 
-    royalties_opex: OutputParameter = field(default_factory=royalties_opex_parameter_output_parameter)
+    royalties_opex: OutputParameter = field(default_factory=royalty_cost_output_parameter)
 
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(

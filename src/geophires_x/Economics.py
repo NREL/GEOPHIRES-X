@@ -13,7 +13,7 @@ from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalcul
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
-    total_capex_parameter_output_parameter, royalties_opex_parameter_output_parameter
+    total_capex_parameter_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1906,7 +1906,15 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
-        self.royalties_opex = self.OutputParameterDict[self.royalties_opex.Name] = royalties_opex_parameter_output_parameter()
+        self.royalties_average_annual_cost = self.OutputParameterDict[self.royalties_average_annual_cost.Name] = OutputParameter(
+            Name='Average Annual Royalty Cost',
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText='The average annual cost paid to a royalty holder, calculated as a percentage of the '
+                        'project\'s gross annual revenue. This is modeled as a variable operating expense.'
+        )
+
 
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
@@ -2511,8 +2519,8 @@ class Economics:
                 self.sam_economics_calculations.royalties_opex.value[1:]  # ignore pre-revenue year(s) (Year 0)
             )
             if average_annual_royalties > 0:
-                self.royalties_opex.value = average_annual_royalties
-                self.Coam.value += self.royalties_opex.quantity().to(self.Coam.CurrentUnits.value).magnitude
+                self.royalties_average_annual_cost.value = average_annual_royalties
+                self.Coam.value += self.royalties_average_annual_cost.quantity().to(self.Coam.CurrentUnits.value).magnitude
 
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value

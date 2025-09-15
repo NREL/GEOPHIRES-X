@@ -20,6 +20,7 @@ from geophires_x.EconomicsSam import (
     get_sam_cash_flow_profile_tabulated_output,
     _ppa_pricing_model,
     _get_fed_and_state_tax_rates,
+    SamEconomicsCalculations,
 )
 from geophires_x.GeoPHIRESUtils import sig_figs, quantity
 
@@ -644,7 +645,7 @@ class EconomicsSamTestCase(BaseTestCase):
             self._egs_test_file_path(), additional_params={'Royalty Rate': royalty_rate}
         )
 
-        sam_econ = calculate_sam_economics(m)
+        sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
         cash_flow = sam_econ.sam_cash_flow_profile
 
         def get_row(name: str):
@@ -653,8 +654,12 @@ class EconomicsSamTestCase(BaseTestCase):
         ppa_revenue_row = get_row('PPA revenue ($)')
         expected_royalties = [x * royalty_rate for x in ppa_revenue_row]
 
+        self.assertListEqual(expected_royalties, sam_econ.royalties_opex)
+
         om_prod_based_expense_row = get_row('O&M production-based expense ($)')
         self.assertListAlmostEqual(expected_royalties, om_prod_based_expense_row, places=0)
+        # Note the above assertion assumes royalties are the only production-based O&M expenses. If this changes,
+        # the assertion will need to be updated.
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

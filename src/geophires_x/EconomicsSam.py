@@ -39,11 +39,12 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     inflation_cost_during_construction_output_parameter,
     total_capex_parameter_output_parameter,
+    royalties_opex_parameter_output_parameter,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
-from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
+from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, CurrencyFrequencyUnit
 
 
 @dataclass
@@ -58,6 +59,8 @@ class SamEconomicsCalculations:
     )
 
     capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
+
+    royalties_opex: OutputParameter = field(default_factory=royalties_opex_parameter_output_parameter)
 
     project_npv: OutputParameter = field(
         default_factory=lambda: OutputParameter(
@@ -169,6 +172,13 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
+
+    royalty_rate = model.economics.royalty_rate.quantity().to('dimensionless').magnitude
+    ppa_revenue_row = _cash_flow_profile_row(cash_flow, 'PPA revenue ($)')
+    royalties_unit = sam_economics.royalties_opex.CurrentUnits.value.replace('/yr', '')
+    sam_economics.royalties_opex = [
+        quantity(x * royalty_rate, 'USD').to(royalties_unit).magnitude for x in ppa_revenue_row
+    ]
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner

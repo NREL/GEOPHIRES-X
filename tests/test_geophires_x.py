@@ -1294,3 +1294,24 @@ Print Output to Console, 1"""
             ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
 
             self.assertAlmostEqual(expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2)
+
+    def test_royalty_rate(self):
+        royalties_output_name = 'Royalties'
+
+        for royalty_rate in [0, 0.1]:
+            result = GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(
+                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                    ),
+                    params={'Royalty Rate': royalty_rate},
+                )
+            )
+            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+            if royalty_rate > 0.0:
+                self.assertIsNotNone(opex_result[royalties_output_name])
+                self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
+                self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+                # FIXME WIP assert total opex includes royalties
+            else:
+                self.assertIsNone(opex_result[royalties_output_name])

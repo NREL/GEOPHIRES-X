@@ -555,6 +555,10 @@ class Outputs:
                         aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
                         f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
+                    if econ.royalty_rate.value > 0.0:
+                        royalties_label = Outputs._field_label(econ.royalties_opex.display_name, 47)
+                        f.write(f'         {royalties_label}{econ.royalties_opex.value:10.2f} {econ.royalties_opex.CurrentUnits.value}\n')
+
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:
                     f.write(f'      {econ.Coam.display_name}:            {econ.Coam.value:10.2f} {econ.Coam.CurrentUnits.value}\n')

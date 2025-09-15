@@ -13,7 +13,7 @@ from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalcul
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
-    total_capex_parameter_output_parameter
+    total_capex_parameter_output_parameter, royalties_opex_parameter_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1906,6 +1906,7 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+        self.royalties_opex = self.OutputParameterDict[self.royalties_opex.Name] = royalties_opex_parameter_output_parameter()
 
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
@@ -2502,9 +2503,16 @@ class Economics:
             # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
             # since SAM Economic Model doesn't subtract ITC from this value.
             self.capex_total.value = (self.sam_economics_calculations.capex.quantity()
-                                .to(self.capex_total.CurrentUnits.value).magnitude)
+                               .to(self.capex_total.CurrentUnits.value).magnitude)
             self.CCap.value = (self.sam_economics_calculations.capex.quantity()
                                .to(self.CCap.CurrentUnits.value).magnitude)
+
+            # FIXME WIP adjust OPEX for royalties
+            # FIXME WIP unit conversion
+            average_annual_royalties = np.average(self.sam_economics_calculations.royalties_opex[1:])  # ignore Year 0
+            if average_annual_royalties > 0:
+                self.royalties_opex.value = average_annual_royalties
+                self.Coam.value += self.royalties_opex.quantity().to(self.Coam.CurrentUnits.value).magnitude
 
             self.wacc.value = self.sam_economics_calculations.wacc.value
             self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value

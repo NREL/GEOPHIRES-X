@@ -2517,6 +2517,8 @@ class Economics:
 
             self.ProjectMOIC.value = self.sam_economics_calculations.moic.value
             self.ProjectVIR.value = self.sam_economics_calculations.project_vir.value
+
+            # TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413
             self.ProjectPaybackPeriod.value = self.sam_economics_calculations.project_payback_period.value
 
         # Calculate the project payback period

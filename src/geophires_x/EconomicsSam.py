@@ -71,7 +71,9 @@ class SamEconomicsCalculations:
     wacc: OutputParameter = field(default_factory=wacc_output_parameter)
     moic: OutputParameter = field(default_factory=moic_parameter)
     project_vir: OutputParameter = field(default_factory=project_vir_parameter)
+
     project_payback_period: OutputParameter = field(default_factory=project_payback_period_parameter)
+    """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
 
 
 def validate_read_parameters(model: Model):
@@ -248,6 +250,7 @@ def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
 
 
 def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:
+    """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
     try:
         after_tax_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
         cumm_cash_flow = np.zeros(len(after_tax_cash_flow))

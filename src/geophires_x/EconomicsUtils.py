@@ -148,9 +148,10 @@ def total_capex_parameter_output_parameter() -> OutputParameter:
 
 def royalties_opex_parameter_output_parameter() -> OutputParameter:
     return OutputParameter(
-            Name='Royalties',
+            Name='Average Annual Royalty Cost',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText='Average annual royalties paid (operating expense)'
+            ToolTipText='The average annual cost paid to a royalty holder, calculated as a percentage of the '
+                        'project\'s gross annual revenue. This is modeled as a variable operating expense.'
         )

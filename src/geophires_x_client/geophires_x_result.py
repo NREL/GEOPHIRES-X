@@ -290,7 +290,7 @@ class GeophiresXResult:
                 'Annual District Heating O&M Cost',
                 'Average Annual Peaking Fuel Cost',
                 'Average annual pumping costs',
-                'Royalties',
+                'Average Annual Royalty Cost',
                 # SUTRA
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',

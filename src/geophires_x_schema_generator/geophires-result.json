@@ -480,9 +480,9 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
-        "Royalties": {
+        "Average Annual Royalty Cost": {
           "type": "number",
-          "description": "Average annual royalties paid (operating expense)",
+          "description": "The average annual cost paid to a royalty holder, calculated as a percentage of the project's gross annual revenue. This is modeled as a variable operating expense.",
           "units": "MUSD/yr"
         },
         "Average annual auxiliary fuel cost": {},

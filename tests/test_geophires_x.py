@@ -1296,7 +1296,7 @@ Print Output to Console, 1"""
             self.assertAlmostEqual(expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2)
 
     def test_royalty_rate(self):
-        royalties_output_name = 'Royalties'
+        royalties_output_name = 'Average Annual Royalty Cost'
 
         for royalty_rate in [0, 0.1]:
             result = GeophiresXClient().get_geophires_result(

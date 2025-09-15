@@ -176,7 +176,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     royalty_rate = model.economics.royalty_rate.quantity().to('dimensionless').magnitude
     ppa_revenue_row = _cash_flow_profile_row(cash_flow, 'PPA revenue ($)')
     royalties_unit = sam_economics.royalties_opex.CurrentUnits.value.replace('/yr', '')
-    sam_economics.royalties_opex = [
+    sam_economics.royalties_opex.value = [
         quantity(x * royalty_rate, 'USD').to(royalties_unit).magnitude for x in ppa_revenue_row
     ]
 

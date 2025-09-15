@@ -2507,7 +2507,9 @@ class Economics:
             self.CCap.value = (self.sam_economics_calculations.capex.quantity()
                                .to(self.CCap.CurrentUnits.value).magnitude)
 
-            average_annual_royalties = np.average(self.sam_economics_calculations.royalties_opex[1:])  # ignore Year 0
+            average_annual_royalties = np.average(
+                self.sam_economics_calculations.royalties_opex.value[1:]  # ignore pre-revenue year(s) (Year 0)
+            )
             if average_annual_royalties > 0:
                 self.royalties_opex.value = average_annual_royalties
                 self.Coam.value += self.royalties_opex.quantity().to(self.Coam.CurrentUnits.value).magnitude

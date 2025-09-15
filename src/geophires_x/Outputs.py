@@ -325,9 +325,16 @@ class Outputs:
                     f.write(f'      Estimated Jobs Created:                                 {model.economics.jobs_created.value}\n')
 
                 if econ.royalty_rate.Provided:
-                    royalty_holder_npv_label = Outputs._field_label(econ.royalty_holder_npv.display_name, 49)
-                    f.write(
-                        f'         {royalty_holder_npv_label}{econ.royalty_holder_npv.value:10.2f} {econ.royalty_holder_npv.CurrentUnits.value}\n')
+                    for royalty_output in [
+                        econ.royalty_holder_npv,
+                        econ.royalty_holder_annual_revenue,
+                        econ.royalty_holder_total_revenue
+                    ]:
+                        label = Outputs._field_label(royalty_output.display_name, 49)
+                        f.write(
+                            f'      {label}{royalty_output.value:10.2f} {royalty_output.CurrentUnits.value}\n')
+
+
 
 
                 f.write(NL)

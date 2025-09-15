@@ -9,6 +9,7 @@ from typing import Any
 
 import numpy as np
 
+# @formatter:off
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSam import _cash_flow_profile_row
 from geophires_x.OptionList import PlantType
@@ -22,6 +23,8 @@ from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
+
+# @formatter:on
 from tests.base_test_case import BaseTestCase
 
 

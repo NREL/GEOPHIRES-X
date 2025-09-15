@@ -94,6 +94,8 @@ class GeophiresXResult:
                 'CHP: Percent cost allocation for electrical plant',
                 'Estimated Jobs Created',
                 'Royalty Holder NPV',
+                'Royalty Holder Average Annual Revenue',
+                'Royalty Holder Total Revenue',
             ],
             'EXTENDED ECONOMICS': [
                 'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',

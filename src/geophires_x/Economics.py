@@ -2157,7 +2157,7 @@ class Economics:
         self.royalty_holder_annual_revenue = self.OutputParameterDict[
             self.royalty_holder_annual_revenue.Name
         ] = OutputParameter(
-            'Royalty Holder Annual Revenue',
+            'Royalty Holder Average Annual Revenue',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
@@ -3289,7 +3289,7 @@ class Economics:
 
 
         if self.royalty_rate.Provided:
-            average_annual_royalties = np.average(
+            average_annual_royalties = np.average(  # TODO unit conversion
                 self.sam_economics_calculations.royalties_opex.value[1:]  # ignore pre-revenue year(s) (Year 0)
             )
 
@@ -3301,9 +3301,10 @@ class Economics:
                 self.sam_economics_calculations.royalties_opex.value,
                 self.discount_initial_year_cashflow.value
             )
-            # FIXME WIP
-            # self.royalty_holder_annual_revenue
-            # self.royalty_holder_total_revenue
+            self.royalty_holder_annual_revenue.value = self.royalties_average_annual_cost.value
+            self.royalty_holder_total_revenue.value = np.sum(  # TODO unit conversion
+                self.sam_economics_calculations.royalties_opex.value[1:]  # ignore pre-revenue year(s) (Year 0)
+            )
 
 
         self.wacc.value = self.sam_economics_calculations.wacc.value

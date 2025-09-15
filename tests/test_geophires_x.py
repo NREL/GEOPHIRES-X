@@ -7,10 +7,16 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
+# noinspection PyProtectedMember
+from geophires_x.EconomicsSam import _cash_flow_profile_row
 from geophires_x.OptionList import PlantType
 from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+
+# noinspection PyProtectedMember
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
@@ -1306,7 +1312,9 @@ Print Output to Console, 1"""
                     from_file_path=self._get_test_file_path(
                         'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
                     ),
-                    params={'Royalty Rate': royalty_rate},
+                    params={
+                        'Royalty Rate': royalty_rate,
+                    },
                 )
             )
             opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
@@ -1332,7 +1340,22 @@ Print Output to Console, 1"""
 
             if royalty_rate > 0.0:
                 self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
-                self.assertGreater(royalty_holder_npv_MUSD, 0)  # FIXME WIP
-            else:
+                self.assertGreater(royalty_holder_npv_MUSD, 0)
+
+                royalties_cash_flow_MUSD = [
+                    it * 1e-6
+                    for it in _cash_flow_profile_row(
+                        result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                    )
+                ]
+
+                self.assertAlmostEqual(
+                    np.average(royalties_cash_flow_MUSD[1:]), opex_result[royalties_output_name]['value'], places=1
+                )
+
+                if royalty_rate == 0.1:
+                    self.assertAlmostEqual(708.07, royalty_holder_npv_MUSD, places=2)
+
+            if royalty_rate == 0.0:
                 self.assertEqual(0, opex_result[royalties_output_name]['value'])
                 self.assertEqual(0, royalty_holder_npv_MUSD)

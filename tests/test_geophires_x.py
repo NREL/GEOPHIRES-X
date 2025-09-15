@@ -1312,6 +1312,18 @@ Print Output to Console, 1"""
                 self.assertIsNotNone(opex_result[royalties_output_name])
                 self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
                 self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
-                # FIXME WIP assert total opex includes royalties
+
+                total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+                opex_line_item_sum = 0
+                for line_item_names in [
+                    'Wellfield maintenance costs',
+                    'Power plant maintenance costs',
+                    'Water costs',
+                    royalties_output_name,
+                ]:
+                    opex_line_item_sum += opex_result[line_item_names]['value']
+
+                self.assertEqual(opex_line_item_sum, total_opex_MUSD)
             else:
                 self.assertIsNone(opex_result[royalties_output_name])

@@ -1025,7 +1025,7 @@ Print Output to Console, 1"""
                 'Number of Injection Wells': doublets,
 
                 # offset contingency
-                'Reservoir Stimulation Capital Cost Adjustment Factor': 1/default_contingency_factor,
+                'Reservoir Stimulation Capital Cost Adjustment Factor': 1 / default_contingency_factor,
             }
         )
         # fmt:on
@@ -1285,6 +1285,7 @@ Print Output to Console, 1"""
             capex_field_suffix = (
                 '' if result_capex.get('Drilling and completion costs') is not None else ' (for redrilling)'
             )
+            # @formatter:off
             expected_annual_redrilling_cost = (
                 (
                     result_capex[f'Drilling and completion costs{capex_field_suffix}']['value']
@@ -1292,6 +1293,7 @@ Print Output to Console, 1"""
                 )
                 * result_redrills
             ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+            # @formatter:on
 
             self.assertAlmostEqual(expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2)
 
@@ -1308,22 +1310,29 @@ Print Output to Console, 1"""
                 )
             )
             opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+
+            self.assertIsNotNone(opex_result[royalties_output_name])
+            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+
+            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+            opex_line_item_sum = 0
+            for line_item_names in [
+                'Wellfield maintenance costs',
+                'Power plant maintenance costs',
+                'Water costs',
+                royalties_output_name,
+            ]:
+                opex_line_item_sum += opex_result[line_item_names]['value']
+
+            self.assertEqual(opex_line_item_sum, total_opex_MUSD)
+
+            econ_result = result.result['ECONOMIC PARAMETERS']
+            royalty_holder_npv_MUSD = econ_result['Royalty Holder NPV']['value']
+
             if royalty_rate > 0.0:
-                self.assertIsNotNone(opex_result[royalties_output_name])
                 self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
-                self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
-
-                total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
-
-                opex_line_item_sum = 0
-                for line_item_names in [
-                    'Wellfield maintenance costs',
-                    'Power plant maintenance costs',
-                    'Water costs',
-                    royalties_output_name,
-                ]:
-                    opex_line_item_sum += opex_result[line_item_names]['value']
-
-                self.assertEqual(opex_line_item_sum, total_opex_MUSD)
+                self.assertGreater(royalty_holder_npv_MUSD, 0)  # FIXME WIP
             else:
-                self.assertIsNone(opex_result[royalties_output_name])
+                self.assertEqual(0, opex_result[royalties_output_name]['value'])
+                self.assertEqual(0, royalty_holder_npv_MUSD)

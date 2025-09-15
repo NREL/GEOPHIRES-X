@@ -93,6 +93,7 @@ class GeophiresXResult:
                 'Project Payback Period',
                 'CHP: Percent cost allocation for electrical plant',
                 'Estimated Jobs Created',
+                'Royalty Holder NPV',
             ],
             'EXTENDED ECONOMICS': [
                 'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',

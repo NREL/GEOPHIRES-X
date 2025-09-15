@@ -417,7 +417,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     )
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
 
-    if hasattr(econ, 'royalty_rate') and econ.royalty_rate.value > 0.0:
+    if hasattr(econ, 'royalty_rate') and econ.royalty_rate.Provided:
         royalty_rate_fraction = econ.royalty_rate.quantity().to(convertible_unit('dimensionless')).magnitude
 
         # For each year, calculate the royalty as a $/MWh variable cost.

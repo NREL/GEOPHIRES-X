@@ -324,6 +324,11 @@ class Outputs:
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
                     f.write(f'      Estimated Jobs Created:                                 {model.economics.jobs_created.value}\n')
 
+                if econ.royalty_rate.Provided:
+                    royalty_holder_npv_label = Outputs._field_label(econ.royalty_holder_npv.display_name, 49)
+                    f.write(
+                        f'         {royalty_holder_npv_label}{econ.royalty_holder_npv.value:10.2f} {econ.royalty_holder_npv.CurrentUnits.value}\n')
+
 
                 f.write(NL)
                 f.write('                          ***ENGINEERING PARAMETERS***\n')
@@ -555,7 +560,7 @@ class Outputs:
                         aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
                         f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
 
-                    if econ.royalty_rate.value > 0.0:
+                    if econ.royalty_rate.Provided:
                         royalties_label = Outputs._field_label(econ.royalties_average_annual_cost.display_name, 47)
                         f.write(f'         {royalties_label}{econ.royalties_average_annual_cost.value:10.2f} {econ.royalties_average_annual_cost.CurrentUnits.value}\n')
 

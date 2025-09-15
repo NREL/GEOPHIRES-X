@@ -975,7 +975,9 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ToolTipText="Royalty rate used in SAM Economic Models."  # FIXME WIP TODO documentation
+            ToolTipText="The percentage of the project's gross annual revenue paid to the royalty holder. "
+                        "This is modeled as a variable production-based operating expense, reducing the developer's "
+                        "taxable income."
         )
 
         self.royalty_holder_discount_rate = self.ParameterDict[self.royalty_holder_discount_rate.Name] = floatParameter(
@@ -986,7 +988,9 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ToolTipText="Royalty holder discount rate used in SAM Economic Models."  # FIXME WIP TODO documentation
+            ToolTipText="The discount rate used to calculate the Net Present Value (NPV) of the royalty holder's "
+                        "income stream. This rate should reflect the royalty holder's specific risk profile and is "
+                        "separate from the main project discount rate."
         )
 
 
@@ -2425,6 +2429,11 @@ class Economics:
 
             if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                 EconomicsSam.validate_read_parameters(model)
+            else:
+                if self.royalty_rate.Provided:
+                    raise NotImplementedError('Royalties are only supported for SAM Economic Models')
+
+                # TODO validate that other SAM-EM-only parameters have not been provided
         else:
             model.logger.info("No parameters read because no content provided")
 

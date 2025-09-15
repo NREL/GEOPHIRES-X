@@ -1639,7 +1639,7 @@
       "maximum": 1.0
     },
     "Royalty Rate": {
-      "description": "Royalty rate used in SAM Economic Models.",
+      "description": "The percentage of the project's gross annual revenue paid to the royalty holder. This is modeled as a variable production-based operating expense, reducing the developer's taxable income.",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1648,7 +1648,7 @@
       "maximum": 1.0
     },
     "Royalty Holder Discount Rate": {
-      "description": "Royalty holder discount rate used in SAM Economic Models.",
+      "description": "The discount rate used to calculate the Net Present Value (NPV) of the royalty holder's income stream. This rate should reflect the royalty holder's specific risk profile and is separate from the main project discount rate.",
       "type": "number",
       "units": "",
       "category": "Economics",

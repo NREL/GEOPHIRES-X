@@ -638,6 +638,24 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertEqual(total_capex, capex_line_item_sum)
 
+    def test_royalty_rate(self):
+        royalty_rate = 0.1
+        m: Model = EconomicsSamTestCase._new_model(
+            self._egs_test_file_path(), additional_params={'Royalty Rate': royalty_rate}
+        )
+
+        sam_econ = calculate_sam_economics(m)
+        cash_flow = sam_econ.sam_cash_flow_profile
+
+        def get_row(name: str):
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        ppa_revenue_row = get_row('PPA revenue ($)')
+        expected_royalties = [x * royalty_rate for x in ppa_revenue_row]
+
+        om_prod_based_expense_row = get_row('O&M production-based expense ($)')
+        self.assertListAlmostEqual(expected_royalties, om_prod_based_expense_row, places=0)
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

@@ -395,13 +395,29 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
-    ret['ppa_price_input'] = _ppa_pricing_model(
+    ppa_price_schedule_per_kWh = _ppa_pricing_model(
         model.surfaceplant.plant_lifetime.value,
         econ.ElecStartPrice.value,
         econ.ElecEndPrice.value,
         econ.ElecEscalationStart.value,
         econ.ElecEscalationRate.value,
     )
+    ret['ppa_price_input'] = ppa_price_schedule_per_kWh
+
+    if hasattr(econ, 'royalty_rate') and econ.royalty_rate.value > 0.0:
+        royalty_rate_fraction = econ.royalty_rate.quantity().to(convertible_unit('dimensionless')).magnitude
+
+        # For each year, calculate the royalty as a $/MWh variable cost.
+        # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
+        # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
+        # (Rate * MWh) will correctly yield the total royalty payment.
+        variable_om_schedule_per_MWh = [
+            (price_per_kWh * 1000) * royalty_rate_fraction  # TODO pint unit conversion (kWh -> MWh)
+            for price_per_kWh in ppa_price_schedule_per_kWh
+        ]
+
+        # The PySAM parameter for variable operating cost in $/MWh is 'om_production'.
+        ret['om_production'] = variable_om_schedule_per_MWh
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)

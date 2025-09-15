@@ -967,6 +967,16 @@ class Economics:
                         "will be automatically set to the same value."
         )
 
+        self.royalty_rate = self.ParameterDict[self.royalty_rate.Name] = floatParameter(
+            "Royalty Rate",
+            DefaultValue=0.,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="Royalty rate used in SAM Economic Models."  # FIXME WIP TODO documentation
+        )
 
         self.discount_initial_year_cashflow = self.ParameterDict[self.discount_initial_year_cashflow.Name] = boolParameter(
             'Discount Initial Year Cashflow',

@@ -26,6 +26,9 @@ def convertible_unit(unit: Any) -> Any:
     if unit == Units.PERCENT or unit == PercentUnit.PERCENT or unit == Units.PERCENT.value:
         return 'percent'
 
+    if unit == PercentUnit.TENTH or unit == PercentUnit.TENTH.value:
+        return 'dimensionless'
+
     return unit
 
 

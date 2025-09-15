@@ -84,6 +84,8 @@ nosetests.xml
 .pydevproject
 .vscode
 
+ai.md
+
 # Complexity
 output/*.html
 output/*/index.html

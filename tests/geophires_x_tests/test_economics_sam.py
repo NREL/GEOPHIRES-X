@@ -651,13 +651,14 @@ class EconomicsSamTestCase(BaseTestCase):
         def get_row(name: str):
             return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
 
-        ppa_revenue_row = get_row('PPA revenue ($)')
-        expected_royalties = [x * royalty_rate for x in ppa_revenue_row]
+        ppa_revenue_row_USD = get_row('PPA revenue ($)')
+        expected_royalties_USD = [x * royalty_rate for x in ppa_revenue_row_USD]
+        expected_royalties_MUSD = [x * 1e-6 for x in expected_royalties_USD]
 
-        self.assertListEqual(expected_royalties, sam_econ.royalties_opex)
+        self.assertListEqual(expected_royalties_MUSD, sam_econ.royalties_opex)
 
         om_prod_based_expense_row = get_row('O&M production-based expense ($)')
-        self.assertListAlmostEqual(expected_royalties, om_prod_based_expense_row, places=0)
+        self.assertListAlmostEqual(expected_royalties_USD, om_prod_based_expense_row, places=0)
         # Note the above assertion assumes royalties are the only production-based O&M expenses. If this changes,
         # the assertion will need to be updated.
 

@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import datetime
 import math
 import time
 import sys
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
 
 # noinspection PyPackageRequirements
 import numpy as np

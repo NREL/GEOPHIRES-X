@@ -3222,14 +3222,20 @@ class Economics:
         :return: schedule: A list of rates as fractions (e.g., 0.05 for 5%).
         """
 
+        def r(x: float) -> float:
+            """Ignore apparent float precision issue"""
+            _precision = 8
+            return round(x, _precision)
+
         plant_lifetime = model.surfaceplant.plant_lifetime.value
 
-        escalation_rate = self.royalty_escalation_rate.value
-        max_rate = self.maximum_royalty_rate.value
+        escalation_rate = r(self.royalty_escalation_rate.value)
+        max_rate = r(self.maximum_royalty_rate.value)
 
         schedule = []
-        current_rate = self.royalty_rate.value
+        current_rate = r(self.royalty_rate.value)
         for _ in range(plant_lifetime):
+            current_rate = r(current_rate)
             schedule.append(min(current_rate, max_rate))
             current_rate += escalation_rate
 

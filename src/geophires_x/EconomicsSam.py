@@ -423,13 +423,13 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
         # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
         # (Rate * MWh) will correctly yield the total royalty payment.
-        variable_om_schedule_per_mwh = [
+        variable_om_schedule_per_MWh = [
             (price_kwh * 1000) * royalty_fraction  # TODO use pint unit conversion instead
             for price_kwh, royalty_fraction in zip(ppa_price_schedule_per_kWh, royalty_rate_schedule)
         ]
 
         # The PySAM parameter for variable operating cost in $/MWh is 'om_production'.
-        ret['om_production'] = variable_om_schedule_per_mwh
+        ret['om_production'] = variable_om_schedule_per_MWh
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)

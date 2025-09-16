@@ -1309,6 +1309,7 @@ Print Output to Console, 1"""
     def test_royalty_rate(self):
         royalties_output_name = 'Average Annual Royalty Cost'
 
+        zero_royalty_npv = None
         for royalty_rate in [0, 0.1]:
             result = GeophiresXClient().get_geophires_result(
                 ImmutableGeophiresInputParameters(
@@ -1345,6 +1346,9 @@ Print Output to Console, 1"""
                 self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
                 self.assertGreater(royalty_holder_npv_MUSD, 0)
 
+                # Owner NPV is lower when royalty rate is non-zero
+                self.assertGreater(zero_royalty_npv, result.result['ECONOMIC PARAMETERS']['Project NPV']['value'])
+
                 royalties_cash_flow_MUSD = [
                     it * 1e-6
                     for it in _cash_flow_profile_row(
@@ -1362,3 +1366,65 @@ Print Output to Console, 1"""
             if royalty_rate == 0.0:
                 self.assertEqual(0, opex_result[royalties_output_name]['value'])
                 self.assertEqual(0, royalty_holder_npv_MUSD)
+                zero_royalty_npv = result.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+    def test_royalty_rate_escalation(self):
+        royalties_output_name = 'Average Annual Royalty Cost'
+
+        base_royalty_rate = 0.05
+        escalation_rate = 0.01
+
+        for max_rate in [0.08, 1.0]:
+            result = GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(
+                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                    ),
+                    params={
+                        'Royalty Rate': base_royalty_rate,
+                        'Royalty Rate Escalation': escalation_rate,
+                        'Royalty Rate Maximum': max_rate,
+                    },
+                )
+            )
+            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+
+            self.assertIsNotNone(opex_result[royalties_output_name])
+            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+
+            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+            opex_line_item_sum = 0
+            for line_item_names in [
+                'Wellfield maintenance costs',
+                'Power plant maintenance costs',
+                'Water costs',
+                royalties_output_name,
+            ]:
+                opex_line_item_sum += opex_result[line_item_names]['value']
+
+            self.assertAlmostEqual(opex_line_item_sum, total_opex_MUSD, places=4)
+
+            project_lifetime_yrs = result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+
+            royalties_cash_flow_MUSD = [
+                it * 1e-6
+                for it in _cash_flow_profile_row(
+                    result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                )
+            ][1:]
+
+            ppa_revenue_MUSD = [
+                it * 1e-6 for it in _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'PPA revenue ($)')
+            ][1:]
+
+            actual_royalty_rate = [None] * len(ppa_revenue_MUSD)
+            for i in range(len(ppa_revenue_MUSD)):
+                actual_royalty_rate[i] = royalties_cash_flow_MUSD[i] / ppa_revenue_MUSD[i]
+
+            max_expected_rate = (
+                max_rate if max_rate < 1.0 else base_royalty_rate + escalation_rate * (project_lifetime_yrs - 1)
+            )
+
+            expected_last_year_revenue = ppa_revenue_MUSD[-1] * max_expected_rate
+            self.assertAlmostEqual(expected_last_year_revenue, royalties_cash_flow_MUSD[-1], places=3)

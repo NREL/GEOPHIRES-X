@@ -1004,6 +1004,7 @@ class Economics:
         )
 
         # TODO support custom royalty rate schedule as a list parameter
+        #  (as an alternative to specifying rate/escalation/max)
 
         self.royalty_holder_discount_rate = self.ParameterDict[self.royalty_holder_discount_rate.Name] = floatParameter(
             'Royalty Holder Discount Rate',

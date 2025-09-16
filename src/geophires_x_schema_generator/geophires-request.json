@@ -1647,7 +1647,7 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
-    "Royalty Escalation Rate": {
+    "Royalty Rate Escalation": {
       "description": "The additive amount the royalty rate increases each year. For example, a value of 0.001 increases a 4% rate (0.04) to 4.1% (0.041) in the next year.",
       "type": "number",
       "units": "",
@@ -1656,7 +1656,7 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
-    "Maximum Royalty Rate": {
+    "Royalty Rate Maximum": {
       "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap).",
       "type": "number",
       "units": "",

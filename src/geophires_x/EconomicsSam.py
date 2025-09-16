@@ -417,20 +417,19 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     )
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
 
-    if hasattr(econ, 'royalty_rate') and econ.royalty_rate.Provided:
-        royalty_rate_fraction = econ.royalty_rate.quantity().to(convertible_unit('dimensionless')).magnitude
-
+    royalty_rate_schedule = _get_royalty_rate_schedule(model)
+    if model.economics.royalty_rate.Provided:
         # For each year, calculate the royalty as a $/MWh variable cost.
         # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
         # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
         # (Rate * MWh) will correctly yield the total royalty payment.
-        variable_om_schedule_per_MWh = [
-            (price_per_kWh * 1000) * royalty_rate_fraction  # TODO pint unit conversion (kWh -> MWh)
-            for price_per_kWh in ppa_price_schedule_per_kWh
+        variable_om_schedule_per_mwh = [
+            (price_kwh * 1000) * royalty_fraction  # TODO use pint unit conversion instead
+            for price_kwh, royalty_fraction in zip(ppa_price_schedule_per_kWh, royalty_rate_schedule)
         ]
 
         # The PySAM parameter for variable operating cost in $/MWh is 'om_production'.
-        ret['om_production'] = variable_om_schedule_per_MWh
+        ret['om_production'] = variable_om_schedule_per_mwh
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)
@@ -479,6 +478,27 @@ def _ppa_pricing_model(
     return BuildPricingModel(
         plant_lifetime, start_price, end_price, escalation_start_year, escalation_rate, [0] * plant_lifetime
     )
+
+
+def _get_royalty_rate_schedule(model: Model) -> list[float]:
+    """
+    Builds a year-by-year schedule of royalty rates based on escalation and cap.
+    Returns a list of rates as fractions (e.g., 0.05 for 5%).
+    """
+
+    econ = model.economics
+    plant_lifetime = model.surfaceplant.plant_lifetime.value
+
+    escalation_rate = econ.royalty_escalation_rate.value
+    max_rate = econ.maximum_royalty_rate.value
+
+    schedule = []
+    current_rate = econ.royalty_rate.value
+    for _ in range(plant_lifetime):
+        schedule.append(min(current_rate, max_rate))
+        current_rate += escalation_rate
+
+    return schedule
 
 
 def _get_max_total_generation_kW(model: Model) -> float:

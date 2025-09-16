@@ -975,9 +975,32 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ToolTipText="The percentage of the project's gross annual revenue paid to the royalty holder. "
+            ToolTipText="The fraction of the project's gross annual revenue paid to the royalty holder. "
                         "This is modeled as a variable production-based operating expense, reducing the developer's "
                         "taxable income."
+        )
+
+        self.royalty_escalation_rate = self.ParameterDict[self.royalty_escalation_rate.Name] = floatParameter(
+            'Royalty Escalation Rate',
+            DefaultValue=0.,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="The additive amount the royalty rate increases each year. For example, a value of 0.001 "
+                        "increases a 4% rate (0.04) to 4.1% (0.041) in the next year."
+        )
+
+        self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
+            'Maximum Royalty Rate',
+            DefaultValue=1.0,  # Default to 100% (no effective cap)
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap)."
         )
 
         self.royalty_holder_discount_rate = self.ParameterDict[self.royalty_holder_discount_rate.Name] = floatParameter(

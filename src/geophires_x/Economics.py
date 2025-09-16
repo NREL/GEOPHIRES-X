@@ -981,7 +981,7 @@ class Economics:
         )
 
         self.royalty_escalation_rate = self.ParameterDict[self.royalty_escalation_rate.Name] = floatParameter(
-            'Royalty Escalation Rate',
+            'Royalty Rate Escalation',
             DefaultValue=0.,
             Min=0.0,
             Max=1.0,
@@ -993,7 +993,7 @@ class Economics:
         )
 
         self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
-            'Maximum Royalty Rate',
+            'Royalty Rate Maximum',
             DefaultValue=1.0,  # Default to 100% (no effective cap)
             Min=0.0,
             Max=1.0,

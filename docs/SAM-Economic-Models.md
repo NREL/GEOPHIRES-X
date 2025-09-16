@@ -150,6 +150,8 @@ Total AddOn Profit Gained per year is treated as fixed amount Capacity payment r
 Add-ons CAPEX, OPEX, and profit are supported.
 Add-ons with electricity and heat are not currently supported, but may be supported in the future.
 
+[Add-Ons example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-3)
+
 ## Royalties
 
 SAM Economic Models can model a royalty agreement where a percentage of the project's gross revenue is paid to a third
@@ -182,14 +184,22 @@ Output Parameters:
 1. `Royalty Holder NPV`: The Net Present Value of the royalty holder's income stream, calculated using the
    `Royalty Holder Discount Rate`.
 
+[Royalties example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-4)
+
 ## Examples
-
-### SAM Single Owner PPA: 50 MWe
-
-[Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA)
 
 ### Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station
 
 [Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4)
 
 See [Case Study: 500 MWe EGS Project Modeled on Fervo Cape Station](Fervo_Project_Cape-4.html).
+
+### SAM Single Owner PPA: 50 MWe
+
+1. [SAM Single Owner PPA: 50 MWe](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA)
+2. [SAM Single Owner PPA: 50 MWe with Add-ons](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-3)
+3. [SAM Single Owner PPA: 50 MWe with Royalties](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-4)
+
+### SAM Single Owner PPA: 400 MWe BICYCLE Comparison
+
+[Web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-2)

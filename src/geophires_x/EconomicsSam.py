@@ -481,24 +481,7 @@ def _ppa_pricing_model(
 
 
 def _get_royalty_rate_schedule(model: Model) -> list[float]:
-    """
-    Builds a year-by-year schedule of royalty rates based on escalation and cap.
-    Returns a list of rates as fractions (e.g., 0.05 for 5%).
-    """
-
-    econ = model.economics
-    plant_lifetime = model.surfaceplant.plant_lifetime.value
-
-    escalation_rate = econ.royalty_escalation_rate.value
-    max_rate = econ.maximum_royalty_rate.value
-
-    schedule = []
-    current_rate = econ.royalty_rate.value
-    for _ in range(plant_lifetime):
-        schedule.append(min(current_rate, max_rate))
-        current_rate += escalation_rate
-
-    return schedule
+    return model.economics.get_royalty_rate_schedule(model)
 
 
 def _get_max_total_generation_kW(model: Model) -> float:

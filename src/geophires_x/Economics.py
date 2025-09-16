@@ -3214,6 +3214,28 @@ class Economics:
                                                    self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
                                                    self.PTCCarbonPrice)
 
+    def get_royalty_rate_schedule(self, model: Model) -> list[float]:
+        """
+        Builds a year-by-year schedule of royalty rates based on escalation and cap.
+
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: schedule: A list of rates as fractions (e.g., 0.05 for 5%).
+        """
+
+        plant_lifetime = model.surfaceplant.plant_lifetime.value
+
+        escalation_rate = self.royalty_escalation_rate.value
+        max_rate = self.maximum_royalty_rate.value
+
+        schedule = []
+        current_rate = self.royalty_rate.value
+        for _ in range(plant_lifetime):
+            schedule.append(min(current_rate, max_rate))
+            current_rate += escalation_rate
+
+        return schedule
+
+
     def calculate_cashflow(self, model: Model) -> None:
             """
             Calculate cashflow and cumulative cash flow

@@ -1003,6 +1003,8 @@ class Economics:
             ToolTipText="The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap)."
         )
 
+        # TODO support custom royalty rate schedule as a list parameter
+
         self.royalty_holder_discount_rate = self.ParameterDict[self.royalty_holder_discount_rate.Name] = floatParameter(
             'Royalty Holder Discount Rate',
             DefaultValue=0.05,

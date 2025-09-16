@@ -93,9 +93,6 @@ class GeophiresXResult:
                 'Project Payback Period',
                 'CHP: Percent cost allocation for electrical plant',
                 'Estimated Jobs Created',
-                'Royalty Holder NPV',
-                'Royalty Holder Average Annual Revenue',
-                'Royalty Holder Total Revenue',
             ],
             'EXTENDED ECONOMICS': [
                 'Adjusted Project LCOE (after incentives, grants, AddOns,etc)',
@@ -113,6 +110,9 @@ class GeophiresXResult:
                 'Total Add-on Net Heat',
                 'Total Add-on Profit',
                 'AddOns Payback Period',
+                'Royalty Holder NPV',
+                'Royalty Holder Average Annual Revenue',
+                'Royalty Holder Total Revenue',
             ],
             'CCUS ECONOMICS': [
                 'Total Avoided Carbon Production',

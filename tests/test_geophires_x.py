@@ -9,9 +9,6 @@ from typing import Any
 
 import numpy as np
 
-# @formatter:off
-# noinspection PyProtectedMember
-from geophires_x.EconomicsSam import _cash_flow_profile_row
 from geophires_x.OptionList import PlantType
 from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
@@ -24,7 +21,10 @@ from geophires_x_client.geophires_input_parameters import GeophiresInputParamete
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
 
-# @formatter:on
+# noinspection PyProtectedMember
+# ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
+from geophires_x.EconomicsSam import _cash_flow_profile_row
+
 from tests.base_test_case import BaseTestCase
 
 
@@ -1338,7 +1338,7 @@ Print Output to Console, 1"""
 
             self.assertEqual(opex_line_item_sum, total_opex_MUSD)
 
-            econ_result = result.result['ECONOMIC PARAMETERS']
+            econ_result = result.result['EXTENDED ECONOMICS']
             royalty_holder_npv_MUSD = econ_result['Royalty Holder NPV']['value']
 
             if royalty_rate > 0.0:

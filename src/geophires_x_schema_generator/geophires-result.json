@@ -143,21 +143,6 @@
           "type": "number",
           "description": "",
           "units": null
-        },
-        "Royalty Holder NPV": {
-          "type": "number",
-          "description": "Net Present Value (NPV) of the royalty holder's cash flow stream.",
-          "units": "MUSD"
-        },
-        "Royalty Holder Average Annual Revenue": {
-          "type": "number",
-          "description": "The royalty holder's annual revenue stream from the royalty agreement.",
-          "units": "MUSD/yr"
-        },
-        "Royalty Holder Total Revenue": {
-          "type": "number",
-          "description": "The total (undiscounted) revenue received by the royalty holder over the project lifetime.",
-          "units": "MUSD"
         }
       }
     },
@@ -186,7 +171,22 @@
         "Total Add-on Net Elec": {},
         "Total Add-on Net Heat": {},
         "Total Add-on Profit": {},
-        "AddOns Payback Period": {}
+        "AddOns Payback Period": {},
+        "Royalty Holder NPV": {
+          "type": "number",
+          "description": "Net Present Value (NPV) of the royalty holder's cash flow stream.",
+          "units": "MUSD"
+        },
+        "Royalty Holder Average Annual Revenue": {
+          "type": "number",
+          "description": "The royalty holder's annual revenue stream from the royalty agreement.",
+          "units": "MUSD/yr"
+        },
+        "Royalty Holder Total Revenue": {
+          "type": "number",
+          "description": "The total (undiscounted) revenue received by the royalty holder over the project lifetime.",
+          "units": "MUSD"
+        }
       }
     },
     "CCUS ECONOMICS": {

@@ -6,6 +6,7 @@ Contents
    :maxdepth: 2
 
    overview
+   Theoretical-Basis-for-GEOPHIRES
    parameters
    How-to-extend-GEOPHIRES-X
    hip_ra_x_parameters

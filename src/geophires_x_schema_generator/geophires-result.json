@@ -174,17 +174,17 @@
         "AddOns Payback Period": {},
         "Royalty Holder NPV": {
           "type": "number",
-          "description": "Net Present Value (NPV) of the royalty holder's cash flow stream.",
+          "description": "The pre-tax Net Present Value (NPV) of the royalty holder's income stream. This is a pre-tax value because the model does not account for the royalty holder's specific tax liabilities.",
           "units": "MUSD"
         },
         "Royalty Holder Average Annual Revenue": {
           "type": "number",
-          "description": "The royalty holder's annual revenue stream from the royalty agreement.",
+          "description": "The royalty holder's gross (pre-tax) annual revenue stream from the royalty agreement.",
           "units": "MUSD/yr"
         },
         "Royalty Holder Total Revenue": {
           "type": "number",
-          "description": "The total (undiscounted) revenue received by the royalty holder over the project lifetime.",
+          "description": "The total gross (pre-tax), undiscounted revenue received by the royalty holder over the project lifetime.",
           "units": "MUSD"
         }
       }

@@ -180,9 +180,10 @@ Output Parameters:
 1. `Average Annual Royalty Cost`: The developer's average annual royalty expense over the project's lifetime after
    construction is complete (Year 1). The same value is also output as `Royalty Holder Average Annual Revenue`. The
    individual royalties for each year are included in the cash flow line item `O&M production-based expense ($)`.
-1. `Royalty Holder Total Revenue`: The total undiscounted royalty income over the project's lifetime.
-1. `Royalty Holder NPV`: The Net Present Value of the royalty holder's income stream, calculated using the
-   `Royalty Holder Discount Rate`.
+1. `Royalty Holder Total Revenue`: The total gross (pre-tax), undiscounted royalty income over the project's lifetime.
+1. `Royalty Holder NPV`: The pre-tax Net Present Value of the royalty holder's income stream, calculated using the
+   `Royalty Holder Discount Rate`. This is a pre-tax value because the model does not account for the royalty holder's
+   specific tax liabilities.
 
 [Royalties example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-4)
 

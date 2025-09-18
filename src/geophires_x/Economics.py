@@ -2182,7 +2182,10 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText="Net Present Value (NPV) of the royalty holder's cash flow stream."
+            ToolTipText=f"The pre-tax Net Present Value (NPV) of the royalty holder's income stream, "
+                        f"calculated using the {self.royalty_holder_discount_rate.Name}. "
+                        f"This is a pre-tax value because the model does not account for the royalty holder's specific "
+                        f"tax liabilities."
         )
         self.royalty_holder_annual_revenue = self.OutputParameterDict[
             self.royalty_holder_annual_revenue.Name
@@ -2191,7 +2194,7 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText="The royalty holder's annual revenue stream from the royalty agreement."
+            ToolTipText="The royalty holder's gross (pre-tax) annual revenue stream from the royalty agreement."
         )
         self.royalty_holder_total_revenue = self.OutputParameterDict[
             self.royalty_holder_total_revenue.Name
@@ -2200,7 +2203,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText='The total (undiscounted) revenue received by the royalty holder over the project lifetime.'
+            ToolTipText='The total gross (pre-tax), undiscounted revenue received by the royalty holder over the '
+                        'project lifetime.'
         )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')

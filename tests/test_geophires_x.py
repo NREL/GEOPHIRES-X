@@ -9,6 +9,7 @@ from typing import Any
 
 import numpy as np
 
+from geophires_x.GeoPHIRESUtils import sig_figs
 from geophires_x.OptionList import PlantType
 from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
@@ -1428,3 +1429,31 @@ Print Output to Console, 1"""
 
             expected_last_year_revenue = ppa_revenue_MUSD[-1] * max_expected_rate
             self.assertAlmostEqual(expected_last_year_revenue, royalties_cash_flow_MUSD[-1], places=3)
+
+    def test_royalty_rate_with_addon(self):
+        """
+        Verifies that custom EXTENDED ECONOMICS header print logic in Outputs works as expected
+        (geophires_x.Outputs.Outputs._print_extended_economics_header)
+        """
+
+        addon_profit_MUSD = 15
+
+        result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=self._get_test_file_path(
+                    'examples/example_SAM-single-owner-PPA-4.txt'  # Royalty rate example
+                ),
+                params={
+                    'AddOn Nickname 1': 'Waste Heat Absorption Chiller',
+                    'AddOn CAPEX 1': 50,
+                    'AddOn OPEX 1': 1,
+                    'AddOn Profit Gained 1': addon_profit_MUSD,
+                },
+            )
+        )
+
+        self.assertEqual(30, sig_figs(result.result['EXTENDED ECONOMICS']['Royalty Holder NPV']['value'], 1))
+
+        addon_cash_flow = _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'Capacity payment revenue ($)')
+        self.assertEqual(0, addon_cash_flow[0])
+        self.assertTrue(all(it == addon_profit_MUSD * 1e6 for it in addon_cash_flow[1:]))

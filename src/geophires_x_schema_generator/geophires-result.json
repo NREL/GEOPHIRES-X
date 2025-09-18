@@ -174,7 +174,7 @@
         "AddOns Payback Period": {},
         "Royalty Holder NPV": {
           "type": "number",
-          "description": "The pre-tax Net Present Value (NPV) of the royalty holder's income stream. This is a pre-tax value because the model does not account for the royalty holder's specific tax liabilities.",
+          "description": "The pre-tax Net Present Value (NPV) of the royalty holder's income stream, calculated using the Royalty Holder Discount Rate. This is a pre-tax value because the model does not account for the royalty holder's specific tax liabilities.",
           "units": "MUSD"
         },
         "Royalty Holder Average Annual Revenue": {

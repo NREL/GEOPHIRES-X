@@ -120,7 +120,7 @@ class SurfacePlant:
         if np.min(ReinjTemp) < Tinj:
             user_injection_temp = Tinj
             Tinj = np.min(ReinjTemp)
-            msg = (f'Model-calculated reinjection temperature ({Tinj}) is lower than input reinjection temperature '
+            msg = (f'Model-calculated reinjection temperature ({Tinj:2f}) is lower than input reinjection temperature '
                    f'({user_injection_temp}); input reinjection temperature will be ignored.')
             model.logger.warning(msg)
 

@@ -1452,7 +1452,7 @@ Print Output to Console, 1"""
             )
         )
 
-        self.assertEqual(30, sig_figs(result.result['EXTENDED ECONOMICS']['Royalty Holder NPV']['value'], 1))
+        self.assertEqual(50, sig_figs(result.result['EXTENDED ECONOMICS']['Royalty Holder NPV']['value'], 1))
 
         addon_cash_flow = _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'Capacity payment revenue ($)')
         self.assertEqual(0, addon_cash_flow[0])

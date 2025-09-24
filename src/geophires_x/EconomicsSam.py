@@ -43,7 +43,7 @@ from geophires_x.EconomicsUtils import (
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
 from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
-from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units, CurrencyFrequencyUnit
+from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
 
 
 @dataclass

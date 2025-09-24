@@ -413,7 +413,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
 
     if model.economics.royalty_rate.Provided:
-        ret['om_production'] = _get_royalties_variable_om_per_MWh_schedule(model)
+        ret['om_production'] = _get_royalties_variable_om_USD_per_MWh_schedule(model)
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)
@@ -436,9 +436,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
-def _get_royalties_variable_om_per_MWh_schedule(model: Model):
-    """TODO price unit in method name"""
-
+def _get_royalties_variable_om_USD_per_MWh_schedule(model: Model):
     royalty_rate_schedule = _get_royalty_rate_schedule(model)
     ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
 
@@ -446,12 +444,13 @@ def _get_royalties_variable_om_per_MWh_schedule(model: Model):
     # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
     # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
     # (Rate * MWh) will correctly yield the total royalty payment.
-    variable_om_schedule_per_MWh = [
-        (price_kWh * 1000) * royalty_fraction  # TODO use pint unit conversion instead
+    variable_om_schedule_USD_per_MWh = [
+        quantity(price_kWh, model.economics.ElecStartPrice.CurrentUnits).to('USD / megawatt_hour').magnitude
+        * royalty_fraction
         for price_kWh, royalty_fraction in zip(ppa_price_schedule_per_kWh, royalty_rate_schedule)
     ]
 
-    return variable_om_schedule_per_MWh
+    return variable_om_schedule_USD_per_MWh
 
 
 def _get_fed_and_state_tax_rates(geophires_ctr_tenths: float) -> tuple[list[float]]:
@@ -471,17 +470,21 @@ def _pct(econ_value: Parameter) -> float:
     return econ_value.quantity().to(convertible_unit('%')).magnitude
 
 
-def _get_ppa_price_schedule_per_kWh(model: Model) -> list[float]:
-    """TODO price unit in method name"""
+def _get_ppa_price_schedule_per_kWh(model: Model) -> list:
+    """
+    :return: quantity list of PPA price schedule per kWh in econ.ElecStartPrice.CurrentUnits
+    """
 
     econ = model.economics
-    return _ppa_pricing_model(
+    pricing_model = _ppa_pricing_model(
         model.surfaceplant.plant_lifetime.value,
         econ.ElecStartPrice.value,
         econ.ElecEndPrice.value,
         econ.ElecEscalationStart.value,
         econ.ElecEscalationRate.value,
     )
+
+    return [quantity(it, econ.ElecStartPrice.CurrentUnits).magnitude for it in pricing_model]
 
 
 def _ppa_pricing_model(

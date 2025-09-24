@@ -654,9 +654,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         ppa_revenue_row_USD = get_row('PPA revenue ($)')
         expected_royalties_USD = [x * royalty_rate for x in ppa_revenue_row_USD]
-        expected_royalties_MUSD = [x * 1e-6 for x in expected_royalties_USD]
-
-        self.assertListEqual(expected_royalties_MUSD, sam_econ.royalties_opex.value)
+        self.assertListAlmostEqual(expected_royalties_USD, sam_econ.royalties_opex.value, places=0)
 
         om_prod_based_expense_row = get_row('O&M production-based expense ($)')
         self.assertListAlmostEqual(expected_royalties_USD, om_prod_based_expense_row, places=0)

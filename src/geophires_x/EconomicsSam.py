@@ -173,12 +173,13 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
-    royalty_rate = model.economics.royalty_rate.quantity().to('dimensionless').magnitude
-    ppa_revenue_row = _cash_flow_profile_row(cash_flow, 'PPA revenue ($)')
-    royalties_unit = sam_economics.royalties_opex.CurrentUnits.value.replace('/yr', '')
-    sam_economics.royalties_opex.value = [
-        quantity(x * royalty_rate, 'USD').to(royalties_unit).magnitude for x in ppa_revenue_row
-    ]
+    if model.economics.royalty_rate.Provided:
+        # Assumes that royalties opex is the only possible O&M production-based expense - this logic will need to be
+        # updated if more O&M production-based expenses are added to SAM-EM
+        sam_economics.royalties_opex.value = [
+            quantity(it, 'USD / year').to(sam_economics.royalties_opex.CurrentUnits).magnitude
+            for it in _cash_flow_profile_row(cash_flow, 'O&M production-based expense ($)')
+        ]
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner
@@ -408,28 +409,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
-    ppa_price_schedule_per_kWh = _ppa_pricing_model(
-        model.surfaceplant.plant_lifetime.value,
-        econ.ElecStartPrice.value,
-        econ.ElecEndPrice.value,
-        econ.ElecEscalationStart.value,
-        econ.ElecEscalationRate.value,
-    )
+    ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
 
-    royalty_rate_schedule = _get_royalty_rate_schedule(model)
     if model.economics.royalty_rate.Provided:
-        # For each year, calculate the royalty as a $/MWh variable cost.
-        # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
-        # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
-        # (Rate * MWh) will correctly yield the total royalty payment.
-        variable_om_schedule_per_MWh = [
-            (price_kwh * 1000) * royalty_fraction  # TODO use pint unit conversion instead
-            for price_kwh, royalty_fraction in zip(ppa_price_schedule_per_kWh, royalty_rate_schedule)
-        ]
-
-        # The PySAM parameter for variable operating cost in $/MWh is 'om_production'.
-        ret['om_production'] = variable_om_schedule_per_MWh
+        ret['om_production'] = _get_royalties_variable_om_per_MWh_schedule(model)
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)
@@ -452,6 +436,24 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
+def _get_royalties_variable_om_per_MWh_schedule(model: Model):
+    """TODO price unit in method name"""
+
+    royalty_rate_schedule = _get_royalty_rate_schedule(model)
+    ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
+
+    # For each year, calculate the royalty as a $/MWh variable cost.
+    # The royalty is a percentage of revenue (MWh * $/MWh). By setting the
+    # variable O&M rate to (PPA Price * Royalty Rate), SAM's calculation
+    # (Rate * MWh) will correctly yield the total royalty payment.
+    variable_om_schedule_per_MWh = [
+        (price_kWh * 1000) * royalty_fraction  # TODO use pint unit conversion instead
+        for price_kWh, royalty_fraction in zip(ppa_price_schedule_per_kWh, royalty_rate_schedule)
+    ]
+
+    return variable_om_schedule_per_MWh
+
+
 def _get_fed_and_state_tax_rates(geophires_ctr_tenths: float) -> tuple[list[float]]:
     geophires_ctr_tenths = Decimal(geophires_ctr_tenths)
     max_fed_rate_tenths = Decimal(0.21)
@@ -469,9 +471,22 @@ def _pct(econ_value: Parameter) -> float:
     return econ_value.quantity().to(convertible_unit('%')).magnitude
 
 
+def _get_ppa_price_schedule_per_kWh(model: Model) -> list[float]:
+    """TODO price unit in method name"""
+
+    econ = model.economics
+    return _ppa_pricing_model(
+        model.surfaceplant.plant_lifetime.value,
+        econ.ElecStartPrice.value,
+        econ.ElecEndPrice.value,
+        econ.ElecEscalationStart.value,
+        econ.ElecEscalationRate.value,
+    )
+
+
 def _ppa_pricing_model(
     plant_lifetime: int, start_price: float, end_price: float, escalation_start_year: int, escalation_rate: float
-) -> list:
+) -> list[float]:
     # See relevant comment in geophires_x.EconomicsUtils.BuildPricingModel re:
     # https://github.com/NREL/GEOPHIRES-X/issues/340?title=Price+Escalation+Start+Year+seemingly+off+by+1.
     # We use the same utility method here for the sake of consistency despite technical incorrectness.

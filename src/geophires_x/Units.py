@@ -201,6 +201,9 @@ class CurrencyFrequencyUnit(str, Enum):
     KMXNPERYEAR = "KMXN/yr"
     MXNPERYEAR = "MXN/yr"
 
+    def get_currency_unit_str(self) -> str:
+        return self.value.split('/')[0]
+
 
 class EnergyCostUnit(str, Enum):
     DOLLARSPERKWH = "USD/kWh"

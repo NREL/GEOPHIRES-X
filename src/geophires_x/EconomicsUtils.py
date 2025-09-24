@@ -150,8 +150,8 @@ def royalty_cost_output_parameter() -> OutputParameter:
     return OutputParameter(
             Name='Royalty Cost',
             UnitType=Units.CURRENCYFREQUENCY,
-            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            PreferredUnits=CurrencyFrequencyUnit.DOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.DOLLARSPERYEAR,
             ToolTipText='The annual costs paid to a royalty holder, calculated as a percentage of the '
                         'project\'s gross annual revenue. This is modeled as a variable operating expense.'
         )

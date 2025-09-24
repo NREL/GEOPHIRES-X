@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.56
- Simulation Date: 2025-09-16
- Simulation Time:  09:04
- Calculation Time:      1.182 sec
+ GEOPHIRES Version: 3.9.59
+ Simulation Date: 2025-09-24
+ Simulation Time:  08:47
+ Calculation Time:      1.162 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -115,8 +115,8 @@ Simulation Metadata
          Wellfield maintenance costs:                         1.13 MUSD/yr
          Power plant maintenance costs:                       3.90 MUSD/yr
          Water costs:                                         1.58 MUSD/yr
-         Average Annual Royalty Cost:                         2.50 MUSD/yr
-      Total operating and maintenance costs:                  9.10 MUSD/yr
+         Average Annual Royalty Cost:                         4.71 MUSD/yr
+      Total operating and maintenance costs:                 11.31 MUSD/yr
 
 
                            ***SURFACE EQUIPMENT SIMULATION RESULTS***
@@ -417,6 +417,6 @@ Interest earned on reserves ($)                  	0              	0          	0 
 
                                 ***EXTENDED ECONOMICS***
 
-      Royalty Holder NPV:                                   29.63 MUSD
-      Royalty Holder Average Annual Revenue:                 2.50 MUSD/yr
-      Royalty Holder Total Revenue:                         49.93 MUSD
+      Royalty Holder NPV:                                   54.18 MUSD
+      Royalty Holder Average Annual Revenue:                 4.71 MUSD/yr
+      Royalty Holder Total Revenue:                         94.17 MUSD

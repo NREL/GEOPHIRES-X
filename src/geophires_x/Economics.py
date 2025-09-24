@@ -3363,18 +3363,31 @@ class Economics:
                 self.sam_economics_calculations.royalties_opex.value[pre_revenue_years_slice_index:]
             )
 
-            self.royalties_average_annual_cost.value = average_annual_royalties  # TODO unit conversion
-            self.Coam.value += self.royalties_average_annual_cost.quantity().to(self.Coam.CurrentUnits.value).magnitude
+            self.royalties_average_annual_cost.value = (quantity(
+                average_annual_royalties,
+                self.sam_economics_calculations.royalties_opex.CurrentUnits
+            ).to(self.royalties_average_annual_cost.CurrentUnits).magnitude)
 
-            self.royalty_holder_npv.value = calculate_npv(
-                self.royalty_holder_discount_rate.value,
-                self.sam_economics_calculations.royalties_opex.value,
-                self.discount_initial_year_cashflow.value
-            )
+            self.Coam.value += (self.royalties_average_annual_cost.quantity()
+                                .to(self.Coam.CurrentUnits.value).magnitude)
+
+            self.royalty_holder_npv.value = quantity(
+                calculate_npv(
+                    self.royalty_holder_discount_rate.value,
+                    self.sam_economics_calculations.royalties_opex.value,
+                    self.discount_initial_year_cashflow.value
+                ),
+                self.sam_economics_calculations.royalties_opex.CurrentUnits.get_currency_unit_str()
+            ).to(self.royalty_holder_npv.CurrentUnits).magnitude
+
             self.royalty_holder_annual_revenue.value = self.royalties_average_annual_cost.value
-            self.royalty_holder_total_revenue.value = np.sum(  # TODO unit conversion
-                self.sam_economics_calculations.royalties_opex.value[pre_revenue_years_slice_index:]
-            )
+
+            self.royalty_holder_total_revenue.value = quantity(
+                np.sum(
+                    self.sam_economics_calculations.royalties_opex.value[pre_revenue_years_slice_index:]
+                ),
+                self.sam_economics_calculations.royalties_opex.CurrentUnits.get_currency_unit_str()
+            ).to(self.royalty_holder_total_revenue.CurrentUnits).magnitude
 
 
         self.wacc.value = self.sam_economics_calculations.wacc.value

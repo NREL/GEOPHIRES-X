@@ -37,7 +37,6 @@ from geophires_x.EconomicsUtils import (
     moic_parameter,
     project_vir_parameter,
     project_payback_period_parameter,
-    inflation_cost_during_construction_output_parameter,
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
 )

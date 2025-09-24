@@ -992,15 +992,17 @@ class Economics:
                         "increases a 4% rate (0.04) to 4.1% (0.041) in the next year."
         )
 
+        maximum_royalty_rate_default_val = 1.0
         self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
             'Royalty Rate Maximum',
-            DefaultValue=1.0,  # Default to 100% (no effective cap)
+            DefaultValue=maximum_royalty_rate_default_val,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ToolTipText="The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap)."
+            ToolTipText=f"The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap)."
+                        f"{' Defaults to 100% (no effective cap).' if maximum_royalty_rate_default_val == 1.0 else ''}"
         )
 
         # TODO support custom royalty rate schedule as a list parameter

@@ -1457,3 +1457,16 @@ Print Output to Console, 1"""
         addon_cash_flow = _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'Capacity payment revenue ($)')
         self.assertEqual(0, addon_cash_flow[0])
         self.assertTrue(all(it == addon_profit_MUSD * 1e6 for it in addon_cash_flow[1:]))
+
+    def test_royalty_rate_not_supported_for_non_sam_economic_models(self):
+        with self.assertRaises(RuntimeError) as re:
+            GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('examples/Fervo_Project_Cape-3.txt'),
+                    params={
+                        'Royalty Rate': 0.1,
+                    },
+                )
+            )
+
+        self.assertIn('Royalties are only supported for SAM Economic Models', str(re.exception))

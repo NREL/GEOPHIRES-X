@@ -1657,7 +1657,7 @@
       "maximum": 1.0
     },
     "Royalty Rate Maximum": {
-      "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap).",
+      "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap). Defaults to 100% (no effective cap).",
       "type": "number",
       "units": "",
       "category": "Economics",

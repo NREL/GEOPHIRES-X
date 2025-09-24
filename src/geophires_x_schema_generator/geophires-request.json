@@ -1638,6 +1638,42 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Royalty Rate": {
+      "description": "The fraction of the project's gross annual revenue paid to the royalty holder. This is modeled as a variable production-based operating expense, reducing the developer's taxable income.",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Royalty Rate Escalation": {
+      "description": "The additive amount the royalty rate increases each year. For example, a value of 0.001 increases a 4% rate (0.04) to 4.1% (0.041) in the next year.",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Royalty Rate Maximum": {
+      "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap). Defaults to 100% (no effective cap).",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Royalty Holder Discount Rate": {
+      "description": "The discount rate used to calculate the Net Present Value (NPV) of the royalty holder's income stream. This rate should reflect the royalty holder's specific risk profile and is separate from the main project discount rate.",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.05,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
     "Discount Initial Year Cashflow": {
       "description": "Whether to discount cashflow in the initial project year when calculating NPV (Net Present Value). The default value of False conforms to NREL's standard convention for NPV calculation (Short W et al, 1995. https://www.nrel.gov/docs/legosti/old/5173.pdf). A value of True will, by contrast, cause NPV calculation to follow the convention used by Excel, Google Sheets, and other common spreadsheet software. Although NREL's NPV convention may typically be considered more technically correct, Excel-style NPV calculation might be preferred for familiarity or compatibility with existing business processes. See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.",
       "type": "boolean",

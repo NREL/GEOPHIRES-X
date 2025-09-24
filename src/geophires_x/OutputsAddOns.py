@@ -29,10 +29,8 @@ class OutputsAddOns(Outputs):
         try:
             with open(self.output_file, 'a', encoding='UTF-8') as f:
                 addon_results: list[OutputTableItem] = []
-                f.write(NL)
-                f.write(NL)
-                f.write("                                ***EXTENDED ECONOMICS***\n")
-                f.write(NL)
+                self._print_extended_economics_header(f)
+
                 if model.economics.LCOE.value > -999.0:
                     f.write(f"      Adjusted Project LCOE (after incentives, grants, AddOns,etc):     {model.economics.LCOE.value:10.2f} " + model.economics.LCOE.PreferredUnits.value + NL)
                     addon_results.append(OutputTableItem('Adjusted Project LCOE (after incentives, grants, AddOns,etc)', '{0:10.2f}'.format(model.economics.LCOE.value), model.economics.LCOE.PreferredUnits.value))

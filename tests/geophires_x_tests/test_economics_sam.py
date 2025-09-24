@@ -20,6 +20,8 @@ from geophires_x.EconomicsSam import (
     get_sam_cash_flow_profile_tabulated_output,
     _ppa_pricing_model,
     _get_fed_and_state_tax_rates,
+    SamEconomicsCalculations,
+    _get_royalty_rate_schedule,
 )
 from geophires_x.GeoPHIRESUtils import sig_figs, quantity
 
@@ -637,6 +639,69 @@ class EconomicsSamTestCase(BaseTestCase):
                 capex_line_item_sum += quantity(capex_line_item['value'], capex_line_item['unit']).to(total_capex_unit)
 
         self.assertEqual(total_capex, capex_line_item_sum)
+
+    def test_royalty_rate(self):
+        royalty_rate = 0.1
+        m: Model = EconomicsSamTestCase._new_model(
+            self._egs_test_file_path(), additional_params={'Royalty Rate': royalty_rate}
+        )
+
+        sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
+        cash_flow = sam_econ.sam_cash_flow_profile
+
+        def get_row(name: str):
+            return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
+
+        ppa_revenue_row_USD = get_row('PPA revenue ($)')
+        expected_royalties_USD = [x * royalty_rate for x in ppa_revenue_row_USD]
+        self.assertListAlmostEqual(expected_royalties_USD, sam_econ.royalties_opex.value, places=0)
+
+        om_prod_based_expense_row = get_row('O&M production-based expense ($)')
+        self.assertListAlmostEqual(expected_royalties_USD, om_prod_based_expense_row, places=0)
+        # Note the above assertion assumes royalties are the only production-based O&M expenses. If this changes,
+        # the assertion will need to be updated.
+
+    def test_royalty_rate_schedule(self):
+        royalty_rate = 0.1
+        escalation_rate = 0.01
+        max_rate = royalty_rate + 5 * escalation_rate
+        m: Model = EconomicsSamTestCase._new_model(
+            self._egs_test_file_path(),
+            additional_params={
+                'Royalty Rate': royalty_rate,
+                'Royalty Rate Escalation': escalation_rate,
+                'Royalty Rate Maximum': max_rate,
+            },
+        )
+
+        schedule: list[float] = _get_royalty_rate_schedule(m)
+
+        self.assertListAlmostEqual(
+            [
+                0.1,
+                0.11,
+                0.12,
+                0.13,
+                0.14,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+                0.15,
+            ],
+            schedule,
+            places=3,
+        )
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

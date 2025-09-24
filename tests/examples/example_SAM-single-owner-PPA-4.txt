@@ -1,0 +1,87 @@
+# Example: SAM Single Owner PPA Economic Model: 50 MWe with Royalties
+# This example models example_SAM-single-owner with royalties that start at 5% and escalate to 10%
+# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html#add-ons
+
+
+# *** ECONOMIC/FINANCIAL PARAMETERS ***
+# *************************************
+Economic Model, 5, -- SAM Single Owner PPA
+
+Royalty Rate, 0.05
+Royalty Rate Escalation, 0.01
+Royalty Rate Maximum, 0.1
+
+Starting Electricity Sale Price, 0.08
+Ending Electricity Sale Price, 1.00
+Electricity Escalation Rate Per Year, 0.00322
+Electricity Escalation Start Year, 1
+
+Fraction of Investment in Bonds, .4
+Inflated Bond Interest Rate, .05
+Discount Rate, 0.08
+Inflation Rate, .02
+Inflation Rate During Construction, 0.05
+
+Combined Income Tax Rate, .28
+Investment Tax Credit Rate, 0.3
+Property Tax Rate, 0
+
+Capital Cost for Power Plant for Electricity Generation, 1900
+
+# *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
+# *************************************************
+End-Use Option, 1, -- Electricity
+Power Plant Type, 2, -- Supercritical ORC
+Plant Lifetime, 20
+
+Reservoir Model, 1
+
+Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
+Reservoir Volume, 2000000000, -- m**3
+Fracture Shape, 3, -- Square
+Fracture Separation, 18
+Fracture Height, 165
+
+Reservoir Density, 2800
+Reservoir Depth, 2.6, -- km
+Reservoir Heat Capacity, 790
+Reservoir Thermal Conductivity, 3.05
+Reservoir Porosity, 0.0118
+Reservoir Impedance, 0.001
+
+Number of Segments, 1
+Gradient 1, 74
+
+Number of Injection Wells, 6
+Number of Production Wells, 6
+
+Production Flow Rate per Well, 100
+
+Production Well Diameter, 9.625
+Injection Well Diameter, 9.625
+
+Well Separation, 365 feet
+
+Ramey Production Wellbore Model, 1
+Injection Temperature, 60 degC
+Injection Wellbore Temperature Gain, 3
+Plant Outlet Pressure, 1000 psi
+Production Wellhead Pressure, 325 psi
+
+Utilization Factor, .9
+Water Loss Fraction, 0.10
+Maximum Drawdown, 0.0066
+Ambient Temperature, 10, -- degC
+Surface Temperature, 10, -- degC
+Circulation Pump Efficiency, 0.80
+
+Well Geometry Configuration, 4
+Has Nonvertical Section, True
+Multilaterals Cased, True
+Number of Multilateral Sections, 3
+Nonvertical Length per Multilateral Section, 1433, -- meters
+
+# *** SIMULATION PARAMETERS ***
+# *****************************
+Maximum Temperature, 500
+Time steps per year, 12

@@ -631,20 +631,23 @@ def InjPressureDropAndPumpingPowerUsingIndexes(
 
     if productionwellpumping:
         # Excess pressure covers non-condensable gas pressure and net positive suction head for the pump
-        Pexcess_kPa = 344.7 # = 50 psi
+        Pexcess_kPa = 344.7  # = 50 psi
 
         # Minimum production pump inlet pressure and minimum wellhead pressure
         if Trock_degC < 373.9:
             Pminimum_kPa = vapor_pressure_water_kPa(Trock_degC) + Pexcess_kPa
-        else: #above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
-            Pminimum_kPa = 100 #setting artificially to 1 bar = 100 kPa
+        else:
+            # Above the critical water temperature, vapor no longer occurs and vapor pressure can no longer be
+            # calculated. A "dummy" vapor pressure can be assumed as the fluid phase no longer impacts the pump depth.
+            Pminimum_kPa = 100  # setting artificially to 1 bar = 100 kPa
         if usebuiltinppwellheadcorrelation:
             Pprodwellhead = Pminimum_kPa  # production wellhead pressure [kPa]
         else:
             Pprodwellhead = ppwellhead
             if Pprodwellhead < Pminimum_kPa:
                 Pprodwellhead = Pminimum_kPa
-                msg = (f'Provided production wellhead pressure ({Pprodwellhead:.2f} kPa) under minimum pressure ({Pminimum_kPa:.2f} kPa). '
+                msg = (f'Provided production wellhead pressure ({Pprodwellhead:.2f} kPa) under minimum pressure '
+                       f'({Pminimum_kPa:.2f} kPa). '
                        f'GEOPHIRES will assume minimum wellhead pressure.')
                 print(f'Warning: {msg}')
                 model.logger.warning(msg)

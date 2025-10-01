@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import datetime
 import math
 import time
 import sys
+from io import TextIOWrapper
 from pathlib import Path
 
 # noinspection PyPackageRequirements
@@ -324,7 +327,6 @@ class Outputs:
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY]:
                     f.write(f'      Estimated Jobs Created:                                 {model.economics.jobs_created.value}\n')
 
-
                 f.write(NL)
                 f.write('                          ***ENGINEERING PARAMETERS***\n')
                 f.write(NL)
@@ -554,6 +556,10 @@ class Outputs:
                         # Non-SAM econ models print this in Extended Economics profile
                         aoc_label = Outputs._field_label(model.addeconomics.AddOnOPEXTotalPerYear.display_name, 47)
                         f.write(f'         {aoc_label}{model.addeconomics.AddOnOPEXTotalPerYear.value:10.2f} {model.addeconomics.AddOnOPEXTotalPerYear.CurrentUnits.value}\n')
+
+                    if econ.royalty_rate.Provided:
+                        royalties_label = Outputs._field_label(econ.royalties_average_annual_cost.display_name, 47)
+                        f.write(f'         {royalties_label}{econ.royalties_average_annual_cost.value:10.2f} {econ.royalties_average_annual_cost.CurrentUnits.value}\n')
 
                     f.write(f'      {econ.Coam.display_name}:            {(econ.Coam.value + econ.averageannualpumpingcosts.value + econ.averageannualheatpumpelectricitycost.value):10.2f} {econ.Coam.CurrentUnits.value}\n')
                 else:
@@ -787,9 +793,25 @@ class Outputs:
 
             addon_df = pd.DataFrame()
             addon_results = []
+            extended_economics_header_printed = False
             if model.economics.DoAddOnCalculations.value and not is_sam_econ_model:
                 # SAM econ models incorporate add-on economics into main economics, not as separate extended economics.
                 addon_df, addon_results = model.addoutputs.PrintOutputs(model)
+                extended_economics_header_printed = True
+
+            if econ.royalty_rate.Provided:
+                with open(self.output_file, 'a', encoding='UTF-8') as f_:
+                    if not extended_economics_header_printed:
+                        self._print_extended_economics_header(f_)
+
+                    for royalty_output in [
+                        econ.royalty_holder_npv,
+                        econ.royalty_holder_annual_revenue,
+                        econ.royalty_holder_total_revenue
+                    ]:
+                        label = Outputs._field_label(royalty_output.display_name, 49)
+                        f_.write(
+                            f'      {label}{royalty_output.value:10.2f} {royalty_output.CurrentUnits.value}\n')
 
             sdac_df = pd.DataFrame()
             sdac_results = []
@@ -892,6 +914,24 @@ class Outputs:
         ret += '\n\n'
 
         return ret
+
+    def _print_extended_economics_header(self, f_output_file: TextIOWrapper | None = None) -> None:
+        """
+        Header may be printed by either OutputsAddOns, or parent class if royalties are calculated and add-ons are not.
+        """
+
+        close_f = False
+        if f_output_file is None:
+            f_output_file = open(self.output_file, 'a', encoding='UTF-8')
+            close_f = True
+
+        f_output_file.write(NL)
+        f_output_file.write(NL)
+        f_output_file.write("                                ***EXTENDED ECONOMICS***\n")
+        f_output_file.write(NL)
+
+        if close_f:
+            f_output_file.close()
 
     @staticmethod
     def _field_label(field_name: str, print_width_before_value: int) -> str:

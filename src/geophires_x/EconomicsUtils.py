@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from geophires_x.Parameter import OutputParameter
-from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit
+from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
 
 
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
@@ -144,3 +144,14 @@ def total_capex_parameter_output_parameter() -> OutputParameter:
                     'For SAM Economic models, it also includes any cost escalation from inflation during construction. '
                     'It is used as the total installed cost input for SAM Economic Models.'
     )
+
+
+def royalty_cost_output_parameter() -> OutputParameter:
+    return OutputParameter(
+            Name='Royalty Cost',
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.DOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.DOLLARSPERYEAR,
+            ToolTipText='The annual costs paid to a royalty holder, calculated as a percentage of the '
+                        'project\'s gross annual revenue. This is modeled as a variable operating expense.'
+        )

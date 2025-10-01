@@ -26,6 +26,9 @@ def convertible_unit(unit: Any) -> Any:
     if unit == Units.PERCENT or unit == PercentUnit.PERCENT or unit == Units.PERCENT.value:
         return 'percent'
 
+    if unit == PercentUnit.TENTH or unit == PercentUnit.TENTH.value:
+        return 'dimensionless'
+
     return unit
 
 
@@ -197,6 +200,9 @@ class CurrencyFrequencyUnit(str, Enum):
     MMXNPERYEAR = "MXN/yr"
     KMXNPERYEAR = "KMXN/yr"
     MXNPERYEAR = "MXN/yr"
+
+    def get_currency_unit_str(self) -> str:
+        return self.value.split('/')[0]
 
 
 class EnergyCostUnit(str, Enum):

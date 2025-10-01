@@ -967,6 +967,60 @@ class Economics:
                         "will be automatically set to the same value."
         )
 
+        self.royalty_rate = self.ParameterDict[self.royalty_rate.Name] = floatParameter(
+            'Royalty Rate',
+            DefaultValue=0.,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="The fraction of the project's gross annual revenue paid to the royalty holder. "
+                        "This is modeled as a variable production-based operating expense, reducing the developer's "
+                        "taxable income."
+        )
+
+        self.royalty_escalation_rate = self.ParameterDict[self.royalty_escalation_rate.Name] = floatParameter(
+            'Royalty Rate Escalation',
+            DefaultValue=0.,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="The additive amount the royalty rate increases each year. For example, a value of 0.001 "
+                        "increases a 4% rate (0.04) to 4.1% (0.041) in the next year."
+        )
+
+        maximum_royalty_rate_default_val = 1.0
+        self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
+            'Royalty Rate Maximum',
+            DefaultValue=maximum_royalty_rate_default_val,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText=f"The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap)."
+                        f"{' Defaults to 100% (no effective cap).' if maximum_royalty_rate_default_val == 1.0 else ''}"
+        )
+
+        # TODO support custom royalty rate schedule as a list parameter
+        #  (as an alternative to specifying rate/escalation/max)
+
+        self.royalty_holder_discount_rate = self.ParameterDict[self.royalty_holder_discount_rate.Name] = floatParameter(
+            'Royalty Holder Discount Rate',
+            DefaultValue=0.05,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="The discount rate used to calculate the Net Present Value (NPV) of the royalty holder's "
+                        "income stream. This rate should reflect the royalty holder's specific risk profile and is "
+                        "separate from the main project discount rate."
+        )
+
 
         self.discount_initial_year_cashflow = self.ParameterDict[self.discount_initial_year_cashflow.Name] = boolParameter(
             'Discount Initial Year Cashflow',
@@ -1896,6 +1950,15 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+        self.royalties_average_annual_cost = self.OutputParameterDict[self.royalties_average_annual_cost.Name] = OutputParameter(
+            Name='Average Annual Royalty Cost',
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText='The average annual cost paid to a royalty holder, calculated as a percentage of the '
+                        'project\'s gross annual revenue. This is modeled as a variable operating expense.'
+        )
+
 
         # district heating
         self.peakingboilercost = self.OutputParameterDict[self.peakingboilercost.Name] = OutputParameter(
@@ -2113,6 +2176,37 @@ class Economics:
         self.jobs_created = self.OutputParameterDict[self.jobs_created.Name] = OutputParameter(
             Name="Estimated Jobs Created",
             UnitType=Units.NONE,
+        )
+
+        # Results for the Royalty Holder
+        self.royalty_holder_npv = self.OutputParameterDict[self.royalty_holder_npv.Name] = OutputParameter(
+            'Royalty Holder NPV',
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText=f"The pre-tax Net Present Value (NPV) of the royalty holder's income stream, "
+                        f"calculated using the {self.royalty_holder_discount_rate.Name}. "
+                        f"This is a pre-tax value because the model does not account for the royalty holder's specific "
+                        f"tax liabilities."
+        )
+        self.royalty_holder_annual_revenue = self.OutputParameterDict[
+            self.royalty_holder_annual_revenue.Name
+        ] = OutputParameter(
+            'Royalty Holder Average Annual Revenue',
+            UnitType=Units.CURRENCYFREQUENCY,
+            PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText="The royalty holder's gross (pre-tax) annual revenue stream from the royalty agreement."
+        )
+        self.royalty_holder_total_revenue = self.OutputParameterDict[
+            self.royalty_holder_total_revenue.Name
+        ] = OutputParameter(
+            'Royalty Holder Total Revenue',
+            UnitType=Units.CURRENCY,
+            PreferredUnits=CurrencyUnit.MDOLLARS,
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText='The total gross (pre-tax), undiscounted revenue received by the royalty holder over the '
+                        'project lifetime.'
         )
 
         model.logger.info(f'Complete {__class__!s}: {sys._getframe().f_code.co_name}')
@@ -2367,6 +2461,11 @@ class Economics:
 
             if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                 EconomicsSam.validate_read_parameters(model)
+            else:
+                if self.royalty_rate.Provided:
+                    raise NotImplementedError('Royalties are only supported for SAM Economic Models')
+
+                # TODO validate that other SAM-EM-only parameters have not been provided
         else:
             model.logger.info("No parameters read because no content provided")
 
@@ -2485,29 +2584,8 @@ class Economics:
                 self.discount_initial_year_cashflow.value
             )
 
-        non_calculated_output_placeholder_val = -1
         if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
-            self.sam_economics_calculations = calculate_sam_economics(model)
-
-            # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
-            # since SAM Economic Model doesn't subtract ITC from this value.
-            self.capex_total.value = (self.sam_economics_calculations.capex.quantity()
-                                .to(self.capex_total.CurrentUnits.value).magnitude)
-            self.CCap.value = (self.sam_economics_calculations.capex.quantity()
-                               .to(self.CCap.CurrentUnits.value).magnitude)
-
-            self.wacc.value = self.sam_economics_calculations.wacc.value
-            self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
-            self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
-                convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
-
-            self.ProjectIRR.value = non_calculated_output_placeholder_val  # SAM calculates After-Tax IRR instead
-            self.after_tax_irr.value = self.sam_economics_calculations.after_tax_irr.quantity().to(
-                convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
-
-            self.ProjectMOIC.value = self.sam_economics_calculations.moic.value
-            self.ProjectVIR.value = self.sam_economics_calculations.project_vir.value
-            self.ProjectPaybackPeriod.value = self.sam_economics_calculations.project_payback_period.value
+            self._calculate_sam_economics(model)
 
         # Calculate the project payback period
         if self.econmodel.value != EconomicModel.SAM_SINGLE_OWNER_PPA:
@@ -3143,6 +3221,34 @@ class Economics:
                                                    self.CarbonEscalationStart.value, self.CarbonEscalationRate.value,
                                                    self.PTCCarbonPrice)
 
+    def get_royalty_rate_schedule(self, model: Model) -> list[float]:
+        """
+        Builds a year-by-year schedule of royalty rates based on escalation and cap.
+
+        :type model: :class:`~geophires_x.Model.Model`
+        :return: schedule: A list of rates as fractions (e.g., 0.05 for 5%).
+        """
+
+        def r(x: float) -> float:
+            """Ignore apparent float precision issue"""
+            _precision = 8
+            return round(x, _precision)
+
+        plant_lifetime = model.surfaceplant.plant_lifetime.value
+
+        escalation_rate = r(self.royalty_escalation_rate.value)
+        max_rate = r(self.maximum_royalty_rate.value)
+
+        schedule = []
+        current_rate = r(self.royalty_rate.value)
+        for _ in range(plant_lifetime):
+            current_rate = r(current_rate)
+            schedule.append(min(current_rate, max_rate))
+            current_rate += escalation_rate
+
+        return schedule
+
+
     def calculate_cashflow(self, model: Model) -> None:
             """
             Calculate cashflow and cumulative cash flow
@@ -3238,6 +3344,68 @@ class Economics:
             # Now do a one-time calculation that calculates the cumulative cash flow after everything else has been accounted for
             for i in range(1, model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value, 1):
                 self.TotalCummRevenue.value[i] = self.TotalCummRevenue.value[i-1] + self.TotalRevenue.value[i]
+
+    def _calculate_sam_economics(self, model: Model) -> None:
+        non_calculated_output_placeholder_val = -1
+        self.sam_economics_calculations = calculate_sam_economics(model)
+
+        # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
+        # since SAM Economic Model doesn't subtract ITC from this value.
+        self.capex_total.value = (self.sam_economics_calculations.capex.quantity()
+                                  .to(self.capex_total.CurrentUnits.value).magnitude)
+        self.CCap.value = (self.sam_economics_calculations.capex.quantity()
+                           .to(self.CCap.CurrentUnits.value).magnitude)
+
+
+        if self.royalty_rate.Provided:
+            # ignore pre-revenue year(s) (e.g. Year 0)
+            pre_revenue_years_slice_index = model.surfaceplant.construction_years.value
+
+            average_annual_royalties = np.average(
+                self.sam_economics_calculations.royalties_opex.value[pre_revenue_years_slice_index:]
+            )
+
+            self.royalties_average_annual_cost.value = (quantity(
+                average_annual_royalties,
+                self.sam_economics_calculations.royalties_opex.CurrentUnits
+            ).to(self.royalties_average_annual_cost.CurrentUnits).magnitude)
+
+            self.Coam.value += (self.royalties_average_annual_cost.quantity()
+                                .to(self.Coam.CurrentUnits.value).magnitude)
+
+            self.royalty_holder_npv.value = quantity(
+                calculate_npv(
+                    self.royalty_holder_discount_rate.value,
+                    self.sam_economics_calculations.royalties_opex.value,
+                    self.discount_initial_year_cashflow.value
+                ),
+                self.sam_economics_calculations.royalties_opex.CurrentUnits.get_currency_unit_str()
+            ).to(self.royalty_holder_npv.CurrentUnits).magnitude
+
+            self.royalty_holder_annual_revenue.value = self.royalties_average_annual_cost.value
+
+            self.royalty_holder_total_revenue.value = quantity(
+                np.sum(
+                    self.sam_economics_calculations.royalties_opex.value[pre_revenue_years_slice_index:]
+                ),
+                self.sam_economics_calculations.royalties_opex.CurrentUnits.get_currency_unit_str()
+            ).to(self.royalty_holder_total_revenue.CurrentUnits).magnitude
+
+
+        self.wacc.value = self.sam_economics_calculations.wacc.value
+        self.nominal_discount_rate.value = self.sam_economics_calculations.nominal_discount_rate.value
+        self.ProjectNPV.value = self.sam_economics_calculations.project_npv.quantity().to(
+            convertible_unit(self.ProjectNPV.CurrentUnits)).magnitude
+
+        self.ProjectIRR.value = non_calculated_output_placeholder_val  # SAM calculates After-Tax IRR instead
+        self.after_tax_irr.value = self.sam_economics_calculations.after_tax_irr.quantity().to(
+            convertible_unit(self.ProjectIRR.CurrentUnits)).magnitude
+
+        self.ProjectMOIC.value = self.sam_economics_calculations.moic.value
+        self.ProjectVIR.value = self.sam_economics_calculations.project_vir.value
+
+        # TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413
+        self.ProjectPaybackPeriod.value = self.sam_economics_calculations.project_payback_period.value
 
     # noinspection SpellCheckingInspection
     def _calculate_derived_outputs(self, model: Model) -> None:

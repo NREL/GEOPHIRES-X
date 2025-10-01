@@ -110,6 +110,9 @@ class GeophiresXResult:
                 'Total Add-on Net Heat',
                 'Total Add-on Profit',
                 'AddOns Payback Period',
+                'Royalty Holder NPV',
+                'Royalty Holder Average Annual Revenue',
+                'Royalty Holder Total Revenue',
             ],
             'CCUS ECONOMICS': [
                 'Total Avoided Carbon Production',
@@ -290,6 +293,7 @@ class GeophiresXResult:
                 'Annual District Heating O&M Cost',
                 'Average Annual Peaking Fuel Cost',
                 'Average annual pumping costs',
+                'Average Annual Royalty Cost',
                 # SUTRA
                 'Average annual auxiliary fuel cost',
                 'Average annual pumping cost',

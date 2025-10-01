@@ -7,15 +7,25 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
+from geophires_x.GeoPHIRESUtils import sig_figs
 from geophires_x.OptionList import PlantType
 from geophires_x.OptionList import WellDrillingCostCorrelation
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+
+# noinspection PyProtectedMember
 from geophires_x_client import _get_logger
 from geophires_x_client.geophires_input_parameters import EndUseOption
 from geophires_x_client.geophires_input_parameters import GeophiresInputParameters
 from geophires_x_client.geophires_input_parameters import ImmutableGeophiresInputParameters
 from geophires_x_tests.test_options_list import WellDrillingCostCorrelationTestCase
+
+# noinspection PyProtectedMember
+# ruff: noqa: I001  # Successful module initialization is dependent on this specific import order.
+from geophires_x.EconomicsSam import _cash_flow_profile_row
+
 from tests.base_test_case import BaseTestCase
 
 
@@ -1025,7 +1035,7 @@ Print Output to Console, 1"""
                 'Number of Injection Wells': doublets,
 
                 # offset contingency
-                'Reservoir Stimulation Capital Cost Adjustment Factor': 1/default_contingency_factor,
+                'Reservoir Stimulation Capital Cost Adjustment Factor': 1 / default_contingency_factor,
             }
         )
         # fmt:on
@@ -1285,6 +1295,7 @@ Print Output to Console, 1"""
             capex_field_suffix = (
                 '' if result_capex.get('Drilling and completion costs') is not None else ' (for redrilling)'
             )
+            # @formatter:off
             expected_annual_redrilling_cost = (
                 (
                     result_capex[f'Drilling and completion costs{capex_field_suffix}']['value']
@@ -1292,5 +1303,170 @@ Print Output to Console, 1"""
                 )
                 * result_redrills
             ) / result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+            # @formatter:on
 
             self.assertAlmostEqual(expected_annual_redrilling_cost, result_opex['Redrilling costs']['value'], places=2)
+
+    def test_royalty_rate(self):
+        royalties_output_name = 'Average Annual Royalty Cost'
+
+        zero_royalty_npv = None
+        for royalty_rate in [0, 0.1]:
+            result = GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(
+                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                    ),
+                    params={
+                        'Royalty Rate': royalty_rate,
+                    },
+                )
+            )
+            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+
+            self.assertIsNotNone(opex_result[royalties_output_name])
+            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+
+            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+            opex_line_item_sum = 0
+            for line_item_names in [
+                'Wellfield maintenance costs',
+                'Power plant maintenance costs',
+                'Water costs',
+                royalties_output_name,
+            ]:
+                opex_line_item_sum += opex_result[line_item_names]['value']
+
+            self.assertEqual(opex_line_item_sum, total_opex_MUSD)
+
+            econ_result = result.result['EXTENDED ECONOMICS']
+            royalty_holder_npv_MUSD = econ_result['Royalty Holder NPV']['value']
+
+            if royalty_rate > 0.0:
+                self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
+                self.assertGreater(royalty_holder_npv_MUSD, 0)
+
+                # Owner NPV is lower when royalty rate is non-zero
+                self.assertGreater(zero_royalty_npv, result.result['ECONOMIC PARAMETERS']['Project NPV']['value'])
+
+                royalties_cash_flow_MUSD = [
+                    it * 1e-6
+                    for it in _cash_flow_profile_row(
+                        result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                    )
+                ]
+
+                self.assertAlmostEqual(
+                    np.average(royalties_cash_flow_MUSD[1:]), opex_result[royalties_output_name]['value'], places=1
+                )
+
+                if royalty_rate == 0.1:
+                    self.assertAlmostEqual(708.07, royalty_holder_npv_MUSD, places=2)
+
+            if royalty_rate == 0.0:
+                self.assertEqual(0, opex_result[royalties_output_name]['value'])
+                self.assertEqual(0, royalty_holder_npv_MUSD)
+                zero_royalty_npv = result.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+
+    def test_royalty_rate_escalation(self):
+        royalties_output_name = 'Average Annual Royalty Cost'
+
+        base_royalty_rate = 0.05
+        escalation_rate = 0.01
+
+        for max_rate in [0.08, 1.0]:
+            result = GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path(
+                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                    ),
+                    params={
+                        'Royalty Rate': base_royalty_rate,
+                        'Royalty Rate Escalation': escalation_rate,
+                        'Royalty Rate Maximum': max_rate,
+                    },
+                )
+            )
+            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+
+            self.assertIsNotNone(opex_result[royalties_output_name])
+            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+
+            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+            opex_line_item_sum = 0
+            for line_item_names in [
+                'Wellfield maintenance costs',
+                'Power plant maintenance costs',
+                'Water costs',
+                royalties_output_name,
+            ]:
+                opex_line_item_sum += opex_result[line_item_names]['value']
+
+            self.assertAlmostEqual(opex_line_item_sum, total_opex_MUSD, places=4)
+
+            project_lifetime_yrs = result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+
+            royalties_cash_flow_MUSD = [
+                it * 1e-6
+                for it in _cash_flow_profile_row(
+                    result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                )
+            ][1:]
+
+            ppa_revenue_MUSD = [
+                it * 1e-6 for it in _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'PPA revenue ($)')
+            ][1:]
+
+            actual_royalty_rate = [None] * len(ppa_revenue_MUSD)
+            for i in range(len(ppa_revenue_MUSD)):
+                actual_royalty_rate[i] = royalties_cash_flow_MUSD[i] / ppa_revenue_MUSD[i]
+
+            max_expected_rate = (
+                max_rate if max_rate < 1.0 else base_royalty_rate + escalation_rate * (project_lifetime_yrs - 1)
+            )
+
+            expected_last_year_revenue = ppa_revenue_MUSD[-1] * max_expected_rate
+            self.assertAlmostEqual(expected_last_year_revenue, royalties_cash_flow_MUSD[-1], places=3)
+
+    def test_royalty_rate_with_addon(self):
+        """
+        Verifies that custom EXTENDED ECONOMICS header print logic in Outputs works as expected
+        (geophires_x.Outputs.Outputs._print_extended_economics_header)
+        """
+
+        addon_profit_MUSD = 15
+
+        result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=self._get_test_file_path(
+                    'examples/example_SAM-single-owner-PPA-4.txt'  # Royalty rate example
+                ),
+                params={
+                    'AddOn Nickname 1': 'Waste Heat Absorption Chiller',
+                    'AddOn CAPEX 1': 50,
+                    'AddOn OPEX 1': 1,
+                    'AddOn Profit Gained 1': addon_profit_MUSD,
+                },
+            )
+        )
+
+        self.assertEqual(50, sig_figs(result.result['EXTENDED ECONOMICS']['Royalty Holder NPV']['value'], 1))
+
+        addon_cash_flow = _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'Capacity payment revenue ($)')
+        self.assertEqual(0, addon_cash_flow[0])
+        self.assertTrue(all(it == addon_profit_MUSD * 1e6 for it in addon_cash_flow[1:]))
+
+    def test_royalty_rate_not_supported_for_non_sam_economic_models(self):
+        with self.assertRaises(RuntimeError) as re:
+            GeophiresXClient().get_geophires_result(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('examples/Fervo_Project_Cape-3.txt'),
+                    params={
+                        'Royalty Rate': 0.1,
+                    },
+                )
+            )
+
+        self.assertIn('Royalties are only supported for SAM Economic Models', str(re.exception))

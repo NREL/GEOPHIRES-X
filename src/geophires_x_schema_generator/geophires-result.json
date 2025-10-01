@@ -171,7 +171,22 @@
         "Total Add-on Net Elec": {},
         "Total Add-on Net Heat": {},
         "Total Add-on Profit": {},
-        "AddOns Payback Period": {}
+        "AddOns Payback Period": {},
+        "Royalty Holder NPV": {
+          "type": "number",
+          "description": "The pre-tax Net Present Value (NPV) of the royalty holder's income stream, calculated using the Royalty Holder Discount Rate. This is a pre-tax value because the model does not account for the royalty holder's specific tax liabilities.",
+          "units": "MUSD"
+        },
+        "Royalty Holder Average Annual Revenue": {
+          "type": "number",
+          "description": "The royalty holder's gross (pre-tax) annual revenue stream from the royalty agreement.",
+          "units": "MUSD/yr"
+        },
+        "Royalty Holder Total Revenue": {
+          "type": "number",
+          "description": "The total gross (pre-tax), undiscounted revenue received by the royalty holder over the project lifetime.",
+          "units": "MUSD"
+        }
       }
     },
     "CCUS ECONOMICS": {
@@ -480,6 +495,11 @@
           "units": "MUSD/yr"
         },
         "Average annual pumping costs": {},
+        "Average Annual Royalty Cost": {
+          "type": "number",
+          "description": "The average annual cost paid to a royalty holder, calculated as a percentage of the project's gross annual revenue. This is modeled as a variable operating expense.",
+          "units": "MUSD/yr"
+        },
         "Average annual auxiliary fuel cost": {},
         "Average annual pumping cost": {},
         "Redrilling costs": {

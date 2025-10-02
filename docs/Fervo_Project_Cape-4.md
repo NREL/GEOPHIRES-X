@@ -158,7 +158,7 @@ Fervo Energy. (2024, September 10). Fervo Energy’s Record-Breaking Production 
 Enhanced
 Geothermal. https://www.businesswire.com/news/home/20240910997008/en/Fervo-Energys-Record-Breaking-Production-Results-Showcase-Rapid-Scale-Up-of-Enhanced-Geothermal
 
-Gradl, C. (2018). SReview of Recent Unconventional Completion Innovations and their Applicability to EGS Wells. Stanford
+Gradl, C. (2018). Review of Recent Unconventional Completion Innovations and their Applicability to EGS Wells. Stanford
 Geothermal Workshop.
 https://pangea.stanford.edu/ERE/pdf/IGAstandard/SGW/2018/Gradl.pdf
 

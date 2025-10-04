@@ -1824,7 +1824,8 @@ class Economics:
                         f'costs per well. '
                         f'Provide {self.ccstimadjfactor.Name} to multiply the correlation-calculated cost. '
                         f'Provide {self.ccstimfixed.Name} to override the correlation and set your own '
-                        f'total stimulation cost.'
+                        f'total stimulation cost. '
+                        f'For traditional hydrothermal reservoirs, {self.ccstimfixed.Name} should be set to $0.'
         )
 
         contingency_and_indirect_costs_tooltip = (

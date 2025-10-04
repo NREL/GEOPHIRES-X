@@ -1897,12 +1897,23 @@ class Economics:
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
         )
+        # noinspection SpellCheckingInspection
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(
             Name="Field gathering system cost",
             display_name='Field gathering system costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            # TODO interpolate constant values in tooltip text instead of hardcoding
+            ToolTipText='The built-in cost correlation for estimating the field gathering system cost follows includes '
+                        'the cost for surface piping from each well to the plant and pumps for production and '
+                        'injection wells. The length of the surface piping is assumed 750 m per well at a cost of '
+                        '$500 per meter. The pumping cost for each  pump in the production wells (line-shaft pumps) '
+                        'and a single pump for the injection wells is calculated with the same correlation as GETEM. '
+                        'An additional 15% is added for contingency and 12% for indirect costs. '
+                        'The built-in cost correlation does not include the cost of pipelines to an off-site heat '
+                        'user or a district-heating system. These costs are estimated at $750 per meter pipeline '
+                        'length and can be manually added by the user to the pipeline distribution costs.'
         )
         self.Cpiping = self.OutputParameterDict[self.Cpiping.Name] = OutputParameter(
             Name="Transmission pipeline costs",

@@ -1396,7 +1396,7 @@
       ]
     },
     "Reservoir Stimulation Capital Cost": {
-      "description": "Total reservoir stimulation capital cost, including indirect costs and contingency.",
+      "description": "Total reservoir stimulation capital cost, including indirect costs and contingency. For traditional hydrothermal reservoirs, this parameter should be set to $0.",
       "type": "number",
       "units": "MUSD",
       "category": "Economics",

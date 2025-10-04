@@ -625,7 +625,8 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost, including indirect costs and contingency."
+            ToolTipText='Total reservoir stimulation capital cost, including indirect costs and contingency. '
+                        f'For traditional hydrothermal reservoirs, this parameter should be set to $0.'
         )
 
         max_stimulation_cost_per_well_MUSD = 100

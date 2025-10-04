@@ -23,7 +23,7 @@ After merging:
 1. [ ] Push tag(s) to GitHub: `git push origin refs/tags/vM.m.P`
 1. [ ] Post a change announcement to the [GEOPHIRES Change Announcements Discussion](https://github.com/NREL/GEOPHIRES-X/discussions/428) ([example](https://github.com/NREL/GEOPHIRES-X/discussions/428#discussioncomment-14593405)). Markdown template:
 ```markdown
-M.m.p: [TITLE](https://github.com/NREL/GEOPHIRES-X/pull/PR-NUMBER) | [release](https://github.com/NREL/GEOPHIRES-X/releases/tag/vM.m.P)`
+M.m.p: [TITLE](https://github.com/NREL/GEOPHIRES-X/pull/PR-NUMBER) | [release](https://github.com/NREL/GEOPHIRES-X/releases/tag/vM.m.P)
 ```
 
 ---

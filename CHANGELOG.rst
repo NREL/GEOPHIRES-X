@@ -7,6 +7,8 @@ GEOPHIRES v3 (2023-2025)
 
 3.9
 ^^^
+3.9.62: `Change notifications, typo fixes, royalties example PI/II <https://github.com/NREL/GEOPHIRES-X/pull/429>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.62>`__
+
 3.9.61: `Royalties <https://github.com/NREL/GEOPHIRES-X/pull/425>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.61>`__
 
 3.9.54: `List parameter read fix <https://github.com/NREL/GEOPHIRES-X/pull/418>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.54>`__

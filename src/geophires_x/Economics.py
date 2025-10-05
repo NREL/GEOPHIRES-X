@@ -1840,6 +1840,7 @@ class Economics:
                         f'For traditional hydrothermal reservoirs, {self.ccstimfixed.Name} should be set to $0.'
         )
 
+        # TODO switch order to align with theoretical basis, which lists indirect costs first
         contingency_and_indirect_costs_tooltip = (
             f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
             f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
@@ -1907,9 +1908,42 @@ class Economics:
         )
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",
+            display_name='Surface power plant costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            ToolTipText='The built-in power plant cost correlations are based on the original correlations developed '
+                        'by Beckers (2016), indexed to 2017 using the IHS Markit North American Power Capital Costs '
+                        'Index (NAPCCI) excluding nuclear plants (IHS 2018). The ORC power plant cost data have been '
+                        'updated with data from the 2016 GETEM tool (DOE 2016) and the geothermal binary power plants '
+                        # 'study by Verkís (2014). '
+                        'study by Verkis (2014). '  # unicode accented i may cause unexpected problems in consumers...
+                        # TODO incorporate reference to figure (commented out for now)
+                        # 'Figure 4 shows the power plant capital cost expressed in $ kWe−1 as a function of plant
+                        # size and initial production temperature for subcritical ORC and double-flash power plants. '
+                        # TODO use tooltip var
+                        'The correlations in GEOPHIRES include 12% for indirect costs and 15% contingency. '
+                        'For the same plant size and production temperature, double-flash power plants are considered '
+                        'about 25% more expensive than single-flash power plants (Zeyghami 2010), and supercritical '
+                        'ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014). A wide '
+                        'range in power plant specific cost values is reported in academic and popular literature. '
+                        'The GEOPHIRES built-in surface plant cost correlations represent typical values. However, '
+                        'the user is recommended to provide their own power plant cost data if available for their '
+                        'case study. The ORC plant specific cost decreases only moderately at higher temperatures. '
+                        'The reasons are that when increasing the temperature, the ORC plant design also changes: '
+                        '(1) a different organic fluid is selected, (2) piping, pump, heat exchangers, and other '
+                        'equipment are designed to handle the higher temperature (and potentially also pressure), '
+                        'requiring thicker walls, potentially different materials, etc., and (3) additional components '
+                        'may be implemented, such as a heat recuperator, making the design and operation more complex. '
+                        'Unlike flash power plants, ORC plants are a small, niche market, typically case specific, '
+                        'and rely on relatively young technology, which has not been subject yet to decades of '
+                        'technological advancement. The cost for direct-use heat applications is highly dependent '
+                        'on the type of application. A generic cost of $250 kWth−1 is assumed '
+                        f'{contingency_and_indirect_costs_tooltip}. '
+                        'However, users are encouraged to provide their own cost figures for '
+                        'their specific application. Beckers and Young (2017) collected several cost figures to '
+                        'estimate the surface equipment cost for geothermal district-heating systems.'
+            # TODO incorporate direct references to relevant parameters for adjusting correlation
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",

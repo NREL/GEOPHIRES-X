@@ -471,12 +471,41 @@ class SurfacePlant:
         self.MyPath = os.path.abspath(__file__)
 
         # Results - used by other objects or printed in output downstream
+
         self.enduse_option_output = self.OutputParameterDict[self.enduse_option_output.Name] = OutputParameter(
             Name=self.enduse_option.Name,
             UnitType=Units.NONE,
-            # FIXME WIP
-            # ToolTipText="Select the end-use application of the geofluid heat: " +
-            #             '; '.join([f'{it.int_value}: {it.value}' for it in EndUseOptions])
+            ToolTipText='Five different end-use options are available in GEOPHIRES: '
+                        '1: Electricity: All produced geothermal fluid is used to generate electricity with either an '
+                        'ORC or flash power plant; '
+                        '2: Direct-use heat: All produced geothermal fluid is used to provide heating for a given '
+                        'application, e.g., a district-heating system or industrial process; '
+                        '3: Cogeneration or combined heat and power (CHP): Both heat and electricity are produced. '
+                        'Three different cogeneration configurations are available: '
+                        '(1): Cogeneration topping cycle: A power plant is followed by a direct-use heat application '
+                        'in series. Heat at high temperatures from the geothermal fluid is first converted into '
+                        'electricity. Any remaining heat in the geothermal fluid after leaving the power plant is '
+                        'supplied to a low-temperature direct-use heat application; '
+                        '(2): Cogeneration bottoming cycle: A direct-use heat application is followed by a power plant '
+                        'in series. In this less common configuration, the geothermal fluid first serves a '
+                        'high-temperature direct-use heat application. Any remaining heat in the geothermal fluid '
+                        'after leaving the direct-use heat process (at a user-specified temperature) is used to '
+                        'generate electricity. The heat-to-power conversion typically occurs with an ORC plant '
+                        'operating at low conversion efficiencies; '
+                        '(3): Cogeneration parallel cycle: A power plant operates in parallel with a direct-use heat '
+                        'application. The produced geothermal fluid is split into two streams, providing heat at the '
+                        'same temperature to a power plant and direct-use heat application. The user specifies the '
+                        'fluid flow fraction going to each process.',
+            # TODO this tooltip text (ported from the theoretical basis) is probably better suited to being semantically
+            #  associated with the End-Use Option input parameter rather than the corresponding OutputParameter here.
+            #  However, the input parameter tooltip text is generated from an enumeration of EndUseOptions enum values
+            #  which doesn't cleanly map to the information contained here because each of the CHP configurations has
+            #  two EndUseOptions for whether heat or electricity sales are considered as extra income. This mapping
+            #  incongruency could possibly eventually be addressed by an additional layer of metadata/indirection for
+            #  adding pointers from input parameters to more complete documentation entries/sections. In the meantime,
+            #  this output parameter tooltip is a logical-enough place to store the information, where it is reasonably
+            #  user-accessible in the UI and parameters reference.
+            json_parameter_type='string'
         )
         self.usebuiltinoutletplantcorrelation = self.OutputParameterDict[self.usebuiltinoutletplantcorrelation.Name] = OutputParameter(
             Name="usebuiltinoutletplantcorrelation",

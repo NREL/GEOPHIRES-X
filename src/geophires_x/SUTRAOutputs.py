@@ -67,7 +67,8 @@ class SUTRAOutputs(Outputs):
                 f.write(NL)
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
-                f.write("      End-Use Option: " + str(model.surfaceplant.enduse_option.value.value) + NL)
+                f.write(f'      {model.surfaceplant.enduse_option_output.display_name}: '
+                        f'{model.surfaceplant.enduse_option_output.value}\n')
                 f.write("      Reservoir Model = " + str(model.reserv.resoption.value.value) + " Model\n")
                 f.write(f"      Direct-Use heat breakeven price:                  {model.economics.LCOH.value:10.2f} " + model.economics.LCOH.CurrentUnits.value + NL)
 

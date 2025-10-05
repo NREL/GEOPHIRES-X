@@ -471,6 +471,13 @@ class SurfacePlant:
         self.MyPath = os.path.abspath(__file__)
 
         # Results - used by other objects or printed in output downstream
+        self.enduse_option_output = self.OutputParameterDict[self.enduse_option_output.Name] = OutputParameter(
+            Name=self.enduse_option.Name,
+            UnitType=Units.NONE,
+            # FIXME WIP
+            # ToolTipText="Select the end-use application of the geofluid heat: " +
+            #             '; '.join([f'{it.int_value}: {it.value}' for it in EndUseOptions])
+        )
         self.usebuiltinoutletplantcorrelation = self.OutputParameterDict[self.usebuiltinoutletplantcorrelation.Name] = OutputParameter(
             Name="usebuiltinoutletplantcorrelation",
             UnitType=Units.NONE
@@ -697,3 +704,5 @@ class SurfacePlant:
                 convertible_unit(self.heat_to_power_conversion_efficiency.CurrentUnits)).magnitude
             if avg_efficiency > 0:  # 0 is presumed to mean N/A
                 self.heat_to_power_conversion_efficiency.value = avg_efficiency
+
+        self.enduse_option_output.value = self.enduse_option.value.value

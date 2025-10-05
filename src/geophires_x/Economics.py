@@ -1970,7 +1970,7 @@ class Economics:
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
             # TODO interpolate constant values in tooltip text instead of hardcoding
-            ToolTipText='The built-in cost correlation for estimating the field gathering system cost follows includes '
+            ToolTipText='The built-in cost correlation for estimating the field gathering system cost includes '
                         'the cost for surface piping from each well to the plant and pumps for production and '
                         'injection wells. The length of the surface piping is assumed 750 m per well at a cost of '
                         '$500 per meter. The pumping cost for each pump in the production wells (line-shaft pumps) '

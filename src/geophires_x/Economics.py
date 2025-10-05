@@ -1852,7 +1852,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default correlation: 60% of the cost of one production well '
+            ToolTipText=f'The built-in exploration cost correlation considers drilling of a slim-hole well at 60% of '
+                        f'the cost of a regular well, $1M for geophysical and field work, '
                         f'{contingency_and_indirect_costs_tooltip}. '
                         f'Provide {self.ccexpladjfactor.Name} to multiply the default correlation. '
                         f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'

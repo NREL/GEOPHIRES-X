@@ -1879,14 +1879,21 @@ class Economics:
             ToolTipText='Drilling and completion cost per well, including indirect costs '
                         f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
+
+        # noinspection SpellCheckingInspection
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
             display_name='Wellfield maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
-            # TODO TooltipText to document how this is calculated
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText='The built-in correlation for the wellfield O&M costs is similar as the surface plant O&M '
+                        'costs: it assumes that it consists of 1% of the total wellfield plus field gathering system '
+                        'costs (for annual non-labor costs) and 25% of the labor costs (the other 75% of the labor '
+                        'costs are assigned to the surface plant O&M costs).'
+            # TODO parameterize relevant constants
         )
+
         self.redrilling_annual_cost = self.OutputParameterDict[self.redrilling_annual_cost.Name] = OutputParameter(
             Name="Redrilling costs",
             UnitType=Units.CURRENCYFREQUENCY,
@@ -1909,7 +1916,17 @@ class Economics:
             display_name='Power plant maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            # TODO parameterize relevant constants
+            # TODO update index year and/or make indexing parameterizable
+            ToolTipText='GEOPHIRES estimates the annual surface plant O&M costs as the sum of 1.5% of the total plant '
+                        'capital cost (for annual non-labor costs), and 75% of the annual labor costs. The other 25% '
+                        'of the labor costs are assigned to the wellfield O&M cost. The labor costs are calculated '
+                        'internally in GEOPHIRES using the 2014 labor costs provided by Beckers (2016), indexed to '
+                        '2017 using the Bureau of Labor Statistics (BLS) Employment Cost Index for utilities (2018). '
+                        'The original 2014 labor cost correlation expresses the labor costs as a function of the plant '
+                        'size (MW) using an approximate logarithmic curve fit to the built-in labor cost data in '
+                        'GETEM.'
         )
         # noinspection SpellCheckingInspection
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(

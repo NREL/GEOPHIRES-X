@@ -939,7 +939,18 @@ class Economics:
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default number of time steps per year (4)",
-            ToolTipText="Number of internal simulation time steps per year"
+            ToolTipText='Number of internal simulation time steps per year. GEOPHIRES assumes linear time '
+                        'discretization with a user-provided number of time steps per year over the lifetime of the '
+                        'plant. The default is four time steps per year, meaning a time step of 3 months. '
+                        'At every time step, GEOPHIRES calculates the reservoir output temperature, production '
+                        'wellhead temperature, direct-use heat and/or electricity power output (in MW), pressure '
+                        'drops and pumping power. On an annual basis, GEOPHIRES calculates the O&M costs and '
+                        'direct-use heat and/or electricity production. To investigate seasonal effects, e.g., to '
+                        'assess the impact of more geothermal heat demand for district heating in winter than in '
+                        'summer, the user can select a smaller time step, e.g., a month (or 12 time steps per year). '
+                        'For even shorter timescale effects, e.g., to account for an hourly varying ambient '
+                        'temperature or investigate the response in plant operation to a fluctuating revenue rate), '
+                        'the user can select an even smaller time step, e.g., 1 h (or 8760 time steps per year).'
         )
         self.FCR = self.ParameterDict[self.FCR.Name] = floatParameter(
             "Fixed Charge Rate",

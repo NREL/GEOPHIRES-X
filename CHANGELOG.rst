@@ -7,6 +7,8 @@ GEOPHIRES v3 (2023-2025)
 
 3.9
 ^^^
+3.9.62: `Change notifications, typo fixes, royalties example PI/II <https://github.com/NREL/GEOPHIRES-X/pull/429>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.62>`__
+
 3.9.61: `Royalties <https://github.com/NREL/GEOPHIRES-X/pull/425>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.61>`__
 
 3.9.54: `List parameter read fix <https://github.com/NREL/GEOPHIRES-X/pull/418>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.54>`__
@@ -176,3 +178,11 @@ as intermediate internal-only patch versions are sometimes introduced during the
 (Improved designation and distribution of releases for public consumption may eventually be addressed by
 `publishing to PyPI <https://github.com/NREL/GEOPHIRES-X/issues/117>`__ and/or use of
 `GitHub releases <https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases>`__.)
+
+Change Notifications
+--------------------
+To receive email notifications of changes:
+
+1. Create or log in to your GitHub account.
+2. Go to the `GEOPHIRES Change Announcements Discussion <https://github.com/NREL/GEOPHIRES-X/discussions/428>`__.
+3. Click the Subscribe button in the Notifications section in the right panel.

@@ -1946,7 +1946,9 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText='Assumes $3.5/1,000 gallons of water'  # TODO parameterize
+            ToolTipText=f'Default correlation: Assumes $3.50/1,000 gallons of water. '
+                        f'Provide {self.oamwateradjfactor.Name} to multiply the default correlation.'
+            # Note: $3.50 could possibly be parameterized, but adjustment factor param serves the same purpose for now.
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",

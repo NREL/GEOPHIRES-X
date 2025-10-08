@@ -1,6 +1,6 @@
 # Theoretical Basis for GEOPHIRES
 
-This document describes the foundational theoretical basis for GEOPHIRES, adapted from the 2019 paper, "[GEOPHIRES v2.0: updated geothermal techno-economic simulation tool](https://doi.org/10.1186/s40517-019-0119-6)" by Koenraad F. Beckers & Kevin McCabe. The core theories described here remain valid and relevant to the current software.
+This document describes the foundational theoretical basis for GEOPHIRES, adapted from the 2019 paper "[GEOPHIRES v2.0: updated geothermal techno-economic simulation tool](https://doi.org/10.1186/s40517-019-0119-6)" by Koenraad F. Beckers & Kevin McCabe. The core theories described here remain valid and relevant to the current software.
 
 However, the text has not been comprehensively updated to include the theory for features added in GEOPHIRES v3 (GEOPHIRES-X) and later.
 While pointers to the documentation for newer models have been added, the detailed technical descriptions herein still pertain to v2.0.

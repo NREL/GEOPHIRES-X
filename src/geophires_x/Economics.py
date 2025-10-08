@@ -1922,9 +1922,10 @@ class Economics:
                         'by Beckers (2016), indexed to 2017 using the IHS Markit North American Power Capital Costs '
                         'Index (NAPCCI) excluding nuclear plants (IHS 2018). The ORC power plant cost data have been '
                         'updated with data from the 2016 GETEM tool (DOE 2016) and the geothermal binary power plants '
-                        # 'study by Verkís (2014). '
-                        'study by Verkis (2014). '  # unicode accented i may cause unexpected problems in consumers...
-                        'Figure 4 in the Theoretical Basis shows the power plant capital cost expressed in $ kWe−1 '
+                        'study by Verkis (2014). '
+                        # Note: actual author name above is "Verkís" but the unicode accented i may cause unexpected
+                        # problems in consumers.
+                        'Figure 4 in the Theoretical Basis shows the power plant capital cost expressed in $ kWe-1 '
                         'as a function of plant size and initial production temperature for subcritical ORC and '
                         'double-flash power plants. '
                         f'The default correlations in GEOPHIRES include {contingency_and_indirect_costs_tooltip_stem}. '
@@ -1943,7 +1944,7 @@ class Economics:
                         'Unlike flash power plants, ORC plants are a small, niche market, typically case specific, '
                         'and rely on relatively young technology, which has not been subject yet to decades of '
                         'technological advancement. The cost for direct-use heat applications is highly dependent '
-                        'on the type of application. A generic cost of $250 kWth−1 is assumed '
+                        'on the type of application. A generic cost of $250 kWth-1 is assumed '
                         f'{contingency_and_indirect_costs_tooltip}. '
                         'However, users are encouraged to provide their own cost figures for '
                         'their specific application. Beckers and Young (2017) collected several cost figures to '

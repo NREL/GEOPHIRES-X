@@ -2020,7 +2020,9 @@ class Economics:
             display_name='Total operating and maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText=f'GEOPHIRES estimates the annual O&M costs as the sum of the annual surface plant, wellfield, '
+                        f'make-up water, and pumping O&M costs.'
         )
         self.averageannualpumpingcosts = OutputParameter(
             Name="Average Annual Pumping Costs",

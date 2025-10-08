@@ -523,7 +523,7 @@
         "Total average annual O&M costs": {},
         "Total operating and maintenance costs": {
           "type": "number",
-          "description": "Total O&M Cost",
+          "description": "Total O&M Cost. GEOPHIRES estimates the annual O&M costs as the sum of the annual surface plant, wellfield, make-up water, and pumping O&M costs.",
           "units": "MUSD/yr"
         },
         "OPEX": {}

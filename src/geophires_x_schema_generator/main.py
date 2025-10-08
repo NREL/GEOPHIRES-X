@@ -23,7 +23,10 @@ def generate_schemas(build_in_src: bool, build_path: str | Path) -> None:
 
         request_build_path = Path(build_dir, f'{json_file_name_prefix}request.json')
         with open(request_build_path, 'w', encoding='utf-8') as f:
+
             print(json.dumps(request_schema_json, indent=2), file=f)
+            # using print([...], file=f) instead of f.write avoids need for pre-commit end of file fix
+
             print(f'Wrote request JSON schema file to {request_build_path}.')
 
         if result_schema_json is not None:

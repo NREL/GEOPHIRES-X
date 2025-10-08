@@ -1,17 +1,19 @@
 # Description
 
-Describe your change, including links to relevant tracking issue(s), implementation approach, new/updated documentation,
-and any other relevant information.
+*Describe your change, including links to relevant tracking issue(s), implementation approach, new/updated documentation,
+and any other relevant information.*
 
 # Testing & Verification
 
-1. Unit tests added: Describe new unit tests added, if any.
-1. Unit tests updated: Describe existing unit tests that were updated, if any.
-1. Manual testing: Describe any additional manual testing steps that were performed, such as running the change on a pre-existing data set you own.
+1. Unit tests added: *Describe new unit tests added, if any.*
+1. Unit tests updated: *Describe existing unit tests that were updated, if any.*
+1. Manual testing: *Describe any additional manual testing steps that were performed, such as running the change on a pre-existing data set you own.*
 
 ---
 
 **Change Checklist**:
+
+Observe the following checklist items if your change includes a new version (see [versioning notes](https://github.com/NREL/GEOPHIRES-X/blob/main/CHANGELOG.rst#versioning-notes) and [version management docs](https://github.com/NREL/GEOPHIRES-X/blob/main/CONTRIBUTING.rst#version-management)).
 
 Before merging:
 1. [ ] Add a CHANGELOG entry ([example](https://github.com/NREL/GEOPHIRES-X/commit/15e10e5c3c08633a16645e41dfb7e8131805483f)). RST Template:

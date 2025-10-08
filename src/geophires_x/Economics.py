@@ -1841,10 +1841,13 @@ class Economics:
         )
 
         # TODO switch order to align with theoretical basis, which lists indirect costs first
-        contingency_and_indirect_costs_tooltip = (
-            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
+        contingency_and_indirect_costs_tooltip_stem = (
+            f'{self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
             f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
+        )
+        contingency_and_indirect_costs_tooltip = (
+            f'plus {contingency_and_indirect_costs_tooltip_stem}'
         )
 
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
@@ -1888,11 +1891,11 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            # TODO parameterize relevant constants in tooltip text
             ToolTipText='The built-in correlation for the wellfield O&M costs is similar as the surface plant O&M '
                         'costs: it assumes that it consists of 1% of the total wellfield plus field gathering system '
                         'costs (for annual non-labor costs) and 25% of the labor costs (the other 75% of the labor '
                         'costs are assigned to the surface plant O&M costs).'
-            # TODO parameterize relevant constants
         )
 
         self.redrilling_annual_cost = self.OutputParameterDict[self.redrilling_annual_cost.Name] = OutputParameter(
@@ -1906,23 +1909,25 @@ class Economics:
                         f'The total is then divided over {model.surfaceplant.plant_lifetime.Name} years to calculate '
                         f'Redrilling costs per year.'
         )
+        # noinspection SpellCheckingInspection
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",
             display_name='Surface power plant costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
+            # TODO incorporate direct references to relevant parameters for adjusting correlation in tooltip text
+            # TODO interpolate relevant constants (that are currently hardcoded) in tooltip text
             ToolTipText='The built-in power plant cost correlations are based on the original correlations developed '
                         'by Beckers (2016), indexed to 2017 using the IHS Markit North American Power Capital Costs '
                         'Index (NAPCCI) excluding nuclear plants (IHS 2018). The ORC power plant cost data have been '
                         'updated with data from the 2016 GETEM tool (DOE 2016) and the geothermal binary power plants '
                         # 'study by Verkís (2014). '
                         'study by Verkis (2014). '  # unicode accented i may cause unexpected problems in consumers...
-                        # TODO incorporate reference to figure (commented out for now)
-                        # 'Figure 4 shows the power plant capital cost expressed in $ kWe−1 as a function of plant
-                        # size and initial production temperature for subcritical ORC and double-flash power plants. '
-                        # TODO use tooltip var
-                        'The correlations in GEOPHIRES include 12% for indirect costs and 15% contingency. '
+                        'Figure 4 in the Theoretical Basis shows the power plant capital cost expressed in $ kWe−1 '
+                        'as a function of plant size and initial production temperature for subcritical ORC and '
+                        'double-flash power plants. '
+                        f'The default correlations in GEOPHIRES include {contingency_and_indirect_costs_tooltip_stem}. '
                         'For the same plant size and production temperature, double-flash power plants are considered '
                         'about 25% more expensive than single-flash power plants (Zeyghami 2010), and supercritical '
                         'ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014). A wide '
@@ -1943,7 +1948,6 @@ class Economics:
                         'However, users are encouraged to provide their own cost figures for '
                         'their specific application. Beckers and Young (2017) collected several cost figures to '
                         'estimate the surface equipment cost for geothermal district-heating systems.'
-            # TODO incorporate direct references to relevant parameters for adjusting correlation
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
@@ -1951,8 +1955,8 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            # TODO parameterize relevant constants
-            # TODO update index year and/or make indexing parameterizable
+            # TODO parameterize relevant constants in tooltip text
+            # TODO update index year and/or make indexing parameterizable in tooltip text
             ToolTipText='GEOPHIRES estimates the annual surface plant O&M costs as the sum of 1.5% of the total plant '
                         'capital cost (for annual non-labor costs), and 75% of the annual labor costs. The other 25% '
                         'of the labor costs are assigned to the wellfield O&M cost. The labor costs are calculated '
@@ -1969,7 +1973,7 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            # TODO interpolate constant values in tooltip text instead of hardcoding
+            # TODO interpolate constant values in tooltip text instead of hardcoding in tooltip text
             ToolTipText='The built-in cost correlation for estimating the field gathering system cost includes '
                         'the cost for surface piping from each well to the plant and pumps for production and '
                         'injection wells. The length of the surface piping is assumed 750 m per well at a cost of '

@@ -44,7 +44,8 @@ Reservoir Depth, 2.6, -- km
 Reservoir Heat Capacity, 790
 Reservoir Thermal Conductivity, 3.05
 Reservoir Porosity, 0.0118
-Reservoir Impedance, 0.001
+Injectivity Index, 3, -- [kg/s/bar] NREL ATB conservative scenario (https://atb.nrel.gov/electricity/2024/geothermal)
+Productivity Index, 2.4742, -- [kg/s/bar] NREL ATB conservative scenario (https://atb.nrel.gov/electricity/2024/geothermal)
 
 Number of Segments, 1
 Gradient 1, 74

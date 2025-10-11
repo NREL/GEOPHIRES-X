@@ -195,7 +195,8 @@ class Outputs:
                 f.write(NL)
                 f.write('                           ***SUMMARY OF RESULTS***\n')
                 f.write(NL)
-                f.write(f'      End-Use Option: {str(model.surfaceplant.enduse_option.value.value)}\n')
+                f.write(f'      {model.surfaceplant.enduse_option_output.display_name}: '
+                        f'{model.surfaceplant.enduse_option_output.value}\n')
                 if model.surfaceplant.plant_type.value in [PlantType.ABSORPTION_CHILLER, PlantType.HEAT_PUMP, PlantType.DISTRICT_HEATING]:
                     f.write('      Surface Application: ' + str(model.surfaceplant.plant_type.value.value) + NL)
                 if model.surfaceplant.enduse_option.value in [EndUseOptions.ELECTRICITY, EndUseOptions.COGENERATION_TOPPING_EXTRA_HEAT, EndUseOptions.COGENERATION_TOPPING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_ELECTRICITY, EndUseOptions.COGENERATION_BOTTOMING_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_HEAT, EndUseOptions.COGENERATION_PARALLEL_EXTRA_ELECTRICITY]: # there is an electricity component
@@ -481,7 +482,7 @@ class Outputs:
                         cpw_label = Outputs._field_label(econ.drilling_and_completion_costs_per_well.display_name, 47)
                         f.write(f'         {cpw_label}{econ.drilling_and_completion_costs_per_well.value:10.2f} {econ.Cwell.CurrentUnits.value}\n')
                     f.write(f'         {econ.Cstim.display_name}:                             {econ.Cstim.value:10.2f} {econ.Cstim.CurrentUnits.value}\n')
-                    f.write(f'         Surface power plant costs:                     {model.economics.Cplant.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
+                    f.write(f'         {econ.Cplant.display_name}:                     {econ.Cplant.value:10.2f} {econ.Cplant.CurrentUnits.value}\n')
                     if model.surfaceplant.plant_type.value == PlantType.ABSORPTION_CHILLER:
                         f.write(f'            of which Absorption Chiller Cost:           {model.economics.chillercapex.value:10.2f} ' + model.economics.Cplant.CurrentUnits.value + NL)
                     if model.surfaceplant.plant_type.value == PlantType.HEAT_PUMP:

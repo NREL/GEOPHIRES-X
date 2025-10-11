@@ -25,18 +25,22 @@ class GeophiresInputEnum(str, Enum):
         return str(self) != str(other)
 
 
+_EXTRA_HEAT_SNIPPET = 'Heat sales considered as extra income'
+_EXTRA_ELECTRICITY_SNIPPET = 'Electricity sales considered as extra income'
+
+
 class EndUseOptions(GeophiresInputEnum):
-    ELECTRICITY = 1, "Electricity"
-    HEAT = 2, "Direct-Use Heat"
-    COGENERATION_TOPPING_EXTRA_HEAT = 31, "Cogeneration Topping Cycle, Heat sales considered as extra income"
-    COGENERATION_TOPPING_EXTRA_ELECTRICITY = 32, "Cogeneration Topping Cycle, Electricity sales considered as extra income"
-    COGENERATION_BOTTOMING_EXTRA_HEAT = 41, "Cogeneration Bottoming Cycle, Heat sales considered as extra income"
-    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = 42, "Cogeneration Bottoming Cycle, Electricity sales considered as extra income"
-    COGENERATION_PARALLEL_EXTRA_HEAT = 51, "Cogeneration Parallel Cycle, Heat sales considered as extra income"
-    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, "Cogeneration Parallel Cycle, Electricity sales considered as extra income"
+    ELECTRICITY = 1, 'Electricity'
+    HEAT = 2, 'Direct-Use Heat'
+    COGENERATION_TOPPING_EXTRA_HEAT = 31, f'Cogeneration Topping Cycle, {_EXTRA_HEAT_SNIPPET}'
+    COGENERATION_TOPPING_EXTRA_ELECTRICITY = 32, f'Cogeneration Topping Cycle, {_EXTRA_ELECTRICITY_SNIPPET}'
+    COGENERATION_BOTTOMING_EXTRA_HEAT = 41, f'Cogeneration Bottoming Cycle, {_EXTRA_HEAT_SNIPPET}'
+    COGENERATION_BOTTOMING_EXTRA_ELECTRICITY = 42, f'Cogeneration Bottoming Cycle, {_EXTRA_ELECTRICITY_SNIPPET}'
+    COGENERATION_PARALLEL_EXTRA_HEAT = 51, f'Cogeneration Parallel Cycle, {_EXTRA_HEAT_SNIPPET}'
+    COGENERATION_PARALLEL_EXTRA_ELECTRICITY = 52, f'Cogeneration Parallel Cycle, {_EXTRA_ELECTRICITY_SNIPPET}'
 
     @staticmethod
-    def from_input_string(input_string: str):
+    def from_input_string(input_string: str) -> 'EndUseOptions':
         """
         :rtype: EndUseOptions
         """
@@ -48,10 +52,16 @@ class EndUseOptions(GeophiresInputEnum):
         raise ValueError(f'Unknown End-Use Option input value: {input_string}')
 
     @staticmethod
-    def from_int(int_val):
+    def from_int(int_val: int) -> 'EndUseOptions':
+        """
+        :rtype: EndUseOptions
+        """
+
         for member in __class__:
             if member.int_value == int_val:
                 return member
+
+        raise ValueError(f'Unknown End-Use Option integer input value: {int_val}')
 
 
 class PlantType(GeophiresInputEnum):

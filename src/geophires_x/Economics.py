@@ -625,7 +625,8 @@ class Economics:
             CurrentUnits=CurrencyUnit.MDOLLARS,
             Provided=False,
             Valid=False,
-            ToolTipText="Total reservoir stimulation capital cost, including indirect costs and contingency."
+            ToolTipText='Total reservoir stimulation capital cost, including indirect costs and contingency. '
+                        f'For traditional hydrothermal reservoirs, this parameter should be set to $0.'
         )
 
         max_stimulation_cost_per_well_MUSD = 100
@@ -938,7 +939,18 @@ class Economics:
             UnitType=Units.NONE,
             Required=True,
             ErrMessage="assume default number of time steps per year (4)",
-            ToolTipText="Number of internal simulation time steps per year"
+            ToolTipText='Number of internal simulation time steps per year. GEOPHIRES assumes linear time '
+                        'discretization with a user-provided number of time steps per year over the lifetime of the '
+                        'plant. The default is four time steps per year, meaning a time step of 3 months. '
+                        'At every time step, GEOPHIRES calculates the reservoir output temperature, production '
+                        'wellhead temperature, direct-use heat and/or electricity power output (in MW), pressure '
+                        'drops and pumping power. On an annual basis, GEOPHIRES calculates the O&M costs and '
+                        'direct-use heat and/or electricity production. To investigate seasonal effects, e.g., to '
+                        'assess the impact of more geothermal heat demand for district heating in winter than in '
+                        'summer, the user can select a smaller time step, e.g., a month (or 12 time steps per year). '
+                        'For even shorter timescale effects, e.g., to account for an hourly varying ambient '
+                        'temperature or investigate the response in plant operation to a fluctuating revenue rate), '
+                        'the user can select an even smaller time step, e.g., 1 h (or 8760 time steps per year).'
         )
         self.FCR = self.ParameterDict[self.FCR.Name] = floatParameter(
             "Fixed Charge Rate",
@@ -1824,13 +1836,18 @@ class Economics:
                         f'costs per well. '
                         f'Provide {self.ccstimadjfactor.Name} to multiply the correlation-calculated cost. '
                         f'Provide {self.ccstimfixed.Name} to override the correlation and set your own '
-                        f'total stimulation cost.'
+                        f'total stimulation cost. '
+                        f'For traditional hydrothermal reservoirs, {self.ccstimfixed.Name} should be set to $0.'
         )
 
-        contingency_and_indirect_costs_tooltip = (
-            f'plus {self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
+        # TODO switch order to align with theoretical basis, which lists indirect costs first
+        contingency_and_indirect_costs_tooltip_stem = (
+            f'{self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}% contingency '
             f'plus {self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}% '
             f'indirect costs'
+        )
+        contingency_and_indirect_costs_tooltip = (
+            f'plus {contingency_and_indirect_costs_tooltip_stem}'
         )
 
         self.Cexpl = self.OutputParameterDict[self.Cexpl.Name] = OutputParameter(
@@ -1839,7 +1856,8 @@ class Economics:
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
             CurrentUnits=CurrencyUnit.MDOLLARS,
-            ToolTipText=f'Default correlation: 60% of the cost of one production well '
+            ToolTipText=f'The built-in exploration cost correlation considers drilling of a slim-hole well at 60% of '
+                        f'the cost of a regular well, $1M for geophysical and field work, '
                         f'{contingency_and_indirect_costs_tooltip}. '
                         f'Provide {self.ccexpladjfactor.Name} to multiply the default correlation. '
                         f'Provide {self.ccexplfixed.Name} to override the default correlation and set your own cost.'
@@ -1865,14 +1883,21 @@ class Economics:
             ToolTipText='Drilling and completion cost per well, including indirect costs '
                         f'(default: {self.wellfield_indirect_capital_cost_percentage.DefaultValue}%).'
         )
+
+        # noinspection SpellCheckingInspection
         self.Coamwell = self.OutputParameterDict[self.Coamwell.Name] = OutputParameter(
             Name="O&M Wellfield cost",
             display_name='Wellfield maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
-            # TODO TooltipText to document how this is calculated
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            # TODO parameterize relevant constants in tooltip text
+            ToolTipText='The built-in correlation for the wellfield O&M costs is similar as the surface plant O&M '
+                        'costs: it assumes that it consists of 1% of the total wellfield plus field gathering system '
+                        'costs (for annual non-labor costs) and 25% of the labor costs (the other 75% of the labor '
+                        'costs are assigned to the surface plant O&M costs).'
         )
+
         self.redrilling_annual_cost = self.OutputParameterDict[self.redrilling_annual_cost.Name] = OutputParameter(
             Name="Redrilling costs",
             UnitType=Units.CURRENCYFREQUENCY,
@@ -1884,25 +1909,85 @@ class Economics:
                         f'The total is then divided over {model.surfaceplant.plant_lifetime.Name} years to calculate '
                         f'Redrilling costs per year.'
         )
+        # noinspection SpellCheckingInspection
         self.Cplant = self.OutputParameterDict[self.Cplant.Name] = OutputParameter(
             Name="Surface Plant cost",
+            display_name='Surface power plant costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            # TODO incorporate direct references to relevant parameters for adjusting correlation in tooltip text
+            # TODO interpolate relevant constants (that are currently hardcoded) in tooltip text
+            ToolTipText='The built-in power plant cost correlations are based on the original correlations developed '
+                        'by Beckers (2016), indexed to 2017 using the IHS Markit North American Power Capital Costs '
+                        'Index (NAPCCI) excluding nuclear plants (IHS 2018). The ORC power plant cost data have been '
+                        'updated with data from the 2016 GETEM tool (DOE 2016) and the geothermal binary power plants '
+                        'study by Verkis (2014). '
+                        # Note: actual author name above is "Verkís" but the unicode accented i may cause unexpected
+                        # problems in consumers.
+                        'Figure 4 in the Theoretical Basis shows the power plant capital cost expressed in $ kWe-1 '
+                        'as a function of plant size and initial production temperature for subcritical ORC and '
+                        'double-flash power plants. '
+                        f'The default correlations in GEOPHIRES include {contingency_and_indirect_costs_tooltip_stem}. '
+                        'For the same plant size and production temperature, double-flash power plants are considered '
+                        'about 25% more expensive than single-flash power plants (Zeyghami 2010), and supercritical '
+                        'ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014). A wide '
+                        'range in power plant specific cost values is reported in academic and popular literature. '
+                        'The GEOPHIRES built-in surface plant cost correlations represent typical values. However, '
+                        'the user is recommended to provide their own power plant cost data if available for their '
+                        'case study. The ORC plant specific cost decreases only moderately at higher temperatures. '
+                        'The reasons are that when increasing the temperature, the ORC plant design also changes: '
+                        '(1) a different organic fluid is selected, (2) piping, pump, heat exchangers, and other '
+                        'equipment are designed to handle the higher temperature (and potentially also pressure), '
+                        'requiring thicker walls, potentially different materials, etc., and (3) additional components '
+                        'may be implemented, such as a heat recuperator, making the design and operation more complex. '
+                        'Unlike flash power plants, ORC plants are a small, niche market, typically case specific, '
+                        'and rely on relatively young technology, which has not been subject yet to decades of '
+                        'technological advancement. The cost for direct-use heat applications is highly dependent '
+                        'on the type of application. A generic cost of $250 kWth-1 is assumed '
+                        f'{contingency_and_indirect_costs_tooltip}. '
+                        'However, users are encouraged to provide their own cost figures for '
+                        'their specific application. Beckers and Young (2017) collected several cost figures to '
+                        'estimate the surface equipment cost for geothermal district-heating systems.'
         )
         self.Coamplant = self.OutputParameterDict[self.Coamplant.Name] = OutputParameter(
             Name="O&M Surface Plant costs",
             display_name='Power plant maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            # TODO parameterize relevant constants in tooltip text
+            # TODO update index year and/or make indexing parameterizable in tooltip text
+            ToolTipText='GEOPHIRES estimates the annual surface plant O&M costs as the sum of 1.5% of the total plant '
+                        'capital cost (for annual non-labor costs), and 75% of the annual labor costs. The other 25% '
+                        'of the labor costs are assigned to the wellfield O&M cost. The labor costs are calculated '
+                        'internally in GEOPHIRES using the 2014 labor costs provided by Beckers (2016), indexed to '
+                        '2017 using the Bureau of Labor Statistics (BLS) Employment Cost Index for utilities (2018). '
+                        'The original 2014 labor cost correlation expresses the labor costs as a function of the plant '
+                        'size (MW) using an approximate logarithmic curve fit to the built-in labor cost data in '
+                        'GETEM.'
         )
+        # noinspection SpellCheckingInspection
         self.Cgath = self.OutputParameterDict[self.Cgath.Name] = OutputParameter(
             Name="Field gathering system cost",
             display_name='Field gathering system costs',
             UnitType=Units.CURRENCY,
             PreferredUnits=CurrencyUnit.MDOLLARS,
-            CurrentUnits=CurrencyUnit.MDOLLARS
+            CurrentUnits=CurrencyUnit.MDOLLARS,
+            # TODO interpolate constant values in tooltip text instead of hardcoding in tooltip text
+            ToolTipText='The built-in cost correlation for estimating the field gathering system cost includes '
+                        'the cost for surface piping from each well to the plant and pumps for production and '
+                        'injection wells. The length of the surface piping is assumed 750 m per well at a cost of '
+                        '$500 per meter. The pumping cost for each pump in the production wells (line-shaft pumps) '
+                        'and a single pump for the injection wells is calculated with the same correlation as GETEM. '
+                        f'Contingency (default: '
+                        f'{self.contingency_percentage.quantity().to(convertible_unit("%")).magnitude:g}%). '
+                        f'and indirect costs (default: '
+                        f'{self.indirect_capital_cost_percentage.quantity().to(convertible_unit("%")).magnitude}%) '
+                        f'are added. '
+                        'The built-in cost correlation does not include the cost of pipelines to an off-site heat '
+                        'user or a district-heating system. These costs are estimated at $750 per meter pipeline '
+                        'length and can be manually added by the user to the pipeline distribution costs.'
         )
         self.Cpiping = self.OutputParameterDict[self.Cpiping.Name] = OutputParameter(
             Name="Transmission pipeline costs",
@@ -1917,7 +2002,9 @@ class Economics:
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            ToolTipText='Assumes $3.5/1,000 gallons of water'  # TODO parameterize
+            ToolTipText=f'Default correlation: Assumes $3.50/1,000 gallons of water. '
+                        f'Provide {self.oamwateradjfactor.Name} to multiply the default correlation.'
+            # Note: $3.50 could possibly be parameterized, but adjustment factor param serves the same purpose for now.
         )
         self.CCap = self.OutputParameterDict[self.CCap.Name] = OutputParameter(
             Name="Total Capital Cost",
@@ -1934,7 +2021,9 @@ class Economics:
             display_name='Total operating and maintenance costs',
             UnitType=Units.CURRENCYFREQUENCY,
             PreferredUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
-            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR
+            CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
+            ToolTipText=f'GEOPHIRES estimates the annual O&M costs as the sum of the annual surface plant, wellfield, '
+                        f'make-up water, and pumping O&M costs.'
         )
         self.averageannualpumpingcosts = OutputParameter(
             Name="Average Annual Pumping Costs",

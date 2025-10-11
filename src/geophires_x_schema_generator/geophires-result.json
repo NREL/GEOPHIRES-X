@@ -8,7 +8,11 @@
     "SUMMARY OF RESULTS": {
       "type": "object",
       "properties": {
-        "End-Use Option": {},
+        "End-Use Option": {
+          "type": "string",
+          "description": "Five different end-use options are available in GEOPHIRES: 1: Electricity: All produced geothermal fluid is used to generate electricity with either an ORC or flash power plant; 2: Direct-use heat: All produced geothermal fluid is used to provide heating for a given application, e.g., a district-heating system or industrial process; 3: Cogeneration or combined heat and power (CHP): Both heat and electricity are produced. Three different cogeneration configurations are available: (1): Cogeneration topping cycle: A power plant is followed by a direct-use heat application in series. Heat at high temperatures from the geothermal fluid is first converted into electricity. Any remaining heat in the geothermal fluid after leaving the power plant is supplied to a low-temperature direct-use heat application; (2): Cogeneration bottoming cycle: A direct-use heat application is followed by a power plant in series. In this less common configuration, the geothermal fluid first serves a high-temperature direct-use heat application. Any remaining heat in the geothermal fluid after leaving the direct-use heat process (at a user-specified temperature) is used to generate electricity. The heat-to-power conversion typically occurs with an ORC plant operating at low conversion efficiencies; (3): Cogeneration parallel cycle: A power plant operates in parallel with a direct-use heat application. The produced geothermal fluid is split into two streams, providing heat at the same temperature to a power plant and direct-use heat application. The user specifies the fluid flow fraction going to each process.",
+          "units": null
+        },
         "End-Use": {},
         "Surface Application": {},
         "Reservoir Model": {},
@@ -400,11 +404,15 @@
         "Drilling and completion costs per redrilled well": {},
         "Stimulation costs": {
           "type": "number",
-          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 5% indirect costs. Provide Reservoir Stimulation Capital Cost per Injection Well and Reservoir Stimulation Capital Cost per Production Well to set the correlation costs per well. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the correlation-calculated cost. Provide Reservoir Stimulation Capital Cost to override the correlation and set your own total stimulation cost.",
+          "description": "Default correlation: $1.25M per injection well plus 15% contingency plus 5% indirect costs. Provide Reservoir Stimulation Capital Cost per Injection Well and Reservoir Stimulation Capital Cost per Production Well to set the correlation costs per well. Provide Reservoir Stimulation Capital Cost Adjustment Factor to multiply the correlation-calculated cost. Provide Reservoir Stimulation Capital Cost to override the correlation and set your own total stimulation cost. For traditional hydrothermal reservoirs, Reservoir Stimulation Capital Cost should be set to $0.",
           "units": "MUSD"
         },
         "Stimulation costs (for redrilling)": {},
-        "Surface power plant costs": {},
+        "Surface power plant costs": {
+          "type": "number",
+          "description": "Surface Plant cost. The built-in power plant cost correlations are based on the original correlations developed by Beckers (2016), indexed to 2017 using the IHS Markit North American Power Capital Costs Index (NAPCCI) excluding nuclear plants (IHS 2018). The ORC power plant cost data have been updated with data from the 2016 GETEM tool (DOE 2016) and the geothermal binary power plants study by Verkis (2014). Figure 4 in the Theoretical Basis shows the power plant capital cost expressed in $ kWe-1 as a function of plant size and initial production temperature for subcritical ORC and double-flash power plants. The default correlations in GEOPHIRES include 15% contingency plus 12% indirect costs. For the same plant size and production temperature, double-flash power plants are considered about 25% more expensive than single-flash power plants (Zeyghami 2010), and supercritical ORC plants are roughly 10% more than subcritical ORC plants (Astolfi et al. 2014). A wide range in power plant specific cost values is reported in academic and popular literature. The GEOPHIRES built-in surface plant cost correlations represent typical values. However, the user is recommended to provide their own power plant cost data if available for their case study. The ORC plant specific cost decreases only moderately at higher temperatures. The reasons are that when increasing the temperature, the ORC plant design also changes: (1) a different organic fluid is selected, (2) piping, pump, heat exchangers, and other equipment are designed to handle the higher temperature (and potentially also pressure), requiring thicker walls, potentially different materials, etc., and (3) additional components may be implemented, such as a heat recuperator, making the design and operation more complex. Unlike flash power plants, ORC plants are a small, niche market, typically case specific, and rely on relatively young technology, which has not been subject yet to decades of technological advancement. The cost for direct-use heat applications is highly dependent on the type of application. A generic cost of $250 kWth-1 is assumed plus 15% contingency plus 12% indirect costs. However, users are encouraged to provide their own cost figures for their specific application. Beckers and Young (2017) collected several cost figures to estimate the surface equipment cost for geothermal district-heating systems.",
+          "units": "MUSD"
+        },
         "of which Absorption Chiller Cost": {},
         "of which Heat Pump Cost": {},
         "of which Peaking Boiler Cost": {},
@@ -420,13 +428,13 @@
         },
         "Field gathering system costs": {
           "type": "number",
-          "description": "Field gathering system cost",
+          "description": "Field gathering system cost. The built-in cost correlation for estimating the field gathering system cost includes the cost for surface piping from each well to the plant and pumps for production and injection wells. The length of the surface piping is assumed 750 m per well at a cost of $500 per meter. The pumping cost for each pump in the production wells (line-shaft pumps) and a single pump for the injection wells is calculated with the same correlation as GETEM. Contingency (default: 15%). and indirect costs (default: 12%) are added. The built-in cost correlation does not include the cost of pipelines to an off-site heat user or a district-heating system. These costs are estimated at $750 per meter pipeline length and can be manually added by the user to the pipeline distribution costs.",
           "units": "MUSD"
         },
         "Total surface equipment costs": {},
         "Exploration costs": {
           "type": "number",
-          "description": "Exploration cost. Default correlation: 60% of the cost of one production well plus 15% contingency plus 12% indirect costs. Provide Exploration Capital Cost Adjustment Factor to multiply the default correlation. Provide Exploration Capital Cost to override the default correlation and set your own cost.",
+          "description": "Exploration cost. The built-in exploration cost correlation considers drilling of a slim-hole well at 60% of the cost of a regular well, $1M for geophysical and field work, plus 15% contingency plus 12% indirect costs. Provide Exploration Capital Cost Adjustment Factor to multiply the default correlation. Provide Exploration Capital Cost to override the default correlation and set your own cost.",
           "units": "MUSD"
         },
         "Investment Tax Credit": {
@@ -468,17 +476,17 @@
       "properties": {
         "Wellfield maintenance costs": {
           "type": "number",
-          "description": "O&M Wellfield cost",
+          "description": "O&M Wellfield cost. The built-in correlation for the wellfield O&M costs is similar as the surface plant O&M costs: it assumes that it consists of 1% of the total wellfield plus field gathering system costs (for annual non-labor costs) and 25% of the labor costs (the other 75% of the labor costs are assigned to the surface plant O&M costs).",
           "units": "MUSD/yr"
         },
         "Power plant maintenance costs": {
           "type": "number",
-          "description": "O&M Surface Plant costs",
+          "description": "O&M Surface Plant costs. GEOPHIRES estimates the annual surface plant O&M costs as the sum of 1.5% of the total plant capital cost (for annual non-labor costs), and 75% of the annual labor costs. The other 25% of the labor costs are assigned to the wellfield O&M cost. The labor costs are calculated internally in GEOPHIRES using the 2014 labor costs provided by Beckers (2016), indexed to 2017 using the Bureau of Labor Statistics (BLS) Employment Cost Index for utilities (2018). The original 2014 labor cost correlation expresses the labor costs as a function of the plant size (MW) using an approximate logarithmic curve fit to the built-in labor cost data in GETEM.",
           "units": "MUSD/yr"
         },
         "Water costs": {
           "type": "number",
-          "description": "O&M Make-up Water costs. Assumes $3.5/1,000 gallons of water",
+          "description": "O&M Make-up Water costs. Default correlation: Assumes $3.50/1,000 gallons of water. Provide Water Cost Adjustment Factor to multiply the default correlation.",
           "units": "MUSD/yr"
         },
         "Average Reservoir Pumping Cost": {},
@@ -515,7 +523,7 @@
         "Total average annual O&M costs": {},
         "Total operating and maintenance costs": {
           "type": "number",
-          "description": "Total O&M Cost",
+          "description": "Total O&M Cost. GEOPHIRES estimates the annual O&M costs as the sum of the annual surface plant, wellfield, make-up water, and pumping O&M costs.",
           "units": "MUSD/yr"
         },
         "OPEX": {}

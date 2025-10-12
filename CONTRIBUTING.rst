@@ -4,6 +4,18 @@ Contributing
 
 Contributions are welcome and greatly appreciated. GEOPHIRES is free and open source software that is built with collaboration and knowledge sharing. Don't hesitate to reach out to `the authors <AUTHORS.rst>`__ if you are interested in contributing in any way — big or small!
 
+GEOPHIRES Project Tenets
+========================
+
+1. **Empower Users to Develop & Deploy Geothermal Technology**: GEOPHIRES's core tenet is to serve the geothermal techno-economic analysis needs of our users including public sector, industry, and academic, especially with regards to the development and deployment of next-generation geothermal technology.
+
+2. **Correctness & Credibility**: GEOPHIRES strives to be maximally accurate according to state-of-the-art research consensus. SME review is required for all changes.
+
+3. **Build Open Consensus & Community**: We build geothermal industry and stakeholder consensus through open source transparency into GEOPHIRES methodology and calculations. We embrace geothermal community participation and contribution as core aspects of fostering consensus.
+
+4. **Continuous Improvement**: GEOPHIRES is updated continuously to reflect the latest geothermal industry research and developments. Software engineering best practices including automated test coverage ensure code quality and compliance with specifications.
+
+
 Feature requests and feedback
 =============================
 

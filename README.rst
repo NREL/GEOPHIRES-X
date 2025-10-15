@@ -11,7 +11,7 @@ GEOPHIRES is a free and open-source geothermal techno-economic simulator.
 GEOPHIRES combines reservoir, wellbore, surface plant, and economic models to estimate the capital and operation and maintenance costs,
 instantaneous and lifetime energy production, and overall levelized cost of energy of a geothermal plant.
 Various reservoir conditions (EGS, doublets, etc.) and end-use options (electricity, direct-use heat, cogeneration) can be modeled.
-Users are encouraged to build upon to the GEOPHIRES framework to implement their own correlations and models.
+Users are encouraged to build upon the GEOPHIRES framework to implement their own correlations and models.
 See the `Documentation`_ section below for more information.
 
 This repository is the canonical source for the modern GEOPHIRES simulator, which succeeds the legacy `GEOPHIRES v2.0 <https://github.com/NREL/GEOPHIRES-v2>`__.
@@ -58,9 +58,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.9.64.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.9.65.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.9.64...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.9.65...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -90,6 +90,16 @@ To run GEOPHIRES locally or to modify the source code, see the `Getting Started 
 
 Documentation
 =============
+
+GEOPHIRES documentation consists of two primary resources:
+
+1. **GEOPHIRES v3 User Manual:** A comprehensive, point-in-time snapshot of the software in PDF format, covering installation, usage, example problems, and parameter lists in detail.
+**Link:** `GEOPHIRES_v3_UserManual.pdf <https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/9c7d95648140886609776f154d25a0dcbf240851/References/GEOPHIRES_v3_UserManual.pdf>`__
+
+2. **GEOPHIRES Reference Manual:** A living document with the most current, authoritative information on frequently updated topics like the GEOPHIRES Parameters.
+**Link:** `nrel.github.io/GEOPHIRES-X <https://nrel.github.io/GEOPHIRES-X/overview.html>`__
+
+----
 
 GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
 and correlations to estimate the capital and operation and maintenance costs,
@@ -135,9 +145,9 @@ The capital and O&M costs for the different geothermal system components (explor
 well drilling, surface plant, etc.) are either provided by the user or calculated with built-in
 correlations.
 
-For more information on the theoretical basis for GEOPHIRES see
+For more information on the theoretical basis for GEOPHIRES see the
 `Theoretical Basis for GEOPHIRES <https://nrel.github.io/GEOPHIRES-X/Theoretical-Basis-for-GEOPHIRES.html>`__
-and `GEOPHIRES reference materials <References/README.md#geophires>`__.
+and `GEOPHIRES Reference Materials <References/README.md#geophires>`__.
 
 Parameters
 ----------

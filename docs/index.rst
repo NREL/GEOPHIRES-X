@@ -7,12 +7,17 @@ Contents
 
    overview
    Theoretical-Basis-for-GEOPHIRES
-   parameters
-   How-to-extend-GEOPHIRES-X
-   hip_ra_x_parameters
+   GEOPHIRES-Examples
    Monte-Carlo-User-Guide
    SAM-Economic-Models
-   GEOPHIRES-Examples
+   How-to-extend-GEOPHIRES-X
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Parameters Reference
+
+   parameters
+   hip_ra_x_parameters
 ..   reference/index
 
 Indices and tables

@@ -91,6 +91,15 @@ To run GEOPHIRES locally or to modify the source code, see the `Getting Started 
 Documentation
 =============
 
+GEOPHIRES documentation consists of two primary resources:
+
+* **GEOPHIRES v3 User Manual:** A comprehensive, point-in-time snapshot of the software in PDF format, covering installation, usage, example problems, and parameter lists in detail.
+    * **Link:** `GEOPHIRES_v3_UserManual.pdf <https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/9c7d95648140886609776f154d25a0dcbf240851/References/GEOPHIRES_v3_UserManual.pdf>`__
+* **GEOPHIRES Reference Manual:** A living document with the most current, authoritative information on frequently updated topics like the GEOPHIRES Parameters.
+    * **Link:** `nrel.github.io/GEOPHIRES-X <https://nrel.github.io/GEOPHIRES-X/overview.html>`__
+
+----
+
 GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
 and correlations to estimate the capital and operation and maintenance costs,
 instantaneous and lifetime energy production, and overall levelized cost of energy of a

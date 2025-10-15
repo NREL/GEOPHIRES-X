@@ -7,7 +7,7 @@ GEOPHIRES v3 (2023-2025)
 
 3.9
 ^^^
-3.9.65: `GEOPHIRES Project Tenets, example_SAM-Single-Owner-PPA PI/II pumping power <https://github.com/NREL/GEOPHIRES-X/pull/432>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.65>`__
+3.9.65: `v3 User Manual, GEOPHIRES Project Tenets, example_SAM-Single-Owner-PPA PI/II pumping power <https://github.com/NREL/GEOPHIRES-X/pull/432>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.65>`__
 
 3.9.64: `Update tooltip texts from theoretical basis <https://github.com/NREL/GEOPHIRES-X/pull/430>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.9.64>`__
 

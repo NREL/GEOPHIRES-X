@@ -91,16 +91,6 @@ To run GEOPHIRES locally or to modify the source code, see the `Getting Started 
 Documentation
 =============
 
-GEOPHIRES documentation consists of two primary resources:
-
-1. **GEOPHIRES v3 User Manual:** A comprehensive, point-in-time snapshot of the software in PDF format, covering installation, usage, example problems, and parameter lists in detail.
-**Link:** `GEOPHIRES_v3_UserManual.pdf <https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/9c7d95648140886609776f154d25a0dcbf240851/References/GEOPHIRES_v3_UserManual.pdf>`__
-
-2. **GEOPHIRES Reference Manual:** A living document with the most current, authoritative information on frequently updated topics like the GEOPHIRES Parameters.
-**Link:** `nrel.github.io/GEOPHIRES-X <https://nrel.github.io/GEOPHIRES-X/overview.html>`__
-
-----
-
 GEOPHIRES combines reservoir, wellbore, surface plant, and economic and cost models
 and correlations to estimate the capital and operation and maintenance costs,
 instantaneous and lifetime energy production, and overall levelized cost of energy of a
@@ -114,7 +104,7 @@ or user-provided components.
 
 |GEOPHIRES Architecture Diagram|
 
-.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2024-11-20.png
+.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2025-10-17.png
     :alt: GEOPHIRES Architecture Diagram
 
 GEOPHIRES has a variety of different reservoir models including
@@ -332,12 +322,6 @@ Example-specific web interface deeplinks are listed in the Link column.
       <i>* TOUGH2 is not currently supported in the web interface. Comment on <a href="https://github.com/softwareengineerprogrammer/geothermal-ui/issues/15">this tracking issue</a> to request web interface support for TOUGH2.</i>
    </embed>
 
-Videos
-------
-
-`NREL GEOPHIRES Workshop: Features Overview & Examples <https://www.youtube.com/watch?v=KsFvpvXjOB4>`__
-
-`NREL GEOPHIRES Workshop: Case Studies <https://youtu.be/uMUDTUL6yWg>`__
 
 HIP-RA: Heat in Place - Resource Assessment
 -------------------------------------------
@@ -362,17 +346,27 @@ Extending GEOPHIRES-X
 
 `Extension example: SUTRA <https://github.com/NREL/GEOPHIRES-X/commit/984cb4da1505667adb2c45cb1297cab6550774bd#diff-5b1ea85ce061b9a1137a46c48d2d293126224d677d3ab38d9b2f4dcfc4e1674e>`__
 
+Resources
+---------
 
-Additional Documentation
-------------------------
+`GEOPHIRES v3 User Manual <https://github.com/softwareengineerprogrammer/GEOPHIRES/blob/9c7d95648140886609776f154d25a0dcbf240851/References/GEOPHIRES_v3_UserManual.pdf>`__: A comprehensive, point-in-time snapshot of the software in PDF format, covering installation, usage, example problems, and parameter lists in detail.
+
+`GEOPHIRES Reference Manual <https://nrel.github.io/GEOPHIRES-X/overview.html>`__: A living document with the most current, authoritative information on frequently updated topics like the GEOPHIRES Parameters.
 
 Additional materials can be found in `/References </References/README.md>`__.
+
+Videos
+------
+
+`NREL GEOPHIRES Workshop: Features Overview & Examples <https://www.youtube.com/watch?v=KsFvpvXjOB4>`__
+
+`NREL GEOPHIRES Workshop: Case Studies <https://youtu.be/uMUDTUL6yWg>`__
 
 
 Development
 ===========
 
-If you are interested in sharing your extensions with others, or even contributing them back to this repository,
+If you are interested in sharing your extensions with others, or contributing them back to this repository,
 you may want to follow `the Development instructions <CONTRIBUTING.rst#development>`__.
 (You can also create a fork after doing an editable install so don't worry about picking this method if you're unsure.)
 

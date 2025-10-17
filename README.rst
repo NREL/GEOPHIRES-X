@@ -104,7 +104,7 @@ or user-provided components.
 
 |GEOPHIRES Architecture Diagram|
 
-.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2024-11-20.png
+.. |GEOPHIRES Architecture Diagram| image:: References/geophires-architecture-diagram_2025-10-17.png
     :alt: GEOPHIRES Architecture Diagram
 
 GEOPHIRES has a variety of different reservoir models including

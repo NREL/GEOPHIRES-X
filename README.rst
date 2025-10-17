@@ -366,7 +366,7 @@ Videos
 Development
 ===========
 
-If you are interested in sharing your extensions with others, or even contributing them back to this repository,
+If you are interested in sharing your extensions with others, or contributing them back to this repository,
 you may want to follow `the Development instructions <CONTRIBUTING.rst#development>`__.
 (You can also create a fork after doing an editable install so don't worry about picking this method if you're unsure.)
 

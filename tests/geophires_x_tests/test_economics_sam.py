@@ -200,17 +200,17 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(e.exception))
 
-    def test_only_1_construction_year_supported(self):
-        # TODO remove this test and uncomment test_multiple_construction_years_supported below once multiple
-        #  construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
-        with self.assertRaises(RuntimeError) as e:
-            self._get_result({'Construction Years': 2})
-
-        self.assertIn('Invalid Construction Years (2)', str(e.exception))
-        self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
-
-    # def test_multiple_construction_years_supported(self):
-    #     self.assertIsNotNone(self._get_result({'Construction Years': 2}))
+    # FIXME WIP
+    # def test_only_1_construction_year_supported(self):
+    #     # TODO remove this test and uncomment test_multiple_construction_years_supported below once multiple
+    #     #  construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
+    #     with self.assertRaises(RuntimeError) as e:
+    #         self._get_result({'Construction Years': 2})
+    #
+    #     self.assertIn('Invalid Construction Years (2)', str(e.exception))
+    #     self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
+    def test_multiple_construction_years_supported(self):
+        self.assertIsNotNone(self._get_result({'Construction Years': 2}))
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

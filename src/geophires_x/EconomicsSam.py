@@ -96,14 +96,15 @@ def validate_read_parameters(model: Model):
             )
         )
 
-    if model.surfaceplant.construction_years.value != 1:
-        raise ValueError(
-            _inv_msg(
-                model.surfaceplant.construction_years.Name,
-                model.surfaceplant.construction_years.value,
-                f'{model.surfaceplant.construction_years.Name}  = 1',
-            )
-        )
+    # FIXME WIP
+    # if model.surfaceplant.construction_years.value != 1:
+    #     raise ValueError(
+    #         _inv_msg(
+    #             model.surfaceplant.construction_years.Name,
+    #             model.surfaceplant.construction_years.value,
+    #             f'{model.surfaceplant.construction_years.Name}  = 1',
+    #         )
+    #     )
 
     gtr: floatParameter = model.economics.GTR
     if gtr.Provided:
@@ -315,16 +316,24 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
     return tabulate(profile_display, **_tabulate_kw_args)
 
 
+def _analysis_period(model: Model) -> int:
+    return model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value - 1
+
+
 def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
     # fmt:off
     ret: dict[str, Any] = {
         # Project lifetime
-        'analysis_period': model.surfaceplant.plant_lifetime.value,
+        'analysis_period': _analysis_period(model),
         'user_capacity_factor': _pct(model.surfaceplant.utilization_factor),
     }
     # fmt:on
 
     return ret
+
+
+def _construction_years_vector(model: Model, v: float = 0.0) -> list[float]:
+    return [v] * (model.surfaceplant.construction_years.value - 1)
 
 
 def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
@@ -339,7 +348,7 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
         (max_total_kWh_produced - it) / max_total_kWh_produced * 100 for it in m.surfaceplant.NetkWhProduced.value
     ]
 
-    ret['degradation'] = degradation_total
+    ret['degradation'] = _construction_years_vector(m, v=100) + degradation_total
 
     return ret
 
@@ -355,13 +364,13 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # noinspection PyDictCreation
     ret: dict[str, Any] = {}
 
-    ret['analysis_period'] = model.surfaceplant.plant_lifetime.value
+    ret['analysis_period'] = _analysis_period(model)
 
     # SAM docs claim that specifying flip target year, aka "year in which you want the IRR to be achieved" influences
     # how after-tax cumulative IRR is reported (https://samrepo.nrelcloud.org/help/mtf_irr.html). This claim seems to
     # be erroneous, however, as setting this value appears to have no effect in either the SAM desktop app nor when
     # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
-    ret['flip_target_year'] = model.surfaceplant.plant_lifetime.value
+    ret['flip_target_year'] = _analysis_period(model)
 
     total_capex = econ.CCap.quantity()
 
@@ -384,8 +393,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     )
     ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
+    construction_years_zero_vector = _construction_years_vector(model)
+
     opex_musd = econ.Coam.value
-    ret['om_fixed'] = [opex_musd * 1e6]
+    ret['om_fixed'] = construction_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
@@ -395,11 +406,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
-    ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
+    ret['itc_fed_percent'] = construction_years_zero_vector + [float(geophires_itc_tenths * Decimal(100))]
 
     if econ.PTCElec.Provided:
-        ret['ptc_fed_amount'] = [econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude]
-        ret['ptc_fed_term'] = econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
+        ret['ptc_fed_amount'] = construction_years_zero_vector + [
+            econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude
+        ]
+        ret['ptc_fed_term'] = (
+            econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
+        )  # FIXME WIP adjust for construction years
 
         if econ.PTCInflationAdjusted.value:
             ret['ptc_fed_escal'] = _pct(econ.RINFL)
@@ -408,11 +423,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
-    ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
+    ppa_price_schedule_per_kWh = construction_years_zero_vector + _get_ppa_price_schedule_per_kWh(model)
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
 
     if model.economics.royalty_rate.Provided:
-        ret['om_production'] = _get_royalties_variable_om_USD_per_MWh_schedule(model)
+        ret['om_production'] = construction_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)
@@ -421,14 +436,14 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['real_discount_rate'] = _pct(econ.discountrate)
 
     # Project lifetime
-    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
+    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value - 1
     ret['term_int_rate'] = _pct(econ.BIR)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     if model.economics.DoAddOnCalculations.value:
         add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
-        add_on_profit_series = [add_on_profit_per_year]
+        add_on_profit_series = construction_years_zero_vector + [add_on_profit_per_year]
         ret['cp_capacity_payment_amount'] = add_on_profit_series
         ret['cp_capacity_payment_type'] = 1
 

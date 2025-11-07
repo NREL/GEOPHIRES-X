@@ -18,7 +18,7 @@ from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
-    coerce_int_params_to_enum_values
+    coerce_int_params_to_enum_values, listParameter
 from geophires_x.Units import *
 from geophires_x.WellBores import calculate_total_drilling_lengths_m
 
@@ -1153,6 +1153,26 @@ class Economics:
                         'This value defines the Accrued financing during construction output. '
                         'Note: For SAM Economic Models, if this parameter is not provided, inflation costs will be '
                         'calculated automatically by compounding Inflation Rate over Construction Years.'
+        )
+
+        self.phased_capex_schedule = self.ParameterDict[self.phased_capex_schedule.Name] = listParameter(
+            "Phased CAPEX Schedule",
+            DefaultValue=[1.],
+            ToolTipText='A list of percentages of the total overnight CAPEX spent in each construction year. '
+                        'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
+        )
+
+        self.construction_loan_interest_rate = self.ParameterDict[
+            self.construction_loan_interest_rate.Name] = floatParameter(
+            "Construction Loan Interest Rate",
+            DefaultValue=8.0,
+            Min=0.0,
+            Max=100.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.PERCENT,
+            CurrentUnits=PercentUnit.PERCENT,
+            ToolTipText='Annual interest rate for the construction loan, '
+                        'used to calculate capitalized interest for phased CAPEX.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

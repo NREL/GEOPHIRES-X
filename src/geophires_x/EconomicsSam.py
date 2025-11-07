@@ -78,6 +78,14 @@ class SamEconomicsCalculations:
     """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
 
 
+@dataclass
+class PhasedConstructionCosts:
+    """Helper dataclass to return pre-processor results."""
+
+    total_installed_cost_usd: float
+    construction_financing_cost_usd: float
+
+
 def validate_read_parameters(model: Model):
     def _inv_msg(param_name: str, invalid_value: Any, supported_description: str) -> str:
         return (
@@ -353,6 +361,51 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
     return ret
 
 
+def _calculate_phased_construction_costs(
+    total_overnight_capex_usd: float,
+    construction_years: int,
+    phased_capex_schedule: list[float],
+    construction_loan_interest_rate: float,
+    debt_fraction: float,
+    logger: logging.Logger,
+) -> PhasedConstructionCosts:
+    """
+    Calculates the true capitalized cost and interest-during-construction (IDC)
+    by simulating a year-by-year phased drawdown.
+    """
+    logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
+
+    current_debt_balance_usd = 0.0
+    total_capitalized_cost_usd = 0.0
+    total_interest_accrued_usd = 0.0
+
+    for year_index in range(construction_years):
+        capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
+
+        # Interest is calculated on the *opening* balance (from previous years' draws)
+        interest_this_year_usd = current_debt_balance_usd * construction_loan_interest_rate
+
+        new_debt_draw_usd = capex_this_year_usd * debt_fraction
+
+        # Add this year's direct cost AND capitalized interest to the total project cost basis
+        total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
+        total_interest_accrued_usd += interest_this_year_usd
+
+        # Update the loan balance for *next* year's interest calculation
+        # New balance = Old Balance + New Debt + Capitalized Interest
+        current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
+
+    logger.info(
+        f"Phased construction complete. "
+        + f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
+        + f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
+    )
+
+    return PhasedConstructionCosts(
+        total_installed_cost_usd=total_capitalized_cost_usd, construction_financing_cost_usd=total_interest_accrued_usd
+    )
+
+
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     """
     TODO:
@@ -372,26 +425,100 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
     ret['flip_target_year'] = _analysis_period(model)
 
-    total_capex = econ.CCap.quantity()
+    # Get base values
+    total_overnight_capex_usd = econ.CCap.quantity().to('USD').magnitude
+    construction_years = model.surfaceplant.construction_years.value
 
-    if econ.inflrateconstruction.Provided:
-        inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    # Initialize final values
+    total_installed_cost_usd: float
+    construction_financing_cost_usd: float
+
+    # *** BEGIN Phased-Construction Logic ***
+    # Check if user provided a valid, multi-year phased schedule
+    if construction_years > 1 and econ.phased_capex_schedule.Provided:
+
+        schedule_pct = econ.phased_capex_schedule.value
+
+        # Validation: Ensure schedule length matches construction years
+        if len(schedule_pct) != construction_years:
+            msg = (
+                f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match Construction Years "
+                f"({construction_years}). Reverting to standard inflation-based financing."
+            )
+            # model.logger.warning(msg)
+            raise RuntimeError(msg)
+
+            # # Fallback to default logic (simple inflation)
+            # inflation_factor = math.pow(1.0 + econ.RINFL.value, construction_years)
+            # total_installed_cost_usd = (total_overnight_capex_usd * inflation_factor)
+            # construction_financing_cost_usd = total_installed_cost_usd - total_overnight_capex_usd
+
+        else:
+            # --- Call the Pre-Processor Function ---
+            phased_costs = _calculate_phased_construction_costs(
+                total_overnight_capex_usd=total_overnight_capex_usd,
+                construction_years=construction_years,
+                phased_capex_schedule=schedule_pct,
+                construction_loan_interest_rate=econ.construction_loan_interest_rate.quantity()
+                .to('dimensionless')
+                .magnitude,
+                debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
+                logger=model.logger,
+            )
+            total_installed_cost_usd = phased_costs.total_installed_cost_usd
+            construction_financing_cost_usd = phased_costs.construction_financing_cost_usd
+
     else:
-        inflation_during_construction_factor = math.pow(
-            1.0 + econ.RINFL.value, model.surfaceplant.construction_years.value
-        )
+        # --- This is the ORIGINAL SAM logic for 1 year (or if no schedule provided) ---
+        if econ.inflrateconstruction.Provided:
+            inflation_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+        else:
+            inflation_factor = math.pow(1.0 + econ.RINFL.value, construction_years)
+
+        total_installed_cost_usd = total_overnight_capex_usd * inflation_factor
+        construction_financing_cost_usd = total_installed_cost_usd - total_overnight_capex_usd
+
+        if construction_years > 1:
+            model.logger.info(f'No Phased CAPEX Schedule provided. Using standard inflation-based financing.')
+
+    # Update output parameters based on whichever logic path was taken
     econ.accrued_financing_during_construction_percentage.value = (
-        quantity(inflation_during_construction_factor - 1, 'dimensionless')
+        quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
         .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
         .magnitude
     )
 
     econ.inflation_cost_during_construction.value = (
-        (total_capex * (inflation_during_construction_factor - 1))
+        quantity(construction_financing_cost_usd, 'USD')
         .to(econ.inflation_cost_during_construction.CurrentUnits)
         .magnitude
     )
-    ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
+
+    # Pass the final, correct values to SAM
+    ret['total_installed_cost'] = total_installed_cost_usd
+    ret['construction_financing_cost'] = construction_financing_cost_usd
+    # *** END Phased-Construction Logic ***
+
+    # total_capex = econ.CCap.quantity()
+    #
+    # if econ.inflrateconstruction.Provided:
+    #     inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    # else:
+    #     inflation_during_construction_factor = math.pow(
+    #         1.0 + econ.RINFL.value, model.surfaceplant.construction_years.value
+    #     )
+    # econ.accrued_financing_during_construction_percentage.value = (
+    #     quantity(inflation_during_construction_factor - 1, 'dimensionless')
+    #     .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
+    #     .magnitude
+    # )
+    #
+    # econ.inflation_cost_during_construction.value = (
+    #     (total_capex * (inflation_during_construction_factor - 1))
+    #     .to(econ.inflation_cost_during_construction.CurrentUnits)
+    #     .magnitude
+    # )
+    # ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
     construction_years_zero_vector = _construction_years_vector(model)
 

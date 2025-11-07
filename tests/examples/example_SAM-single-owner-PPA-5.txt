@@ -8,39 +8,48 @@
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************
 Economic Model, 5, -- SAM Single Owner PPA
-Construction Years, 3
-Phased CAPEX Schedule, 0.1,0.4,0.5
+Construction Years, 7
+Phased CAPEX Schedule, 0.01,0.02,0.07,0.1,0.2,0.2,0.4
 
 Capital Cost for Power Plant for Electricity Generation, 1900
+Exploration Capital Cost, 120
 
 Starting Electricity Sale Price, 0.08
 Ending Electricity Sale Price, 1.00
 Electricity Escalation Rate Per Year, 0.00322
 Electricity Escalation Start Year, 1
 
-Fraction of Investment in Bonds, .4
-Inflated Bond Interest Rate, .05
+Fraction of Investment in Bonds, .65
+Inflated Bond Interest Rate, .07
 Discount Rate, 0.08
-Inflation Rate, .02
+Inflation Rate, .023
 
 Combined Income Tax Rate, .28
 Investment Tax Credit Rate, 0.3
 Property Tax Rate, 0
+
+Well Drilling Cost Correlation, 10, -- VERTICAL_LARGE_INT1
+
+Reservoir Stimulation Capital Cost per Injection Well, 2.1739130435, -- $2.5M/well after contingency
+Reservoir Stimulation Capital Cost per Production Well, 2.1739130435, -- Baseline stimulation cost of $4.0M, calibrated from high-intensity U.S. shale well analogue (~$39k/frac stage for 102 stages). This is a pre-contingency value and excludes EGS-specific cost premiums such as ceramic proppant and HPHT hardware.
+Reservoir Stimulation Indirect Capital Cost Percentage, 0, -- Baseline stimulation cost includes indirect costs
+
+Field Gathering System Capital Cost Adjustment Factor, 0.54, -- Gathering costs represent 2% of facilities CAPEX per https://www.linkedin.com/pulse/fervo-energy-technology-day-2024-entering-geothermal-decade-matson-n4stc/
+
 
 
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************
 End-Use Option, 1, -- Electricity
 Power Plant Type, 2, -- Supercritical ORC
-Plant Lifetime, 20
+Plant Lifetime, 30
 
 Reservoir Model, 1
 
-Reservoir Volume Option, 2, -- RES_VOL_FRAC_SEP (Specify reservoir volume and fracture separation)
-Reservoir Volume, 2000000000, -- m**3
+Reservoir Volume Option, 1, -- FRAC_NUM_SEP: Reservoir volume calculated with fracture separation and number of fractures as input
+Number of Fractures, 1663, -- 55 fractures per well
 Fracture Shape, 3, -- Square
-Fracture Separation, 18
-Fracture Height, 165
+Fracture Separation, 26,
 
 Reservoir Density, 2800
 Reservoir Depth, 2.6, -- km
@@ -53,13 +62,12 @@ Productivity Index, 2.4742, -- [kg/s/bar] NREL ATB conservative scenario (https:
 Number of Segments, 1
 Gradient 1, 74
 
-Number of Injection Wells, 6
-Number of Production Wells, 6
+Number of Doublets, 15
 
-Production Flow Rate per Well, 100
+Production Flow Rate per Well, 80
 
-Production Well Diameter, 9.625
-Injection Well Diameter, 9.625
+Production Well Diameter, 8.5
+Injection Well Diameter, 8.5
 
 Well Separation, 365 feet
 
@@ -71,7 +79,7 @@ Production Wellhead Pressure, 325 psi
 
 Utilization Factor, .9
 Water Loss Fraction, 0.10
-Maximum Drawdown, 0.0066
+Maximum Drawdown, 1,
 Ambient Temperature, 10, -- degC
 Surface Temperature, 10, -- degC
 Circulation Pump Efficiency, 0.80
@@ -81,7 +89,7 @@ Has Nonvertical Section, True
 Multilaterals Cased, True
 Number of Multilateral Sections, 3
 Nonvertical Length per Multilateral Section, 1433, -- meters
-
+Number of Multilateral Sections, 0, -- This parameter is set to 0 because, for this case study, the cost of horizontal drilling is assumed to be included within the 'vertical drilling cost.' This approach allows us to more directly convey the overall well drilling and completion cost.
 
 # *** SIMULATION PARAMETERS ***
 # *****************************

@@ -198,7 +198,13 @@ class GeophiresXTestCase(BaseTestCase):
             example_files.remove(ef)
             example_files.append(ef)
 
-        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
+        # Test integrity check - no files means something is misconfigured
+        assert len(example_files) > 0, 'Test integrity check failed: example files is misconfigured.'
+        if self._is_github_actions():
+            # Additional integrity check to catch when temporary local overrides to example file list are accidentally
+            # checked in.
+            assert len(example_files) > 10, 'Test integrity check failed: list of example files is too small.'
+
         regenerate_cmds = []
         for example_file_path in example_files:
             with self.subTest(msg=example_file_path):

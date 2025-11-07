@@ -105,3 +105,7 @@ class BaseTestCase(unittest.TestCase):
     # noinspection PyPep8Naming,PyMethodMayBeStatic
     def assertHasLogRecordWithMessage(self, logs_, message):
         assert message in [record.message for record in logs_.records]
+
+    # noinspection PyMethodMayBeStatic
+    def _is_github_actions(self):
+        return 'CI' in os.environ or 'TOXPYTHON' in os.environ

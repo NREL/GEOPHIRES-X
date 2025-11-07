@@ -412,9 +412,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         ret['ptc_fed_amount'] = construction_years_zero_vector + [
             econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude
         ]
-        ret['ptc_fed_term'] = (
-            econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
-        )  # FIXME WIP adjust for construction years
+        ret['ptc_fed_term'] = (econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude) + len(
+            construction_years_zero_vector
+        )
 
         if econ.PTCInflationAdjusted.value:
             ret['ptc_fed_escal'] = _pct(econ.RINFL)
@@ -423,8 +423,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     geophires_ptr_tenths = Decimal(econ.PTR.value)
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
-    ppa_price_schedule_per_kWh = construction_years_zero_vector + _get_ppa_price_schedule_per_kWh(model)
-    ret['ppa_price_input'] = ppa_price_schedule_per_kWh
+    ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
+    ret['ppa_price_input'] = construction_years_zero_vector + ppa_price_schedule_per_kWh
 
     if model.economics.royalty_rate.Provided:
         ret['om_production'] = construction_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
@@ -436,15 +436,16 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['real_discount_rate'] = _pct(econ.discountrate)
 
     # Project lifetime
-    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value - 1
+    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + len(construction_years_zero_vector)
     ret['term_int_rate'] = _pct(econ.BIR)
+    ret['loan_moratorium'] = len(construction_years_zero_vector)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     if model.economics.DoAddOnCalculations.value:
         add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
-        add_on_profit_series = construction_years_zero_vector + [add_on_profit_per_year]
-        ret['cp_capacity_payment_amount'] = add_on_profit_series
+        add_on_profit_series = [add_on_profit_per_year] * model.surfaceplant.plant_lifetime.value
+        ret['cp_capacity_payment_amount'] = construction_years_zero_vector + add_on_profit_series
         ret['cp_capacity_payment_type'] = 1
 
     return ret

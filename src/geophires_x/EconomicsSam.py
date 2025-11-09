@@ -326,7 +326,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
 
 
 def _analysis_period(model: Model) -> int:
-    return model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value - 1
+    return model.surfaceplant.plant_lifetime.value + _pre_revenue_years_count(model) - 1
 
 
 def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
@@ -341,13 +341,13 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
-def _get_pre_revenue_years_count(model: Model) -> int:
-    return model.surfaceplant.construction_years.value
+def _pre_revenue_years_count(model: Model) -> int:
     # TODO/WIP include exploration years
+    return model.surfaceplant.construction_years.value
 
 
 def _pre_revenue_years_vector(model: Model, v: float = 0.0) -> list[float]:
-    return [v] * (_get_pre_revenue_years_count(model) - 1)
+    return [v] * (_pre_revenue_years_count(model) - 1)
 
 
 def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
@@ -435,67 +435,44 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Get base values
     total_overnight_capex_usd = econ.CCap.quantity().to('USD').magnitude
-    pre_revenue_years = _get_pre_revenue_years_count(model)
+    pre_revenue_years = _pre_revenue_years_count(model)
 
     # Initialize final values
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
 
-    # *** BEGIN Phased-Construction Logic ***
-    # Check if user provided a valid, multi-year phased schedule
-    if pre_revenue_years > 1 and econ.phased_capex_schedule.Provided:
+    # *** Phased-Construction Logic ***
+    schedule_pct = econ.phased_capex_schedule.value
 
-        schedule_pct = econ.phased_capex_schedule.value
+    # Validation: Ensure schedule length matches pre-revenue years
+    # TODO/WIP validation should happen during read_parameters, not here (probably)
+    if len(schedule_pct) != pre_revenue_years:
+        msg = (
+            f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match pre-revenue years "
+            f"({pre_revenue_years})."
+        )
+        raise RuntimeError(msg)
 
-        # Validation: Ensure schedule length matches construction years
-        if len(schedule_pct) != pre_revenue_years:
-            msg = (
-                f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match pre-revenue years "
-                f"({pre_revenue_years})."
-            )
-            # model.logger.warning(msg + f" Reverting to standard inflation-based financing.")
-            raise RuntimeError(msg)
+    # Call the phased capex calculation function
+    phased_costs = _calculate_phased_capex_costs(
+        total_overnight_capex_usd=total_overnight_capex_usd,
+        pre_revenue_years_count=pre_revenue_years,
+        phased_capex_schedule=schedule_pct,
+        pre_revenue_bond_interest_rate=econ.pre_revenue_bond_interest_rate.quantity().to('dimensionless').magnitude,
+        debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
+        logger=model.logger,
+    )
+    total_installed_cost_usd = phased_costs.total_installed_cost_usd
+    construction_financing_cost_usd = phased_costs.construction_financing_cost_usd
 
-            # # Fallback to default logic (simple inflation)
-            # inflation_factor = math.pow(1.0 + econ.RINFL.value, construction_years)
-            # total_installed_cost_usd = (total_overnight_capex_usd * inflation_factor)
-            # construction_financing_cost_usd = total_installed_cost_usd - total_overnight_capex_usd
-
-        else:
-            # --- Call the Pre-Processor Function ---
-            phased_costs = _calculate_phased_capex_costs(
-                total_overnight_capex_usd=total_overnight_capex_usd,
-                pre_revenue_years_count=pre_revenue_years,
-                phased_capex_schedule=schedule_pct,
-                pre_revenue_bond_interest_rate=econ.pre_revenue_bond_interest_rate.quantity()
-                .to('dimensionless')
-                .magnitude,
-                debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
-                logger=model.logger,
-            )
-            total_installed_cost_usd = phased_costs.total_installed_cost_usd
-            construction_financing_cost_usd = phased_costs.construction_financing_cost_usd
-
-    else:
-        # --- This is the ORIGINAL SAM logic for 1 year (or if no schedule provided) ---
-        if econ.inflrateconstruction.Provided:
-            inflation_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
-        else:
-            inflation_factor = math.pow(1.0 + econ.RINFL.value, pre_revenue_years)
-
-        total_installed_cost_usd = total_overnight_capex_usd * inflation_factor
-        construction_financing_cost_usd = total_installed_cost_usd - total_overnight_capex_usd
-
-        if pre_revenue_years > 1:
-            model.logger.info(f'No Phased CAPEX Schedule provided. Using standard inflation-based financing.')
-
-    # Update output parameters based on whichever logic path was taken
+    # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.accrued_financing_during_construction_percentage.value = (
         quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
         .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
         .magnitude
     )
 
+    # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.inflation_cost_during_construction.value = (
         quantity(construction_financing_cost_usd, 'USD')
         .to(econ.inflation_cost_during_construction.CurrentUnits)
@@ -505,33 +482,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Pass the final, correct values to SAM
     ret['total_installed_cost'] = total_installed_cost_usd
     ret['construction_financing_cost'] = construction_financing_cost_usd
-    # *** END Phased-Construction Logic ***
 
-    # total_capex = econ.CCap.quantity()
-    #
-    # if econ.inflrateconstruction.Provided:
-    #     inflation_during_construction_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
-    # else:
-    #     inflation_during_construction_factor = math.pow(
-    #         1.0 + econ.RINFL.value, model.surfaceplant.construction_years.value
-    #     )
-    # econ.accrued_financing_during_construction_percentage.value = (
-    #     quantity(inflation_during_construction_factor - 1, 'dimensionless')
-    #     .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
-    #     .magnitude
-    # )
-    #
-    # econ.inflation_cost_during_construction.value = (
-    #     (total_capex * (inflation_during_construction_factor - 1))
-    #     .to(econ.inflation_cost_during_construction.CurrentUnits)
-    #     .magnitude
-    # )
-    # ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
-
-    construction_years_zero_vector = _pre_revenue_years_vector(model)
+    pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
 
     opex_musd = econ.Coam.value
-    ret['om_fixed'] = construction_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
+    ret['om_fixed'] = pre_revenue_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
@@ -541,14 +496,14 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
-    ret['itc_fed_percent'] = construction_years_zero_vector + [float(geophires_itc_tenths * Decimal(100))]
+    ret['itc_fed_percent'] = pre_revenue_years_zero_vector + [float(geophires_itc_tenths * Decimal(100))]
 
     if econ.PTCElec.Provided:
-        ret['ptc_fed_amount'] = construction_years_zero_vector + [
+        ret['ptc_fed_amount'] = pre_revenue_years_zero_vector + [
             econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude
         ]
         ret['ptc_fed_term'] = (econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude) + len(
-            construction_years_zero_vector
+            pre_revenue_years_zero_vector
         )
 
         if econ.PTCInflationAdjusted.value:
@@ -559,10 +514,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
     ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
-    ret['ppa_price_input'] = construction_years_zero_vector + ppa_price_schedule_per_kWh
+    ret['ppa_price_input'] = pre_revenue_years_zero_vector + ppa_price_schedule_per_kWh
 
     if model.economics.royalty_rate.Provided:
-        ret['om_production'] = construction_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
+        ret['om_production'] = pre_revenue_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     ret['debt_percent'] = _pct(econ.FIB)
@@ -571,16 +526,16 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['real_discount_rate'] = _pct(econ.discountrate)
 
     # Project lifetime
-    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + len(construction_years_zero_vector)
+    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + len(pre_revenue_years_zero_vector)
     ret['term_int_rate'] = _pct(econ.BIR)
-    ret['loan_moratorium'] = len(construction_years_zero_vector)
+    ret['loan_moratorium'] = len(pre_revenue_years_zero_vector)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
     if model.economics.DoAddOnCalculations.value:
         add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
         add_on_profit_series = [add_on_profit_per_year] * model.surfaceplant.plant_lifetime.value
-        ret['cp_capacity_payment_amount'] = construction_years_zero_vector + add_on_profit_series
+        ret['cp_capacity_payment_amount'] = pre_revenue_years_zero_vector + add_on_profit_series
         ret['cp_capacity_payment_type'] = 1
 
     return ret

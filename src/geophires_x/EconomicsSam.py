@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 import os
 from dataclasses import dataclass, field
@@ -340,8 +341,13 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
     return ret
 
 
-def _construction_years_vector(model: Model, v: float = 0.0) -> list[float]:
-    return [v] * (model.surfaceplant.construction_years.value - 1)
+def _get_pre_revenue_years_count(model: Model) -> int:
+    return model.surfaceplant.construction_years.value
+    # TODO/WIP include exploration years
+
+
+def _pre_revenue_years_vector(model: Model, v: float = 0.0) -> list[float]:
+    return [v] * (_get_pre_revenue_years_count(model) - 1)
 
 
 def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
@@ -356,12 +362,12 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
         (max_total_kWh_produced - it) / max_total_kWh_produced * 100 for it in m.surfaceplant.NetkWhProduced.value
     ]
 
-    ret['degradation'] = _construction_years_vector(m, v=100) + degradation_total
+    ret['degradation'] = _pre_revenue_years_vector(m, v=100) + degradation_total
 
     return ret
 
 
-def _calculate_phased_construction_costs(
+def _calculate_phased_capex_costs(
     total_overnight_capex_usd: float,
     construction_years: int,
     phased_capex_schedule: list[float],
@@ -396,7 +402,7 @@ def _calculate_phased_construction_costs(
         current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
 
     logger.info(
-        f"Phased construction complete. "
+        f"Phased capex complete. "
         + f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
         + f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
     )
@@ -427,7 +433,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Get base values
     total_overnight_capex_usd = econ.CCap.quantity().to('USD').magnitude
-    construction_years = model.surfaceplant.construction_years.value
+    pre_revenue_years = _get_pre_revenue_years_count(model)
 
     # Initialize final values
     total_installed_cost_usd: float
@@ -435,15 +441,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # *** BEGIN Phased-Construction Logic ***
     # Check if user provided a valid, multi-year phased schedule
-    if construction_years > 1 and econ.phased_capex_schedule.Provided:
+    if pre_revenue_years > 1 and econ.phased_capex_schedule.Provided:
 
         schedule_pct = econ.phased_capex_schedule.value
 
         # Validation: Ensure schedule length matches construction years
-        if len(schedule_pct) != construction_years:
+        if len(schedule_pct) != pre_revenue_years:
             msg = (
                 f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match Construction Years "
-                f"({construction_years}). Reverting to standard inflation-based financing."
+                f"({pre_revenue_years}). Reverting to standard inflation-based financing."
             )
             # model.logger.warning(msg)
             raise RuntimeError(msg)
@@ -455,9 +461,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
         else:
             # --- Call the Pre-Processor Function ---
-            phased_costs = _calculate_phased_construction_costs(
+            phased_costs = _calculate_phased_capex_costs(
                 total_overnight_capex_usd=total_overnight_capex_usd,
-                construction_years=construction_years,
+                construction_years=pre_revenue_years,
                 phased_capex_schedule=schedule_pct,
                 construction_loan_interest_rate=econ.construction_loan_interest_rate.quantity()
                 .to('dimensionless')
@@ -473,12 +479,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         if econ.inflrateconstruction.Provided:
             inflation_factor = 1.0 + econ.inflrateconstruction.quantity().to('dimensionless').magnitude
         else:
-            inflation_factor = math.pow(1.0 + econ.RINFL.value, construction_years)
+            inflation_factor = math.pow(1.0 + econ.RINFL.value, pre_revenue_years)
 
         total_installed_cost_usd = total_overnight_capex_usd * inflation_factor
         construction_financing_cost_usd = total_installed_cost_usd - total_overnight_capex_usd
 
-        if construction_years > 1:
+        if pre_revenue_years > 1:
             model.logger.info(f'No Phased CAPEX Schedule provided. Using standard inflation-based financing.')
 
     # Update output parameters based on whichever logic path was taken
@@ -520,7 +526,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # )
     # ret['total_installed_cost'] = (total_capex * inflation_during_construction_factor).to('USD').magnitude
 
-    construction_years_zero_vector = _construction_years_vector(model)
+    construction_years_zero_vector = _pre_revenue_years_vector(model)
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = construction_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value

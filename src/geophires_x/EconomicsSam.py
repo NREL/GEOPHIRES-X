@@ -379,6 +379,10 @@ def _calculate_phased_capex_costs(
     """
     Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
     construction) by simulating a year-by-year phased expenditure with inflation.
+
+    Per GEOPHIRES convention, financing begins to accrue in Year 0:
+    - Inflation for Year 0 spending is applied in Year 0.
+    - Interest on debt for Year 0 spending is accrued in Year 0.
     """
 
     logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
@@ -392,16 +396,19 @@ def _calculate_phased_capex_costs(
         # Calculate base (overnight) CAPEX for this year
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
 
+        # Calculate inflation adjustment for this year
         inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
         inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
 
         # Total CAPEX spent this year (including inflation)
         capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
 
-        # Interest is calculated on the opening balance (from previous years' draws)
-        interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
-
+        # Debt drawn to cover this year's spending
         new_debt_draw_usd = capex_this_year_usd * debt_fraction
+
+        # Interest is calculated on the opening balance PLUS the new draw for this year.
+        # This aligns with the convention of costs (inflation) being incurred at the start of the year.
+        interest_this_year_usd = (current_debt_balance_usd + new_debt_draw_usd) * pre_revenue_bond_interest_rate
 
         # Add this year's direct cost AND capitalized interest to the total project cost basis
         total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
@@ -485,7 +492,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.accrued_financing_during_construction_percentage.value = (
-        quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
+        quantity(
+            # construction_financing_cost_usd / total_overnight_capex_usd,
+            construction_financing_cost_usd / total_installed_cost_usd,
+            'dimensionless',
+        )
         .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
         .magnitude
     )

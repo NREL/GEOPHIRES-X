@@ -1165,7 +1165,7 @@ class Economics:
         self.pre_revenue_bond_interest_rate = self.ParameterDict[
             self.pre_revenue_bond_interest_rate.Name] = floatParameter(
             "Pre-Revenue Bond Interest Rate",
-            DefaultValue=8.0,
+            DefaultValue=self.BIR.DefaultValue,
             Min=0.0,
             Max=100.0,
             UnitType=Units.PERCENT,

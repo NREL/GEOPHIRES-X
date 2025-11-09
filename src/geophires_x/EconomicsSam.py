@@ -372,7 +372,7 @@ def _calculate_phased_capex_costs(
     total_overnight_capex_usd: float,
     pre_revenue_years_count: int,
     phased_capex_schedule: list[float],
-    pre_revenue_loan_interest_rate: float,
+    pre_revenue_bond_interest_rate: float,
     debt_fraction: float,
     logger: logging.Logger,
 ) -> PhasedPreRevenueCosts:
@@ -391,7 +391,7 @@ def _calculate_phased_capex_costs(
         capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
 
         # Interest is calculated on the opening balance (from previous years' draws)
-        interest_this_year_usd = current_debt_balance_usd * pre_revenue_loan_interest_rate
+        interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
 
         new_debt_draw_usd = capex_this_year_usd * debt_fraction
 
@@ -467,7 +467,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
                 total_overnight_capex_usd=total_overnight_capex_usd,
                 pre_revenue_years_count=pre_revenue_years,
                 phased_capex_schedule=schedule_pct,
-                pre_revenue_loan_interest_rate=econ.pre_revenue_bond_interest_rate.quantity()
+                pre_revenue_bond_interest_rate=econ.pre_revenue_bond_interest_rate.quantity()
                 .to('dimensionless')
                 .magnitude,
                 debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,

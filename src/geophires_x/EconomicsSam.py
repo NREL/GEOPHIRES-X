@@ -80,7 +80,7 @@ class SamEconomicsCalculations:
 
 
 @dataclass
-class PhasedConstructionCosts:
+class PhasedPreRevenueCosts:
     """Helper dataclass to return pre-processor results."""
 
     total_installed_cost_usd: float
@@ -353,6 +353,7 @@ def _pre_revenue_years_vector(model: Model, v: float = 0.0) -> list[float]:
 def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
     econ = m.economics
 
+    # noinspection PyDictCreation
     ret: dict[str, Any] = {}
 
     ret['inflation_rate'] = econ.RINFL.quantity().to(convertible_unit('%')).magnitude
@@ -369,27 +370,28 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
 
 def _calculate_phased_capex_costs(
     total_overnight_capex_usd: float,
-    construction_years: int,
+    pre_revenue_years_count: int,
     phased_capex_schedule: list[float],
-    construction_loan_interest_rate: float,
+    pre_revenue_loan_interest_rate: float,
     debt_fraction: float,
     logger: logging.Logger,
-) -> PhasedConstructionCosts:
+) -> PhasedPreRevenueCosts:
     """
-    Calculates the true capitalized cost and interest-during-construction (IDC)
-    by simulating a year-by-year phased drawdown.
+    Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
+    construction) by simulating a year-by-year phased expenditure.
     """
+
     logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
 
     current_debt_balance_usd = 0.0
     total_capitalized_cost_usd = 0.0
     total_interest_accrued_usd = 0.0
 
-    for year_index in range(construction_years):
+    for year_index in range(pre_revenue_years_count):
         capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
 
-        # Interest is calculated on the *opening* balance (from previous years' draws)
-        interest_this_year_usd = current_debt_balance_usd * construction_loan_interest_rate
+        # Interest is calculated on the opening balance (from previous years' draws)
+        interest_this_year_usd = current_debt_balance_usd * pre_revenue_loan_interest_rate
 
         new_debt_draw_usd = capex_this_year_usd * debt_fraction
 
@@ -403,11 +405,11 @@ def _calculate_phased_capex_costs(
 
     logger.info(
         f"Phased capex complete. "
-        + f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
-        + f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
+        f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
+        f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
     )
 
-    return PhasedConstructionCosts(
+    return PhasedPreRevenueCosts(
         total_installed_cost_usd=total_capitalized_cost_usd, construction_financing_cost_usd=total_interest_accrued_usd
     )
 
@@ -448,10 +450,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         # Validation: Ensure schedule length matches construction years
         if len(schedule_pct) != pre_revenue_years:
             msg = (
-                f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match Construction Years "
-                f"({pre_revenue_years}). Reverting to standard inflation-based financing."
+                f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match pre-revenue years "
+                f"({pre_revenue_years})."
             )
-            # model.logger.warning(msg)
+            # model.logger.warning(msg + f" Reverting to standard inflation-based financing.")
             raise RuntimeError(msg)
 
             # # Fallback to default logic (simple inflation)
@@ -463,9 +465,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
             # --- Call the Pre-Processor Function ---
             phased_costs = _calculate_phased_capex_costs(
                 total_overnight_capex_usd=total_overnight_capex_usd,
-                construction_years=pre_revenue_years,
+                pre_revenue_years_count=pre_revenue_years,
                 phased_capex_schedule=schedule_pct,
-                construction_loan_interest_rate=econ.construction_loan_interest_rate.quantity()
+                pre_revenue_loan_interest_rate=econ.pre_revenue_bond_interest_rate.quantity()
                 .to('dimensionless')
                 .magnitude,
                 debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,

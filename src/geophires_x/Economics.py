@@ -1162,16 +1162,16 @@ class Economics:
                         'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
         )
 
-        self.construction_loan_interest_rate = self.ParameterDict[
-            self.construction_loan_interest_rate.Name] = floatParameter(
-            "Construction Loan Interest Rate",
+        self.pre_revenue_bond_interest_rate = self.ParameterDict[
+            self.pre_revenue_bond_interest_rate.Name] = floatParameter(
+            "Pre-Revenue Bond Interest Rate",
             DefaultValue=8.0,
             Min=0.0,
             Max=100.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
-            ToolTipText='Annual interest rate for the construction loan, '
+            ToolTipText='Annual interest rate for the pre-revenue bond (such as for construction loan), '
                         'used to calculate capitalized interest for phased CAPEX.'
         )
 

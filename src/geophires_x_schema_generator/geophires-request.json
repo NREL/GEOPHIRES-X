@@ -1764,6 +1764,26 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Phased CAPEX Schedule": {
+      "description": "A list of percentages of the total overnight CAPEX spent in each construction year. The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5",
+      "type": "array",
+      "units": null,
+      "category": "Economics",
+      "default": [
+        1.0
+      ],
+      "minimum": -Infinity,
+      "maximum": Infinity
+    },
+    "Pre-Revenue Bond Interest Rate": {
+      "description": "Annual interest rate for the pre-revenue bond (such as for construction loan), used to calculate capitalized interest for phased CAPEX.",
+      "type": "number",
+      "units": "%",
+      "category": "Economics",
+      "default": 5.0,
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
     "Contingency Percentage": {
       "description": "The contingency percentage applied to the direct capital costs for stimulation, field gathering system, exploration, and surface plant. (Note: well drilling and completion costs do not have contingency applied and are not affected by this parameter.)",
       "type": "number",

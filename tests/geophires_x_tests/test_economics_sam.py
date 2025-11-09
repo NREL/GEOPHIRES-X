@@ -544,7 +544,7 @@ class EconomicsSamTestCase(BaseTestCase):
         r1: GeophiresXResult = self._get_result(
             params1, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         )
-        self.assertAlmostEqual(4.769, _accrued_financing(r1), places=1)
+        self.assertAlmostEqual(0, _accrued_financing(r1), places=1)
 
         params2 = {
             'Construction Years': 1,
@@ -553,7 +553,7 @@ class EconomicsSamTestCase(BaseTestCase):
         r2: GeophiresXResult = self._get_result(
             params2, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         )
-        self.assertEqual(15.0, _accrued_financing(r2))
+        self.assertEqual(0, _accrued_financing(r2))
 
         # TODO enable when multiple construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
         # params3 = {

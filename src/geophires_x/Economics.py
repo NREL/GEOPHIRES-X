@@ -1162,15 +1162,16 @@ class Economics:
                         'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
         )
 
+        pre_revenue_bond_interest_rate_unit = PercentUnit.PERCENT
         self.pre_revenue_bond_interest_rate = self.ParameterDict[
             self.pre_revenue_bond_interest_rate.Name] = floatParameter(
             "Pre-Revenue Bond Interest Rate",
-            DefaultValue=self.BIR.DefaultValue,
+            DefaultValue=self.BIR.quantity().to(convertible_unit(pre_revenue_bond_interest_rate_unit)).magnitude,
             Min=0.0,
             Max=100.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=PercentUnit.PERCENT,
+            CurrentUnits=pre_revenue_bond_interest_rate_unit,
             ToolTipText='Annual interest rate for the pre-revenue bond (such as for construction loan), '
                         'used to calculate capitalized interest for phased CAPEX.'
         )

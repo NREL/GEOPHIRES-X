@@ -81,10 +81,9 @@ class SamEconomicsCalculations:
 
 @dataclass
 class PhasedPreRevenueCosts:
-    """Helper dataclass to return pre-processor results."""
-
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
+    inflation_cost_usd: float = 0.0
 
 
 def validate_read_parameters(model: Model):
@@ -373,12 +372,13 @@ def _calculate_phased_capex_costs(
     pre_revenue_years_count: int,
     phased_capex_schedule: list[float],
     pre_revenue_bond_interest_rate: float,
+    inflation_rate: float,
     debt_fraction: float,
     logger: logging.Logger,
 ) -> PhasedPreRevenueCosts:
     """
     Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
-    construction) by simulating a year-by-year phased expenditure.
+    construction) by simulating a year-by-year phased expenditure with inflation.
     """
 
     logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
@@ -386,9 +386,17 @@ def _calculate_phased_capex_costs(
     current_debt_balance_usd = 0.0
     total_capitalized_cost_usd = 0.0
     total_interest_accrued_usd = 0.0
+    total_inflation_cost_usd = 0.0
 
     for year_index in range(pre_revenue_years_count):
-        capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
+        # Calculate base (overnight) CAPEX for this year
+        base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
+
+        inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
+        inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
+
+        # Total CAPEX spent this year (including inflation)
+        capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
 
         # Interest is calculated on the opening balance (from previous years' draws)
         interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
@@ -398,6 +406,7 @@ def _calculate_phased_capex_costs(
         # Add this year's direct cost AND capitalized interest to the total project cost basis
         total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
         total_interest_accrued_usd += interest_this_year_usd
+        total_inflation_cost_usd += inflation_cost_this_year_usd
 
         # Update the loan balance for *next* year's interest calculation
         # New balance = Old Balance + New Debt + Capitalized Interest
@@ -406,11 +415,14 @@ def _calculate_phased_capex_costs(
     logger.info(
         f"Phased capex complete. "
         f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
+        f"Total Inflation Cost: ${total_inflation_cost_usd:,.2f}, "
         f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
     )
 
     return PhasedPreRevenueCosts(
-        total_installed_cost_usd=total_capitalized_cost_usd, construction_financing_cost_usd=total_interest_accrued_usd
+        total_installed_cost_usd=total_capitalized_cost_usd,
+        construction_financing_cost_usd=total_interest_accrued_usd,
+        inflation_cost_usd=total_inflation_cost_usd,
     )
 
 
@@ -453,12 +465,18 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         )
         raise RuntimeError(msg)
 
+    if econ.inflrateconstruction.Provided:
+        pre_revenue_inflation_rate = econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    else:
+        pre_revenue_inflation_rate = econ.RINFL.quantity().to('dimensionless').magnitude
+
     # Call the phased capex calculation function
     phased_costs = _calculate_phased_capex_costs(
         total_overnight_capex_usd=total_overnight_capex_usd,
         pre_revenue_years_count=pre_revenue_years,
         phased_capex_schedule=schedule_pct,
         pre_revenue_bond_interest_rate=econ.pre_revenue_bond_interest_rate.quantity().to('dimensionless').magnitude,
+        inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
         logger=model.logger,
     )
@@ -474,7 +492,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.inflation_cost_during_construction.value = (
-        quantity(construction_financing_cost_usd, 'USD')
+        quantity(phased_costs.inflation_cost_usd, 'USD')
         .to(econ.inflation_cost_during_construction.CurrentUnits)
         .magnitude
     )

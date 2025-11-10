@@ -104,16 +104,6 @@ def validate_read_parameters(model: Model):
             )
         )
 
-    # FIXME WIP
-    # if model.surfaceplant.construction_years.value != 1:
-    #     raise ValueError(
-    #         _inv_msg(
-    #             model.surfaceplant.construction_years.Name,
-    #             model.surfaceplant.construction_years.value,
-    #             f'{model.surfaceplant.construction_years.Name}  = 1',
-    #         )
-    #     )
-
     gtr: floatParameter = model.economics.GTR
     if gtr.Provided:
         model.logger.warning(
@@ -125,6 +115,24 @@ def validate_read_parameters(model: Model):
     if eir.Provided:
         model.logger.warning(
             f'{eir.Name} provided value ({eir.value}) will be ignored. (SAM Economics does not support {eir.Name}.)'
+        )
+
+    # Ensure schedule length matches pre-revenue years
+    construction_years = _pre_revenue_years_count(model)
+    econ = model.economics
+    capex_schedule = econ.construction_capex_schedule.value
+    if len(capex_schedule) != construction_years:
+        msg = (
+            f"{econ.construction_capex_schedule.Name} length ({len(capex_schedule)}) does not match construction years "
+            f"({construction_years})."
+        )
+        raise ValueError(msg)
+
+    if econ.bond_financing_start_year >= construction_years:
+        raise ValueError(
+            f'Bond financing start year ({econ.bond_financing_start_year.value}) must be less than '
+            f'{model.surfaceplant.construction_years.Name} ({construction_years}). '
+            # f'(Provide {econ.construction_bond_interest_rate.Name}=0 to use equity-only financing.)'  # WIP...
         )
 
 
@@ -221,6 +229,8 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
     Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
 
     :return: tuple of Nominal Discount Rate (%), WACC (%)
+
+    FIXME WIP account for Bond Financing Start Year & Construction Bond Interest Rate
     """
 
     econ = model.economics
@@ -341,7 +351,6 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
 
 
 def _pre_revenue_years_count(model: Model) -> int:
-    # TODO/WIP include exploration years
     return model.surfaceplant.construction_years.value
 
 
@@ -457,15 +466,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # *** Phased-Construction Logic ***
     schedule_pct = econ.construction_capex_schedule.value
-
-    # Validation: Ensure schedule length matches pre-revenue years
-    # TODO/WIP validation should happen during read_parameters, not here (probably)
-    if len(schedule_pct) != pre_revenue_years:
-        msg = (
-            f"{econ.construction_capex_schedule.Name} length ({len(schedule_pct)}) does not match pre-revenue years "
-            f"({pre_revenue_years})."
-        )
-        raise RuntimeError(msg)
 
     if econ.inflrateconstruction.Provided:
         pre_revenue_inflation_rate = econ.inflrateconstruction.quantity().to('dimensionless').magnitude

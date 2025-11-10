@@ -18,7 +18,7 @@ from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
-    coerce_int_params_to_enum_values, listParameter
+    coerce_int_params_to_enum_values, listParameter, Parameter
 from geophires_x.SurfacePlantUtils import MAX_CONSTRUCTION_YEARS
 from geophires_x.Units import *
 from geophires_x.WellBores import calculate_total_drilling_lengths_m
@@ -2590,10 +2590,17 @@ class Economics:
             if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                 EconomicsSam.validate_read_parameters(model)
             else:
-                if self.royalty_rate.Provided:
-                    raise NotImplementedError('Royalties are only supported for SAM Economic Models')
+                sam_em_only_params: list[Parameter] = [
+                    self.royalty_rate,
+                    # TODO other royalty params
+                    self.construction_capex_schedule,
+                    self.construction_bond_interest_rate,
+                    self.bond_financing_start_year
+                ]
+                for sam_em_only_param in sam_em_only_params:
+                    if sam_em_only_param.Provided:
+                        raise NotImplementedError(f'{sam_em_only_param.Name} is only supported for SAM Economic Models')
 
-                # TODO validate that other SAM-EM-only parameters have not been provided
         else:
             model.logger.info("No parameters read because no content provided")
 

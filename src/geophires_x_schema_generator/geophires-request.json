@@ -1261,13 +1261,13 @@
       "maximum": 1.0
     },
     "Construction Years": {
-      "description": "Number of years spent in construction (assumes whole years, no fractions). Capital costs are spread evenly over construction years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years.",
+      "description": "Number of years spent in construction (assumes whole years, no fractions). By default, capital costs are spread evenly over construction years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years.",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
       "default": 1,
       "minimum": 1,
-      "maximum": 14
+      "maximum": 15
     },
     "Working Fluid Heat Capacity": {
       "description": "Heat capacity of the working fluid",
@@ -1776,13 +1776,22 @@
       "maximum": Infinity
     },
     "Construction Bond Interest Rate": {
-      "description": "Annual interest rate for construction bonds/debt/loans, used to calculate capitalized interest for phased construction CAPEX.",
+      "description": "Annual interest rate for construction bonds (debt/loans), used to calculate capitalized interest for phased construction CAPEX.",
       "type": "number",
       "units": "%",
       "category": "Economics",
       "default": 5.0,
       "minimum": 0.0,
       "maximum": 100.0
+    },
+    "Bond Financing Start Year": {
+      "description": "Project year when bond financing (debt/loans) starts (default: Year 0). Prior years will be financed with equity only.",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 15
     },
     "Contingency Percentage": {
       "description": "The contingency percentage applied to the direct capital costs for stimulation, field gathering system, exploration, and surface plant. (Note: well drilling and completion costs do not have contingency applied and are not affected by this parameter.)",

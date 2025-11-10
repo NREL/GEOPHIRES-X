@@ -374,6 +374,7 @@ def _calculate_phased_capex_costs(
     pre_revenue_bond_interest_rate: float,
     inflation_rate: float,
     debt_fraction: float,
+    debt_financing_start_year: int,
     logger: logging.Logger,
 ) -> PhasedPreRevenueCosts:
     """
@@ -401,7 +402,8 @@ def _calculate_phased_capex_costs(
         # Interest is calculated on the opening balance (from previous years' draws)
         interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
 
-        new_debt_draw_usd = capex_this_year_usd * debt_fraction
+        debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
+        new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year
 
         # Add this year's direct cost AND capitalized interest to the total project cost basis
         total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
@@ -413,7 +415,7 @@ def _calculate_phased_capex_costs(
         current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
 
     logger.info(
-        f"Phased capex complete. "
+        f"Phased CAPEX calculation complete: "
         f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
         f"Total Inflation Cost: ${total_inflation_cost_usd:,.2f}, "
         f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
@@ -478,6 +480,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         pre_revenue_bond_interest_rate=econ.construction_bond_interest_rate.quantity().to('dimensionless').magnitude,
         inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
+        debt_financing_start_year=econ.bond_financing_start_year.value,
         logger=model.logger,
     )
     total_installed_cost_usd = phased_costs.total_installed_cost_usd

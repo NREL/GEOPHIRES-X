@@ -19,6 +19,7 @@ from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, E
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
     coerce_int_params_to_enum_values, listParameter
+from geophires_x.SurfacePlantUtils import MAX_CONSTRUCTION_YEARS
 from geophires_x.Units import *
 from geophires_x.WellBores import calculate_total_drilling_lengths_m
 
@@ -1176,8 +1177,21 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=construction_bond_interest_rate_unit,
-            ToolTipText='Annual interest rate for construction bonds/debt/loans, '
+            ToolTipText='Annual interest rate for construction bonds (debt/loans), '
                         'used to calculate capitalized interest for phased construction CAPEX.'
+        )
+
+        default_bond_financing_start_year = 0
+        self.bond_financing_start_year = self.ParameterDict[self.bond_financing_start_year.Name] = intParameter(
+            "Bond Financing Start Year",
+            DefaultValue=default_bond_financing_start_year,
+            AllowableRange=list(range(0, MAX_CONSTRUCTION_YEARS+1, 1)),
+            UnitType=Units.TIME,
+            PreferredUnits=TimeUnit.YEAR,
+            CurrentUnits=TimeUnit.YEAR,
+            ToolTipText=f'Project year when bond financing (debt/loans) starts '
+                        f'(default: Year {default_bond_financing_start_year}). '
+                        'Prior years will be financed with equity only.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

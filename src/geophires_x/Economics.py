@@ -1050,28 +1050,32 @@ class Economics:
                         'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.'
         )
 
+        default_fraction_in_bonds = 0.5
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
-            DefaultValue=0.5,
+            DefaultValue=default_fraction_in_bonds,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default fraction of investment in bonds (0.5)",
-            ToolTipText="Fraction of geothermal project financing through bonds (debt)."
+            ErrMessage=f"assume default fraction of investment in bonds ({default_fraction_in_bonds})",
+            ToolTipText="Fraction of geothermal project financing through bonds (debt/loans)."
         )
+
+        default_bond_interest_rate = 0.05
         self.BIR = self.ParameterDict[self.BIR.Name] = floatParameter(
             "Inflated Bond Interest Rate",
-            DefaultValue=0.05,
+            DefaultValue=default_bond_interest_rate,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default inflated bond interest rate (0.05)",
-            ToolTipText="Inflated bond interest rate (see docs)"
+            ErrMessage=f"assume default inflated bond interest rate ({default_bond_interest_rate})",
+            ToolTipText="Inflated bond interest rate (for debt/loans)"
         )
+
         self.EIR = self.ParameterDict[self.EIR.Name] = floatParameter(
             "Inflated Equity Interest Rate",
             DefaultValue=0.1,
@@ -1172,7 +1176,7 @@ class Economics:
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=construction_bond_interest_rate_unit,
-            ToolTipText='Annual interest rate for the construction bond (loan/debt), '
+            ToolTipText='Annual interest rate for construction bonds/debt/loans, '
                         'used to calculate capitalized interest for phased construction CAPEX.'
         )
 

@@ -1684,7 +1684,7 @@
       "maximum": null
     },
     "Fraction of Investment in Bonds": {
-      "description": "Fraction of geothermal project financing through bonds (debt).",
+      "description": "Fraction of geothermal project financing through bonds (debt/loans).",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1693,7 +1693,7 @@
       "maximum": 1.0
     },
     "Inflated Bond Interest Rate": {
-      "description": "Inflated bond interest rate (see docs)",
+      "description": "Inflated bond interest rate (for debt/loans)",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1776,7 +1776,7 @@
       "maximum": Infinity
     },
     "Construction Bond Interest Rate": {
-      "description": "Annual interest rate for the construction bond (loan/debt), used to calculate capitalized interest for phased construction CAPEX.",
+      "description": "Annual interest rate for construction bonds/debt/loans, used to calculate capitalized interest for phased construction CAPEX.",
       "type": "number",
       "units": "%",
       "category": "Economics",

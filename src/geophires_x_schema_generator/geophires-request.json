@@ -1764,7 +1764,7 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
-    "Phased CAPEX Schedule": {
+    "Construction CAPEX Schedule": {
       "description": "A list of percentages of the total overnight CAPEX spent in each construction year. The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5",
       "type": "array",
       "units": null,
@@ -1775,8 +1775,8 @@
       "minimum": -Infinity,
       "maximum": Infinity
     },
-    "Pre-Revenue Bond Interest Rate": {
-      "description": "Annual interest rate for the pre-revenue bond (such as for construction loan), used to calculate capitalized interest for phased CAPEX.",
+    "Construction Bond Interest Rate": {
+      "description": "Annual interest rate for the construction bond (loan/debt), used to calculate capitalized interest for phased construction CAPEX.",
       "type": "number",
       "units": "%",
       "category": "Economics",

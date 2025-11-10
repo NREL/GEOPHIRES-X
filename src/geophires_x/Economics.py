@@ -1155,25 +1155,25 @@ class Economics:
                         'calculated automatically by compounding Inflation Rate over Construction Years.'
         )
 
-        self.phased_capex_schedule = self.ParameterDict[self.phased_capex_schedule.Name] = listParameter(
-            "Phased CAPEX Schedule",
+        self.construction_capex_schedule = self.ParameterDict[self.construction_capex_schedule.Name] = listParameter(
+            "Construction CAPEX Schedule",
             DefaultValue=[1.],
             ToolTipText='A list of percentages of the total overnight CAPEX spent in each construction year. '
                         'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
         )
 
-        pre_revenue_bond_interest_rate_unit = PercentUnit.PERCENT
-        self.pre_revenue_bond_interest_rate = self.ParameterDict[
-            self.pre_revenue_bond_interest_rate.Name] = floatParameter(
-            "Pre-Revenue Bond Interest Rate",
-            DefaultValue=self.BIR.quantity().to(convertible_unit(pre_revenue_bond_interest_rate_unit)).magnitude,
+        construction_bond_interest_rate_unit = PercentUnit.PERCENT
+        self.construction_bond_interest_rate = self.ParameterDict[
+            self.construction_bond_interest_rate.Name] = floatParameter(
+            "Construction Bond Interest Rate",
+            DefaultValue=self.BIR.quantity().to(convertible_unit(construction_bond_interest_rate_unit)).magnitude,
             Min=0.0,
             Max=100.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=pre_revenue_bond_interest_rate_unit,
-            ToolTipText='Annual interest rate for the pre-revenue bond (such as for construction loan), '
-                        'used to calculate capitalized interest for phased CAPEX.'
+            CurrentUnits=construction_bond_interest_rate_unit,
+            ToolTipText='Annual interest rate for the construction bond (loan/debt), '
+                        'used to calculate capitalized interest for phased construction CAPEX.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

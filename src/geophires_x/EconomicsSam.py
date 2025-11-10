@@ -454,7 +454,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     construction_financing_cost_usd: float
 
     # *** Phased-Construction Logic ***
-    schedule_pct = econ.phased_capex_schedule.value
+    schedule_pct = econ.construction_capex_schedule.value
 
     # Validation: Ensure schedule length matches pre-revenue years
     # TODO/WIP validation should happen during read_parameters, not here (probably)
@@ -475,7 +475,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         total_overnight_capex_usd=total_overnight_capex_usd,
         pre_revenue_years_count=pre_revenue_years,
         phased_capex_schedule=schedule_pct,
-        pre_revenue_bond_interest_rate=econ.pre_revenue_bond_interest_rate.quantity().to('dimensionless').magnitude,
+        pre_revenue_bond_interest_rate=econ.construction_bond_interest_rate.quantity().to('dimensionless').magnitude,
         inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
         logger=model.logger,
@@ -483,14 +483,12 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     total_installed_cost_usd = phased_costs.total_installed_cost_usd
     construction_financing_cost_usd = phased_costs.construction_financing_cost_usd
 
-    # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.accrued_financing_during_construction_percentage.value = (
         quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
         .to(convertible_unit(econ.accrued_financing_during_construction_percentage.CurrentUnits))
         .magnitude
     )
 
-    # TODO/WIP align/adjust for all pre-revenue years (e.g. permitting/exploration, not just construction)
     econ.inflation_cost_during_construction.value = (
         quantity(phased_costs.inflation_cost_usd, 'USD')
         .to(econ.inflation_cost_during_construction.CurrentUnits)

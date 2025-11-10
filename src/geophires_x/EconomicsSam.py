@@ -460,7 +460,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # TODO/WIP validation should happen during read_parameters, not here (probably)
     if len(schedule_pct) != pre_revenue_years:
         msg = (
-            f"Phased CAPEX Schedule length ({len(schedule_pct)}) does not match pre-revenue years "
+            f"{econ.construction_capex_schedule.Name} length ({len(schedule_pct)}) does not match pre-revenue years "
             f"({pre_revenue_years})."
         )
         raise RuntimeError(msg)

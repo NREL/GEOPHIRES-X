@@ -210,7 +210,7 @@ class EconomicsSamTestCase(BaseTestCase):
     #     self.assertIn('Invalid Construction Years (2)', str(e.exception))
     #     self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
     def test_multiple_construction_years_supported(self):
-        self.assertIsNotNone(self._get_result({'Construction Years': 2, 'Phased CAPEX Schedule': '0.5,0.5'}))
+        self.assertIsNotNone(self._get_result({'Construction Years': 2, 'Construction CAPEX Schedule': '0.5,0.5'}))
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

@@ -503,6 +503,22 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
 
+    # https://nrel-pysam.readthedocs.io/en/main/modules/Singleowner.html#depreciation-group
+    ret['depr_alloc_sl_20_percent'] = 0.0
+    ret['depr_alloc_custom_percent'] = 100.0
+
+    # Build custom depreciation schedule to handle pre-revenue years.
+    # Standard 20-year straight-line depreciation for geothermal assets.
+    straight_line_20_year_schedule = [2.5] + [5.0] * 19 + [2.5]
+    depr_custom_schedule = pre_revenue_years_zero_vector + straight_line_20_year_schedule
+
+    # Pad with zeros to match the analysis period length.
+    analysis_period = _analysis_period(model)
+    if len(depr_custom_schedule) < analysis_period:
+        depr_custom_schedule.extend([0.0] * (analysis_period - len(depr_custom_schedule)))
+
+    ret['depr_custom_schedule'] = depr_custom_schedule[:analysis_period]
+
     opex_musd = econ.Coam.value
     ret['om_fixed'] = pre_revenue_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
@@ -520,6 +536,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         ret['ptc_fed_amount'] = pre_revenue_years_zero_vector + [
             econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude
         ]
+        # noinspection PyRedundantParentheses
         ret['ptc_fed_term'] = (econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude) + len(
             pre_revenue_years_zero_vector
         )

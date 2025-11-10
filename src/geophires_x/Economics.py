@@ -1167,20 +1167,6 @@ class Economics:
                         'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
         )
 
-        construction_bond_interest_rate_unit = PercentUnit.PERCENT
-        self.construction_bond_interest_rate = self.ParameterDict[
-            self.construction_bond_interest_rate.Name] = floatParameter(
-            "Construction Bond Interest Rate",
-            DefaultValue=self.BIR.quantity().to(convertible_unit(construction_bond_interest_rate_unit)).magnitude,
-            Min=0.0,
-            Max=100.0,
-            UnitType=Units.PERCENT,
-            PreferredUnits=PercentUnit.PERCENT,
-            CurrentUnits=construction_bond_interest_rate_unit,
-            ToolTipText='Annual interest rate for construction bonds (debt/loans), '
-                        'used to calculate capitalized interest for phased construction CAPEX.'
-        )
-
         default_bond_financing_start_year = 0
         self.bond_financing_start_year = self.ParameterDict[self.bond_financing_start_year.Name] = intParameter(
             "Bond Financing Start Year",
@@ -2594,7 +2580,6 @@ class Economics:
                     self.royalty_rate,
                     # TODO other royalty params
                     self.construction_capex_schedule,
-                    self.construction_bond_interest_rate,
                     self.bond_financing_start_year
                 ]
                 for sam_em_only_param in sam_em_only_params:

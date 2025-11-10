@@ -1775,15 +1775,6 @@
       "minimum": -Infinity,
       "maximum": Infinity
     },
-    "Construction Bond Interest Rate": {
-      "description": "Annual interest rate for construction bonds (debt/loans), used to calculate capitalized interest for phased construction CAPEX.",
-      "type": "number",
-      "units": "%",
-      "category": "Economics",
-      "default": 5.0,
-      "minimum": 0.0,
-      "maximum": 100.0
-    },
     "Bond Financing Start Year": {
       "description": "Project year when bond financing (debt/loans) starts (default: Year 0). Prior years will be financed with equity only.",
       "type": "integer",

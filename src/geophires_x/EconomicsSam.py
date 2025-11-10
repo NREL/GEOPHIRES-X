@@ -128,7 +128,7 @@ def validate_read_parameters(model: Model):
         )
         raise ValueError(msg)
 
-    if econ.bond_financing_start_year >= construction_years:
+    if econ.bond_financing_start_year.value >= construction_years:
         raise ValueError(
             f'Bond financing start year ({econ.bond_financing_start_year.value}) must be less than '
             f'{model.surfaceplant.construction_years.Name} ({construction_years}). '
@@ -477,7 +477,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         total_overnight_capex_usd=total_overnight_capex_usd,
         pre_revenue_years_count=pre_revenue_years,
         phased_capex_schedule=schedule_pct,
-        pre_revenue_bond_interest_rate=econ.construction_bond_interest_rate.quantity().to('dimensionless').magnitude,
+        pre_revenue_bond_interest_rate=econ.BIR.quantity().to('dimensionless').magnitude,
         inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
         debt_financing_start_year=econ.bond_financing_start_year.value,

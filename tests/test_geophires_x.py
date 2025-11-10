@@ -1475,4 +1475,4 @@ Print Output to Console, 1"""
                 )
             )
 
-        self.assertIn('Royalties are only supported for SAM Economic Models', str(re.exception))
+        self.assertIn('Royalty Rate is only supported for SAM Economic Models', str(re.exception))

@@ -105,11 +105,17 @@ jobs:
 #            os: 'macos-latest'
 
     steps:
+    - name: '[skip check]'
+      if: (matrix.main_only == true) && (github.ref != 'refs/heads/main')
+      run: |
+        echo "Job '${{ matrix.name }}' is marked as 'main_only'."
+        echo "Skipping on this pull request because we are not on 'main' branch."
     - if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v5
+      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       with:
         python-version: ${{ matrix.python }}
         architecture: ${{ matrix.python_arch }}

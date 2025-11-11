@@ -10,7 +10,6 @@ permissions:
 jobs:
   test:
     name: ${{ matrix.name }}
-    if: (github.ref == 'refs/heads/main') || (matrix.main_only != true)
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -106,6 +105,12 @@ jobs:
 #            os: 'macos-latest'
 
     steps:
+    - name: Cancel job on PRs for 'main_only' matrix entries
+      if: matrix.main_only == true && github.ref != 'refs/heads/main'
+      # https://github.com/andymckay/cancel-action; https://github.com/marketplace/actions/cancel-this-build
+      uses: andymckay/cancel-action@v0.5
+      with:
+        message: "Job '${{ matrix.name }}' runs only on the 'main' branch."
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0

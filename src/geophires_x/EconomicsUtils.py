@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import logging
+from dataclasses import dataclass, field
+
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
 
@@ -155,3 +158,76 @@ def royalty_cost_output_parameter() -> OutputParameter:
             ToolTipText='The annual costs paid to a royalty holder, calculated as a percentage of the '
                         'project\'s gross annual revenue. This is modeled as a variable operating expense.'
         )
+
+
+@dataclass
+class PreRevenueCostsAndCashflow:
+    total_installed_cost_usd: float
+    construction_financing_cost_usd: float
+    inflation_cost_usd: float = 0.0
+    pre_revenue_cash_flow: list[float] = field(default_factory=list)
+
+
+def _calculate_phased_capex_costs(
+    total_overnight_capex_usd: float,
+    pre_revenue_years_count: int,
+    phased_capex_schedule: list[float],
+    pre_revenue_bond_interest_rate: float,
+    inflation_rate: float,
+    debt_fraction: float,
+    debt_financing_start_year: int,
+    logger: logging.Logger,
+) -> PreRevenueCostsAndCashflow:
+    """
+    Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
+    construction) by simulating a year-by-year phased expenditure with inflation.
+    """
+
+    logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
+
+    current_debt_balance_usd = 0.0
+    total_capitalized_cost_usd = 0.0
+    total_interest_accrued_usd = 0.0
+    total_inflation_cost_usd = 0.0
+    cash_flow_usd: list[float] = []
+
+    for year_index in range(pre_revenue_years_count):
+        # Calculate base (overnight) CAPEX for this year
+        base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
+
+        inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
+        inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
+
+        # Total CAPEX spent this year (including inflation)
+        capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
+        cash_flow_usd.append(-capex_this_year_usd)
+
+        # Interest is calculated on the opening balance (from previous years' draws)
+        interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
+
+        debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
+        new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year
+
+        # Add this year's direct cost AND capitalized interest to the total project cost basis
+        total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
+        total_interest_accrued_usd += interest_this_year_usd
+        total_inflation_cost_usd += inflation_cost_this_year_usd
+
+        # Update the loan balance for *next* year's interest calculation
+        # New balance = Old Balance + New Debt + Capitalized Interest
+        current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
+
+    logger.info(
+        f"Phased CAPEX calculation complete: "
+        f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
+        f"Total Inflation Cost: ${total_inflation_cost_usd:,.2f}, "
+        f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
+    )
+
+    return PreRevenueCostsAndCashflow(
+        total_installed_cost_usd=total_capitalized_cost_usd,
+        construction_financing_cost_usd=total_interest_accrued_usd,
+        inflation_cost_usd=total_inflation_cost_usd,
+        pre_revenue_cash_flow=cash_flow_usd,
+        # FIXME WIP TODO calculate/include current_debt_balance_usd
+    )

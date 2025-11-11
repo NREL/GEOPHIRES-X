@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import math
 import os
 from dataclasses import dataclass, field
@@ -40,6 +39,7 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
+    _calculate_phased_capex_costs,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -77,13 +77,6 @@ class SamEconomicsCalculations:
 
     project_payback_period: OutputParameter = field(default_factory=project_payback_period_parameter)
     """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
-
-
-@dataclass
-class PhasedPreRevenueCosts:
-    total_installed_cost_usd: float
-    construction_financing_cost_usd: float
-    inflation_cost_usd: float = 0.0
 
 
 def validate_read_parameters(model: Model):
@@ -379,69 +372,6 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
     ret['degradation'] = _pre_revenue_years_vector(m, v=100) + degradation_total
 
     return ret
-
-
-def _calculate_phased_capex_costs(
-    total_overnight_capex_usd: float,
-    pre_revenue_years_count: int,
-    phased_capex_schedule: list[float],
-    pre_revenue_bond_interest_rate: float,
-    inflation_rate: float,
-    debt_fraction: float,
-    debt_financing_start_year: int,
-    logger: logging.Logger,
-) -> PhasedPreRevenueCosts:
-    """
-    Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
-    construction) by simulating a year-by-year phased expenditure with inflation.
-    """
-
-    logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
-
-    current_debt_balance_usd = 0.0
-    total_capitalized_cost_usd = 0.0
-    total_interest_accrued_usd = 0.0
-    total_inflation_cost_usd = 0.0
-
-    for year_index in range(pre_revenue_years_count):
-        # Calculate base (overnight) CAPEX for this year
-        base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
-
-        inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
-        inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
-
-        # Total CAPEX spent this year (including inflation)
-        capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
-
-        # Interest is calculated on the opening balance (from previous years' draws)
-        # interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
-        # FIXME WIP - SAM already counts interest payments in pre-revenue years so don't double-count them here
-        interest_this_year_usd = current_debt_balance_usd * 0
-
-        debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
-        new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year
-
-        # Add this year's direct cost AND capitalized interest to the total project cost basis
-        total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
-        total_interest_accrued_usd += interest_this_year_usd
-        total_inflation_cost_usd += inflation_cost_this_year_usd
-
-        # Update the loan balance for *next* year's interest calculation
-        # New balance = Old Balance + New Debt + Capitalized Interest
-        current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
-
-    logger.info(
-        f"Phased CAPEX calculation complete: "
-        f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
-        f"Total Inflation Cost: ${total_inflation_cost_usd:,.2f}, "
-        f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
-    )
-
-    return PhasedPreRevenueCosts(
-        total_installed_cost_usd=total_capitalized_cost_usd,
-        construction_financing_cost_usd=total_interest_accrued_usd,
-        inflation_cost_usd=total_inflation_cost_usd,
-    )
 
 
 def _get_single_owner_parameters(model: Model) -> dict[str, Any]:

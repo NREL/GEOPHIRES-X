@@ -108,7 +108,7 @@ jobs:
     - name: Cancel job on PRs for 'main_only' matrix entries
       if: matrix.main_only == true && github.ref != 'refs/heads/main'
       # https://github.com/andymckay/cancel-action; https://github.com/marketplace/actions/cancel-this-build
-      uses: andymckay/cancel-action@v0.3
+      uses: andymckay/cancel-action@0.5
       with:
         message: "Job '${{ matrix.name }}' runs only on the 'main' branch."
     - uses: actions/checkout@v4

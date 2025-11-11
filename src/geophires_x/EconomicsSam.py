@@ -414,7 +414,9 @@ def _calculate_phased_capex_costs(
         capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
 
         # Interest is calculated on the opening balance (from previous years' draws)
-        interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
+        # interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
+        # FIXME WIP - SAM already counts interest payments in pre-revenue years so don't double-count them here
+        interest_this_year_usd = current_debt_balance_usd * 0
 
         debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
         new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year

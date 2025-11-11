@@ -3,61 +3,6 @@ from __future__ import annotations
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
 
-import numpy_financial as npf
-from typing import List
-
-
-def calculate_equivalent_lump_sum_capex(
-    total_overnight_capex: float,
-    phased_schedule_fractions: List[float],
-    discount_rate: float
-) -> float:
-    """
-    Calculates the time-zero equivalent CAPEX of a phased expenditure schedule.
-
-    This function answers the question: "What single lump-sum payment at Year 0
-    has the same present value as the multi-year phased expenditure plan?"
-
-    It does this by calculating the Net Present Value (NPV) of the
-    phased expenditure stream, discounting all future costs back to Year 0.
-
-    Args:
-        total_overnight_capex:
-            The total nominal cost (e.g., 100_000_000).
-        phased_schedule_fractions:
-            A list of fractions (e.g., [0.1, 0.4, 0.5])
-            where the index corresponds to the year of expenditure
-            (index 0 = Year 0, index 1 = Year 1, etc.).
-        discount_rate:
-            The annual discount rate as a fraction (e.g., 0.08 for 8%).
-
-    Returns:
-        The equivalent Year 0 lump-sum capital cost (the NPV of the
-        expenditure stream).
-    """
-
-    # 1. Create the nominal cash flow stream of expenditures
-    #    e.g., [10_000_000, 40_000_000, 50_000_000]
-    expenditure_stream = [total_overnight_capex * p for p in phased_schedule_fractions]
-
-    # 2. Calculate the Present Value (NPV) of this stream.
-    #    The numpy_financial.npv function assumes the first value in the
-    #    list is at t=1, not t=0. We must handle the t=0 value manually.
-    if not expenditure_stream:
-        return 0.0
-
-    # The Year 0 expenditure is already in present value
-    cash_flow_t0 = expenditure_stream
-
-    # All subsequent expenditures (Year 1 onwards) must be discounted
-    cash_flow_t1_onward = expenditure_stream[1:]
-
-    # Calculate the NPV of the future values and add the t=0 value
-    present_value_of_expenditures = cash_flow_t0 + npf.npv(discount_rate, cash_flow_t1_onward)
-
-    # 3. Return the equivalent Year 0 cost
-    return present_value_of_expenditures
-
 
 def BuildPricingModel(plantlifetime: int, StartPrice: float, EndPrice: float,
                       EscalationStartYear: int, EscalationRate: float, PTCAddition: list) -> list:

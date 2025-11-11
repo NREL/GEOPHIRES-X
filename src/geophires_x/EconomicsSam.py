@@ -229,7 +229,7 @@ def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]]
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
     pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
-    after_tax_irr_pct = npf.irr(pre_revenue_cash_flow + operational_cash_flow) * 100.0
+    after_tax_irr_pct = npf.irr(pre_revenue_cash_flow + operational_cash_flow[1:]) * 100.0
 
     # after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
     # if math.isnan(after_tax_irr_pct):
@@ -358,7 +358,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
 
 
 def _analysis_period(model: Model) -> int:
-    return model.surfaceplant.plant_lifetime.value + _pre_revenue_years_count(model) - 1
+    return model.surfaceplant.plant_lifetime.value  # + _pre_revenue_years_count(model) - 1
 
 
 def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
@@ -427,18 +427,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
 
-    # *** Phased-Construction Logic ***
-    schedule_pct = econ.construction_capex_schedule.value
-
-    if econ.inflrateconstruction.Provided:
-        pre_revenue_inflation_rate = econ.inflrateconstruction.quantity().to('dimensionless').magnitude
-    else:
-        pre_revenue_inflation_rate = econ.RINFL.quantity().to('dimensionless').magnitude
-
-    # Call the phased capex calculation function
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    total_installed_cost_usd = pre_revenue_costs.total_installed_cost_usd
-    construction_financing_cost_usd = pre_revenue_costs.construction_financing_cost_usd
+    total_installed_cost_usd: float = pre_revenue_costs.total_installed_cost_usd
+    construction_financing_cost_usd: float = pre_revenue_costs.construction_financing_cost_usd
 
     econ.accrued_financing_during_construction_percentage.value = (
         quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
@@ -458,21 +449,21 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
 
-    # https://nrel-pysam.readthedocs.io/en/main/modules/Singleowner.html#depreciation-group
-    ret['depr_alloc_sl_20_percent'] = 0.0
-    ret['depr_alloc_custom_percent'] = 100.0
-
-    # Build custom depreciation schedule to handle pre-revenue years.
-    # Standard 20-year straight-line depreciation for geothermal assets.
-    straight_line_20_year_schedule = [2.5] + [5.0] * 19 + [2.5]
-    depr_custom_schedule = pre_revenue_years_zero_vector + straight_line_20_year_schedule
-
-    # Pad with zeros to match the analysis period length.
-    analysis_period = _analysis_period(model)
-    if len(depr_custom_schedule) < analysis_period:
-        depr_custom_schedule.extend([0.0] * (analysis_period - len(depr_custom_schedule)))
-
-    ret['depr_custom_schedule'] = depr_custom_schedule[:analysis_period]
+    # # https://nrel-pysam.readthedocs.io/en/main/modules/Singleowner.html#depreciation-group
+    # ret['depr_alloc_sl_20_percent'] = 0.0
+    # ret['depr_alloc_custom_percent'] = 100.0
+    #
+    # # Build custom depreciation schedule to handle pre-revenue years.
+    # # Standard 20-year straight-line depreciation for geothermal assets.
+    # straight_line_20_year_schedule = [2.5] + [5.0] * 19 + [2.5]
+    # depr_custom_schedule = pre_revenue_years_zero_vector + straight_line_20_year_schedule
+    #
+    # # Pad with zeros to match the analysis period length.
+    # analysis_period = _analysis_period(model)
+    # if len(depr_custom_schedule) < analysis_period:
+    #     depr_custom_schedule.extend([0.0] * (analysis_period - len(depr_custom_schedule)))
+    #
+    # ret['depr_custom_schedule'] = depr_custom_schedule[:analysis_period]
 
     opex_musd = econ.Coam.value
     ret['om_fixed'] = pre_revenue_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
@@ -519,7 +510,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Project lifetime
     ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + len(pre_revenue_years_zero_vector)
     ret['term_int_rate'] = _pct(econ.BIR)
-    ret['loan_moratorium'] = len(pre_revenue_years_zero_vector)
+    # ret['loan_moratorium'] = len(pre_revenue_years_zero_vector)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 

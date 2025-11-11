@@ -166,7 +166,7 @@ class PreRevenueCostsAndCashflow:
     construction_financing_cost_usd: float
     debt_balance_usd: float
     inflation_cost_usd: float = 0.0
-    pre_revenue_equity_cash_flow: list[float] = field(default_factory=list)
+    pre_revenue_equity_cash_flow_usd: list[float] = field(default_factory=list)
 
     @property
     def effective_debt_percent(self) -> float:
@@ -258,6 +258,6 @@ def _calculate_pre_revenue_costs_and_cashflow(
         debt_balance_usd=current_debt_balance_usd,
         inflation_cost_usd=total_inflation_cost_usd,
         #pre_revenue_equity_cash_flow=cash_flow_usd,
-        pre_revenue_equity_cash_flow=equity_cash_flow_usd,
+        pre_revenue_equity_cash_flow_usd=equity_cash_flow_usd,
     )
 

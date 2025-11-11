@@ -212,24 +212,27 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     """FIXME WIP"""
 
-    # WIP
-    # pre_revenue_cash_flow = calculate_pre_revenue_costs_and_cashflow(model).pre_revenue_cash_flow
-    # operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
-    #
-    # true_npv = npf.npv(
-    #     model.economics.discountrate.quantity().to('dimensionless').magnitude,  # Use the real discount rate
-    #     pre_revenue_cash_flow + operational_cash_flow
-    # )
-    # return sig_figs(true_npv * 1e-6)  # Convert to M$
+    pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
+    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
+    operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+    combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
 
-    return single_owner.Outputs.project_return_aftertax_npv * 1e-6
+    # WIP
+
+    true_npv_usd = npf.npv(
+        _calculate_nominal_discount_rate_and_wacc(model, single_owner)[0] / 100.0, combined_cash_flow
+    )
+    return true_npv_usd * 1e-6  # Convert to M$
+
+    # return single_owner.Outputs.project_return_aftertax_npv * 1e-6
 
 
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow
+    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
-    after_tax_irr_pct = npf.irr(pre_revenue_cash_flow + operational_cash_flow[1:]) * 100.0
+    combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
+    after_tax_irr_pct = npf.irr(combined_cash_flow) * 100.0
 
     # after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
     # if math.isnan(after_tax_irr_pct):

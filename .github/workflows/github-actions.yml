@@ -10,6 +10,7 @@ permissions:
 jobs:
   test:
     name: ${{ matrix.name }}
+    if: (github.ref == 'refs/heads/main') || (matrix.main_only != true)
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -32,18 +33,21 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py38'
             os: 'ubuntu-latest'
+            main_only: true
           - name: 'py39 (ubuntu)'
             python: '3.9'
             toxpython: 'python3.9'
             python_arch: 'x64'
             tox_env: 'py39'
             os: 'ubuntu-latest'
+            main_only: true
           - name: 'py310 (ubuntu)'
             python: '3.10'
             toxpython: 'python3.10'
             python_arch: 'x64'
             tox_env: 'py310'
             os: 'ubuntu-latest'
+            main_only: true
 #          - name: 'py310 (windows)'
 #            python: '3.10'
 #            toxpython: 'python3.10'
@@ -62,12 +66,14 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py311'
             os: 'macos-latest'
+            main_only: true
           - name: 'py311 (windows)'
             python: '3.11'
             toxpython: 'python3.11'
             python_arch: 'x64'
             tox_env: 'py311'
             os: 'windows-latest'
+            main_only: true
           - name: 'py312 (ubuntu)'
             python: '3.12'
             toxpython: 'python3.12'

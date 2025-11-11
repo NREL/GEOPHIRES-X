@@ -30,7 +30,10 @@ class BaseTestCase(unittest.TestCase):
             try:
                 self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
             except AssertionError as ae:
-                difference_percent = abs(100.0 * (actual - expected) / expected)
+                try:
+                    difference_percent = abs(100.0 * (actual - expected) / expected)
+                except ZeroDivisionError:
+                    difference_percent = float('nan')
                 raise AssertionError(f'{actual} != {expected} within {percent}% ({difference_percent:.2f}%)') from ae
         else:
             if isinstance(expected, list) and isinstance(actual, list):

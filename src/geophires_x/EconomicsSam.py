@@ -39,7 +39,9 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
-    _calculate_phased_capex_costs,
+    _calculate_pre_revenue_costs_and_cashflow,
+    PreRevenueCostsAndCashflow,
+    calculate_pre_revenue_costs_and_cashflow,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -111,7 +113,8 @@ def validate_read_parameters(model: Model):
         )
 
     # Ensure schedule length matches pre-revenue years
-    construction_years = _pre_revenue_years_count(model)
+    # construction_years = _pre_revenue_years_count(model)
+    construction_years = model.surfaceplant.construction_years.value
     econ = model.economics
     capex_schedule = econ.construction_capex_schedule.value
     if len(capex_schedule) != construction_years:
@@ -181,10 +184,11 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
         return sig_figs(_v, num_sig_figs)
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
+
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
     sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))
 
-    sam_economics.project_npv.value = sf(single_owner.Outputs.project_return_aftertax_npv * 1e-6)
+    sam_economics.project_npv.value = sf(_get_project_npv_musd(single_owner, cash_flow, model))
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
     if model.economics.royalty_rate.Provided:
@@ -205,15 +209,36 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     return sam_economics
 
 
+def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
+    """FIXME WIP"""
+
+    # WIP
+    # pre_revenue_cash_flow = calculate_pre_revenue_costs_and_cashflow(model).pre_revenue_cash_flow
+    # operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+    #
+    # true_npv = npf.npv(
+    #     model.economics.discountrate.quantity().to('dimensionless').magnitude,  # Use the real discount rate
+    #     pre_revenue_cash_flow + operational_cash_flow
+    # )
+    # return sig_figs(true_npv * 1e-6)  # Convert to M$
+
+    return single_owner.Outputs.project_return_aftertax_npv * 1e-6
+
+
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
-    after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
-    if math.isnan(after_tax_irr_pct):
-        try:
-            after_tax_returns_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
-            after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
-            model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
-        except Exception as e:
-            model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
+    pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
+    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow
+    operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+    after_tax_irr_pct = npf.irr(pre_revenue_cash_flow + operational_cash_flow) * 100.0
+
+    # after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
+    # if math.isnan(after_tax_irr_pct):
+    #     try:
+    #         after_tax_returns_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+    #         after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
+    #         model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
+    #     except Exception as e:
+    #         model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
 
     return after_tax_irr_pct
 
@@ -349,7 +374,8 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
 
 
 def _pre_revenue_years_count(model: Model) -> int:
-    return model.surfaceplant.construction_years.value
+    # return model.surfaceplant.construction_years.value
+    return 0  # FIXME WIP (v3 impl)
 
 
 def _pre_revenue_years_vector(model: Model, v: float = 0.0) -> list[float]:
@@ -410,18 +436,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         pre_revenue_inflation_rate = econ.RINFL.quantity().to('dimensionless').magnitude
 
     # Call the phased capex calculation function
-    phased_costs = _calculate_phased_capex_costs(
-        total_overnight_capex_usd=total_overnight_capex_usd,
-        pre_revenue_years_count=pre_revenue_years,
-        phased_capex_schedule=schedule_pct,
-        pre_revenue_bond_interest_rate=econ.BIR.quantity().to('dimensionless').magnitude,
-        inflation_rate=pre_revenue_inflation_rate,
-        debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
-        debt_financing_start_year=econ.bond_financing_start_year.value,
-        logger=model.logger,
-    )
-    total_installed_cost_usd = phased_costs.total_installed_cost_usd
-    construction_financing_cost_usd = phased_costs.construction_financing_cost_usd
+    pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
+    total_installed_cost_usd = pre_revenue_costs.total_installed_cost_usd
+    construction_financing_cost_usd = pre_revenue_costs.construction_financing_cost_usd
 
     econ.accrued_financing_during_construction_percentage.value = (
         quantity(construction_financing_cost_usd / total_overnight_capex_usd, 'dimensionless')
@@ -430,7 +447,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     )
 
     econ.inflation_cost_during_construction.value = (
-        quantity(phased_costs.inflation_cost_usd, 'USD')
+        quantity(pre_revenue_costs.inflation_cost_usd, 'USD')
         .to(econ.inflation_cost_during_construction.CurrentUnits)
         .magnitude
     )
@@ -493,7 +510,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         ret['om_production'] = pre_revenue_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
 
     # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
-    ret['debt_percent'] = _pct(econ.FIB)
+    # ret['debt_percent'] = _pct(econ.FIB)
+    ret['debt_percent'] = pre_revenue_costs.effective_debt_percent
 
     # Interest rate
     ret['real_discount_rate'] = _pct(econ.discountrate)

@@ -164,11 +164,37 @@ def royalty_cost_output_parameter() -> OutputParameter:
 class PreRevenueCostsAndCashflow:
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
+    debt_balance_usd: float
     inflation_cost_usd: float = 0.0
-    pre_revenue_cash_flow: list[float] = field(default_factory=list)
+    pre_revenue_equity_cash_flow: list[float] = field(default_factory=list)
+
+    @property
+    def effective_debt_percent(self) -> float:
+        return self.debt_balance_usd / self.total_installed_cost_usd * 100.0
 
 
-def _calculate_phased_capex_costs(
+def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAndCashflow:
+    econ = model.economics
+    if econ.inflrateconstruction.Provided:
+        pre_revenue_inflation_rate = econ.inflrateconstruction.quantity().to('dimensionless').magnitude
+    else:
+        pre_revenue_inflation_rate = econ.RINFL.quantity().to('dimensionless').magnitude
+
+
+    return _calculate_pre_revenue_costs_and_cashflow(
+        total_overnight_capex_usd=econ.CCap.quantity().to('USD').magnitude,
+        # pre_revenue_years_count=pre_revenue_years,
+        pre_revenue_years_count=model.surfaceplant.construction_years.value,
+        phased_capex_schedule=econ.construction_capex_schedule.value,
+        pre_revenue_bond_interest_rate=econ.BIR.quantity().to('dimensionless').magnitude,
+        inflation_rate=pre_revenue_inflation_rate,
+        debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
+        debt_financing_start_year=econ.bond_financing_start_year.value,
+        logger=model.logger,
+    )
+
+
+def _calculate_pre_revenue_costs_and_cashflow(
     total_overnight_capex_usd: float,
     pre_revenue_years_count: int,
     phased_capex_schedule: list[float],
@@ -190,6 +216,7 @@ def _calculate_phased_capex_costs(
     total_interest_accrued_usd = 0.0
     total_inflation_cost_usd = 0.0
     cash_flow_usd: list[float] = []
+    equity_cash_flow_usd: list[float] = []
 
     for year_index in range(pre_revenue_years_count):
         # Calculate base (overnight) CAPEX for this year
@@ -207,6 +234,7 @@ def _calculate_phased_capex_costs(
 
         debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
         new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year
+        equity_cash_flow_usd.append(-(capex_this_year_usd-new_debt_draw_usd))
 
         # Add this year's direct cost AND capitalized interest to the total project cost basis
         total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
@@ -227,7 +255,9 @@ def _calculate_phased_capex_costs(
     return PreRevenueCostsAndCashflow(
         total_installed_cost_usd=total_capitalized_cost_usd,
         construction_financing_cost_usd=total_interest_accrued_usd,
+        debt_balance_usd=current_debt_balance_usd,
         inflation_cost_usd=total_inflation_cost_usd,
-        pre_revenue_cash_flow=cash_flow_usd,
-        # FIXME WIP TODO calculate/include current_debt_balance_usd
+        #pre_revenue_equity_cash_flow=cash_flow_usd,
+        pre_revenue_equity_cash_flow=equity_cash_flow_usd,
     )
+

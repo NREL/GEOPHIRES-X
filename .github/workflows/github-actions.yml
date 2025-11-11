@@ -105,13 +105,8 @@ jobs:
 #            os: 'macos-latest'
 
     steps:
-    - name: Cancel job on PRs for 'main_only' matrix entries
-      if: matrix.main_only == true && github.ref != 'refs/heads/main'
-      # https://github.com/andymckay/cancel-action; https://github.com/marketplace/actions/cancel-this-build
-      uses: andymckay/cancel-action@0.5
-      with:
-        message: "Job '${{ matrix.name }}' runs only on the 'main' branch."
-    - uses: actions/checkout@v4
+    - if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v5
@@ -119,6 +114,7 @@ jobs:
         python-version: ${{ matrix.python }}
         architecture: ${{ matrix.python_arch }}
     - name: install dependencies
+      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       run: |
         python -mpip install --upgrade pip
         python -mpip install --progress-bar=off -r ci/requirements.txt
@@ -127,6 +123,7 @@ jobs:
         tox --version
         pip list --format=freeze
     - name: test
+      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       env:
         TOXPYTHON: '${{ matrix.toxpython }}'
       run: >

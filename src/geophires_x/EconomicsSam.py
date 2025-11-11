@@ -135,6 +135,11 @@ def validate_read_parameters(model: Model):
             # f'(Provide {econ.construction_bond_interest_rate.Name}=0 to use equity-only financing.)'  # WIP...
         )
 
+    if econ.bond_financing_start_year.value > 0:
+        # Can't support unless debt interest payments can be disabled in pre-revenue years (currently only
+        # principal payments can)
+        raise NotImplementedError(f'{econ.bond_financing_start_year.Name} > 0 is not yet supported.')
+
 
 @lru_cache(maxsize=12)
 def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:

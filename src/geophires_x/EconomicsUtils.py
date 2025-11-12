@@ -3,6 +3,9 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
+import numpy as np
+from scipy.interpolate.interpolate import interp1d
+
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
 
@@ -261,3 +264,52 @@ def _calculate_pre_revenue_costs_and_cashflow(
         pre_revenue_equity_cash_flow_usd=equity_cash_flow_usd,
     )
 
+
+def adjust_phased_schedule_to_new_length(original_schedule: list[float], new_length: int) -> list[float]:
+    """
+    Adjusts a schedule (list of fractions) to a new length by interpolation,
+    then normalizes the result to ensure it sums to 1.0.
+
+    Args:
+        original_schedule: The initial list of fractional values.
+        new_length: The desired length of the new schedule.
+
+    Returns:
+        A new schedule of the desired length with its values summing to 1.0.
+    """
+
+    if new_length < 1:
+        raise ValueError
+
+    if not original_schedule:
+        raise ValueError
+
+    original_len = len(original_schedule)
+    if original_len == new_length:
+        return original_schedule
+
+    if original_len == 1:
+        # Interpolation is not possible with a single value; return a constant schedule
+        return [1.0 / new_length] * new_length
+
+    # Create an interpolation function based on the original schedule
+    x_original = np.arange(original_len)
+    y_original = np.array(original_schedule)
+
+    # Use linear interpolation, and extrapolate if the new schedule is longer
+    f = interp1d(x_original, y_original, kind='nearest', fill_value="extrapolate")
+
+    # Create new x-points for the desired length
+    x_new = np.linspace(0, original_len - 1, new_length)
+
+    # Get the new, projected y-values
+    y_new = f(x_new)
+
+    # Normalize the new schedule so it sums to 1.0
+    total = np.sum(y_new)
+    if total == 0:
+        # Avoid division by zero; return an equal distribution
+        return [1.0 / new_length] * new_length
+
+    normalized_schedule = (y_new / total).tolist()
+    return normalized_schedule

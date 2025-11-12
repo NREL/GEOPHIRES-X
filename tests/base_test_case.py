@@ -106,8 +106,9 @@ class BaseTestCase(unittest.TestCase):
                 self.assertListEqual(f1_lines, f2_lines, msg=f'{expected}, {actual}')
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
-    def assertHasLogRecordWithMessage(self, logs_, message):
-        assert message in [record.message for record in logs_.records]
+    def assertHasLogRecordWithMessage(self, logs_, message, treat_substring_match_as_match: bool = False):
+        messages = [record.message for record in logs_.records]
+        assert any(it == message or (treat_substring_match_as_match and message in it) for it in messages)
 
     # noinspection PyMethodMayBeStatic
     def _is_github_actions(self):

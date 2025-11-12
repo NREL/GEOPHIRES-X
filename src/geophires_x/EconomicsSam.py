@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import math
 import os
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -42,6 +41,7 @@ from geophires_x.EconomicsUtils import (
     _calculate_pre_revenue_costs_and_cashflow,
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
+    adjust_phased_schedule_to_new_length,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -112,17 +112,22 @@ def validate_read_parameters(model: Model):
             f'{eir.Name} provided value ({eir.value}) will be ignored. (SAM Economics does not support {eir.Name}.)'
         )
 
-    # Ensure schedule length matches pre-revenue years
-    # construction_years = _pre_revenue_years_count(model)
-    construction_years = model.surfaceplant.construction_years.value
     econ = model.economics
+
+    construction_years = model.surfaceplant.construction_years.value
     capex_schedule = econ.construction_capex_schedule.value
-    if len(capex_schedule) != construction_years:
-        msg = (
-            f"{econ.construction_capex_schedule.Name} length ({len(capex_schedule)}) does not match construction years "
-            f"({construction_years})."
+    capex_schedule_len = len(capex_schedule)
+    if capex_schedule_len != construction_years:
+        econ.construction_capex_schedule.value = adjust_phased_schedule_to_new_length(
+            econ.construction_capex_schedule.value, construction_years
         )
-        raise ValueError(msg)
+        msg = (
+            f'{econ.construction_capex_schedule.Name} ({econ.construction_capex_schedule}) '
+            f'length ({capex_schedule_len}) '
+            f'does not match construction years ({construction_years}). '
+            f'It has been adjusted to: {econ.construction_capex_schedule.value}'
+        )
+        model.logger.warning(msg)
 
     if econ.bond_financing_start_year.value >= construction_years:
         raise ValueError(

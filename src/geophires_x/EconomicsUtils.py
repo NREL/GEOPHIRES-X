@@ -164,7 +164,7 @@ def royalty_cost_output_parameter() -> OutputParameter:
         )
 
 
-_EQUITY_SPEND_ROW_NAME = 'Equity spend ($)' # "Issuance of equity ($)"
+_EQUITY_CASH_FLOW_ROW_NAME = "Issuance of equity ($)"
 
 @dataclass
 class PreRevenueCostsAndCashflow:
@@ -182,7 +182,7 @@ class PreRevenueCostsAndCashflow:
 
     @property
     def pre_revenue_equity_cash_flow_usd(self):
-        return self.pre_revenue_cash_flow_profile[_EQUITY_SPEND_ROW_NAME]
+        return self.pre_revenue_cash_flow_profile[_EQUITY_CASH_FLOW_ROW_NAME]
 
 
 
@@ -274,22 +274,32 @@ def _calculate_pre_revenue_costs_and_cashflow(
     # noinspection PyDictCreation
     pre_revenue_cf_profile: dict[str, list[float]] = {}
 
-    # Equity cash flow is an *outflow* (negative)
-    # equity_cash_flow_usd = [-x for x in equity_spend_vec] # WIP...
+    pre_revenue_cf_profile['Purchase of property ($)'] = [-x for x in capex_spend_vec]
+    pre_revenue_cf_profile[
+        'Cash flow from investing activities ($)'
+        # 'CAPEX spend ($)'
+    ] = [-x for x in capex_spend_vec]
+
 
     # --- Financing Activities ---
     # Issuance of equity and debt are *inflows* (positive)
-    pre_revenue_cf_profile[_EQUITY_SPEND_ROW_NAME] = equity_spend_vec
-    pre_revenue_cf_profile['Debt draw ($)'] = debt_draw_vec # TODO/WIP...
-
-    # mini_profile["Purchase of property ($)"] = [-x for x in capex_spend_vec]
+    pre_revenue_cf_profile[_EQUITY_CASH_FLOW_ROW_NAME] = equity_spend_vec
     pre_revenue_cf_profile[
-        # 'Cash flow from investing activities ($)'
-        'CAPEX spend ($)'
-    ] = [-x for x in capex_spend_vec]
+        # 'Debt draw ($)'
+        'Issuance of debt ($)'
+    ] = debt_draw_vec
 
-    # pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in
-    #                                                                      zip(equity_spend_vec, debt_draw_vec)]
+    # FIXME WIP TODO Size of debt ($)
+
+    pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in
+                                                                         zip(equity_spend_vec, debt_draw_vec)]
+
+
+
+    # Equity cash flow is an *outflow* (negative)
+    equity_cash_flow_usd = [-x for x in equity_spend_vec]
+    pre_revenue_cf_profile['Total pre-tax returns ($)'] = equity_cash_flow_usd
+    pre_revenue_cf_profile['Total after-tax returns ($)'] = equity_cash_flow_usd
 
 
 

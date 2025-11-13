@@ -42,7 +42,7 @@ from geophires_x.EconomicsUtils import (
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
-    _EQUITY_SPEND_ROW_NAME,
+    _EQUITY_CASH_FLOW_ROW_NAME,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -84,7 +84,7 @@ class SamEconomicsCalculations:
 
     @property
     def _pre_revenue_years_count(self) -> int:
-        return len(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[_EQUITY_SPEND_ROW_NAME])
+        return len(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[_EQUITY_CASH_FLOW_ROW_NAME])
 
     @property
     def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
@@ -93,6 +93,9 @@ class SamEconomicsCalculations:
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
         construction_rows: list[list[Any]] = [['CONSTRUCTION'] + [''] * (len(self.sam_cash_flow_profile[0]) - 1)]
+
+        def _rnd(k, v, it: Any) -> Any:
+            return round(float(it)) if k.endswith('($)') and is_float(it) else it
 
         for row in range(len(self.sam_cash_flow_profile)):
             pre_revenue_row_content = [''] * pre_revenue_years_to_insert
@@ -105,18 +108,16 @@ class SamEconomicsCalculations:
 
                 for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
 
-                    def _rnd(it: Any) -> Any:
-                        return round(float(it)) if k.endswith('($)') and is_float(it) else it
-
-                    construction_rows.append([k] + [_rnd(it_) for it_ in v])
-            # else:
-            #     # FIXME WIP phased CAPEX, 0-value rows, etc...
-            #     row_name = ret[row][0]
-            #     if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
-            #         pre_revenue_row_content = self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
-            #             row_name
-            #         ].copy()
-            #         insert_index = 2
+                    construction_rows.append([k] + [_rnd(k, v, it_) for it_ in v])
+            else:
+                # FIXME WIP TODO zero-vectors e.g. Debt principal payment ($)
+                row_name = ret[row][0]
+                if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
+                    pre_revenue_row_content = [
+                        _rnd(k, v, it_)
+                        for it_ in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[row_name]
+                    ]
+                    insert_index = 2
 
             adjusted_row = [ret[row][0]] + pre_revenue_row_content + ret[row][insert_index:]
             ret[row] = adjusted_row

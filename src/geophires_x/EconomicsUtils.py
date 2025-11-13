@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
 from scipy.interpolate.interpolate import interp1d
@@ -183,6 +184,8 @@ class PreRevenueCostsAndCashflow:
     @property
     def pre_revenue_equity_cash_flow_usd(self):
         return self.pre_revenue_cash_flow_profile[_EQUITY_SPEND_ROW_NAME]
+
+
 
 
 def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAndCashflow:

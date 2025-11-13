@@ -163,17 +163,26 @@ def royalty_cost_output_parameter() -> OutputParameter:
         )
 
 
+_EQUITY_SPEND_ROW_NAME = "Issuance of equity ($)"
+
+
 @dataclass
 class PreRevenueCostsAndCashflow:
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
     debt_balance_usd: float
     inflation_cost_usd: float = 0.0
-    pre_revenue_equity_cash_flow_usd: list[float] = field(default_factory=list)
+
+    pre_revenue_cash_flow_profile: dict[str, list[float]] = field(default_factory=dict)
+    """Maps SAM's row names (str) to a list of pre-revenue values"""
 
     @property
     def effective_debt_percent(self) -> float:
         return self.debt_balance_usd / self.total_installed_cost_usd * 100.0
+
+    @property
+    def pre_revenue_equity_cash_flow_usd(self):
+        return self.pre_revenue_cash_flow_profile[_EQUITY_SPEND_ROW_NAME]
 
 
 def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAndCashflow:
@@ -186,7 +195,6 @@ def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAn
 
     return _calculate_pre_revenue_costs_and_cashflow(
         total_overnight_capex_usd=econ.CCap.quantity().to('USD').magnitude,
-        # pre_revenue_years_count=pre_revenue_years,
         pre_revenue_years_count=model.surfaceplant.construction_years.value,
         phased_capex_schedule=econ.construction_capex_schedule.value,
         pre_revenue_bond_interest_rate=econ.BIR.quantity().to('dimensionless').magnitude,
@@ -210,6 +218,8 @@ def _calculate_pre_revenue_costs_and_cashflow(
     """
     Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
     construction) by simulating a year-by-year phased expenditure with inflation.
+
+    Also builds a "mini" cash flow profile for these pre-revenue years.
     """
 
     logger.info(f"Using Phased CAPEX Schedule: {phased_capex_schedule}")
@@ -218,50 +228,71 @@ def _calculate_pre_revenue_costs_and_cashflow(
     total_capitalized_cost_usd = 0.0
     total_interest_accrued_usd = 0.0
     total_inflation_cost_usd = 0.0
-    cash_flow_usd: list[float] = []
-    equity_cash_flow_usd: list[float] = []
+
+    capex_spend_vec: list[float] = []
+    equity_spend_vec: list[float] = []
+    debt_draw_vec: list[float] = []
+    interest_accrued_vec: list[float] = []  # This is non-cash, but good to track
 
     for year_index in range(pre_revenue_years_count):
-        # Calculate base (overnight) CAPEX for this year
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
 
         inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
         inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
 
-        # Total CAPEX spent this year (including inflation)
         capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
-        cash_flow_usd.append(-capex_this_year_usd)
 
         # Interest is calculated on the opening balance (from previous years' draws)
         interest_this_year_usd = current_debt_balance_usd * pre_revenue_bond_interest_rate
 
         debt_fraction_this_year = debt_fraction if year_index >= debt_financing_start_year else 0
         new_debt_draw_usd = capex_this_year_usd * debt_fraction_this_year
-        equity_cash_flow_usd.append(-(capex_this_year_usd-new_debt_draw_usd))
 
-        # Add this year's direct cost AND capitalized interest to the total project cost basis
+        # Equity spend is the cash portion of CAPEX not funded by new debt
+        equity_spent_this_year_usd = capex_this_year_usd - new_debt_draw_usd
+
+        capex_spend_vec.append(capex_this_year_usd)
+        equity_spend_vec.append(equity_spent_this_year_usd)
+        debt_draw_vec.append(new_debt_draw_usd)
+        interest_accrued_vec.append(interest_this_year_usd)
+
         total_capitalized_cost_usd += capex_this_year_usd + interest_this_year_usd
         total_interest_accrued_usd += interest_this_year_usd
         total_inflation_cost_usd += inflation_cost_this_year_usd
 
-        # Update the loan balance for *next* year's interest calculation
-        # New balance = Old Balance + New Debt + Capitalized Interest
         current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
 
     logger.info(
         f"Phased CAPEX calculation complete: "
         f"Total Installed Cost: ${total_capitalized_cost_usd:,.2f}, "
-        f"Total Inflation Cost: ${total_inflation_cost_usd:,.2f}, "
+        f"Final Debt Balance: ${current_debt_balance_usd:,.2f}, "
         f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
     )
+
+    # noinspection PyDictCreation
+    pre_revenue_cf_profile: dict[str, list[float]] = {}
+
+    # Equity cash flow is an *outflow* (negative)
+    # equity_cash_flow_usd = [-x for x in equity_spend_vec] # WIP...
+
+    # --- Investing Activities ---
+    # Purchase of property is an *outflow*
+    # mini_profile["Purchase of property ($)"] = [-x for x in capex_spend_vec]
+    pre_revenue_cf_profile["Cash flow from investing activities ($)"] = [-x for x in capex_spend_vec]
+
+    # --- Financing Activities ---
+    # Issuance of equity and debt are *inflows* (positive)
+    pre_revenue_cf_profile[_EQUITY_SPEND_ROW_NAME] = equity_spend_vec
+    # mini_profile[FIXME-WIP-TBD] = debt_draw_vec # TODO
+    pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)]
+
 
     return PreRevenueCostsAndCashflow(
         total_installed_cost_usd=total_capitalized_cost_usd,
         construction_financing_cost_usd=total_interest_accrued_usd,
         debt_balance_usd=current_debt_balance_usd,
         inflation_cost_usd=total_inflation_cost_usd,
-        #pre_revenue_equity_cash_flow=cash_flow_usd,
-        pre_revenue_equity_cash_flow_usd=equity_cash_flow_usd,
+        pre_revenue_cash_flow_profile=pre_revenue_cf_profile
     )
 
 

@@ -52,6 +52,7 @@ from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Un
 @dataclass
 class SamEconomicsCalculations:
     sam_cash_flow_profile: list[list[Any]]
+    pre_revenue_costs_and_cash_flow: PreRevenueCostsAndCashflow
 
     lcoe_nominal: OutputParameter = field(
         default_factory=lambda: OutputParameter(
@@ -188,7 +189,10 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     def sf(_v: float, num_sig_figs: int = 5) -> float:
         return sig_figs(_v, num_sig_figs)
 
-    sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
+    sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(
+        sam_cash_flow_profile=cash_flow,
+        pre_revenue_costs_and_cash_flow=calculate_pre_revenue_costs_and_cashflow(model),
+    )
 
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
     sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))

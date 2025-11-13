@@ -203,7 +203,11 @@ class EconomicsSamTestCase(BaseTestCase):
     def test_multiple_construction_years_supported(self):
         # self.assertIsNotNone(self._get_result({'Construction Years': 2, 'Construction CAPEX Schedule': '0.5,0.5'}))
         construction_years_2: GeophiresXResult = self._get_result(
-            {'Construction Years': 2, 'Construction CAPEX Schedule': '0.5,0.5'}
+            {
+                'Construction Years': 2,
+                'Construction CAPEX Schedule': '0.5,0.5',
+                'Fraction of Investment in Bonds': 0.25,
+            }
         )
         self.assertIsNotNone(construction_years_2)
         cy2_cf = construction_years_2.result['SAM CASH FLOW PROFILE']

@@ -164,8 +164,7 @@ def royalty_cost_output_parameter() -> OutputParameter:
         )
 
 
-_EQUITY_SPEND_ROW_NAME = "Issuance of equity ($)"
-
+_EQUITY_SPEND_ROW_NAME = 'Equity spend ($)' # "Issuance of equity ($)"
 
 @dataclass
 class PreRevenueCostsAndCashflow:
@@ -278,16 +277,20 @@ def _calculate_pre_revenue_costs_and_cashflow(
     # Equity cash flow is an *outflow* (negative)
     # equity_cash_flow_usd = [-x for x in equity_spend_vec] # WIP...
 
-    # --- Investing Activities ---
-    # Purchase of property is an *outflow*
-    # mini_profile["Purchase of property ($)"] = [-x for x in capex_spend_vec]
-    pre_revenue_cf_profile["Cash flow from investing activities ($)"] = [-x for x in capex_spend_vec]
-
     # --- Financing Activities ---
     # Issuance of equity and debt are *inflows* (positive)
     pre_revenue_cf_profile[_EQUITY_SPEND_ROW_NAME] = equity_spend_vec
-    # mini_profile[FIXME-WIP-TBD] = debt_draw_vec # TODO
-    pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)]
+    pre_revenue_cf_profile['Debt draw ($)'] = debt_draw_vec # TODO/WIP...
+
+    # mini_profile["Purchase of property ($)"] = [-x for x in capex_spend_vec]
+    pre_revenue_cf_profile[
+        # 'Cash flow from investing activities ($)'
+        'CAPEX spend ($)'
+    ] = [-x for x in capex_spend_vec]
+
+    # pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in
+    #                                                                      zip(equity_spend_vec, debt_draw_vec)]
+
 
 
     return PreRevenueCostsAndCashflow(

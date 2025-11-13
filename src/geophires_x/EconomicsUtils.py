@@ -164,7 +164,7 @@ def royalty_cost_output_parameter() -> OutputParameter:
         )
 
 
-_EQUITY_CASH_FLOW_ROW_NAME = "Issuance of equity ($)"
+_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'Total after-tax returns ($)'
 
 @dataclass
 class PreRevenueCostsAndCashflow:
@@ -181,8 +181,8 @@ class PreRevenueCostsAndCashflow:
         return self.debt_balance_usd / self.total_installed_cost_usd * 100.0
 
     @property
-    def pre_revenue_equity_cash_flow_usd(self):
-        return self.pre_revenue_cash_flow_profile[_EQUITY_CASH_FLOW_ROW_NAME]
+    def total_after_tax_returns_cash_flow_usd(self):
+        return self.pre_revenue_cash_flow_profile[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME]
 
 
 
@@ -205,6 +205,8 @@ def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAn
         debt_financing_start_year=econ.bond_financing_start_year.value,
         logger=model.logger,
     )
+
+_CONSTRUCTION_LINE_ITEM_DESIGNATOR = '' # '[construction] '
 
 
 def _calculate_pre_revenue_costs_and_cashflow(
@@ -276,35 +278,35 @@ def _calculate_pre_revenue_costs_and_cashflow(
     # noinspection PyDictCreation
     pre_revenue_cf_profile: dict[str, list[float]] = {}
 
-    pre_revenue_cf_profile['Purchase of property ($)'] = [-x for x in capex_spend_vec]
+    pre_revenue_cf_profile[f'Purchase of property {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = [-x for x in capex_spend_vec]
     pre_revenue_cf_profile[
-        'Cash flow from investing activities ($)'
+        f'Cash flow from investing activities {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
         # 'CAPEX spend ($)'
     ] = [-x for x in capex_spend_vec]
 
 
     # --- Financing Activities ---
     # Issuance of equity and debt are *inflows* (positive)
-    pre_revenue_cf_profile[_EQUITY_CASH_FLOW_ROW_NAME] = equity_spend_vec
+    pre_revenue_cf_profile[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME] = equity_spend_vec
     pre_revenue_cf_profile[
         # 'Debt draw ($)'
-        'Issuance of debt ($)'
+        f'Issuance of debt {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
     ] = debt_draw_vec
 
     pre_revenue_cf_profile[
-        'Debt balance ($)'
+        f'Debt balance {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
         # 'Size of debt ($)'
     ] = debt_balance_usd_vec
 
-    pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in
+    pre_revenue_cf_profile[f'Cash flow from financing activities {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = [e + d for e, d in
                                                                          zip(equity_spend_vec, debt_draw_vec)]
 
 
 
     # Equity cash flow is an *outflow* (negative)
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
-    pre_revenue_cf_profile['Total pre-tax returns ($)'] = equity_cash_flow_usd
-    pre_revenue_cf_profile['Total after-tax returns ($)'] = equity_cash_flow_usd
+    pre_revenue_cf_profile[f'Total pre-tax returns {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = equity_cash_flow_usd
+    pre_revenue_cf_profile[f'Total after-tax returns {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = equity_cash_flow_usd
 
 
 

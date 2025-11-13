@@ -42,7 +42,7 @@ from geophires_x.EconomicsUtils import (
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
-    _EQUITY_CASH_FLOW_ROW_NAME,
+    _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -84,7 +84,11 @@ class SamEconomicsCalculations:
 
     @property
     def _pre_revenue_years_count(self) -> int:
-        return len(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[_EQUITY_CASH_FLOW_ROW_NAME])
+        return len(
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
+                _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
+            ]
+        )
 
     @property
     def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
@@ -107,8 +111,8 @@ class SamEconomicsCalculations:
                     pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
 
                 for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
-
-                    construction_rows.append([k] + [_rnd(k, v, it_) for it_ in v])
+                    k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
+                    construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
             else:
                 # FIXME WIP TODO zero-vectors e.g. Debt principal payment ($)
                 row_name = ret[row][0]
@@ -125,6 +129,28 @@ class SamEconomicsCalculations:
         construction_rows.append([''] * len(self.sam_cash_flow_profile[0]))
         for construction_row in reversed(construction_rows):
             ret.insert(1, construction_row)
+
+        def _get_row_index(row_name: str) -> list[Any]:
+            return [it[0] for it in ret].index(row_name)
+
+        def _get_row(row_name: str) -> list[Any]:
+            for r in ret:
+                if r[0] == row_name:
+                    return r[1:]
+
+        npv_usd = []
+        after_tax_cash_flow = _get_row('Total after-tax returns ($)')
+        for year in range(len(after_tax_cash_flow)):
+            npv_usd.append(
+                round(
+                    npf.npv(
+                        self.nominal_discount_rate.quantity().to('dimensionless').magnitude,
+                        after_tax_cash_flow[: year + 1],
+                    )
+                )
+            )
+
+        ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
 
         return ret
 
@@ -269,7 +295,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
     """FIXME WIP"""
 
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
 
@@ -285,7 +311,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
 
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
     after_tax_irr_pct = npf.irr(combined_cash_flow) * 100.0

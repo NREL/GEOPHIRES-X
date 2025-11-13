@@ -138,9 +138,12 @@ class SamEconomicsCalculations:
                 if r[0] == row_name:
                     return r[1:]
 
-        npv_usd = []
         after_tax_cash_flow = _get_row('Total after-tax returns ($)')
+
+        npv_usd = []
+        irr_pct = []
         for year in range(len(after_tax_cash_flow)):
+            # cash_flow_to_year = [float(x) for x in after_tax_cash_flow[:year+1]]
             npv_usd.append(
                 round(
                     npf.npv(
@@ -150,7 +153,10 @@ class SamEconomicsCalculations:
                 )
             )
 
+            irr_pct.append(npf.irr(after_tax_cash_flow[: year + 1]) * 100.0)
+
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
+        ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct
 
         return ret
 

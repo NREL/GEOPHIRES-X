@@ -92,6 +92,8 @@ class SamEconomicsCalculations:
 
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
+        construction_rows: list[list[Any]] = [['CONSTRUCTION'] + [''] * (len(self.sam_cash_flow_profile[0]) - 1)]
+
         for row in range(len(self.sam_cash_flow_profile)):
             pre_revenue_row_content = [''] * pre_revenue_years_to_insert
             insert_index = 1
@@ -100,17 +102,28 @@ class SamEconomicsCalculations:
                 for pre_revenue_year in range(pre_revenue_years_to_insert):
                     negative_year_index: int = self._pre_revenue_years_count - 1 - pre_revenue_year
                     pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
-            else:
-                # FIXME WIP phased CAPEX, 0-value rows, etc...
-                row_name = ret[row][0]
-                if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
-                    pre_revenue_row_content = self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
-                        row_name
-                    ].copy()
-                    insert_index = 2
+
+                for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
+
+                    def _rnd(it: Any) -> Any:
+                        return round(float(it)) if k.endswith('($)') and is_float(it) else it
+
+                    construction_rows.append([k] + [_rnd(it_) for it_ in v])
+            # else:
+            #     # FIXME WIP phased CAPEX, 0-value rows, etc...
+            #     row_name = ret[row][0]
+            #     if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
+            #         pre_revenue_row_content = self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
+            #             row_name
+            #         ].copy()
+            #         insert_index = 2
 
             adjusted_row = [ret[row][0]] + pre_revenue_row_content + ret[row][insert_index:]
             ret[row] = adjusted_row
+
+        construction_rows.append([''] * len(self.sam_cash_flow_profile[0]))
+        for construction_row in reversed(construction_rows):
+            ret.insert(1, construction_row)
 
         return ret
 

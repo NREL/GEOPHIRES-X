@@ -234,6 +234,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     capex_spend_vec: list[float] = []
     equity_spend_vec: list[float] = []
     debt_draw_vec: list[float] = []
+    debt_balance_usd_vec: list[float] = []
     interest_accrued_vec: list[float] = []  # This is non-cash, but good to track
 
     for year_index in range(pre_revenue_years_count):
@@ -263,6 +264,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
         total_inflation_cost_usd += inflation_cost_this_year_usd
 
         current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
+        debt_balance_usd_vec.append(current_debt_balance_usd)
 
     logger.info(
         f"Phased CAPEX calculation complete: "
@@ -289,7 +291,10 @@ def _calculate_pre_revenue_costs_and_cashflow(
         'Issuance of debt ($)'
     ] = debt_draw_vec
 
-    # FIXME WIP TODO Size of debt ($)
+    pre_revenue_cf_profile[
+        'Debt balance ($)'
+        # 'Size of debt ($)'
+    ] = debt_balance_usd_vec
 
     pre_revenue_cf_profile["Cash flow from financing activities ($)"] = [e + d for e, d in
                                                                          zip(equity_spend_vec, debt_draw_vec)]

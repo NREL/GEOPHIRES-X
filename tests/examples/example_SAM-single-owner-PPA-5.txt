@@ -10,7 +10,7 @@
 Economic Model, 5, -- SAM Single Owner PPA
 Construction Years, 7
 Construction CAPEX Schedule, 0.01,0.02,0.07,0.1,0.2,0.2,0.4
-# Bond Financing Start Year, 4  # FIXME WIP not supported yet
+Bond Financing Start Year, 4
 
 Capital Cost for Power Plant for Electricity Generation, 1900
 Exploration Capital Cost, 120

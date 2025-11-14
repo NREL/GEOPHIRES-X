@@ -218,15 +218,11 @@ def validate_read_parameters(model: Model):
 
     if econ.bond_financing_start_year.value >= construction_years:
         raise ValueError(
-            f'Bond financing start year ({econ.bond_financing_start_year.value}) must be less than '
+            f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) must be less than '
             f'{model.surfaceplant.construction_years.Name} ({construction_years}). '
-            # f'(Provide {econ.construction_bond_interest_rate.Name}=0 to use equity-only financing.)'  # WIP...
+            # f'(Provide {econ.bond_financing_start_year.Name}={model.surfaceplant.construction_years.value - 1} '
+            # f'to use equity-only financing.)'
         )
-
-    if econ.bond_financing_start_year.value > 0:
-        # Can't support unless debt interest payments can be disabled in pre-revenue years (currently only
-        # principal payments can)
-        raise NotImplementedError(f'{econ.bond_financing_start_year.Name} > 0 is not yet supported.')
 
 
 @lru_cache(maxsize=12)

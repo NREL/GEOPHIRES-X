@@ -144,7 +144,8 @@ class SamEconomicsCalculations:
             raise ValueError(f'Could not find row with name {row_name__}')
 
         after_tax_cash_flow: list[float] = (
-            _get_row('Total after-tax returns [construction] ($)') + _get_row('Total after-tax returns ($)')[2:]
+            _get_row('Total after-tax returns [construction] ($)')
+            + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
         )
         after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
         npv_usd = []

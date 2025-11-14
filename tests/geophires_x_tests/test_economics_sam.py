@@ -27,6 +27,7 @@ from geophires_x.GeoPHIRESUtils import sig_figs, quantity
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
+from geophires_x.Units import convertible_unit
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
@@ -200,8 +201,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(e.exception))
 
-    def test_multiple_construction_years_supported(self):
-        # self.assertIsNotNone(self._get_result({'Construction Years': 2, 'Construction CAPEX Schedule': '0.5,0.5'}))
+    def test_multiple_construction_years(self):
         construction_years_2: GeophiresXResult = self._get_result(
             {
                 'Construction Years': 2,
@@ -216,13 +216,29 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual('Year 20', cy2_cf[0][-1])
 
         with self.assertLogs(level='INFO') as logs:
-            self._get_result({'Construction Years': 4, 'Construction CAPEX Schedule': '0.5,0.5'})
+            construction_years_4 = self._get_result({'Construction Years': 4, 'Construction CAPEX Schedule': '0.5,0.5'})
 
             self.assertHasLogRecordWithMessage(
                 logs, 'has been adjusted to: [0.25, 0.25, 0.25, 0.25]', treat_substring_match_as_match=True
             )
 
-        # TODO add more test cases
+            cy4_cf = construction_years_4.result['SAM CASH FLOW PROFILE']
+
+            cy4_result_npv = construction_years_4.result['ECONOMIC PARAMETERS']['Project NPV']
+            self.assertEqual(
+                sig_figs(quantity(cy4_result_npv['value'], cy4_result_npv['unit']).to('USD').magnitude, 4),
+                sig_figs(self._get_cash_flow_row(cy4_cf, 'After-tax cumulative NPV ($)')[-1], 4),
+            )
+
+            cy4_result_irr = construction_years_4.result['ECONOMIC PARAMETERS']['After-tax IRR']
+
+            self.assertEqual(
+                sig_figs(
+                    quantity(cy4_result_irr['value'], cy4_result_irr['unit']).to(convertible_unit('percent')).magnitude,
+                    3,
+                ),
+                sig_figs(self._get_cash_flow_row(cy4_cf, 'After-tax cumulative IRR (%)')[-1], 3),
+            )
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

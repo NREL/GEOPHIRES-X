@@ -113,15 +113,18 @@ class SamEconomicsCalculations:
                 for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
                     k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
                     construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
-            else:
-                # FIXME WIP TODO zero-vectors e.g. Debt principal payment ($)
-                row_name = ret[row][0]
-                if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
-                    pre_revenue_row_content = [
-                        _rnd(k, v, it_)
-                        for it_ in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[row_name]
-                    ]
-                    insert_index = 2
+
+            # FIXME WIP/TODO - zip with construction rows
+            # else:
+            # row_name = ret[row][0]
+            # if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
+            #     pre_revenue_row_content = [
+            #         _rnd(k, v, it_)
+            #         for it_ in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[row_name]
+            #     ]
+            #     insert_index = 2
+
+            #  TODO zero-vectors e.g. Debt principal payment ($)
 
             adjusted_row = [ret[row][0]] + pre_revenue_row_content + ret[row][insert_index:]
             ret[row] = adjusted_row
@@ -130,16 +133,20 @@ class SamEconomicsCalculations:
         for construction_row in reversed(construction_rows):
             ret.insert(1, construction_row)
 
-        def _get_row_index(row_name: str) -> list[Any]:
-            return [it[0] for it in ret].index(row_name)
+        def _get_row_index(row_name_: str) -> list[Any]:
+            return [it[0] for it in ret].index(row_name_)
 
-        def _get_row(row_name: str) -> list[Any]:
+        def _get_row(row_name__: str) -> list[Any]:
             for r in ret:
-                if r[0] == row_name:
+                if r[0] == row_name__:
                     return r[1:]
 
-        after_tax_cash_flow = _get_row('Total after-tax returns ($)')
+            raise ValueError(f'Could not find row with name {row_name__}')
 
+        after_tax_cash_flow: list[float] = (
+            _get_row('Total after-tax returns [construction] ($)') + _get_row('Total after-tax returns ($)')[2:]
+        )
+        after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
         npv_usd = []
         irr_pct = []
         for year in range(len(after_tax_cash_flow)):

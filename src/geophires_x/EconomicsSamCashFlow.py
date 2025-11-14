@@ -25,7 +25,8 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
 
     # TODO this and/or related logic will need to be adjusted when multiple construction years are supported
     #  https://github.com/NREL/GEOPHIRES-X/issues/406
-    total_duration = model.surfaceplant.plant_lifetime.value + model.surfaceplant.construction_years.value
+    # FIXME WIP update above comment for impl
+    total_duration = model.surfaceplant.plant_lifetime.value + 1  # + model.surfaceplant.construction_years.value
 
     # Prefix with 'Year ' partially as workaround for tabulate applying float formatting to ints, possibly related
     # to https://github.com/astanin/python-tabulate/issues/18

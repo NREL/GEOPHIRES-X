@@ -42,6 +42,7 @@ from geophires_x.EconomicsUtils import (
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
+    _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
@@ -52,6 +53,7 @@ from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Un
 @dataclass
 class SamEconomicsCalculations:
     sam_cash_flow_profile: list[list[Any]]
+    pre_revenue_costs_and_cash_flow: PreRevenueCostsAndCashflow
 
     lcoe_nominal: OutputParameter = field(
         default_factory=lambda: OutputParameter(
@@ -79,6 +81,91 @@ class SamEconomicsCalculations:
 
     project_payback_period: OutputParameter = field(default_factory=project_payback_period_parameter)
     """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
+
+    @property
+    def _pre_revenue_years_count(self) -> int:
+        return len(
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
+                _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
+            ]
+        )
+
+    @property
+    def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
+        ret: list[list[Any]] = self.sam_cash_flow_profile.copy()
+
+        pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
+
+        construction_rows: list[list[Any]] = [['CONSTRUCTION'] + [''] * (len(self.sam_cash_flow_profile[0]) - 1)]
+
+        def _rnd(k_, v_, it: Any) -> Any:
+            return round(float(it)) if k_.endswith('($)') and is_float(it) else it
+
+        for row in range(len(self.sam_cash_flow_profile)):
+            pre_revenue_row_content = [''] * pre_revenue_years_to_insert
+            insert_index = 1
+
+            if row == 0:
+                for pre_revenue_year in range(pre_revenue_years_to_insert):
+                    negative_year_index: int = self._pre_revenue_years_count - 1 - pre_revenue_year
+                    pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
+
+                for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
+                    k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
+                    construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
+
+            # FIXME WIP/TODO - zip with construction rows
+            # else:
+            # row_name = ret[row][0]
+            # if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
+            #     pre_revenue_row_content = [
+            #         _rnd(k, v, it_)
+            #         for it_ in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[row_name]
+            #     ]
+            #     insert_index = 2
+
+            #  TODO zero-vectors e.g. Debt principal payment ($)
+
+            adjusted_row = [ret[row][0]] + pre_revenue_row_content + ret[row][insert_index:]
+            ret[row] = adjusted_row
+
+        construction_rows.append([''] * len(self.sam_cash_flow_profile[0]))
+        for construction_row in reversed(construction_rows):
+            ret.insert(1, construction_row)
+
+        def _get_row_index(row_name_: str) -> list[Any]:
+            return [it[0] for it in ret].index(row_name_)
+
+        def _get_row(row_name__: str) -> list[Any]:
+            for r in ret:
+                if r[0] == row_name__:
+                    return r[1:]
+
+            raise ValueError(f'Could not find row with name {row_name__}')
+
+        after_tax_cash_flow: list[float] = (
+            _get_row('Total after-tax returns [construction] ($)')
+            + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
+        )
+        after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
+        npv_usd = []
+        irr_pct = []
+        for year in range(len(after_tax_cash_flow)):
+            npv_usd.append(
+                round(
+                    npf.npv(
+                        self.nominal_discount_rate.quantity().to('dimensionless').magnitude,
+                        after_tax_cash_flow[: year + 1],
+                    )
+                )
+            )
+
+            irr_pct.append(npf.irr(after_tax_cash_flow[: year + 1]) * 100.0)
+
+        ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
+        ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct
+
+        return ret
 
 
 def validate_read_parameters(model: Model):
@@ -188,7 +275,10 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     def sf(_v: float, num_sig_figs: int = 5) -> float:
         return sig_figs(_v, num_sig_figs)
 
-    sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(sam_cash_flow_profile=cash_flow)
+    sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(
+        sam_cash_flow_profile=cash_flow,
+        pre_revenue_costs_and_cash_flow=calculate_pre_revenue_costs_and_cashflow(model),
+    )
 
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
     sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))
@@ -218,7 +308,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
     """FIXME WIP"""
 
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
 
@@ -234,7 +324,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
 
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.pre_revenue_equity_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
     after_tax_irr_pct = npf.irr(combined_cash_flow) * 100.0
@@ -357,7 +447,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
                 return entry_display
         return entry
 
-    profile_display = model.economics.sam_economics_calculations.sam_cash_flow_profile.copy()
+    profile_display = model.economics.sam_economics_calculations.sam_cash_flow_profile_all_years.copy()
     for i in range(len(profile_display)):
         for j in range(len(profile_display[i])):
             profile_display[i][j] = get_entry_display(profile_display[i][j])
@@ -427,14 +517,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # calling with PySAM. But, we set it here anyway for the sake of technical compliance.
     ret['flip_target_year'] = _analysis_period(model)
 
-    # Get base values
     total_overnight_capex_usd = econ.CCap.quantity().to('USD').magnitude
-    pre_revenue_years = _pre_revenue_years_count(model)
 
-    # Initialize final values
     total_installed_cost_usd: float
     construction_financing_cost_usd: float
-
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
     total_installed_cost_usd: float = pre_revenue_costs.total_installed_cost_usd
     construction_financing_cost_usd: float = pre_revenue_costs.construction_financing_cost_usd
@@ -453,9 +539,10 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Pass the final, correct values to SAM
     ret['total_installed_cost'] = total_installed_cost_usd
-    ret['construction_financing_cost'] = construction_financing_cost_usd
 
-    pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
+    # TODO/WIP interest during construction (IDC) line item
+
+    # pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
 
     # # https://nrel-pysam.readthedocs.io/en/main/modules/Singleowner.html#depreciation-group
     # ret['depr_alloc_sl_20_percent'] = 0.0
@@ -474,7 +561,9 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # ret['depr_custom_schedule'] = depr_custom_schedule[:analysis_period]
 
     opex_musd = econ.Coam.value
-    ret['om_fixed'] = pre_revenue_years_zero_vector + [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
+    ret['om_fixed'] = [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
+    # ret['om_fixed'] = pre_revenue_years_zero_vector + ret['om_fixed']
+
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
 
@@ -484,16 +573,15 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['federal_tax_rate'], ret['state_tax_rate'] = _get_fed_and_state_tax_rates(econ.CTR.value)
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
-    ret['itc_fed_percent'] = pre_revenue_years_zero_vector + [float(geophires_itc_tenths * Decimal(100))]
+    ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
+    # ret['itc_fed_percent'] = pre_revenue_years_zero_vector + ret['itc_fed_percent']
 
     if econ.PTCElec.Provided:
-        ret['ptc_fed_amount'] = pre_revenue_years_zero_vector + [
-            econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude
-        ]
-        # noinspection PyRedundantParentheses
-        ret['ptc_fed_term'] = (econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude) + len(
-            pre_revenue_years_zero_vector
-        )
+        ret['ptc_fed_amount'] = [econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude]
+        # ret['ptc_fed_amount'] = pre_revenue_years_zero_vector + ret['ptc_fed_amount']
+
+        ret['ptc_fed_term'] = econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
+        # ret['ptc_fed_term'] = ret['ptc_fed_term']+len(pre_revenue_years_zero_vector)
 
         if econ.PTCInflationAdjusted.value:
             ret['ptc_fed_escal'] = _pct(econ.RINFL)
@@ -503,12 +591,14 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['property_tax_rate'] = float(geophires_ptr_tenths * Decimal(100))
 
     ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
-    ret['ppa_price_input'] = pre_revenue_years_zero_vector + ppa_price_schedule_per_kWh
+    ret['ppa_price_input'] = ppa_price_schedule_per_kWh
+    # ret['ppa_price_input'] = pre_revenue_years_zero_vector + ret['ppa_price_input']
 
     if model.economics.royalty_rate.Provided:
-        ret['om_production'] = pre_revenue_years_zero_vector + _get_royalties_variable_om_USD_per_MWh_schedule(model)
+        ret['om_production'] = _get_royalties_variable_om_USD_per_MWh_schedule(model)
+        # ret['om_production'] = pre_revenue_years_zero_vector + ret['om_production']
 
-    # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
+        # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
     # ret['debt_percent'] = _pct(econ.FIB)
     ret['debt_percent'] = pre_revenue_costs.effective_debt_percent
 
@@ -516,7 +606,7 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     ret['real_discount_rate'] = _pct(econ.discountrate)
 
     # Project lifetime
-    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value + len(pre_revenue_years_zero_vector)
+    ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
     ret['term_int_rate'] = _pct(econ.BIR)
     # ret['loan_moratorium'] = len(pre_revenue_years_zero_vector)
 
@@ -525,7 +615,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     if model.economics.DoAddOnCalculations.value:
         add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
         add_on_profit_series = [add_on_profit_per_year] * model.surfaceplant.plant_lifetime.value
-        ret['cp_capacity_payment_amount'] = pre_revenue_years_zero_vector + add_on_profit_series
+        ret['cp_capacity_payment_amount'] = add_on_profit_series
+        # ret['cp_capacity_payment_amount'] =pre_revenue_years_zero_vector + ret['cp_capacity_payment_amount']
         ret['cp_capacity_payment_type'] = 1
 
     return ret

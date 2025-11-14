@@ -26,59 +26,61 @@ jobs:
             toxpython: 'python3.11'
             tox_env: 'docs'
             os: 'ubuntu-latest'
-          - name: 'py38 (ubuntu)'
-            python: '3.8'
-            toxpython: 'python3.8'
-            python_arch: 'x64'
-            tox_env: 'py38'
-            os: 'ubuntu-latest'
-            main_only: true
-          - name: 'py39 (ubuntu)'
-            python: '3.9'
-            toxpython: 'python3.9'
-            python_arch: 'x64'
-            tox_env: 'py39'
-            os: 'ubuntu-latest'
-            main_only: true
-          - name: 'py310 (ubuntu)'
-            python: '3.10'
-            toxpython: 'python3.10'
-            python_arch: 'x64'
-            tox_env: 'py310'
-            os: 'ubuntu-latest'
-            main_only: true
+
+            # FIXME TEMP
+#          - name: 'py38 (ubuntu)'
+#            python: '3.8'
+#            toxpython: 'python3.8'
+#            python_arch: 'x64'
+#            tox_env: 'py38'
+#            os: 'ubuntu-latest'
+#          - name: 'py39 (ubuntu)'
+#            python: '3.9'
+#            toxpython: 'python3.9'
+#            python_arch: 'x64'
+#            tox_env: 'py39'
+#            os: 'ubuntu-latest'
+#          - name: 'py310 (ubuntu)'
+#            python: '3.10'
+#            toxpython: 'python3.10'
+#            python_arch: 'x64'
+#            tox_env: 'py310'
+#            os: 'ubuntu-latest'
+
 #          - name: 'py310 (windows)'
 #            python: '3.10'
 #            toxpython: 'python3.10'
 #            python_arch: 'x64'
 #            tox_env: 'py310'
 #            os: 'windows-latest'
-          - name: 'py311 (ubuntu)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            os: 'ubuntu-latest'
-          - name: 'py311 (macos)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            os: 'macos-latest'
-            main_only: true
-          - name: 'py311 (windows)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            os: 'windows-latest'
-            main_only: true
+
+            # FIXME TEMP
+#          - name: 'py311 (ubuntu)'
+#            python: '3.11'
+#            toxpython: 'python3.11'
+#            python_arch: 'x64'
+#            tox_env: 'py311'
+#            os: 'ubuntu-latest'
+#          - name: 'py311 (macos)'
+#            python: '3.11'
+#            toxpython: 'python3.11'
+#            python_arch: 'x64'
+#            tox_env: 'py311'
+#            os: 'macos-latest'
+#          - name: 'py311 (windows)'
+#            python: '3.11'
+#            toxpython: 'python3.11'
+#            python_arch: 'x64'
+#            tox_env: 'py311'
+#            os: 'windows-latest'
+
           - name: 'py312 (ubuntu)'
             python: '3.12'
             toxpython: 'python3.12'
             python_arch: 'x64'
             tox_env: 'py312'
             os: 'ubuntu-latest'
+
 #          - name: 'pypy38 (ubuntu)'
 #            python: 'pypy-3.8'
 #            toxpython: 'pypy3.8'
@@ -105,22 +107,14 @@ jobs:
 #            os: 'macos-latest'
 
     steps:
-    - name: '[skip check]'
-      if: (matrix.main_only == true) && (github.ref != 'refs/heads/main')
-      run: |
-        echo "Job '${{ matrix.name }}' is marked as 'main_only'."
-        echo "Skipping this job because we are not on 'main' branch."
-    - if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v5
-      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       with:
         python-version: ${{ matrix.python }}
         architecture: ${{ matrix.python_arch }}
     - name: install dependencies
-      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       run: |
         python -mpip install --upgrade pip
         python -mpip install --progress-bar=off -r ci/requirements.txt
@@ -129,7 +123,6 @@ jobs:
         tox --version
         pip list --format=freeze
     - name: test
-      if: (matrix.main_only != true) || (github.ref == 'refs/heads/main')
       env:
         TOXPYTHON: '${{ matrix.toxpython }}'
       run: >

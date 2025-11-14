@@ -149,8 +149,7 @@ class SamEconomicsCalculations:
         after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
         npv_usd = []
         irr_pct = []
-        for year in range(len(after_tax_cash_flow)):
-            # cash_flow_to_year = [float(x) for x in after_tax_cash_flow[:year+1]]
+        for year in range(len(after_tax_cash_flow) + 1):
             npv_usd.append(
                 round(
                     npf.npv(

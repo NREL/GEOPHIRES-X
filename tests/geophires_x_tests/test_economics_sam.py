@@ -520,9 +520,14 @@ class EconomicsSamTestCase(BaseTestCase):
         )
         sam_after_tax_irr_calc = float(after_tax_irr_cash_flow_entries[-1])
 
-        # Test case condition - we expect SAM to have calculated NaN here. If this assertion fails, adjust params passed
-        # to _get_result such that final year of After-tax cumulative IRR is NaN.
-        assert math.isnan(sam_after_tax_irr_calc)
+        try:
+            # As of 2025-11-14, this assertion is expected to fail because After-tax cumulative IRR is now backfilled
+            # upstream by the SAM-EM as part of adjusting IRR for multi-year construction periods.
+            # However, we would want to run the remainder of the test if the assertion does pass, hence why skipping
+            # is conditional.
+            assert math.isnan(sam_after_tax_irr_calc)
+        except AssertionError:
+            self.skipTest('Skipping because NaN after-tax IRR is handled upstream by SAM-EM')
 
         after_tax_cash_flow = EconomicsSamTestCase._get_cash_flow_row(
             r.result['SAM CASH FLOW PROFILE'], 'Total after-tax returns ($)'

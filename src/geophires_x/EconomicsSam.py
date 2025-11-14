@@ -543,7 +543,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     # Pass the final, correct values to SAM
     ret['total_installed_cost'] = total_installed_cost_usd
-    ret['construction_financing_cost'] = construction_financing_cost_usd
+
+    # TODO/WIP interest during construction (IDC) line item
 
     pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
 

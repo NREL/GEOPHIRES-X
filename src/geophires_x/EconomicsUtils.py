@@ -187,7 +187,7 @@ class PreRevenueCostsAndCashflow:
 
 
 
-def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAndCashflow:
+def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsAndCashflow:
     econ = model.economics
     if econ.inflrateconstruction.Provided:
         pre_revenue_inflation_rate = econ.inflrateconstruction.quantity().to('dimensionless').magnitude
@@ -206,7 +206,8 @@ def calculate_pre_revenue_costs_and_cashflow(model:'Model') -> PreRevenueCostsAn
         logger=model.logger,
     )
 
-_CONSTRUCTION_LINE_ITEM_DESIGNATOR = '' # '[construction] '
+
+_CONSTRUCTION_LINE_ITEM_DESIGNATOR = ''  # '[construction] '
 
 
 def _calculate_pre_revenue_costs_and_cashflow(

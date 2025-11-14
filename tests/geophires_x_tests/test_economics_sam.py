@@ -213,6 +213,7 @@ class EconomicsSamTestCase(BaseTestCase):
         cy2_cf = construction_years_2.result['SAM CASH FLOW PROFILE']
         # self.assertTrue(cy2_cf[0][1].startswith('Year -'))
         self.assertEqual('Year -1', cy2_cf[0][1])
+        self.assertEqual('Year 20', cy2_cf[0][-1])
 
         with self.assertLogs(level='INFO') as logs:
             self._get_result({'Construction Years': 4, 'Construction CAPEX Schedule': '0.5,0.5'})

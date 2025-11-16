@@ -181,7 +181,7 @@ class EconomicsSamTestCase(BaseTestCase):
         )
 
     @staticmethod
-    def _get_cash_flow_row(cash_flow, name):
+    def _get_cash_flow_row(cash_flow: list[list[Any]], name: str) -> list[Any]:
 
         def r_0(r):
             if r is not None and len(r) > 0:
@@ -211,7 +211,6 @@ class EconomicsSamTestCase(BaseTestCase):
         )
         self.assertIsNotNone(construction_years_2)
         cy2_cf = construction_years_2.result['SAM CASH FLOW PROFILE']
-        # self.assertTrue(cy2_cf[0][1].startswith('Year -'))
         self.assertEqual('Year -1', cy2_cf[0][1])
         self.assertEqual('Year 20', cy2_cf[0][-1])
 
@@ -239,6 +238,25 @@ class EconomicsSamTestCase(BaseTestCase):
                 ),
                 sig_figs(self._get_cash_flow_row(cy4_cf, 'After-tax cumulative IRR (%)')[-1], 3),
             )
+
+    def test_bond_interest_rate_during_construction(self):
+        r: GeophiresXResult = self._get_result(
+            {
+                'Construction Years': 2,
+                'Inflation Rate During Construction': 0,
+                'Fraction of Investment in Bonds': 0,
+                'Inflated Bond Interest Rate During Construction': 0,
+            }
+        )
+
+        def get_equity_usd(r: GeophiresXResult) -> float:
+            equity_str = self._get_cash_flow_row(r.result['SAM CASH FLOW PROFILE'], 'Issuance of equity ($)')[-1]
+
+            return float(equity_str)
+
+        equity_musd = quantity(get_equity_usd(r), 'USD').to('MUSD').magnitude
+        total_capex_musd = r.result['SUMMARY OF RESULTS']['Total CAPEX']['value']
+        self.assertAlmostEqual(total_capex_musd, equity_musd, places=2)
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

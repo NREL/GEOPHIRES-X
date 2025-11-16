@@ -1701,6 +1701,15 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Inflated Bond Interest Rate During Construction": {
+      "description": "Inflated bond interest rate during construction (for debt/loans)",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.05,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
     "Inflated Equity Interest Rate": {
       "description": "Inflated equity interest rate (see docs)",
       "type": "number",

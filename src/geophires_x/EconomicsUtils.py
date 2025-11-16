@@ -199,11 +199,16 @@ def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsA
     else:
         pre_revenue_inflation_rate = econ.RINFL.quantity().to('dimensionless').magnitude
 
+    pre_revenue_bond_interest_rate_param = econ.BIR
+    if econ.bond_interest_rate_during_construction.Provided:
+        pre_revenue_bond_interest_rate = econ.bond_interest_rate_during_construction
+    pre_revenue_bond_interest_rate = pre_revenue_bond_interest_rate_param.quantity().to('dimensionless').magnitude
+
     return _calculate_pre_revenue_costs_and_cashflow(
         total_overnight_capex_usd=econ.CCap.quantity().to('USD').magnitude,
         pre_revenue_years_count=model.surfaceplant.construction_years.value,
         phased_capex_schedule=econ.construction_capex_schedule.value,
-        pre_revenue_bond_interest_rate=econ.BIR.quantity().to('dimensionless').magnitude,
+        pre_revenue_bond_interest_rate=pre_revenue_bond_interest_rate,
         inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
         debt_financing_start_year=econ.bond_financing_start_year.value,

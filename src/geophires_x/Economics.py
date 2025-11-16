@@ -1077,6 +1077,17 @@ class Economics:
             ToolTipText="Inflated bond interest rate (for debt/loans)"
         )
 
+        self.bond_interest_rate_during_construction = self.ParameterDict[self.bond_interest_rate_during_construction.Name] = floatParameter(
+            'Inflated Bond Interest Rate During Construction',
+            DefaultValue=self.BIR.DefaultValue,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText='Inflated bond interest rate during construction (for debt/loans)'
+        )
+
         self.EIR = self.ParameterDict[self.EIR.Name] = floatParameter(
             "Inflated Equity Interest Rate",
             DefaultValue=0.1,

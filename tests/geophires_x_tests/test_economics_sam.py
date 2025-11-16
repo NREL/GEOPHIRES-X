@@ -240,11 +240,12 @@ class EconomicsSamTestCase(BaseTestCase):
             )
 
     def test_bond_interest_rate_during_construction(self):
+        fraction_in_bonds: float = 0.5
         r: GeophiresXResult = self._get_result(
             {
                 'Construction Years': 2,
                 'Inflation Rate During Construction': 0,
-                'Fraction of Investment in Bonds': 0,
+                'Fraction of Investment in Bonds': fraction_in_bonds,
                 'Inflated Bond Interest Rate During Construction': 0,
             }
         )
@@ -256,7 +257,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         equity_musd = quantity(get_equity_usd(r), 'USD').to('MUSD').magnitude
         total_capex_musd = r.result['SUMMARY OF RESULTS']['Total CAPEX']['value']
-        self.assertAlmostEqual(total_capex_musd, equity_musd, places=2)
+        self.assertAlmostEqual(total_capex_musd * fraction_in_bonds, equity_musd, places=2)
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

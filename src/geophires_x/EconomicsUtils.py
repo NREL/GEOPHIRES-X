@@ -201,7 +201,7 @@ def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsA
 
     pre_revenue_bond_interest_rate_param = econ.BIR
     if econ.bond_interest_rate_during_construction.Provided:
-        pre_revenue_bond_interest_rate = econ.bond_interest_rate_during_construction
+        pre_revenue_bond_interest_rate_param = econ.bond_interest_rate_during_construction
     pre_revenue_bond_interest_rate = pre_revenue_bond_interest_rate_param.quantity().to('dimensionless').magnitude
 
     return _calculate_pre_revenue_costs_and_cashflow(

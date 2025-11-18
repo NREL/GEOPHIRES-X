@@ -247,7 +247,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     equity_spend_vec: list[float] = []
     debt_draw_vec: list[float] = []
     debt_balance_usd_vec: list[float] = []
-    interest_accrued_vec: list[float] = []  # This is non-cash, but good to track
+    interest_accrued_vec: list[float] = []  # WIP addding cashflow line item "Debt interest payment [construction] ($)"
 
     for year_index in range(pre_revenue_years_count):
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
@@ -308,6 +308,8 @@ def _calculate_pre_revenue_costs_and_cashflow(
         f'Debt balance {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
         # 'Size of debt ($)'
     ] = debt_balance_usd_vec
+
+    pre_revenue_cf_profile[f'Debt interest payment {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = interest_accrued_vec
 
     pre_revenue_cf_profile[f'Cash flow from financing activities {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = [
         e + d for e, d in zip(equity_spend_vec, debt_draw_vec)

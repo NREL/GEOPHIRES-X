@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.5
- Simulation Date: 2025-11-14
- Simulation Time:  09:35
- Calculation Time:      1.786 sec
+ GEOPHIRES Version: 3.10.8
+ Simulation Date: 2025-11-18
+ Simulation Time:  10:32
+ Calculation Time:      1.724 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -220,6 +220,7 @@ Cash flow from investing activities [construction] ($)	-6,132,082	-12,546,240	-4
 Total after-tax returns [construction] ($)            	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-47,011,979 	-48,093,255 	-98,398,799
 Issuance of debt [construction] ($)                   	0         	0          	0          	0           	87,307,961  	89,316,044  	182,740,627
 Debt balance [construction] ($)                       	0         	0          	0          	0           	87,307,961  	182,735,563 	378,267,679
+Debt interest payment [construction] ($)              	0         	0          	0          	0           	0           	6,111,557   	12,791,489
 Cash flow from financing activities [construction] ($)	6,132,082 	12,546,240 	44,921,812 	65,650,020  	134,319,940 	137,409,299 	281,139,426
 Total pre-tax returns [construction] ($)              	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-47,011,979 	-48,093,255 	-98,398,799
 

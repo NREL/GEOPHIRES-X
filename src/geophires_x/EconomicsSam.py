@@ -111,7 +111,9 @@ class SamEconomicsCalculations:
                     pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
 
                 for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
+                    # TODO move logic to _calculate_pre_revenue_costs_and_cashflow (_CONSTRUCTION_LINE_ITEM_DESIGNATOR)
                     k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
+
                     construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
 
             # FIXME WIP/TODO - zip with construction rows

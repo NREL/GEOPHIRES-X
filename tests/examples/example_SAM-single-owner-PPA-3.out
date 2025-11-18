@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.4
- Simulation Date: 2025-11-14
- Simulation Time:  09:16
- Calculation Time:      1.177 sec
+ GEOPHIRES Version: 3.10.8
+ Simulation Date: 2025-11-18
+ Simulation Time:  11:30
+ Calculation Time:      1.152 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -199,11 +199,14 @@ Simulation Metadata
 CONSTRUCTION
 Purchase of property [construction] ($)               	-275,473,424
 Cash flow from investing activities [construction] ($)	-275,473,424
-Total after-tax returns [construction] ($)            	-165,284,055
+
 Issuance of debt [construction] ($)                   	110,189,370
 Debt balance [construction] ($)                       	110,189,370
+Debt interest payment [construction] ($)              	0
 Cash flow from financing activities [construction] ($)	275,473,424
+
 Total pre-tax returns [construction] ($)              	-165,284,055
+Total after-tax returns [construction] ($)            	-165,284,055
 
 ENERGY
 Electricity to grid (kWh)                             	0.0            	459,393,200	462,061,296	462,867,882	463,343,815	463,676,568	463,929,931	464,133,155	464,302,013	464,445,938	464,571,006	464,681,345	464,779,886	464,868,777	464,949,642	465,023,726	465,092,011	465,155,313	465,214,308	465,269,475	465,319,040

@@ -85,7 +85,7 @@ class SamEconomicsCalculations:
     @property
     def _pre_revenue_years_count(self) -> int:
         return len(
-            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[
                 _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
             ]
         )
@@ -98,23 +98,22 @@ class SamEconomicsCalculations:
 
         construction_rows: list[list[Any]] = [['CONSTRUCTION'] + [''] * (len(self.sam_cash_flow_profile[0]) - 1)]
 
-        def _rnd(k_, v_, it: Any) -> Any:
-            return round(float(it)) if k_.endswith('($)') and is_float(it) else it
-
-        for row in range(len(self.sam_cash_flow_profile)):
+        for row_index in range(len(self.sam_cash_flow_profile)):
             pre_revenue_row_content = [''] * pre_revenue_years_to_insert
             insert_index = 1
 
-            if row == 0:
+            if row_index == 0:
                 for pre_revenue_year in range(pre_revenue_years_to_insert):
                     negative_year_index: int = self._pre_revenue_years_count - 1 - pre_revenue_year
                     pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
 
-                for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile.items():
-                    # TODO move logic to _calculate_pre_revenue_costs_and_cashflow (_CONSTRUCTION_LINE_ITEM_DESIGNATOR)
-                    k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
-
-                    construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
+                # for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict.items():
+                #     # TODO move logic to _calculate_pre_revenue_costs_and_cashflow (_CONSTRUCTION_LINE_ITEM_DESIGNATOR)
+                #     k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
+                #
+                #     construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
+                for _, row_ in enumerate(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile):
+                    construction_rows.append(row_)
 
             # FIXME WIP/TODO - zip with construction rows
             # else:
@@ -128,8 +127,8 @@ class SamEconomicsCalculations:
 
             #  TODO zero-vectors e.g. Debt principal payment ($)
 
-            adjusted_row = [ret[row][0]] + pre_revenue_row_content + ret[row][insert_index:]
-            ret[row] = adjusted_row
+            adjusted_row = [ret[row_index][0]] + pre_revenue_row_content + ret[row_index][insert_index:]
+            ret[row_index] = adjusted_row
 
         construction_rows.append([''] * len(self.sam_cash_flow_profile[0]))
         for construction_row in reversed(construction_rows):
@@ -163,6 +162,7 @@ class SamEconomicsCalculations:
             )
 
             irr_pct.append(npf.irr(after_tax_cash_flow[: year + 1]) * 100.0)
+            # FIXME TODO correct 'nan' to 'NaN' (either here or appropriate place in processing pipeline...)
 
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
         ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct

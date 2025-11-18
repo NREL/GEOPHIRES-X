@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.10.8
  Simulation Date: 2025-11-18
- Simulation Time:  10:32
- Calculation Time:      1.724 sec
+ Simulation Time:  11:15
+ Calculation Time:      1.726 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -217,12 +217,12 @@ Simulation Metadata
 CONSTRUCTION
 Purchase of property [construction] ($)               	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-134,319,940	-137,409,299	-281,139,426
 Cash flow from investing activities [construction] ($)	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-134,319,940	-137,409,299	-281,139,426
-Total after-tax returns [construction] ($)            	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-47,011,979 	-48,093,255 	-98,398,799
 Issuance of debt [construction] ($)                   	0         	0          	0          	0           	87,307,961  	89,316,044  	182,740,627
 Debt balance [construction] ($)                       	0         	0          	0          	0           	87,307,961  	182,735,563 	378,267,679
 Debt interest payment [construction] ($)              	0         	0          	0          	0           	0           	6,111,557   	12,791,489
 Cash flow from financing activities [construction] ($)	6,132,082 	12,546,240 	44,921,812 	65,650,020  	134,319,940 	137,409,299 	281,139,426
 Total pre-tax returns [construction] ($)              	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-47,011,979 	-48,093,255 	-98,398,799
+Total after-tax returns [construction] ($)            	-6,132,082	-12,546,240	-44,921,812	-65,650,020 	-47,011,979 	-48,093,255 	-98,398,799
 
 ENERGY
 Electricity to grid (kWh)                             	          	           	           	            	            	            	0.0          	859,490,068 	865,758,172	867,671,460	868,803,529	869,596,370	870,200,786	870,686,054	871,089,570	871,433,728	871,732,959	871,997,081	872,233,061	872,446,015	872,639,805	872,817,414	872,981,192	873,133,019	873,274,427	873,406,675	873,530,811	873,647,716	873,758,141	873,862,724	873,962,017	874,056,500	874,146,590	874,232,654	874,315,016	874,393,962	874,466,670

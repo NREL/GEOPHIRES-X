@@ -9,6 +9,7 @@ from scipy.interpolate.interpolate import interp1d
 
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
+from geophires_x.GeoPHIRESUtils import is_float
 
 
 def BuildPricingModel(
@@ -180,8 +181,9 @@ class PreRevenueCostsAndCashflow:
     debt_balance_usd: float
     inflation_cost_usd: float = 0.0
 
-    pre_revenue_cash_flow_profile: dict[str, list[float]] = field(default_factory=dict)
-    """Maps SAM's row names (str) to a list of pre-revenue values"""
+    pre_revenue_cash_flow_profile: list[list[float | str]] = field(default_factory=list)
+    # pre_revenue_cash_flow_profile_dict: dict[str, list[float]] = field(default_factory=dict)
+    # """Maps SAM's row names (str) to a list of pre-revenue values"""
 
     @property
     def effective_debt_percent(self) -> float:
@@ -189,7 +191,24 @@ class PreRevenueCostsAndCashflow:
 
     @property
     def total_after_tax_returns_cash_flow_usd(self):
-        return self.pre_revenue_cash_flow_profile[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME]
+        return self.pre_revenue_cash_flow_profile_dict[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME]
+
+    @property
+    def pre_revenue_cash_flow_profile_dict(self) -> dict[str, list[float]]:
+        """Maps SAM's row names (str) to a list of pre-revenue values"""
+        ret = {}
+
+        for i in range(len(self.pre_revenue_cash_flow_profile)):
+            row_name = self.pre_revenue_cash_flow_profile[i][0]
+            if row_name == '':
+                continue
+
+            row_name = row_name.replace(f'{_CONSTRUCTION_LINE_ITEM_DESIGNATOR} ', '')
+
+            row_values = self.pre_revenue_cash_flow_profile[i][1:]
+            ret[row_name] = row_values
+
+        return ret
 
 
 def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsAndCashflow:
@@ -216,7 +235,7 @@ def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsA
     )
 
 
-_CONSTRUCTION_LINE_ITEM_DESIGNATOR = ''  # '[construction] '
+_CONSTRUCTION_LINE_ITEM_DESIGNATOR = '[construction]'
 
 
 def _calculate_pre_revenue_costs_and_cashflow(
@@ -286,45 +305,61 @@ def _calculate_pre_revenue_costs_and_cashflow(
     )
 
     # noinspection PyDictCreation
-    pre_revenue_cf_profile: dict[str, list[float]] = {}
+    blank_row = [''] * len(capex_spend_vec)
+    # pre_revenue_cf_profile_dict: dict[str, list[float]] = {}
+    pre_revenue_cf_profile: list[list[float | str]] = []
 
-    pre_revenue_cf_profile[f'Purchase of property {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = [
-        -x for x in capex_spend_vec
-    ]
-    pre_revenue_cf_profile[
-        f'Cash flow from investing activities {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
+    # TODO/WIP append blank rows to designate groupings
+
+    def _rnd(k_, v_: Any) -> Any:
+        return round(float(v_)) if k_.endswith('($)') and is_float(v_) else v_
+
+    def _append_row(row_name: str, row_vals: list[float | str]) -> None:
+        row_name_adjusted = row_name.split('(')[0] + f'{_CONSTRUCTION_LINE_ITEM_DESIGNATOR} (' + row_name.split('(')[1]
+        pre_revenue_cf_profile.append([row_name_adjusted] + [_rnd(row_name, it) for it in row_vals])
+
+    _append_row(f'Purchase of property ($)', [-x for x in capex_spend_vec])
+    _append_row(
+        f'Cash flow from investing activities ($)',
         # 'CAPEX spend ($)'
-    ] = [-x for x in capex_spend_vec]
+        [-x for x in capex_spend_vec],
+    )
+
+    # pre_revenue_cf_profile.append(blank_row.copy())
 
     # --- Financing Activities ---
     # Issuance of equity and debt are *inflows* (positive)
-    pre_revenue_cf_profile[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME] = equity_spend_vec
-    pre_revenue_cf_profile[
+    # _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,equity_spend_vec)
+    _append_row(
         # 'Debt draw ($)'
-        f'Issuance of debt {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
-    ] = debt_draw_vec
+        f'Issuance of debt ($)',
+        debt_draw_vec,
+    )
 
-    pre_revenue_cf_profile[
-        f'Debt balance {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'
+    _append_row(
+        f'Debt balance ($)'
         # 'Size of debt ($)'
-    ] = debt_balance_usd_vec
+        ,
+        debt_balance_usd_vec,
+    )
 
-    pre_revenue_cf_profile[f'Debt interest payment {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = interest_accrued_vec
+    _append_row(f'Debt interest payment ($)', interest_accrued_vec)
 
-    pre_revenue_cf_profile[f'Cash flow from financing activities {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = [
-        e + d for e, d in zip(equity_spend_vec, debt_draw_vec)
-    ]
+    _append_row(f'Cash flow from financing activities ($)', [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)])
 
     # Equity cash flow is an *outflow* (negative)
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
-    pre_revenue_cf_profile[f'Total pre-tax returns {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = equity_cash_flow_usd
-    pre_revenue_cf_profile[f'Total after-tax returns {_CONSTRUCTION_LINE_ITEM_DESIGNATOR}($)'] = equity_cash_flow_usd
+    _append_row(f'Total pre-tax returns ($)', equity_cash_flow_usd)
+
+    # _append_row(f'Total after-tax returns ($)', equity_cash_flow_usd)
+    _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
 
     return PreRevenueCostsAndCashflow(
         total_installed_cost_usd=total_capitalized_cost_usd,
         construction_financing_cost_usd=total_interest_accrued_usd,
         debt_balance_usd=current_debt_balance_usd,
         inflation_cost_usd=total_inflation_cost_usd,
+        # pre_revenue_cash_flow_profile_dict=pre_revenue_cf_profile_dict,
         pre_revenue_cash_flow_profile=pre_revenue_cf_profile,
     )
 

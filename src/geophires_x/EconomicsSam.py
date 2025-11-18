@@ -93,6 +93,7 @@ class SamEconomicsCalculations:
     @property
     def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
         ret: list[list[Any]] = self.sam_cash_flow_profile.copy()
+        col_count = len(self.sam_cash_flow_profile[0])
 
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
@@ -113,7 +114,9 @@ class SamEconomicsCalculations:
                 #
                 #     construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
                 for _, row_ in enumerate(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile):
-                    construction_rows.append(row_)
+                    pre_revenue_row = row_.copy()
+                    pre_revenue_row.extend([''] * (col_count - len(pre_revenue_row)))
+                    construction_rows.append(pre_revenue_row)
 
             # FIXME WIP/TODO - zip with construction rows
             # else:

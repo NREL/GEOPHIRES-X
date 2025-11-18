@@ -304,12 +304,9 @@ def _calculate_pre_revenue_costs_and_cashflow(
         f"Total Capitalized Interest: ${total_interest_accrued_usd:,.2f}"
     )
 
-    # noinspection PyDictCreation
-    blank_row = [''] * len(capex_spend_vec)
-    # pre_revenue_cf_profile_dict: dict[str, list[float]] = {}
     pre_revenue_cf_profile: list[list[float | str]] = []
 
-    # TODO/WIP append blank rows to designate groupings
+    blank_row = [''] * len(capex_spend_vec)
 
     def _rnd(k_, v_: Any) -> Any:
         return round(float(v_)) if k_.endswith('($)') and is_float(v_) else v_
@@ -318,6 +315,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
         row_name_adjusted = row_name.split('(')[0] + f'{_CONSTRUCTION_LINE_ITEM_DESIGNATOR} (' + row_name.split('(')[1]
         pre_revenue_cf_profile.append([row_name_adjusted] + [_rnd(row_name, it) for it in row_vals])
 
+    # --- Investing Activities ---
     _append_row(f'Purchase of property ($)', [-x for x in capex_spend_vec])
     _append_row(
         f'Cash flow from investing activities ($)',
@@ -325,11 +323,9 @@ def _calculate_pre_revenue_costs_and_cashflow(
         [-x for x in capex_spend_vec],
     )
 
-    # pre_revenue_cf_profile.append(blank_row.copy())
+    pre_revenue_cf_profile.append(blank_row.copy())
 
     # --- Financing Activities ---
-    # Issuance of equity and debt are *inflows* (positive)
-    # _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,equity_spend_vec)
     _append_row(
         # 'Debt draw ($)'
         f'Issuance of debt ($)',
@@ -347,11 +343,11 @@ def _calculate_pre_revenue_costs_and_cashflow(
 
     _append_row(f'Cash flow from financing activities ($)', [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)])
 
-    # Equity cash flow is an *outflow* (negative)
+    pre_revenue_cf_profile.append(blank_row.copy())
+
+    # --- Returns ---
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
     _append_row(f'Total pre-tax returns ($)', equity_cash_flow_usd)
-
-    # _append_row(f'Total after-tax returns ($)', equity_cash_flow_usd)
     _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
 
     return PreRevenueCostsAndCashflow(

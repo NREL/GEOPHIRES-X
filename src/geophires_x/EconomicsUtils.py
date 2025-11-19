@@ -223,14 +223,21 @@ def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsA
         pre_revenue_bond_interest_rate_param = econ.bond_interest_rate_during_construction
     pre_revenue_bond_interest_rate = pre_revenue_bond_interest_rate_param.quantity().to('dimensionless').magnitude
 
+    construction_years: int = model.surfaceplant.construction_years.value
+
+    # Translate from negative year index input value to start-year-0-indexed calculation value
+    debt_financing_start_year: int = (
+        construction_years - abs(econ.bond_financing_start_year.value) if econ.bond_financing_start_year.Provided else 0
+    )
+
     return _calculate_pre_revenue_costs_and_cashflow(
         total_overnight_capex_usd=econ.CCap.quantity().to('USD').magnitude,
-        pre_revenue_years_count=model.surfaceplant.construction_years.value,
+        pre_revenue_years_count=construction_years,
         phased_capex_schedule=econ.construction_capex_schedule.value,
         pre_revenue_bond_interest_rate=pre_revenue_bond_interest_rate,
         inflation_rate=pre_revenue_inflation_rate,
         debt_fraction=econ.FIB.quantity().to('dimensionless').magnitude,
-        debt_financing_start_year=econ.bond_financing_start_year.value,
+        debt_financing_start_year=debt_financing_start_year,
         logger=model.logger,
     )
 

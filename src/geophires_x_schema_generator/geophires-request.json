@@ -1785,13 +1785,13 @@
       "maximum": 1.0
     },
     "Bond Financing Start Year": {
-      "description": "Project year when bond financing (debt/loans) starts (default: Year 0). Prior years will be financed with equity only.",
+      "description": "Project year index when bond financing (debt/loans) starts (if Fraction of Investment in Bonds is >0). Prior years will be financed with equity only. By default, bond financing starts during the first construction year which has year index {(Construction Years - 1) * -1}. For example, a project with 4 construction years where bond financing starts on the third Construction Year would have a Bond Financing Start Year value of -1; construction starts in Year -3, the secondyear is Year -2, and the final 2 bond-financed construction years are Year -1 and Year 0.",
       "type": "integer",
       "units": "yr",
       "category": "Economics",
       "default": 0,
-      "minimum": 0,
-      "maximum": 15
+      "minimum": -14,
+      "maximum": 0
     },
     "Contingency Percentage": {
       "description": "The contingency percentage applied to the direct capital costs for stimulation, field gathering system, exploration, and surface plant. (Note: well drilling and completion costs do not have contingency applied and are not affected by this parameter.)",

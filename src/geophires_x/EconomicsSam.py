@@ -221,12 +221,10 @@ def validate_read_parameters(model: Model):
         )
         model.logger.warning(msg)
 
-    if econ.bond_financing_start_year.value >= construction_years:
+    if abs(econ.bond_financing_start_year.value) >= construction_years:
         raise ValueError(
-            f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) must be less than '
-            f'{model.surfaceplant.construction_years.Name} ({construction_years}). '
-            # f'(Provide {econ.bond_financing_start_year.Name}={model.surfaceplant.construction_years.value - 1} '
-            # f'to use equity-only financing.)'
+            f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) may not be earlier than '
+            f'first {model.surfaceplant.construction_years.Name[:-1]} ({-1*(construction_years-1)}). '
         )
 
 

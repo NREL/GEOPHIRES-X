@@ -1171,13 +1171,17 @@ class Economics:
                         'calculated automatically by compounding Inflation Rate over Construction Years.'
         )
 
+        construction_capex_schedule_name = 'Construction CAPEX Schedule'
         self.construction_capex_schedule = self.ParameterDict[self.construction_capex_schedule.Name] = listParameter(
-            "Construction CAPEX Schedule",
+            construction_capex_schedule_name,
             DefaultValue=[1.],
             Min=0.0,
             Max=1.0,
-            ToolTipText='A list of percentages of the total overnight CAPEX spent in each construction year. '
-                        'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
+            ToolTipText=f'A list of fractions of the total overnight CAPEX spent in each construction year. '
+                        f'For example, for 3 construction years with 10% in the first year, 40% in the second, '
+                        f'and 50% in the third, provide {construction_capex_schedule_name} = 0.1,0.4,0.5. '
+                        f'If the length of the provided schedule does not match the number of construction years, '
+                        f'it will be interpolated to match the number of construction years.'
         )
 
         default_bond_financing_start_year = 0

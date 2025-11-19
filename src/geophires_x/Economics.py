@@ -1174,6 +1174,8 @@ class Economics:
         self.construction_capex_schedule = self.ParameterDict[self.construction_capex_schedule.Name] = listParameter(
             "Construction CAPEX Schedule",
             DefaultValue=[1.],
+            Min=0.0,
+            Max=1.0,
             ToolTipText='A list of percentages of the total overnight CAPEX spent in each construction year. '
                         'The number of entries must equal Construction Years. e.g., for 3 years: 0.1,0.4,0.5'
         )

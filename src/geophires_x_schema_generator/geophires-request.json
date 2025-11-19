@@ -1781,8 +1781,8 @@
       "default": [
         1.0
       ],
-      "minimum": -Infinity,
-      "maximum": Infinity
+      "minimum": 0.0,
+      "maximum": 1.0
     },
     "Bond Financing Start Year": {
       "description": "Project year when bond financing (debt/loans) starts (default: Year 0). Prior years will be financed with equity only.",

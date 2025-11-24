@@ -514,10 +514,14 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                display_inflation_during_construction_in_capital_costs = is_sam_econ_model
-                if display_inflation_during_construction_in_capital_costs:
+                display_inflation_and_interest_during_construction_in_capital_costs = is_sam_econ_model
+                if display_inflation_and_interest_during_construction_in_capital_costs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
+
+                    idc_label = Outputs._field_label(econ.interest_during_construction.display_name, 47)
+                    f.write(
+                        f'         {idc_label}{econ.interest_during_construction.value:10.2f} {econ.interest_during_construction.CurrentUnits.value}\n')
 
                     if econ.DoAddOnCalculations.value:
                         # Non-SAM econ models print this in Extended Economics profile

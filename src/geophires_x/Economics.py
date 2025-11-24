@@ -13,7 +13,7 @@ from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalcul
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
-    total_capex_parameter_output_parameter
+    interest_during_construction_output_parameter, total_capex_parameter_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -2232,6 +2232,9 @@ class Economics:
         self.inflation_cost_during_construction = self.OutputParameterDict[
             self.inflation_cost_during_construction.Name] = inflation_cost_during_construction_output_parameter()
 
+        self.interest_during_construction = self.OutputParameterDict[
+            self.interest_during_construction.Name] = interest_during_construction_output_parameter()
+
         self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
             after_tax_irr_parameter())
         self.real_discount_rate = self.OutputParameterDict[self.real_discount_rate.Name] = (
@@ -3498,7 +3501,7 @@ class Economics:
 
     def _calculate_sam_economics(self, model: Model) -> None:
         non_calculated_output_placeholder_val = -1
-        self.sam_economics_calculations = calculate_sam_economics(model)
+        self.sam_economics_calculations: SamEconomicsCalculations = calculate_sam_economics(model)
 
         # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
         # since SAM Economic Model doesn't subtract ITC from this value.
@@ -3506,6 +3509,11 @@ class Economics:
                                   .to(self.capex_total.CurrentUnits.value).magnitude)
         self.CCap.value = (self.sam_economics_calculations.capex.quantity()
                            .to(self.CCap.CurrentUnits.value).magnitude)
+
+        self.interest_during_construction.value = quantity(
+            self.sam_economics_calculations.pre_revenue_costs_and_cash_flow.interest_during_construction_usd,
+            'USD'
+        ).to(self.interest_during_construction.CurrentUnits.value).magnitude
 
 
         if self.royalty_rate.Provided:

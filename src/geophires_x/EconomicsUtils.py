@@ -147,6 +147,16 @@ def inflation_cost_during_construction_output_parameter() -> OutputParameter:
     )
 
 
+def interest_during_construction_output_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='Interest during construction (IDC)',
+        UnitType=Units.CURRENCY,
+        PreferredUnits=CurrencyUnit.MDOLLARS,
+        CurrentUnits=CurrencyUnit.MDOLLARS,
+        ToolTipText='The sum of interest paid during construction.',  # WIP/TODO
+    )
+
+
 def total_capex_parameter_output_parameter() -> OutputParameter:
     return OutputParameter(
         Name='Total CAPEX',
@@ -172,6 +182,7 @@ def royalty_cost_output_parameter() -> OutputParameter:
 
 
 _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'Total after-tax returns ($)'
+_IDC_CASH_FLOW_ROW_NAME = 'Debt interest payment ($)'
 
 
 @dataclass
@@ -209,6 +220,12 @@ class PreRevenueCostsAndCashflow:
             ret[row_name] = row_values
 
         return ret
+
+    @property
+    def interest_during_construction_usd(self) -> float:
+        return sum(
+            [float(it) for it in self.pre_revenue_cash_flow_profile_dict[_IDC_CASH_FLOW_ROW_NAME] if is_float(it)]
+        )
 
 
 def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsAndCashflow:
@@ -351,7 +368,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
         debt_balance_usd_vec,
     )
 
-    _append_row(f'Debt interest payment ($)', interest_accrued_vec)
+    _append_row(_IDC_CASH_FLOW_ROW_NAME, interest_accrued_vec)
 
     _append_row(f'Cash flow from financing activities ($)', [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)])
 

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.8
- Simulation Date: 2025-11-18
- Simulation Time:  11:30
- Calculation Time:      1.152 sec
+ GEOPHIRES Version: 3.10.10
+ Simulation Date: 2025-11-24
+ Simulation Time:  09:00
+ Calculation Time:      1.154 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -200,6 +200,7 @@ CONSTRUCTION
 Purchase of property [construction] ($)               	-275,473,424
 Cash flow from investing activities [construction] ($)	-275,473,424
 
+Issuance of equity [construction] ($)                 	165,284,055
 Issuance of debt [construction] ($)                   	110,189,370
 Debt balance [construction] ($)                       	110,189,370
 Debt interest payment [construction] ($)              	0

@@ -273,7 +273,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     equity_spend_vec: list[float] = []
     debt_draw_vec: list[float] = []
     debt_balance_usd_vec: list[float] = []
-    interest_accrued_vec: list[float] = []  # WIP addding cashflow line item "Debt interest payment [construction] ($)"
+    interest_accrued_vec: list[float] = []
 
     for year_index in range(pre_revenue_years_count):
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
@@ -333,6 +333,11 @@ def _calculate_pre_revenue_costs_and_cashflow(
     pre_revenue_cf_profile.append(blank_row.copy())
 
     # --- Financing Activities ---
+    _append_row(
+        f'Issuance of equity ($)',
+        [abs(it) for it in equity_spend_vec],
+    )
+
     _append_row(
         # 'Debt draw ($)'
         f'Issuance of debt ($)',

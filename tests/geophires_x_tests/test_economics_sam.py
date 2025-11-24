@@ -245,6 +245,23 @@ class EconomicsSamTestCase(BaseTestCase):
             _floats(self._get_cash_flow_row(cy4_cf, 'Debt balance ($)'))[0],
         )
 
+        def _sum(cf_row_name: str, abs_val: bool = False) -> float:
+            return sum([abs(it) if abs_val else it for it in _floats(self._get_cash_flow_row(cy4_cf, cf_row_name))])
+
+        installed_cost_from_construction_cash_flow = _sum(
+            'Purchase of property [construction] ($)', abs_val=True
+        ) + _sum('Debt interest payment [construction] ($)')
+
+        self.assertEqual(
+            abs(_floats(self._get_cash_flow_row(cy4_cf, 'Total installed cost ($)'))[0]),
+            installed_cost_from_construction_cash_flow,
+        )
+
+        self.assertEqual(
+            _sum('Issuance of equity [construction] ($)'),
+            _floats(self._get_cash_flow_row(cy4_cf, 'Issuance of equity ($)'))[0],
+        )
+
     def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
         """
         TODO move to parent class (BaseTestCase)

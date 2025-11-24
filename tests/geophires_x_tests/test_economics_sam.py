@@ -23,7 +23,7 @@ from geophires_x.EconomicsSam import (
     SamEconomicsCalculations,
     _get_royalty_rate_schedule,
 )
-from geophires_x.GeoPHIRESUtils import sig_figs, quantity
+from geophires_x.GeoPHIRESUtils import sig_figs, quantity, is_float
 
 # noinspection PyProtectedMember
 from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
@@ -221,23 +221,39 @@ class EconomicsSamTestCase(BaseTestCase):
                 logs, 'has been adjusted to: [0.25, 0.25, 0.25, 0.25]', treat_substring_match_as_match=True
             )
 
-            cy4_cf = construction_years_4.result['SAM CASH FLOW PROFILE']
+        cy4_cf = construction_years_4.result['SAM CASH FLOW PROFILE']
 
-            cy4_result_npv = construction_years_4.result['ECONOMIC PARAMETERS']['Project NPV']
-            self.assertEqual(
-                sig_figs(quantity(cy4_result_npv['value'], cy4_result_npv['unit']).to('USD').magnitude, 4),
-                sig_figs(self._get_cash_flow_row(cy4_cf, 'After-tax cumulative NPV ($)')[-1], 4),
-            )
+        cy4_result_npv = construction_years_4.result['ECONOMIC PARAMETERS']['Project NPV']
+        self.assertAlmostEqualWithinSigFigs(
+            quantity(cy4_result_npv['value'], cy4_result_npv['unit']).to('USD').magnitude,
+            self._get_cash_flow_row(cy4_cf, 'After-tax cumulative NPV ($)')[-1],
+            num_sig_figs=4,
+        )
 
-            cy4_result_irr = construction_years_4.result['ECONOMIC PARAMETERS']['After-tax IRR']
+        cy4_result_irr = construction_years_4.result['ECONOMIC PARAMETERS']['After-tax IRR']
 
-            self.assertEqual(
-                sig_figs(
-                    quantity(cy4_result_irr['value'], cy4_result_irr['unit']).to(convertible_unit('percent')).magnitude,
-                    3,
-                ),
-                sig_figs(self._get_cash_flow_row(cy4_cf, 'After-tax cumulative IRR (%)')[-1], 3),
-            )
+        self.assertAlmostEqualWithinSigFigs(
+            quantity(cy4_result_irr['value'], cy4_result_irr['unit']).to(convertible_unit('percent')).magnitude,
+            self._get_cash_flow_row(cy4_cf, 'After-tax cumulative IRR (%)')[-1],
+        )
+
+        def _floats(_cf: list[Any]) -> list[float]:
+            return [float(it) for it in _cf if is_float(it)]
+
+        self.assertEqual(
+            _floats(self._get_cash_flow_row(cy4_cf, 'Debt balance [construction] ($)'))[-1],
+            _floats(self._get_cash_flow_row(cy4_cf, 'Debt balance ($)'))[0],
+        )
+
+    def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
+        """
+        TODO move to parent class (BaseTestCase)
+        """
+
+        self.assertEqual(
+            sig_figs(expected, num_sig_figs),
+            sig_figs(actual, num_sig_figs),
+        )
 
     def test_bond_interest_rate_during_construction(self):
         fraction_in_bonds: float = 0.5

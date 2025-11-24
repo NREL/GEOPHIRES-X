@@ -38,11 +38,13 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
-    _calculate_pre_revenue_costs_and_cashflow,
+)
+from geophires_x.EconomicsSamPreRevenue import (
+    _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
+    _calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
-    _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions

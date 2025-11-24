@@ -1,8 +1,8 @@
 from base_test_case import BaseTestCase
-from geophires_x.EconomicsUtils import adjust_phased_schedule_to_new_length
+from geophires_x.EconomicsSamPreRevenue import adjust_phased_schedule_to_new_length
 
 
-class EconomicsUtilsTestCase(BaseTestCase):
+class EconomicsSamPreRevenueTestCase(BaseTestCase):
 
     def test_adjust_phased_schedule_to_new_length(self) -> None:
         def asrt(original_schedule: list[float], new_length: int, expected_schedule: list[float]) -> None:

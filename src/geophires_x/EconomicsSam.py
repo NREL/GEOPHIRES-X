@@ -110,25 +110,10 @@ class SamEconomicsCalculations:
                     negative_year_index: int = self._pre_revenue_years_count - 1 - pre_revenue_year
                     pre_revenue_row_content[pre_revenue_year] = f'Year -{negative_year_index}'
 
-                # for k, v in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict.items():
-                #     # TODO move logic to _calculate_pre_revenue_costs_and_cashflow (_CONSTRUCTION_LINE_ITEM_DESIGNATOR)
-                #     k_construction = k.split('(')[0] + '[construction] (' + k.split('(')[1]
-                #
-                #     construction_rows.append([k_construction] + [_rnd(k, v, it_) for it_ in v])
                 for _, row_ in enumerate(self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile):
                     pre_revenue_row = row_.copy()
                     pre_revenue_row.extend([''] * (col_count - len(pre_revenue_row)))
                     construction_rows.append(pre_revenue_row)
-
-            # FIXME WIP/TODO - zip with construction rows
-            # else:
-            # row_name = ret[row][0]
-            # if row_name in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile:
-            #     pre_revenue_row_content = [
-            #         _rnd(k, v, it_)
-            #         for it_ in self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile[row_name]
-            #     ]
-            #     insert_index = 2
 
             #  TODO zero-vectors e.g. Debt principal payment ($)
 
@@ -541,29 +526,8 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Pass the final, correct values to SAM
     ret['total_installed_cost'] = total_installed_cost_usd
 
-    # TODO/WIP interest during construction (IDC) line item
-
-    # pre_revenue_years_zero_vector = _pre_revenue_years_vector(model)
-
-    # # https://nrel-pysam.readthedocs.io/en/main/modules/Singleowner.html#depreciation-group
-    # ret['depr_alloc_sl_20_percent'] = 0.0
-    # ret['depr_alloc_custom_percent'] = 100.0
-    #
-    # # Build custom depreciation schedule to handle pre-revenue years.
-    # # Standard 20-year straight-line depreciation for geothermal assets.
-    # straight_line_20_year_schedule = [2.5] + [5.0] * 19 + [2.5]
-    # depr_custom_schedule = pre_revenue_years_zero_vector + straight_line_20_year_schedule
-    #
-    # # Pad with zeros to match the analysis period length.
-    # analysis_period = _analysis_period(model)
-    # if len(depr_custom_schedule) < analysis_period:
-    #     depr_custom_schedule.extend([0.0] * (analysis_period - len(depr_custom_schedule)))
-    #
-    # ret['depr_custom_schedule'] = depr_custom_schedule[:analysis_period]
-
     opex_musd = econ.Coam.value
     ret['om_fixed'] = [opex_musd * 1e6] * model.surfaceplant.plant_lifetime.value
-    # ret['om_fixed'] = pre_revenue_years_zero_vector + ret['om_fixed']
 
     # GEOPHIRES assumes O&M fixed costs are not affected by inflation
     ret['om_fixed_escal'] = -1.0 * _pct(econ.RINFL)
@@ -575,14 +539,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     geophires_itc_tenths = Decimal(econ.RITC.value)
     ret['itc_fed_percent'] = [float(geophires_itc_tenths * Decimal(100))]
-    # ret['itc_fed_percent'] = pre_revenue_years_zero_vector + ret['itc_fed_percent']
 
     if econ.PTCElec.Provided:
         ret['ptc_fed_amount'] = [econ.PTCElec.quantity().to(convertible_unit('USD/kWh')).magnitude]
-        # ret['ptc_fed_amount'] = pre_revenue_years_zero_vector + ret['ptc_fed_amount']
 
         ret['ptc_fed_term'] = econ.PTCDuration.quantity().to(convertible_unit('yr')).magnitude
-        # ret['ptc_fed_term'] = ret['ptc_fed_term']+len(pre_revenue_years_zero_vector)
 
         if econ.PTCInflationAdjusted.value:
             ret['ptc_fed_escal'] = _pct(econ.RINFL)
@@ -593,14 +554,11 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
 
     ppa_price_schedule_per_kWh = _get_ppa_price_schedule_per_kWh(model)
     ret['ppa_price_input'] = ppa_price_schedule_per_kWh
-    # ret['ppa_price_input'] = pre_revenue_years_zero_vector + ret['ppa_price_input']
 
     if model.economics.royalty_rate.Provided:
         ret['om_production'] = _get_royalties_variable_om_USD_per_MWh_schedule(model)
-        # ret['om_production'] = pre_revenue_years_zero_vector + ret['om_production']
 
-        # Debt/equity ratio ('Fraction of Investment in Bonds' parameter)
-    # ret['debt_percent'] = _pct(econ.FIB)
+    # Debt/equity ratio
     ret['debt_percent'] = pre_revenue_costs.effective_debt_percent
 
     # Interest rate
@@ -609,7 +567,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
     # Project lifetime
     ret['term_tenor'] = model.surfaceplant.plant_lifetime.value
     ret['term_int_rate'] = _pct(econ.BIR)
-    # ret['loan_moratorium'] = len(pre_revenue_years_zero_vector)
 
     ret['ibi_oth_amount'] = (econ.OtherIncentives.quantity() + econ.TotalGrant.quantity()).to('USD').magnitude
 
@@ -617,7 +574,6 @@ def _get_single_owner_parameters(model: Model) -> dict[str, Any]:
         add_on_profit_per_year = np.sum(model.addeconomics.AddOnProfitGainedPerYear.quantity().to('USD/yr').magnitude)
         add_on_profit_series = [add_on_profit_per_year] * model.surfaceplant.plant_lifetime.value
         ret['cp_capacity_payment_amount'] = add_on_profit_series
-        # ret['cp_capacity_payment_amount'] =pre_revenue_years_zero_vector + ret['cp_capacity_payment_amount']
         ret['cp_capacity_payment_type'] = 1
 
     return ret

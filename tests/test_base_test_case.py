@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 from tests.base_test_case import BaseTestCase

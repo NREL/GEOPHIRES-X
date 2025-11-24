@@ -274,9 +274,10 @@ class Outputs:
                         label = Outputs._field_label(field.Name, 49)
                         f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
 
-                acf: OutputParameter = econ.accrued_financing_during_construction_percentage
-                acf_label = Outputs._field_label(acf.display_name, 49)
-                f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
+                if not is_sam_econ_model:  # (parameter is ambiguous to the point of meaninglessness for SAM-EM)
+                    acf: OutputParameter = econ.accrued_financing_during_construction_percentage
+                    acf_label = Outputs._field_label(acf.display_name, 49)
+                    f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
 
                 display_inflation_costs_in_economic_parameters: bool = (
                     econ.econmodel.value in [EconomicModel.BICYCLE,

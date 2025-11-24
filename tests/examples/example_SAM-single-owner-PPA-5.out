@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.10.10
  Simulation Date: 2025-11-24
- Simulation Time:  09:38
- Calculation Time:      1.754 sec
+ Simulation Time:  09:47
+ Calculation Time:      1.722 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -28,7 +28,6 @@ Simulation Metadata
       Real Discount Rate:                                    8.00 %
       Nominal Discount Rate:                                10.48 %
       WACC:                                                  7.60 %
-      Accrued financing during construction:                 3.15 %
       Project lifetime:                                      30 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                          91.53 MUSD

@@ -2223,10 +2223,7 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
             ToolTipText='The accrued inflation on total capital costs over the construction period, '
-                        f'as defined by {self.inflrateconstruction.Name}. '
-                        'For SAM Economic Models, this is calculated automatically by compounding '
-                        f'{self.RINFL.Name} over Construction Years '
-                        f'if {self.inflrateconstruction.Name} is not provided.'
+                        f'as defined by {self.inflrateconstruction.Name}.'
         )
 
         self.inflation_cost_during_construction = self.OutputParameterDict[

@@ -153,7 +153,9 @@ def interest_during_construction_output_parameter() -> OutputParameter:
         UnitType=Units.CURRENCY,
         PreferredUnits=CurrencyUnit.MDOLLARS,
         CurrentUnits=CurrencyUnit.MDOLLARS,
-        ToolTipText='The sum of interest paid during construction.',  # WIP/TODO
+        ToolTipText='The total accumulated interest incurred on debt during the construction phase. '
+        'This cost is capitalized (added to the loan principal and total installed cost) '
+        'rather than paid in cash.',
     )
 
 
@@ -193,8 +195,6 @@ class PreRevenueCostsAndCashflow:
     inflation_cost_usd: float = 0.0
 
     pre_revenue_cash_flow_profile: list[list[float | str]] = field(default_factory=list)
-    # pre_revenue_cash_flow_profile_dict: dict[str, list[float]] = field(default_factory=dict)
-    # """Maps SAM's row names (str) to a list of pre-revenue values"""
 
     @property
     def effective_debt_percent(self) -> float:

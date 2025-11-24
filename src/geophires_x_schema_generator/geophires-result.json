@@ -101,7 +101,7 @@
         },
         "Accrued financing during construction": {
           "type": "number",
-          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
+          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction.",
           "units": "%"
         },
         "Inflation costs during construction": {
@@ -445,6 +445,11 @@
         "Inflation costs during construction": {
           "type": "number",
           "description": "The calculated amount of cost escalation due to inflation over the construction period.",
+          "units": "MUSD"
+        },
+        "Interest during construction (IDC)": {
+          "type": "number",
+          "description": "The total accumulated interest incurred on debt during the construction phase. This cost is capitalized (added to the loan principal and total installed cost) rather than paid in cash.",
           "units": "MUSD"
         },
         "Total Add-on CAPEX": {

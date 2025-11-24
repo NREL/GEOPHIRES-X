@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from base_test_case import BaseTestCase
 from geophires_x.EconomicsSamPreRevenue import adjust_phased_schedule_to_new_length
 

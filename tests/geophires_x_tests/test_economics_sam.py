@@ -427,36 +427,49 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertAlmostEqual(tic_no_infl * (1 + infl_rate), tic_infl, places=0)
 
-        # TODO/WIP enable when multiple construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
-        # def _infl_cost_musd(r: GeophiresXResult) -> float:
-        #     return r.result['CAPITAL COSTS (M$)']['Inflation costs during construction']['value']
-        #
-        # params_3 = {
-        #     'Construction Years': 3,
-        #     'Inflation Rate': 0.04769,
-        #     'Inflated Bond Interest Rate During Construction': 0,
-        #     # 'Fraction of Investment in Bonds': 0,
-        # }
-        # r3: GeophiresXResult = self._get_result(
-        #     params_3,
-        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
-        # )
-        # cash_flow_3 = r3.result['SAM CASH FLOW PROFILE']
-        # # FIXME WIP...
-        # # self.assertEqual(15.0, _accrued_financing(r3))
-        # tic_3 = EconomicsSamTestCase._get_cash_flow_row(cash_flow_3, tic)[-1]
-        # self.assertAlmostEqual(tic_no_infl * (1 + infl_rate), tic_3, places=0)
-        #
-        # params4 = {
-        #     'Construction Years': 3,
-        #     'Inflation Rate During Construction': 0.15,
-        #     'Inflated Bond Interest Rate During Construction': 0,
-        # }
-        # r4: GeophiresXResult = self._get_result(
-        #     params4,
-        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
-        # )
-        # # self.assertEqual(15.0, _accrued_financing(r4))  # FIXME WIP
+        def _infl_cost_musd(r: GeophiresXResult) -> float:
+            return r.result['CAPITAL COSTS (M$)']['Inflation costs during construction']['value']
+
+        params_3 = {
+            'Construction Years': 3,
+            'Inflation Rate': 0.04769,
+            'Inflated Bond Interest Rate During Construction': 0,
+        }
+        r3: GeophiresXResult = self._get_result(
+            params_3, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+
+        # Validate that inflation during construction is calculated by compounding the inflation rate over construction years
+        occ_3 = r3.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value']
+        infl_rate_3 = params_3['Inflation Rate']
+        # Default uniform schedule for 3 years
+        schedule = [1 / 3, 1 / 3, 1 / 3]
+
+        expected_infl_cost_3 = sum([occ_3 * s * ((1 + infl_rate_3) ** (y + 1) - 1) for y, s in enumerate(schedule)])
+
+        self.assertAlmostEqual(expected_infl_cost_3, _infl_cost_musd(r3), places=1)
+
+        cash_flow_3 = r3.result['SAM CASH FLOW PROFILE']
+        tic_3 = EconomicsSamTestCase._get_cash_flow_row(cash_flow_3, tic)[-1]
+
+        # Verify TIC matches OCC + Inflation Cost (IDC is 0)
+        self.assertAlmostEqual(occ_3 + expected_infl_cost_3, quantity(abs(tic_3), 'USD').to('MUSD').magnitude, places=0)
+
+        params4 = {
+            'Construction Years': 3,
+            'Inflation Rate During Construction': 0.15,
+            'Inflated Bond Interest Rate During Construction': 0,
+        }
+        r4: GeophiresXResult = self._get_result(
+            params4, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+
+        # r4 treats 'Inflation Rate During Construction' as the annual inflation rate in the current implementation
+        infl_rate_4 = params4['Inflation Rate During Construction']
+        occ_4 = r4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value']
+
+        expected_infl_cost_4 = sum([occ_4 * s * ((1 + infl_rate_4) ** (y + 1) - 1) for y, s in enumerate(schedule)])
+        self.assertAlmostEqual(expected_infl_cost_4, _infl_cost_musd(r4), places=1)
 
     def test_ptc(self):
         def assert_ptc(params, expected_ptc_usd_per_kWh):

@@ -847,28 +847,7 @@ class EconomicsSamTestCase(BaseTestCase):
         schedule: list[float] = _get_royalty_rate_schedule(m)
 
         self.assertListAlmostEqual(
-            [
-                0.1,
-                0.11,
-                0.12,
-                0.13,
-                0.14,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-            ],
+            [0.1, 0.11, 0.12, 0.13, 0.14, *[0.15] * 15],
             schedule,
             places=3,
         )

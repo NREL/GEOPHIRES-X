@@ -447,9 +447,9 @@
           "description": "The calculated amount of cost escalation due to inflation over the construction period.",
           "units": "MUSD"
         },
-        "Interest during construction (IDC)": {
+        "Interest during construction": {
           "type": "number",
-          "description": "The total accumulated interest incurred on debt during the construction phase. This cost is capitalized (added to the loan principal and total installed cost) rather than paid in cash.",
+          "description": "Interest During Construction (IDC) is the total accumulated interest incurred on debt during the construction phase. This cost is capitalized (added to the loan principal and total installed cost) rather than paid in cash.",
           "units": "MUSD"
         },
         "Total Add-on CAPEX": {

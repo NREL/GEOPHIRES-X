@@ -5,9 +5,9 @@
 Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.10.10
- Simulation Date: 2025-11-24
- Simulation Time:  09:47
- Calculation Time:      1.731 sec
+ Simulation Date: 2025-11-25
+ Simulation Time:  09:34
+ Calculation Time:      1.737 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -104,7 +104,7 @@ Simulation Metadata
          Total surface equipment costs:                    1560.49 MUSD
          Exploration costs:                                  30.00 MUSD
          Inflation costs during construction:                59.82 MUSD
-         Interest during construction (IDC):                  0.00 MUSD
+         Interest during construction:                        0.00 MUSD
       Total CAPEX:                                         2660.87 MUSD
 
 

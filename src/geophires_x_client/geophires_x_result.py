@@ -268,7 +268,7 @@ class GeophiresXResult:
                 'Investment Tax Credit',
                 # Displayed for economic models that treat inflation costs as capital costs (SAM-EM)
                 'Inflation costs during construction',
-                'Interest during construction (IDC)',
+                'Interest during construction',
                 'Total Add-on CAPEX',
                 'Total capital costs',
                 'Annualized capital costs',

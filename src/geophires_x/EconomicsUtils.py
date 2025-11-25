@@ -141,13 +141,13 @@ def inflation_cost_during_construction_output_parameter() -> OutputParameter:
 
 def interest_during_construction_output_parameter() -> OutputParameter:
     return OutputParameter(
-        Name='Interest during construction (IDC)',
+        Name='Interest during construction',
         UnitType=Units.CURRENCY,
         PreferredUnits=CurrencyUnit.MDOLLARS,
         CurrentUnits=CurrencyUnit.MDOLLARS,
-        ToolTipText='The total accumulated interest incurred on debt during the construction phase. '
-        'This cost is capitalized (added to the loan principal and total installed cost) '
-        'rather than paid in cash.',
+        ToolTipText='Interest During Construction (IDC) is the total accumulated interest '
+        'incurred on debt during the construction phase. This cost is capitalized '
+        '(added to the loan principal and total installed cost) rather than paid in cash.',
     )
 
 

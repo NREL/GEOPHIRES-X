@@ -260,7 +260,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         idc_sum = _sum('Debt interest payment [construction] ($)')
 
-        cy4_idc = construction_years_4.result['CAPITAL COSTS (M$)']['Interest during construction (IDC)']
+        cy4_idc = construction_years_4.result['CAPITAL COSTS (M$)']['Interest during construction']
         self.assertAlmostEqualWithinSigFigs(
             idc_sum, quantity(cy4_idc['value'], cy4_idc['unit']).to('USD').magnitude, num_sig_figs=4
         )

@@ -1774,7 +1774,7 @@
       "maximum": 1.0
     },
     "Construction CAPEX Schedule": {
-      "description": "A list of fractions of the total overnight CAPEX spent in each construction year. For example, for 3 construction years with 10% in the first year, 40% in the second, and 50% in the third, provide Construction CAPEX Schedule = 0.1,0.4,0.5. If the length of the provided schedule does not match the number of construction years, it will be interpolated to match the number of construction years.",
+      "description": "A list of fractions of the total overnight CAPEX spent in each construction year. For example, for 3 construction years with 10% in the first year, 40% in the second, and 50% in the third, provide Construction CAPEX Schedule = 0.1,0.4,0.5. The schedule will be automatically interpolated to match the number of construction years and normalized to sum to 1.0.",
       "type": "array",
       "units": null,
       "category": "Economics",

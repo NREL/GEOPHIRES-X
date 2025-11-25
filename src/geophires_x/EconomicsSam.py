@@ -301,8 +301,11 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
         # Assumes that royalties opex is the only possible O&M production-based expense - this logic will need to be
         # updated if more O&M production-based expenses are added to SAM-EM
         sam_economics.royalties_opex.value = [
-            quantity(it, 'USD / year').to(sam_economics.royalties_opex.CurrentUnits).magnitude
-            for it in _cash_flow_profile_row(cash_flow, 'O&M production-based expense ($)')
+            *_pre_revenue_years_vector(model),
+            *[
+                quantity(it, 'USD / year').to(sam_economics.royalties_opex.CurrentUnits).magnitude
+                for it in _cash_flow_profile_row(cash_flow, 'O&M production-based expense ($)')
+            ],
         ]
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
@@ -483,8 +486,7 @@ def _get_custom_gen_parameters(model: Model) -> dict[str, Any]:
 
 
 def _pre_revenue_years_count(model: Model) -> int:
-    # return model.surfaceplant.construction_years.value
-    return 0  # FIXME WIP (v3 impl)
+    return model.surfaceplant.construction_years.value
 
 
 def _pre_revenue_years_vector(model: Model, v: float = 0.0) -> list[float]:
@@ -504,7 +506,7 @@ def _get_utility_rate_parameters(m: Model) -> dict[str, Any]:
         (max_total_kWh_produced - it) / max_total_kWh_produced * 100 for it in m.surfaceplant.NetkWhProduced.value
     ]
 
-    ret['degradation'] = _pre_revenue_years_vector(m, v=100) + degradation_total
+    ret['degradation'] = degradation_total
 
     return ret
 

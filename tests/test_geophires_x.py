@@ -1319,16 +1319,22 @@ Print Output to Console, 1"""
         zero_royalty_npv = None
         for royalty_rate in [0, 0.1]:
             with self.subTest(msg=f'royalty_rate={royalty_rate}'):
-                result = GeophiresXClient().get_geophires_result(
-                    ImmutableGeophiresInputParameters(
-                        from_file_path=self._get_test_file_path(
-                            'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
-                        ),
-                        params={
-                            'Royalty Rate': royalty_rate,
-                        },
+
+                def _get_result(
+                    _royalty_rate: float, additional_params: dict[str, Any] | None = None
+                ) -> GeophiresXResult:
+                    if additional_params is None:
+                        additional_params = {}
+                    return GeophiresXClient().get_geophires_result(
+                        ImmutableGeophiresInputParameters(
+                            from_file_path=self._get_test_file_path(
+                                'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                            ),
+                            params={'Royalty Rate': _royalty_rate, **additional_params},
+                        )
                     )
-                )
+
+                result = _get_result(royalty_rate)
                 opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
 
                 self.assertIsNotNone(opex_result[royalties_output_name])
@@ -1347,8 +1353,14 @@ Print Output to Console, 1"""
 
                 self.assertEqual(opex_line_item_sum, total_opex_MUSD)
 
-                econ_result = result.result['EXTENDED ECONOMICS']
-                royalty_holder_npv_MUSD = econ_result['Royalty Holder NPV']['value']
+                def _royalty_holder_npv_MUSD(r: GeophiresXResult) -> float:
+                    econ_result = r.result['EXTENDED ECONOMICS']
+                    return econ_result['Royalty Holder NPV']['value']
+
+                # econ_result = result.result['EXTENDED ECONOMICS']
+                royalty_holder_npv_MUSD = _royalty_holder_npv_MUSD(
+                    result
+                )  #  econ_result['Royalty Holder NPV']['value']
 
                 if royalty_rate > 0.0:
                     self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
@@ -1369,7 +1381,14 @@ Print Output to Console, 1"""
                     )
 
                     if royalty_rate == 0.1:
-                        self.assertAlmostEqual(708.07, royalty_holder_npv_MUSD, places=2)
+                        base_expected_royalty_holder_npv_MUSD = 708.07
+                        self.assertAlmostEqual(base_expected_royalty_holder_npv_MUSD, royalty_holder_npv_MUSD, places=2)
+
+                        result_multiple_construction_years = _get_result(
+                            royalty_rate, additional_params={'Construction Years': 5}
+                        )
+                        mcy_royalty_npv = _royalty_holder_npv_MUSD(result_multiple_construction_years)
+                        self.assertLess(mcy_royalty_npv, base_expected_royalty_holder_npv_MUSD)
 
                 if royalty_rate == 0.0:
                     self.assertEqual(0, opex_result[royalties_output_name]['value'])

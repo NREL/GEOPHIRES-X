@@ -790,6 +790,19 @@ class EconomicsSamTestCase(BaseTestCase):
                 file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
             )
 
+        add_ons_multiple_construction_years_result = self._get_result(
+            {'Do AddOn Calculations': True, 'Construction Years': 3},
+            file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+        )
+        self.assertGreater(
+            add_ons_multiple_construction_years_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+        self.assertEqual(
+            add_ons_multiple_construction_years_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'],
+            add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'],
+        )
+
     def _assert_capex_line_items_sum_to_total(self, r: GeophiresXResult):
         capex_line_items = {key: value for key, value in r.result['CAPITAL COSTS (M$)'].items() if value is not None}
 

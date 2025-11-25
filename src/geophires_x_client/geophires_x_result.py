@@ -266,6 +266,7 @@ class GeophiresXResult:
                 'Total surface equipment costs',
                 'Exploration costs',
                 'Investment Tax Credit',
+                'Overnight Capital Cost',
                 # Displayed for economic models that treat inflation costs as capital costs (SAM-EM)
                 'Inflation costs during construction',
                 'Interest during construction',

@@ -129,6 +129,19 @@ def wacc_output_parameter() -> OutputParameter:
     )
 
 
+def overnight_capital_cost_output_parameter() -> OutputParameter:
+    return OutputParameter(
+        Name='Overnight Capital Cost',
+        UnitType=Units.CURRENCY,
+        PreferredUnits=CurrencyUnit.MDOLLARS,
+        CurrentUnits=CurrencyUnit.MDOLLARS,
+        ToolTipText='Overnight Capital Cost (OCC) represents the total capital cost required '
+        'to construct the plant if it were built instantly ("overnight"). '
+        'This value excludes time-dependent costs such as inflation and '
+        'interest incurred during the construction period.',
+    )
+
+
 def inflation_cost_during_construction_output_parameter() -> OutputParameter:
     return OutputParameter(
         Name='Inflation costs during construction',

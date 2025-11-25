@@ -13,7 +13,8 @@ from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalcul
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
-    interest_during_construction_output_parameter, total_capex_parameter_output_parameter
+    interest_during_construction_output_parameter, total_capex_parameter_output_parameter, \
+    overnight_capital_cost_output_parameter
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -2216,6 +2217,10 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+
+        self.overnight_capital_cost = self.OutputParameterDict[
+            self.overnight_capital_cost.Name] = overnight_capital_cost_output_parameter()
+
         self.accrued_financing_during_construction_percentage = self.OutputParameterDict[
           self.accrued_financing_during_construction_percentage.Name] = OutputParameter(
             Name='Accrued financing during construction',
@@ -3506,6 +3511,9 @@ class Economics:
                                   .to(self.capex_total.CurrentUnits.value).magnitude)
         self.CCap.value = (self.sam_economics_calculations.capex.quantity()
                            .to(self.CCap.CurrentUnits.value).magnitude)
+
+        self.overnight_capital_cost.value = (self.sam_economics_calculations.overnight_capital_cost.quantity()
+                                             .to(self.overnight_capital_cost.CurrentUnits.value).magnitude)
 
         self.interest_during_construction.value = quantity(
             self.sam_economics_calculations.pre_revenue_costs_and_cash_flow.interest_during_construction_usd,

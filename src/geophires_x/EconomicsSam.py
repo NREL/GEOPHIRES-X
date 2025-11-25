@@ -38,6 +38,7 @@ from geophires_x.EconomicsUtils import (
     project_payback_period_parameter,
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
+    overnight_capital_cost_output_parameter,
 )
 from geophires_x.EconomicsSamPreRevenue import (
     _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
@@ -63,6 +64,8 @@ class SamEconomicsCalculations:
             CurrentUnits=EnergyCostUnit.CENTSSPERKWH,
         )
     )
+
+    overnight_capital_cost: OutputParameter = field(default_factory=overnight_capital_cost_output_parameter)
 
     capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
 
@@ -282,6 +285,10 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(
         sam_cash_flow_profile=cash_flow,
         pre_revenue_costs_and_cash_flow=calculate_pre_revenue_costs_and_cashflow(model),
+    )
+
+    sam_economics.overnight_capital_cost.value = (
+        model.economics.CCap.quantity().to(sam_economics.overnight_capital_cost.CurrentUnits.value).magnitude
     )
 
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)

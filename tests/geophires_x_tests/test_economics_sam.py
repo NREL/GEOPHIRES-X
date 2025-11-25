@@ -229,20 +229,7 @@ class EconomicsSamTestCase(BaseTestCase):
                     logs, 'has been adjusted to: [0.25, 0.25, 0.25, 0.25]', treat_substring_match_as_match=True
                 )
         except AssertionError as ae:
-            # if sys.version_info < (3, 9):
-            if self._is_github_actions():
-                # FIXME - see
-                #  https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/19646240874/job/56262028512#step:5:344
-                _log.warning(
-                    f'WARNING: Skipping assertion in GitHub Actions '
-                    f'for Python {sys.version_info.major}.{sys.version_info.minor}'
-                )
-
-                # self.assertHasLogRecordWithMessage(
-                #     logs, 'has been adjusted to:', treat_substring_match_as_match=True
-                # )
-            else:
-                raise ae
+            self._handle_assert_logs_failure(ae)
 
         cy4_cf = construction_years_4.result['SAM CASH FLOW PROFILE']
 
@@ -310,15 +297,15 @@ class EconomicsSamTestCase(BaseTestCase):
         half_half = [0.5, 0.5]
         self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(half_half), 2, model_logger))
 
-        with self.assertLogs(level='WARNING') as logs:
+        with self.assertLogs(logger=model_logger.name, level='WARNING') as logs:
             quarters = [0.25] * 4
             self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(quarters), 2, model_logger))
             self.assertHasLogRecordWithMessage(
                 logs, 'has been adjusted to: [0.5, 0.5]', treat_substring_match_as_match=True
             )
 
-        double_ones = [1.0, 1.0]
-        with self.assertLogs(level='WARNING') as logs2:
+        with self.assertLogs(logger=model_logger.name, level='WARNING') as logs2:
+            double_ones = [1.0, 1.0]
             self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(double_ones), 2, model_logger))
             self.assertHasLogRecordWithMessage(logs2, 'does not sum to 1.0', treat_substring_match_as_match=True)
 
@@ -884,3 +871,15 @@ class EconomicsSamTestCase(BaseTestCase):
             m.Calculate()
 
         return m
+
+    def _handle_assert_logs_failure(self, ae: AssertionError):
+        # if sys.version_info < (3, 9):
+        if self._is_github_actions():
+            # FIXME - see
+            #  https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/19646240874/job/56262028512#step:5:344
+            _log.warning(
+                f'WARNING: Skipping assertion in GitHub Actions '
+                f'for Python {sys.version_info.major}.{sys.version_info.minor}'
+            )
+        else:
+            raise ae

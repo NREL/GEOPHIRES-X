@@ -1180,8 +1180,8 @@ class Economics:
             ToolTipText=f'A list of fractions of the total overnight CAPEX spent in each construction year. '
                         f'For example, for 3 construction years with 10% in the first year, 40% in the second, '
                         f'and 50% in the third, provide {construction_capex_schedule_name} = 0.1,0.4,0.5. '
-                        f'If the length of the provided schedule does not match the number of construction years, '
-                        f'it will be interpolated to match the number of construction years.'
+                        f'The schedule will be automatically interpolated to match the number of construction years '
+                        f'and normalized to sum to 1.0.'
         )
 
         default_bond_financing_start_year = 0

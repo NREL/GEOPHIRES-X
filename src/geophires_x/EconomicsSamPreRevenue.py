@@ -235,7 +235,11 @@ def adjust_phased_schedule_to_new_length(original_schedule: list[float], new_len
 
     original_len = len(original_schedule)
     if original_len == new_length:
-        return original_schedule
+        # Even if lengths match, we must normalize to ensure sum is 1.0
+        total = sum(original_schedule)
+        if total == 0:
+            return [1.0 / new_length] * new_length
+        return [x / total for x in original_schedule]
 
     if original_len == 1:
         # Interpolation is not possible with a single value; return a constant schedule

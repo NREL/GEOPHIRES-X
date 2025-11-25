@@ -160,7 +160,7 @@ class SamEconomicsCalculations:
         return ret
 
 
-def validate_read_parameters(model: Model):
+def validate_read_parameters(model: Model) -> None:
     def _inv_msg(param_name: str, invalid_value: Any, supported_description: str) -> str:
         return (
             f'Invalid {param_name} ({invalid_value}) for '
@@ -193,26 +193,44 @@ def validate_read_parameters(model: Model):
 
     econ = model.economics
 
-    construction_years = model.surfaceplant.construction_years.value
-    capex_schedule = econ.construction_capex_schedule.value
-    capex_schedule_len = len(capex_schedule)
-    if capex_schedule_len != construction_years:
-        econ.construction_capex_schedule.value = adjust_phased_schedule_to_new_length(
-            econ.construction_capex_schedule.value, construction_years
-        )
-        msg = (
-            f'{econ.construction_capex_schedule.Name} ({econ.construction_capex_schedule}) '
-            f'length ({capex_schedule_len}) '
-            f'does not match construction years ({construction_years}). '
-            f'It has been adjusted to: {econ.construction_capex_schedule.value}'
-        )
-        model.logger.warning(msg)
+    econ.construction_capex_schedule.value = _validate_construction_capex_schedule(
+        econ.construction_capex_schedule,
+        model.surfaceplant.construction_years.value,
+        model.logger,
+    )
 
+    construction_years = model.surfaceplant.construction_years.value
     if abs(econ.bond_financing_start_year.value) >= construction_years:
         raise ValueError(
             f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) may not be earlier than '
             f'first {model.surfaceplant.construction_years.Name[:-1]} ({-1*(construction_years-1)}). '
         )
+
+
+def _validate_construction_capex_schedule(
+    econ_capex_schedule: listParameter, construction_years: int, model_logger
+) -> list[float]:
+    capex_schedule: list[float] = econ_capex_schedule.value.copy()
+
+    adjust_schedule_reasons: list[str] = []
+    if sum(capex_schedule) != 1.0:
+        adjust_schedule_reasons.append(f'does not sum to 1.0 (sums to {sum(capex_schedule)})')
+
+    capex_schedule_len = len(capex_schedule)
+    if capex_schedule_len != construction_years:
+        adjust_schedule_reasons.append(
+            f'length ({capex_schedule_len}) does not match ' f'construction years ({construction_years})'
+        )
+
+    if len(adjust_schedule_reasons) > 0:
+        capex_schedule = adjust_phased_schedule_to_new_length(econ_capex_schedule.value, construction_years)
+        msg = f'{econ_capex_schedule.Name} ({econ_capex_schedule}) '
+        msg += ' and '.join(adjust_schedule_reasons)
+        msg += f'. It has been adjusted to: {capex_schedule}'
+
+        model_logger.warning(msg)
+
+    return capex_schedule
 
 
 @lru_cache(maxsize=12)

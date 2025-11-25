@@ -9,6 +9,7 @@ from typing import Any
 
 import numpy as np
 import numpy_financial as npf
+from geophires_x.Parameter import listParameter
 
 from base_test_case import BaseTestCase
 
@@ -23,6 +24,7 @@ from geophires_x.EconomicsSam import (
     _get_fed_and_state_tax_rates,
     SamEconomicsCalculations,
     _get_royalty_rate_schedule,
+    _validate_construction_capex_schedule,
 )
 from geophires_x.GeoPHIRESUtils import sig_figs, quantity, is_float
 
@@ -289,6 +291,36 @@ class EconomicsSamTestCase(BaseTestCase):
             _sum('Issuance of equity [construction] ($)'),
             _floats(self._get_cash_flow_row(cy4_cf, 'Issuance of equity ($)'))[0],
         )
+
+    def test_validate_construction_capex_schedule(self):
+        model_logger = self._new_model(self._egs_test_file_path()).logger
+
+        def _sched(sched: list[float]) -> listParameter:
+            construction_capex_schedule_name = 'Construction CAPEX Schedule'
+            schedule_param = listParameter(
+                construction_capex_schedule_name,
+                DefaultValue=[1.0],
+                Min=0.0,
+                Max=1.0,
+                ToolTipText=construction_capex_schedule_name,
+            )
+            schedule_param.value = sched
+            return schedule_param
+
+        half_half = [0.5, 0.5]
+        self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(half_half), 2, model_logger))
+
+        with self.assertLogs(level='WARNING') as logs:
+            quarters = [0.25] * 4
+            self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(quarters), 2, model_logger))
+            self.assertHasLogRecordWithMessage(
+                logs, 'has been adjusted to: [0.5, 0.5]', treat_substring_match_as_match=True
+            )
+
+        double_ones = [1.0, 1.0]
+        with self.assertLogs(level='WARNING') as logs2:
+            self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(double_ones), 2, model_logger))
+            self.assertHasLogRecordWithMessage(logs2, 'does not sum to 1.0', treat_substring_match_as_match=True)
 
     def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
         """

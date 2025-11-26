@@ -274,6 +274,16 @@ class EconomicsSamTestCase(BaseTestCase):
             installed_cost_from_construction_cash_flow,
         )
 
+        self.assertLess(
+            construction_years_4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value'],
+            installed_cost_from_construction_cash_flow,
+        )
+
+        self.assertLess(
+            construction_years_4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value'],
+            construction_years_4.result['CAPITAL COSTS (M$)']['Total CAPEX']['value'],
+        )
+
         self.assertEqual(
             _sum('Issuance of equity [construction] ($)'),
             _floats(self._get_cash_flow_row(cy4_cf, 'Issuance of equity ($)'))[0],

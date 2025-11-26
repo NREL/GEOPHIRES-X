@@ -227,7 +227,7 @@ def _validate_construction_capex_schedule(
 
     if len(adjust_schedule_reasons) > 0:
         capex_schedule = adjust_phased_schedule_to_new_length(econ_capex_schedule.value, construction_years)
-        msg = f'{econ_capex_schedule.Name} ({econ_capex_schedule}) '
+        msg = f'{econ_capex_schedule.Name} ({econ_capex_schedule.value}) '
         msg += ' and '.join(adjust_schedule_reasons)
         msg += f'. It has been adjusted to: {capex_schedule}'
 

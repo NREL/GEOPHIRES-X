@@ -1185,9 +1185,9 @@ class Economics:
                         f'and normalized to sum to 1.0.'
         )
 
-        default_bond_financing_start_year = 0
-        latest_allowed_bond_financing_start_year_index = 0
         bond_financing_start_year_name = 'Bond Financing Start Year'
+        default_bond_financing_start_year = -1*(MAX_CONSTRUCTION_YEARS - 1)
+        latest_allowed_bond_financing_start_year_index = 0
         self.bond_financing_start_year = self.ParameterDict[self.bond_financing_start_year.Name] = intParameter(
             bond_financing_start_year_name,
             DefaultValue=default_bond_financing_start_year,
@@ -1201,15 +1201,15 @@ class Economics:
             ToolTipText=f'Project year index when bond financing (debt/loans) starts '
                         f'(if {self.FIB.Name} is >0). '
                         f'Prior years will be financed with equity only. '
-                        f'By default, bond financing starts during the first construction year '
+                        f'By default, bond financing starts during the first construction year '  # TODO lead with this
                         f'which has year index {{({model.surfaceplant.construction_years.Name} - 1) * -1}}. '
-                        f'For example, a project with 4 '
-                        # f'{model.surfaceplant.construction_years.Name} '
-                        'construction years '
-                        f'where bond '
-                        f'financing starts on the third {model.surfaceplant.construction_years.Name[:-1]} would have '
-                        f'a {bond_financing_start_year_name} value of -1; construction starts in Year -3, the second'
-                        f'year is Year -2, and the final 2 bond-financed construction years are Year -1 and Year 0.'
+                        f'For example, a project with 4 construction years '
+                        f'where bond financing starts on the third {model.surfaceplant.construction_years.Name[:-1]} '
+                        f'would have a {bond_financing_start_year_name} value of -1; construction starts in Year -3, '
+                        f'the second year is Year -2, and the final 2 bond-financed construction years are Year -1 '
+                        f'and Year 0. '
+                        f'Bond financing will start on the first construction year if the specified year index is '
+                        f'prior to the first construction year.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(

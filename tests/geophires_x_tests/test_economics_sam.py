@@ -350,14 +350,50 @@ class EconomicsSamTestCase(BaseTestCase):
             }
         )
 
-        def get_equity_usd(r: GeophiresXResult) -> float:
-            equity_str = self._get_cash_flow_row(r.result['SAM CASH FLOW PROFILE'], 'Issuance of equity ($)')[-1]
+        def get_equity_usd(_r: GeophiresXResult) -> float:
+            equity_str = self._get_cash_flow_row(_r.result['SAM CASH FLOW PROFILE'], 'Issuance of equity ($)')[-1]
 
             return float(equity_str)
 
         equity_musd = quantity(get_equity_usd(r), 'USD').to('MUSD').magnitude
         total_capex_musd = r.result['SUMMARY OF RESULTS']['Total CAPEX']['value']
         self.assertAlmostEqual(total_capex_musd * fraction_in_bonds, equity_musd, places=2)
+
+    def test_bond_financing_start_year(self):
+        construction_years = 4
+
+        def _get_result_(_financing_start_year: int) -> GeophiresXResult:
+            return self._get_result(
+                {
+                    'Construction Years': construction_years,
+                    'Inflation Rate During Construction': 0,
+                    'Fraction of Investment in Bonds': 0.5,
+                    'Bond Financing Start Year': _financing_start_year,
+                }
+            )
+
+        def get_debt_issuance_usd(_r: GeophiresXResult) -> list[float]:
+            return self._get_cash_flow_row(_r.result['SAM CASH FLOW PROFILE'], 'Issuance of debt [construction] ($)')
+
+        def _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(_r, _financing_start_year: int) -> None:
+            di = get_debt_issuance_usd(_r)
+            year_indexes = [int(it.replace('Year ', '')) for it in _r.result['SAM CASH FLOW PROFILE'][0][1:]]
+            bond_financing_start_cash_flow_index = (
+                year_indexes.index(_financing_start_year) if year_indexes[0] <= _financing_start_year else 0
+            )
+            self.assertTrue(all(it == 0 for it in di[:bond_financing_start_cash_flow_index]))
+            self.assertTrue(all(it > 0 for it in di[bond_financing_start_cash_flow_index:]))
+
+        for financing_start_year in range(-1 * (construction_years - 1), 1):
+            r_1: GeophiresXResult = _get_result_(financing_start_year)
+            _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_1, financing_start_year)
+
+        fsy_prior_construction = -13
+        r_prior_construction: GeophiresXResult = _get_result_(fsy_prior_construction)
+        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_prior_construction, fsy_prior_construction)
+
+        with self.assertRaises(RuntimeError):
+            _get_result_(1)  # Bond financing start year is negative year indexed, so value must be less than 0
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(

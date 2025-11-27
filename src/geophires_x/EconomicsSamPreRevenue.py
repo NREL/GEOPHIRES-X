@@ -68,8 +68,9 @@ def calculate_pre_revenue_costs_and_cashflow(model: 'Model') -> PreRevenueCostsA
     construction_years: int = model.surfaceplant.construction_years.value
 
     # Translate from negative year index input value to start-year-0-indexed calculation value
-    debt_financing_start_year: int = (
-        construction_years - abs(econ.bond_financing_start_year.value) if econ.bond_financing_start_year.Provided else 0
+    debt_financing_start_year: int = max(
+        construction_years - abs(econ.bond_financing_start_year.value) - 1,
+        0,  # Treat bond financing years prior to construction as starting in the first year of construction
     )
 
     return _calculate_pre_revenue_costs_and_cashflow(

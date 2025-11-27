@@ -204,9 +204,9 @@ def validate_read_parameters(model: Model) -> None:
 
     construction_years = model.surfaceplant.construction_years.value
     if abs(econ.bond_financing_start_year.value) >= construction_years:
-        raise ValueError(
-            f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) may not be earlier than '
-            f'first {model.surfaceplant.construction_years.Name[:-1]} ({-1*(construction_years-1)}). '
+        model.logger.debug(
+            f'{econ.bond_financing_start_year.Name} ({econ.bond_financing_start_year.value}) is earlier than '
+            f'first {model.surfaceplant.construction_years.Name[:-1]} ({-1 * (construction_years - 1)}). (OK)'
         )
 
 

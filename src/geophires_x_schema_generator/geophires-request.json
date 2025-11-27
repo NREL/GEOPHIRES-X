@@ -1785,11 +1785,11 @@
       "maximum": 1.0
     },
     "Bond Financing Start Year": {
-      "description": "Project year index when bond financing (debt/loans) starts (if Fraction of Investment in Bonds is >0). Prior years will be financed with equity only. By default, bond financing starts during the first construction year which has year index {(Construction Years - 1) * -1}. For example, a project with 4 construction years where bond financing starts on the third Construction Year would have a Bond Financing Start Year value of -1; construction starts in Year -3, the secondyear is Year -2, and the final 2 bond-financed construction years are Year -1 and Year 0.",
+      "description": "Project year index when bond financing (debt/loans) starts (if Fraction of Investment in Bonds is >0). Prior years will be financed with equity only. By default, bond financing starts during the first construction year which has year index {(Construction Years - 1) * -1}. For example, a project with 4 construction years where bond financing starts on the third Construction Year would have a Bond Financing Start Year value of -1; construction starts in Year -3, the second year is Year -2, and the final 2 bond-financed construction years are Year -1 and Year 0. Bond financing will start on the first construction year if the specified year index is prior to the first construction year.",
       "type": "integer",
       "units": "yr",
       "category": "Economics",
-      "default": 0,
+      "default": -14,
       "minimum": -14,
       "maximum": 0
     },

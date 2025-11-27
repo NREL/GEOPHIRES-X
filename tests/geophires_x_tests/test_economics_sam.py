@@ -362,10 +362,10 @@ class EconomicsSamTestCase(BaseTestCase):
     def test_bond_financing_start_year(self):
         construction_years = 4
 
-        def _get_result_(_financing_start_year: int) -> GeophiresXResult:
+        def _get_result_(_financing_start_year: int, _construction_years: int = construction_years) -> GeophiresXResult:
             return self._get_result(
                 {
-                    'Construction Years': construction_years,
+                    'Construction Years': _construction_years,
                     'Inflation Rate During Construction': 0,
                     'Fraction of Investment in Bonds': 0.5,
                     'Bond Financing Start Year': _financing_start_year,
@@ -385,12 +385,17 @@ class EconomicsSamTestCase(BaseTestCase):
             self.assertTrue(all(it > 0 for it in di[bond_financing_start_cash_flow_index:]))
 
         for financing_start_year in range(-1 * (construction_years - 1), 1):
-            r_1: GeophiresXResult = _get_result_(financing_start_year)
-            _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_1, financing_start_year)
+            r: GeophiresXResult = _get_result_(financing_start_year)
+            _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r, financing_start_year)
 
-        fsy_prior_construction = -13
-        r_prior_construction: GeophiresXResult = _get_result_(fsy_prior_construction)
-        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_prior_construction, fsy_prior_construction)
+        fsy_min = -13
+        r_prior_construction: GeophiresXResult = _get_result_(fsy_min)
+        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_prior_construction, fsy_min)
+
+        max_construction_years = 14
+        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(
+            _get_result_(fsy_min, _construction_years=max_construction_years), fsy_min
+        )
 
         with self.assertRaises(RuntimeError):
             _get_result_(1)  # Bond financing start year is negative year indexed, so value must be less than 0

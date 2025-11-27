@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from base_test_case import BaseTestCase
 from geophires_x.EconomicsSamPreRevenue import adjust_phased_schedule_to_new_length
-from geophires_x.EconomicsSamPreRevenue import calculate_pre_revenue_costs_and_cashflow
 
 
 class EconomicsSamPreRevenueTestCase(BaseTestCase):
@@ -37,7 +36,3 @@ class EconomicsSamPreRevenueTestCase(BaseTestCase):
             [0.25] * 2 + [0.1278]*4
         )
         # fmt:on
-
-    def test_calculate_pre_revenue_costs_and_cashflow(self) -> None:
-        model = None  # FIXME WIP
-        calculate_pre_revenue_costs_and_cashflow(model)

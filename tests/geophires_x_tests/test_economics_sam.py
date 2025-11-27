@@ -863,6 +863,7 @@ class EconomicsSamTestCase(BaseTestCase):
         capex_line_item_sum = 0
         for line_item_name, capex_line_item in capex_line_items.items():
             if line_item_name not in [
+                'Overnight Capital Cost',
                 'Total CAPEX',
                 'Total surface equipment costs',
                 'Drilling and completion costs per well',

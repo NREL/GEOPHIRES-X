@@ -515,6 +515,12 @@ class Outputs:
                         #  expenditure.
                         pass
 
+                display_occ_and_inflation_during_construction_in_capital_costs = is_sam_econ_model
+                if display_occ_and_inflation_during_construction_in_capital_costs:
+                    occ_label = Outputs._field_label(econ.overnight_capital_cost.display_name, 47)
+                    f.write(
+                        f'         {occ_label}{econ.overnight_capital_cost.value:10.2f} {econ.overnight_capital_cost.CurrentUnits.value}\n')
+
                 display_idc_in_capital_costs = is_sam_econ_model \
                                                        and model.surfaceplant.construction_years.value > 1
                 if display_idc_in_capital_costs:
@@ -522,12 +528,7 @@ class Outputs:
                     f.write(
                         f'         {idc_label}{econ.interest_during_construction.value:10.2f} {econ.interest_during_construction.CurrentUnits.value}\n')
 
-                display_occ_and_inflation_during_construction_in_capital_costs = is_sam_econ_model
                 if display_occ_and_inflation_during_construction_in_capital_costs:
-                    occ_label = Outputs._field_label(econ.overnight_capital_cost.display_name, 47)
-                    f.write(
-                        f'         {occ_label}{econ.overnight_capital_cost.value:10.2f} {econ.overnight_capital_cost.CurrentUnits.value}\n')
-
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 

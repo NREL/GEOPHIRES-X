@@ -14,6 +14,8 @@ from PySAM import Singleowner
 
 import geophires_x.Model as Model
 
+_SAM_CASH_FLOW_NAN_STR = 'NaN'
+
 
 @lru_cache(maxsize=12)
 def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
@@ -61,7 +63,7 @@ def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) 
                 return x_
             else:
                 if math.isnan(x_):
-                    return 'NaN'
+                    return _SAM_CASH_FLOW_NAN_STR
 
                 return rnd(x_)
 

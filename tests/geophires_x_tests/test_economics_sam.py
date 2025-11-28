@@ -29,7 +29,12 @@ from geophires_x.EconomicsSam import (
 from geophires_x.GeoPHIRESUtils import sig_figs, quantity, is_float
 
 # noinspection PyProtectedMember
-from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
+from geophires_x.EconomicsSamCashFlow import (
+    _clean_profile,
+    _is_category_row_label,
+    _is_designator_row_label,
+    _SAM_CASH_FLOW_NAN_STR,
+)
 from geophires_x.Units import convertible_unit
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
@@ -722,7 +727,7 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(([21], [9]), _get_fed_and_state_tax_rates(0.3))
         self.assertEqual(([10], [0]), _get_fed_and_state_tax_rates(0.1))
 
-    def test_nan_after_tax_irr(self):
+    def test_nan_after_tax_irr_output_param(self):
         """
         Verify that After-tax IRRs that would have been calculated as NaN by SAM are instead calculated with
         numpy-financial.irr
@@ -748,7 +753,7 @@ class EconomicsSamTestCase(BaseTestCase):
             # is conditional.
             assert math.isnan(sam_after_tax_irr_calc)
         except AssertionError:
-            self.skipTest('Skipping because NaN after-tax IRR is handled upstream by SAM-EM')
+            self.skipTest('Skipping because NaN after-tax IRR is now handled upstream by SAM-EM')
 
         after_tax_cash_flow = EconomicsSamTestCase._get_cash_flow_row(
             r.result['SAM CASH FLOW PROFILE'], 'Total after-tax returns ($)'
@@ -758,6 +763,30 @@ class EconomicsSamTestCase(BaseTestCase):
         r_irr = _irr(r)
         self.assertFalse(math.isnan(r_irr))
         self.assertAlmostEqual(npf_irr, r_irr, places=2)
+
+    def test_nan__irr_cash_flow_line_items_for_multiple_construction_years(self):
+        """
+        IRR during construction years is expected to be nan - serialized as 'NaN'
+        """
+
+        def _irr(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['After-tax IRR']['value']
+
+        construction_years = 2
+
+        rate_params = {
+            'Electricity Escalation Rate Per Year': 0.00348993288590604,
+            'Starting Electricity Sale Price': 0.13,
+            'Construction Years': construction_years,
+        }
+        r: GeophiresXResult = self._get_result(rate_params)
+        after_tax_irr_cash_flow_entries = EconomicsSamTestCase._get_cash_flow_row(
+            r.result['SAM CASH FLOW PROFILE'], 'After-tax cumulative IRR (%)'
+        )
+        self.assertTrue(
+            all(it == _SAM_CASH_FLOW_NAN_STR for it in after_tax_irr_cash_flow_entries[:construction_years])
+        )
+        self.assertTrue(all(is_float(it) for it in after_tax_irr_cash_flow_entries[construction_years:]))
 
     def test_nan_project_payback_period(self):
         def _payback_period(_r: GeophiresXResult) -> float:

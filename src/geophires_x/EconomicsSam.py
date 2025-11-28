@@ -27,7 +27,7 @@ import PySAM.Utilityrate5 as UtilityRate
 from tabulate import tabulate
 
 from geophires_x import Model as Model
-from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow
+from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow, _SAM_CASH_FLOW_NAN_STR
 from geophires_x.EconomicsUtils import (
     BuildPricingModel,
     wacc_output_parameter,
@@ -154,8 +154,8 @@ class SamEconomicsCalculations:
                 )
             )
 
-            irr_pct.append(npf.irr(after_tax_cash_flow[: year + 1]) * 100.0)
-            # FIXME TODO correct 'nan' to 'NaN' (either here or appropriate place in processing pipeline...)
+            year_irr = npf.irr(after_tax_cash_flow[: year + 1]) * 100.0
+            irr_pct.append(year_irr if not isnan(year_irr) else _SAM_CASH_FLOW_NAN_STR)
 
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
         ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct

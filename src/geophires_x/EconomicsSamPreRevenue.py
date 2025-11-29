@@ -6,7 +6,7 @@ from typing import Any
 
 import numpy as np
 from geophires_x.GeoPHIRESUtils import is_float
-from scipy.interpolate.interpolate import interp1d
+from scipy.interpolate import interp1d
 
 _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'Total after-tax returns ($)'
 _IDC_CASH_FLOW_ROW_NAME = 'Debt interest payment ($)'

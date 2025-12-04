@@ -303,7 +303,7 @@ class Reservoir:
         # noinspection SpellCheckingInspection
         self.fracnumb_per_stimulated_well = self.ParameterDict[self.fracnumb_per_stimulated_well.Name] = intParameter(
             'Number of Fractures per Stimulated Well',
-            DefaultValue=20,
+            DefaultValue=10,
             AllowableRange=fracnumb_allowable_range,
             UnitType=Units.NONE,
             ToolTipText=f'Number of identical parallel fractures per stimulated well '

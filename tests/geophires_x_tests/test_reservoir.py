@@ -10,9 +10,9 @@ from pint.facets.plain import PlainQuantity
 
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
-from geophires_x.Reservoir import _MAX_ALLOWED_FRACTURES
 
 # noinspection PyProtectedMember
+from geophires_x.Reservoir import _MAX_ALLOWED_FRACTURES
 from geophires_x.Reservoir import Reservoir
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient

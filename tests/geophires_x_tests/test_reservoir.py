@@ -10,6 +10,9 @@ from pint.facets.plain import PlainQuantity
 
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
+from geophires_x.Reservoir import _MAX_ALLOWED_FRACTURES
+
+# noinspection PyProtectedMember
 from geophires_x.Reservoir import Reservoir
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
@@ -273,5 +276,10 @@ class ReservoirTestCase(BaseTestCase):
         r_102_per_inj = _get_result(102, 59, prod_wells_stimulated=False)
         self.assertEqual(12_036 / 2, r_102_per_inj.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
 
-        with self.assertRaises(RuntimeError, msg='Please provide only one'):
+        with self.assertRaises(RuntimeError) as e:
             _get_result(102, 59, fracs_total=12_036)
+        self.assertIn('provide only one', str(e.exception))
+
+        with self.assertRaises(RuntimeError) as e:
+            _get_result(_MAX_ALLOWED_FRACTURES, 59)
+        self.assertIn(f'({_MAX_ALLOWED_FRACTURES*59*2}) must not exceed {_MAX_ALLOWED_FRACTURES}', str(e.exception))

@@ -14,6 +14,9 @@ import geophires_x.Model as Model
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
+_MAX_ALLOWED_FRACTURES = 1_000_000
+
+
 class Reservoir:
     """
     This class is the parent class for modeling the Reservoir.
@@ -284,10 +287,11 @@ class Reservoir:
             ToolTipText="Width of each fracture"
         )
 
+        fracnumb_allowable_range = list(range(1, _MAX_ALLOWED_FRACTURES + 1, 1))
         self.fracnumb = self.ParameterDict[self.fracnumb.Name] = intParameter(
             "Number of Fractures",
             DefaultValue=10,
-            AllowableRange=list(range(1, 100_000, 1)),
+            AllowableRange=fracnumb_allowable_range,
             UnitType=Units.NONE,
             ErrMessage="assume default number of fractures (10)",
             ToolTipText="Number of identical parallel fractures in EGS fracture-based reservoir model."
@@ -300,7 +304,7 @@ class Reservoir:
         self.fracnumb_per_stimulated_well = self.ParameterDict[self.fracnumb_per_stimulated_well.Name] = intParameter(
             'Number of Fractures per Stimulated Well',
             DefaultValue=20,
-            AllowableRange=list(range(1, 100_000, 1)),
+            AllowableRange=fracnumb_allowable_range,
             UnitType=Units.NONE,
             ToolTipText=f'Number of identical parallel fractures per stimulated well '
                         f'in EGS fracture-based reservoir model. '
@@ -707,6 +711,9 @@ class Reservoir:
             self.fracnumbcalc.value = self.fracnumb_per_stimulated_well.value * stimulated_wells_count
         else:
             self.fracnumbcalc.value = self.fracnumb.value
+        if self.fracnumbcalc.value > _MAX_ALLOWED_FRACTURES:
+            raise ValueError(f'{self.fracnumb.Name} ({self.fracnumbcalc.value}) must not exceed '
+                             f'{_MAX_ALLOWED_FRACTURES}.')
 
         if self.fracshape.value == FractureShape.CIRCULAR_AREA:
             self.fracheightcalc.value = math.sqrt(4 / math.pi * self.fracareacalc.value)

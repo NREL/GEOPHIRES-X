@@ -320,7 +320,7 @@
       "category": "Reservoir",
       "default": 10,
       "minimum": 1,
-      "maximum": 99999
+      "maximum": 1000000
     },
     "Number of Fractures per Stimulated Well": {
       "description": "Number of identical parallel fractures per stimulated well in EGS fracture-based reservoir model. (Note that injection wells are assumed to be stimulated by default; production wells are assumed to be stimulated if Reservoir Stimulation Capital Cost per Production Well is provided.)",
@@ -329,7 +329,7 @@
       "category": "Reservoir",
       "default": 20,
       "minimum": 1,
-      "maximum": 99999
+      "maximum": 1000000
     },
     "Fracture Separation": {
       "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",

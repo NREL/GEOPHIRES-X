@@ -10,6 +10,9 @@ from pint.facets.plain import PlainQuantity
 
 from geophires_x.GeoPHIRESUtils import static_pressure_MPa
 from geophires_x.Model import Model
+
+# noinspection PyProtectedMember
+from geophires_x.Reservoir import _MAX_ALLOWED_FRACTURES
 from geophires_x.Reservoir import Reservoir
 from geophires_x_client import GeophiresInputParameters
 from geophires_x_client import GeophiresXClient
@@ -228,3 +231,55 @@ class ReservoirTestCase(BaseTestCase):
 
         for k, v in expected.items():
             self.assertEqual(summary[k], v)
+
+    def test_number_of_fractures_per_stimulated_well(self):
+        def _get_result(
+            fracs_per_stimulated_well: int | None,
+            inj_wells: int,
+            prod_wells: int | None = None,
+            prod_wells_stimulated: bool = True,
+            fracs_total: int | None = None,
+        ) -> GeophiresXResult:
+            if prod_wells is None:
+                prod_wells = inj_wells
+
+            params = {
+                'Number of Production Wells': prod_wells,
+                'Number of Injection Wells': inj_wells,
+            }
+
+            if fracs_per_stimulated_well is not None:
+                params['Number of Fractures per Stimulated Well'] = fracs_per_stimulated_well
+
+            if fracs_total is not None:
+                params['Number of Fractures'] = fracs_total
+
+            if prod_wells_stimulated:
+                # stim cost per production well indicates prod wells are stimulated (cost doesn't matter for this test)
+                params['Reservoir Stimulation Capital Cost per Production Well'] = 1
+
+            return GeophiresXClient().get_geophires_result(
+                GeophiresInputParameters(
+                    from_file_path=self._get_test_file_path('generic-egs-case-4_no-fractures-specified.txt'),
+                    params=params,
+                )
+            )
+
+        r_102_per = _get_result(102, 59)
+        self.assertEqual(12_036, r_102_per.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
+
+        r_102_per_total_equivalent = _get_result(None, 59, fracs_total=12_036)
+        self.assertEqual(
+            12_036, r_102_per_total_equivalent.result['RESERVOIR PARAMETERS']['Number of fractures']['value']
+        )
+
+        r_102_per_inj = _get_result(102, 59, prod_wells_stimulated=False)
+        self.assertEqual(12_036 / 2, r_102_per_inj.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
+
+        with self.assertRaises(RuntimeError) as e:
+            _get_result(102, 59, fracs_total=12_036)
+        self.assertIn('provide only one', str(e.exception))
+
+        with self.assertRaises(RuntimeError) as e:
+            _get_result(_MAX_ALLOWED_FRACTURES, 59)
+        self.assertIn(f'({_MAX_ALLOWED_FRACTURES*59*2}) must not exceed {_MAX_ALLOWED_FRACTURES}', str(e.exception))

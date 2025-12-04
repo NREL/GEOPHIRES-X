@@ -14,6 +14,9 @@ import geophires_x.Model as Model
 from geophires_x.GeoPHIRESUtils import heat_capacity_water_J_per_kg_per_K, quantity, static_pressure_MPa
 from geophires_x.GeoPHIRESUtils import density_water_kg_per_m3
 
+_MAX_ALLOWED_FRACTURES = 1_000_000
+
+
 class Reservoir:
     """
     This class is the parent class for modeling the Reservoir.
@@ -284,13 +287,30 @@ class Reservoir:
             ToolTipText="Width of each fracture"
         )
 
+        fracnumb_allowable_range = list(range(1, _MAX_ALLOWED_FRACTURES + 1, 1))
         self.fracnumb = self.ParameterDict[self.fracnumb.Name] = intParameter(
             "Number of Fractures",
             DefaultValue=10,
-            AllowableRange=list(range(1, 100_000, 1)),
+            AllowableRange=fracnumb_allowable_range,
             UnitType=Units.NONE,
             ErrMessage="assume default number of fractures (10)",
             ToolTipText="Number of identical parallel fractures in EGS fracture-based reservoir model."
+        )
+
+        # Variable is a workaround for the fact that model.economics has not been initialized yet.
+        model_economics_stimulation_cost_per_production_well_name = \
+            'Reservoir Stimulation Capital Cost per Production Well'
+        # noinspection SpellCheckingInspection
+        self.fracnumb_per_stimulated_well = self.ParameterDict[self.fracnumb_per_stimulated_well.Name] = intParameter(
+            'Number of Fractures per Stimulated Well',
+            DefaultValue=20,
+            AllowableRange=fracnumb_allowable_range,
+            UnitType=Units.NONE,
+            ToolTipText=f'Number of identical parallel fractures per stimulated well '
+                        f'in EGS fracture-based reservoir model. '
+                        f'(Note that injection wells are assumed to be stimulated by default; '
+                        f'production wells are assumed to be stimulated if '
+                        f'{model_economics_stimulation_cost_per_production_well_name} is provided.)'
         )
 
         self.fracsep = self.ParameterDict[self.fracsep.Name] = floatParameter(
@@ -617,8 +637,6 @@ class Reservoir:
 
                     elif ParameterToModify.Name.startswith("Fracture Separation"):
                         self.fracsepcalc.value = self.fracsep.value
-                    elif ParameterToModify.Name.startswith("Number of Fractures"):
-                        self.fracnumbcalc.value = self.fracnumb.value
                     elif ParameterToModify.Name.startswith("Fracture Width"):
                         self.fracwidthcalc.value = self.fracwidth.value
                     elif ParameterToModify.Name.startswith("Fracture Height"):
@@ -656,6 +674,11 @@ class Reservoir:
 
         model.reserv.layerthickness.value[model.reserv.numseg.value-1] = 100_000.0
 
+        if self.fracnumb.Provided and self.fracnumb_per_stimulated_well.Provided:
+            raise ValueError(f'Only one of {self.fracnumb_per_stimulated_well.Name} and {self.fracnumb.Name}'
+                             f'may be provided. '
+                             f'Please provide only one of these parameters.')
+
 
         model.logger.info(f'complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 
@@ -676,9 +699,22 @@ class Reservoir:
         # If you choose to subclass this master class, you can also choose to override this method (or not),
         # and if you do, do it before or after you call you own version of this method.  If you do, you can also
         # choose to call this method from you class, which can effectively run the calculations of the superclass,
-        # making all thr values available to your methods. but you had n better set all the parameters!
+        # making all the values available to your methods. but you had n better set all the parameters!
 
-        # calculate fracture geometry
+        # calculate fracture count and geometry
+        if self.fracnumb_per_stimulated_well.Provided:
+            stimulated_wells_count = model.wellbores.ninj.value
+            if model.economics.stimulation_cost_per_production_well.Provided:
+                # Only injection wells are assumed to be stimulated unless stimulation cost per
+                # production well parameter is provided (even if provided cost is $0).
+                stimulated_wells_count += model.wellbores.nprod.value
+            self.fracnumbcalc.value = self.fracnumb_per_stimulated_well.value * stimulated_wells_count
+        else:
+            self.fracnumbcalc.value = self.fracnumb.value
+        if self.fracnumbcalc.value > _MAX_ALLOWED_FRACTURES:
+            raise ValueError(f'{self.fracnumb.Name} ({self.fracnumbcalc.value}) must not exceed '
+                             f'{_MAX_ALLOWED_FRACTURES}.')
+
         if self.fracshape.value == FractureShape.CIRCULAR_AREA:
             self.fracheightcalc.value = math.sqrt(4 / math.pi * self.fracareacalc.value)
             self.fracwidthcalc.value = self.fracheightcalc.value

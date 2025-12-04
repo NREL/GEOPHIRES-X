@@ -293,15 +293,20 @@ class Reservoir:
             ToolTipText="Number of identical parallel fractures in EGS fracture-based reservoir model."
         )
 
+        # Variable is a workaround for the fact that model.economics has not been initialized yet.
+        model_economics_stimulation_cost_per_production_well_name = \
+            'Reservoir Stimulation Capital Cost per Production Well'
         # noinspection SpellCheckingInspection
         self.fracnumb_per_stimulated_well = self.ParameterDict[self.fracnumb_per_stimulated_well.Name] = intParameter(
             'Number of Fractures per Stimulated Well',
             DefaultValue=20,
             AllowableRange=list(range(1, 100_000, 1)),
             UnitType=Units.NONE,
-            ToolTipText='Number of identical parallel fractures per stimulated well '
-                        'in EGS fracture-based reservoir model.'
-                        # TODO specify that production well stimulation indicated by stim cost param
+            ToolTipText=f'Number of identical parallel fractures per stimulated well '
+                        f'in EGS fracture-based reservoir model. '
+                        f'(Note that injection wells are assumed to be stimulated by default; '
+                        f'production wells are assumed to be stimulated if '
+                        f'{model_economics_stimulation_cost_per_production_well_name} is provided.)'
         )
 
         self.fracsep = self.ParameterDict[self.fracsep.Name] = floatParameter(
@@ -628,16 +633,6 @@ class Reservoir:
 
                     elif ParameterToModify.Name.startswith("Fracture Separation"):
                         self.fracsepcalc.value = self.fracsep.value
-                    # elif ParameterToModify.Name.startswith("Number of Fractures"):
-                    #     if ParameterToModify.Name == self.fracnumb_per_stimulated_well.Name:
-                    #         stimulated_wells_count = model.wellbores.ninj.value
-                    #         if model.economics.stimulation_cost_per_production_well.Provided:
-                    #             # Only injection wells are assumed to be stimulated unless stimulation cost per
-                    #             # production well parameter is provided (even if provided cost is $0).
-                    #             stimulated_wells_count += model.wellbores.nprod.value
-                    #         self.fracnumbcalc.value = self.fracnumb_per_stimulated_well.value * stimulated_wells_count
-                    #     else:
-                    #         self.fracnumbcalc.value = self.fracnumb.value
                     elif ParameterToModify.Name.startswith("Fracture Width"):
                         self.fracwidthcalc.value = self.fracwidth.value
                     elif ParameterToModify.Name.startswith("Fracture Height"):
@@ -676,7 +671,7 @@ class Reservoir:
         model.reserv.layerthickness.value[model.reserv.numseg.value-1] = 100_000.0
 
         if self.fracnumb.Provided and self.fracnumb_per_stimulated_well.Provided:
-            raise ValueError(f'Only one of {self.fracnumb_per_stimulated_well.Name} and {self.fracnumbcalc.Name}'
+            raise ValueError(f'Only one of {self.fracnumb_per_stimulated_well.Name} and {self.fracnumb.Name}'
                              f'may be provided. '
                              f'Please provide only one of these parameters.')
 

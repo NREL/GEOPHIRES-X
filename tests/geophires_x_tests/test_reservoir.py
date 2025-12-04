@@ -272,3 +272,6 @@ class ReservoirTestCase(BaseTestCase):
 
         r_102_per_inj = _get_result(102, 59, prod_wells_stimulated=False)
         self.assertEqual(12_036 / 2, r_102_per_inj.result['RESERVOIR PARAMETERS']['Number of fractures']['value'])
+
+        with self.assertRaises(RuntimeError, msg='Please provide only one'):
+            _get_result(102, 59, fracs_total=12_036)

@@ -44,12 +44,11 @@ from geophires_x.EconomicsSamPreRevenue import (
     _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
-    _calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
 )
 from geophires_x.GeoPHIRESUtils import is_float, is_int, sig_figs, quantity
 from geophires_x.OptionList import EconomicModel, EndUseOptions
-from geophires_x.Parameter import Parameter, OutputParameter, floatParameter
+from geophires_x.Parameter import Parameter, OutputParameter, floatParameter, listParameter
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
 
 
@@ -199,7 +198,7 @@ def validate_read_parameters(model: Model) -> None:
     econ.construction_capex_schedule.value = _validate_construction_capex_schedule(
         econ.construction_capex_schedule,
         model.surfaceplant.construction_years.value,
-        model.logger,
+        model,
     )
 
     construction_years = model.surfaceplant.construction_years.value
@@ -211,7 +210,7 @@ def validate_read_parameters(model: Model) -> None:
 
 
 def _validate_construction_capex_schedule(
-    econ_capex_schedule: listParameter, construction_years: int, model_logger
+    econ_capex_schedule: listParameter, construction_years: int, model: Model
 ) -> list[float]:
     capex_schedule: list[float] = econ_capex_schedule.value.copy()
 
@@ -227,11 +226,16 @@ def _validate_construction_capex_schedule(
 
     if len(adjust_schedule_reasons) > 0:
         capex_schedule = adjust_phased_schedule_to_new_length(econ_capex_schedule.value, construction_years)
-        msg = f'{econ_capex_schedule.Name} ({econ_capex_schedule.value}) '
-        msg += ' and '.join(adjust_schedule_reasons)
-        msg += f'. It has been adjusted to: {capex_schedule}'
 
-        model_logger.warning(msg)
+        if model.outputs.printoutput:
+            # Use printoutput as a proxy for whether the user has requested logging;
+            #  TODO to implement/support logging-specific config
+
+            msg = f'{econ_capex_schedule.Name} ({econ_capex_schedule.value}) '
+            msg += ' and '.join(adjust_schedule_reasons)
+            msg += f'. It has been adjusted to: {capex_schedule}'
+
+            model.logger.warning(msg)
 
     return capex_schedule
 

@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.16
+ GEOPHIRES Version: 3.10.17
  Simulation Date: 2025-12-10
- Simulation Time:  08:55
- Calculation Time:      1.865 sec
+ Simulation Time:  11:17
+ Calculation Time:      1.837 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -33,7 +33,7 @@ Simulation Metadata
       Project NPV:                                         108.32 MUSD
       After-tax IRR:                                        16.54 %
       Project VIR=PI=PIR:                                    1.91
-      Project MOIC:                                          6.88
+      Project MOIC:                                          5.72
       Project Payback Period:                                       2.92 yr
       Estimated Jobs Created:                                 250
 

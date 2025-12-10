@@ -45,7 +45,7 @@ def BuildPricingModel(
     return Price
 
 
-_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER = 'pre-tax'  # TODO/WIP switch to after-tax...
+_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER = 'after-tax'
 
 
 def moic_parameter() -> OutputParameter:

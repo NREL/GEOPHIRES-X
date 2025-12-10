@@ -1498,3 +1498,37 @@ Print Output to Console, 1"""
             )
 
         self.assertIn('Royalty Rate is only supported for SAM Economic Models', str(re.exception))
+
+    def test_royalty_rate_with_multiple_construction_years(self):
+        royalty_rate_example_stem = 'examples/example_SAM-single-owner-PPA-4'  # Royalty rate example
+
+        royalty_rate_example_input_file_path = self._get_test_file_path(f'{royalty_rate_example_stem}.txt')
+
+        # Test assumes example has 1 construction year; if this changes for some reason, a version of the example with
+        # a single construction year should be used instead.
+        assert (
+            BaseTestCase.get_input_parameter(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=royalty_rate_example_input_file_path,
+                ),
+                'Construction Years',
+            )
+            == 1
+        )
+
+        base_result = GeophiresXResult(self._get_test_file_path(f'{royalty_rate_example_stem}.out'))
+
+        mcy_result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=royalty_rate_example_input_file_path,
+                params={
+                    'Construction Years': 3,
+                },
+            )
+        )
+
+        def _royalty_holder_npv(r: GeophiresXResult) -> float:
+            econ_result = r.result['EXTENDED ECONOMICS']
+            return econ_result['Royalty Holder NPV']['value']
+
+        self.assertGreater(_royalty_holder_npv(base_result), _royalty_holder_npv(mcy_result))

@@ -994,23 +994,3 @@ class EconomicsSamTestCase(BaseTestCase):
             )
         else:
             raise ae
-
-    @staticmethod
-    def get_input_parameter(params: GeophiresInputParameters, param_name: str) -> float | str | None:
-        """
-        TODO refactor into generic utility method
-        TODO should return quantity
-        """
-
-        for line in reversed(params.as_text().split('\n')):
-            parts = line.strip().split(',')
-            if parts[0].strip() == param_name:
-                ret = parts[1].strip()
-                try:
-                    return float(ret)
-                except ValueError:
-                    pass
-
-                return str(ret)
-
-        return None

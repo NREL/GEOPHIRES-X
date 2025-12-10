@@ -5,6 +5,8 @@ import numbers
 import os.path
 import unittest
 
+from geophires_x_client import GeophiresInputParameters
+
 # noinspection PyProtectedMember
 from geophires_x_client import _get_logger
 
@@ -113,3 +115,23 @@ class BaseTestCase(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def _is_github_actions(self):
         return 'CI' in os.environ or 'TOXPYTHON' in os.environ
+
+    @staticmethod
+    def get_input_parameter(params: GeophiresInputParameters, param_name: str) -> float | str | None:
+        """
+        TODO refactor into generic utility method
+        TODO should return quantity
+        """
+
+        for line in reversed(params.as_text().split('\n')):
+            parts = line.strip().split(',')
+            if parts[0].strip() == param_name:
+                ret = parts[1].strip()
+                try:
+                    return float(ret)
+                except ValueError:
+                    pass
+
+                return str(ret)
+
+        return None

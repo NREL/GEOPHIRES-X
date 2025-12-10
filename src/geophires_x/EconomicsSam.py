@@ -329,8 +329,8 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile, model)
     sam_economics.project_vir.value = _calculate_project_vir(cash_flow_operational_years, model)  # FIXME WIP TODO
     sam_economics.project_payback_period.value = _calculate_project_payback_period(
-        cash_flow_operational_years, model
-    )  # FIXME WIP TODO
+        sam_economics.sam_cash_flow_profile, model
+    )
 
     return sam_economics
 
@@ -479,7 +479,7 @@ def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
 def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:
     """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
     try:
-        after_tax_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
+        after_tax_cash_flow = _cash_flow_total_after_tax_returns_all_years(cash_flow, _pre_revenue_years_count(model))
         cumm_cash_flow = np.zeros(len(after_tax_cash_flow))
         cumm_cash_flow[0] = after_tax_cash_flow[0]
         for year in range(1, len(after_tax_cash_flow)):

@@ -271,13 +271,17 @@ class EconomicsSamTestCase(BaseTestCase):
         )
 
         installed_cost_from_construction_cash_flow = (
-            _sum('Purchase of property [construction] ($)', abs_val=True) + idc_sum
+            _sum('Total capital expenditure [construction] ($)', abs_val=True) + idc_sum
         )
 
+        sam_total_installed_cost_usd = abs(_floats(self._get_cash_flow_row(cy4_cf, 'Total installed cost ($)'))[0])
         self.assertEqual(
-            abs(_floats(self._get_cash_flow_row(cy4_cf, 'Total installed cost ($)'))[0]),
+            sam_total_installed_cost_usd,
             installed_cost_from_construction_cash_flow,
         )
+
+        installed_cost_construction_line_item_sum = _sum('Total installed cost [construction] ($)', abs_val=True)
+        self.assertAlmostEqualWithinSigFigs(sam_total_installed_cost_usd, installed_cost_construction_line_item_sum, 8)
 
         self.assertLess(
             construction_years_4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value'],
@@ -289,9 +293,10 @@ class EconomicsSamTestCase(BaseTestCase):
             construction_years_4.result['CAPITAL COSTS (M$)']['Total CAPEX']['value'],
         )
 
-        self.assertEqual(
+        self.assertAlmostEqualWithinSigFigs(
             _sum('Issuance of equity [construction] ($)'),
             _floats(self._get_cash_flow_row(cy4_cf, 'Issuance of equity ($)'))[0],
+            8,
         )
 
     def test_validate_construction_capex_schedule(self):

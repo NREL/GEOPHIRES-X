@@ -99,7 +99,7 @@ class SamEconomicsCalculations:
         )
 
     @property
-    def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
+    def sam_cash_flow_profile(self) -> list[list[Any]]:
         ret: list[list[Any]] = self._sam_cash_flow_profile_operational_years.copy()
         col_count = len(self._sam_cash_flow_profile_operational_years[0])
 
@@ -169,9 +169,7 @@ class SamEconomicsCalculations:
 
     @property
     def sam_cash_flow_total_after_tax_returns_all_years(self) -> list[float]:
-        return _cash_flow_total_after_tax_returns_all_years(
-            self.sam_cash_flow_profile_all_years, self._pre_revenue_years_count
-        )
+        return _cash_flow_total_after_tax_returns_all_years(self.sam_cash_flow_profile, self._pre_revenue_years_count)
 
 
 def validate_read_parameters(model: Model) -> None:
@@ -327,7 +325,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner
     )
-    sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile_all_years, model)
+    sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile, model)
     sam_economics.project_vir.value = _calculate_project_vir(cash_flow_operational_years, model)  # FIXME WIP TODO
     sam_economics.project_payback_period.value = _calculate_project_payback_period(
         cash_flow_operational_years, model
@@ -499,7 +497,7 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
                 return entry_display
         return entry
 
-    profile_display = model.economics.sam_economics_calculations.sam_cash_flow_profile_all_years.copy()
+    profile_display = model.economics.sam_economics_calculations.sam_cash_flow_profile.copy()
     for i in range(len(profile_display)):
         for j in range(len(profile_display[i])):
             profile_display[i][j] = get_entry_display(profile_display[i][j])

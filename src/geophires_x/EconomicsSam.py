@@ -373,38 +373,24 @@ def _cash_flow_total_returns_all_years(
 
 
 def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
-    """FIXME WIP"""
-
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
     pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
-
-    # WIP
 
     true_npv_usd = npf.npv(
         _calculate_nominal_discount_rate_and_wacc(model, single_owner)[0] / 100.0, combined_cash_flow
     )
     return true_npv_usd * 1e-6  # Convert to M$
 
-    # return single_owner.Outputs.project_return_aftertax_npv * 1e-6
 
-
+# noinspection PyUnusedLocal
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
     pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
     after_tax_irr_pct = npf.irr(combined_cash_flow) * 100.0
-
-    # after_tax_irr_pct = single_owner.Outputs.project_return_aftertax_irr
-    # if math.isnan(after_tax_irr_pct):
-    #     try:
-    #         after_tax_returns_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
-    #         after_tax_irr_pct = npf.irr(after_tax_returns_cash_flow) * 100.0
-    #         model.logger.info(f'After-tax IRR was NaN, calculated with numpy-financial: {after_tax_irr_pct}%')
-    #     except Exception as e:
-    #         model.logger.warning(f'After-tax IRR was NaN and calculation with numpy-financial failed: {e}')
 
     return after_tax_irr_pct
 
@@ -484,7 +470,10 @@ def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
 
 
 def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:
-    """TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413"""
+    """
+    TODO remove or clarify project payback period: https://github.com/NREL/GEOPHIRES-X/issues/413
+    """
+
     try:
         after_tax_cash_flow = _cash_flow_total_after_tax_returns_all_years(cash_flow, _pre_revenue_years_count(model))
         cumm_cash_flow = np.zeros(len(after_tax_cash_flow))

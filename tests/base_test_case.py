@@ -5,6 +5,7 @@ import numbers
 import os.path
 import unittest
 
+from geophires_x.GeoPHIRESUtils import sig_figs
 from geophires_x_client import GeophiresInputParameters
 
 # noinspection PyProtectedMember
@@ -111,6 +112,12 @@ class BaseTestCase(unittest.TestCase):
     def assertHasLogRecordWithMessage(self, logs_, message, treat_substring_match_as_match: bool = False):
         messages = [record.message for record in logs_.records]
         assert any(it == message or (treat_substring_match_as_match and message in it) for it in messages)
+
+    def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
+        self.assertEqual(
+            sig_figs(expected, num_sig_figs),
+            sig_figs(actual, num_sig_figs),
+        )
 
     # noinspection PyMethodMayBeStatic
     def _is_github_actions(self):

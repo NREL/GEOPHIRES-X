@@ -336,16 +336,6 @@ class EconomicsSamTestCase(BaseTestCase):
         except AssertionError as ae:
             self._handle_assert_logs_failure(ae)
 
-    def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
-        """
-        TODO move to parent class (BaseTestCase)
-        """
-
-        self.assertEqual(
-            sig_figs(expected, num_sig_figs),
-            sig_figs(actual, num_sig_figs),
-        )
-
     def test_bond_interest_rate_during_construction(self):
         fraction_in_bonds: float = 0.5
         r: GeophiresXResult = self._get_result(

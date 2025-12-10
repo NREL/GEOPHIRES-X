@@ -3,6 +3,8 @@ from __future__ import annotations
 from geophires_x.Parameter import OutputParameter
 from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, CurrencyFrequencyUnit
 
+CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME = 'Construction CAPEX Schedule'
+
 
 def BuildPricingModel(
     plantlifetime: int,

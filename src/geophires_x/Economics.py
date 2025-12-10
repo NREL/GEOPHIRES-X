@@ -14,7 +14,7 @@ from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter,
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
     interest_during_construction_output_parameter, total_capex_parameter_output_parameter, \
-    overnight_capital_cost_output_parameter
+    overnight_capital_cost_output_parameter, CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1172,15 +1172,14 @@ class Economics:
                         'calculated automatically by compounding Inflation Rate over Construction Years.'
         )
 
-        construction_capex_schedule_name = 'Construction CAPEX Schedule'
         self.construction_capex_schedule = self.ParameterDict[self.construction_capex_schedule.Name] = listParameter(
-            construction_capex_schedule_name,
+            CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME,
             DefaultValue=[1.],
             Min=0.0,
             Max=1.0,
             ToolTipText=f'A list of fractions of the total overnight CAPEX spent in each construction year. '
                         f'For example, for 3 construction years with 10% in the first year, 40% in the second, '
-                        f'and 50% in the third, provide {construction_capex_schedule_name} = 0.1,0.4,0.5. '
+                        f'and 50% in the third, provide {CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME} = 0.1,0.4,0.5. '
                         f'The schedule will be automatically interpolated to match the number of construction years '
                         f'and normalized to sum to 1.0.'
         )

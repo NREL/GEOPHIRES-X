@@ -1,5 +1,6 @@
 import numpy as np
 
+from .EconomicsUtils import CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME
 from .GeoPHIRESUtils import quantity
 from .OptionList import EndUseOptions, PlantType
 from .Parameter import floatParameter, intParameter, OutputParameter, ReadParameter, \
@@ -417,11 +418,14 @@ class SurfacePlant:
             AllowableRange=list(range(1, MAX_CONSTRUCTION_YEARS + 1, 1)),
             UnitType=Units.NONE,
             ErrMessage=f'assume default number of years in construction ({default_construction_years})',
-            ToolTipText='Number of years spent in construction (assumes whole years, no fractions). '
-                        'By default, capital costs are spread evenly over construction years e.g. if total capital '
-                        'costs are $500M and there are 2 construction years, '
-                        'then $250M will be spent in both the first and second construction years.'
+            ToolTipText=f'Number of years spent in construction (assumes whole years, no fractions). '
+                        f'By default, capital costs are spread evenly over construction years e.g. if total capital '
+                        f'costs are $500M and there are 2 construction years, '
+                        f'then $250M will be spent in both the first and second construction years. '
+                        f'For SAM Economic Models, provide {CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME} to use a '
+                        f'custom spread instead.'
         )
+
         self.cp_fluid = self.ParameterDict[self.cp_fluid.Name] = floatParameter(
             "Working Fluid Heat Capacity",
             UnitType=Units.HEAT_CAPACITY,

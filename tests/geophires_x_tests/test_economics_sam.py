@@ -36,7 +36,7 @@ from geophires_x.EconomicsSamCashFlow import (
     _SAM_CASH_FLOW_NAN_STR,
 )
 from geophires_x.Units import convertible_unit
-from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresInputParameters, ImmutableGeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 
@@ -948,6 +948,20 @@ class EconomicsSamTestCase(BaseTestCase):
             places=3,
         )
 
+    def test_sam_cash_flow_total_after_tax_returns_all_years(self):
+        input_file = self._egs_test_file_path()
+        additional_params = {'Construction Years': 2}
+        m: Model = EconomicsSamTestCase._new_model(input_file, additional_params=additional_params)
+
+        input_params = ImmutableGeophiresInputParameters(additional_params, from_file_path=Path(input_file))
+
+        sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
+        after_tax_returns_cash_flow = sam_econ.sam_cash_flow_total_after_tax_returns_all_years
+        construction_years = EconomicsSamTestCase.get_input_parameter(input_params, 'Construction Years')
+        plant_lifetime = EconomicsSamTestCase.get_input_parameter(input_params, 'Plant Lifetime')
+
+        self.assertEqual(construction_years + plant_lifetime, len(after_tax_returns_cash_flow))
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:
@@ -980,3 +994,23 @@ class EconomicsSamTestCase(BaseTestCase):
             )
         else:
             raise ae
+
+    @staticmethod
+    def get_input_parameter(params: GeophiresInputParameters, param_name: str) -> float | str | None:
+        """
+        TODO refactor into generic utility method
+        TODO should return quantity
+        """
+
+        for line in reversed(params.as_text().split('\n')):
+            parts = line.strip().split(',')
+            if parts[0].strip() == param_name:
+                ret = parts[1].strip()
+                try:
+                    return float(ret)
+                except ValueError:
+                    pass
+
+                return str(ret)
+
+        return None

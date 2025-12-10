@@ -161,6 +161,24 @@ class SamEconomicsCalculations:
 
         return ret
 
+    @property
+    def sam_cash_flow_total_after_tax_returns_all_years(self) -> list[float]:
+        def _get_row(row_name__: str) -> list[Any]:
+            for r in self.sam_cash_flow_profile_all_years:
+                if r[0] == row_name__:
+                    return r[1:]
+
+            raise ValueError(f'Could not find row with name {row_name__}')
+
+        return [
+            *[float(it) for it in _get_row('Total after-tax returns [construction] ($)') if is_float(it)],
+            *[
+                float(it)
+                for it in _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
+                if is_float(it)
+            ],
+        ]
+
 
 def validate_read_parameters(model: Model) -> None:
     def _inv_msg(param_name: str, invalid_value: Any, supported_description: str) -> str:
@@ -389,6 +407,8 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
 def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
     try:
         total_capital_invested_USD: Decimal = Decimal(_cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0])
+
+        # FIXME WIP sum sam_cash_flow_total_after_tax_returns_all_years instead
         total_value_received_from_investment_USD: Decimal = sum(
             [Decimal(it) for it in _cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')]
         )

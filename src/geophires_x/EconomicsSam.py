@@ -409,8 +409,6 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
     Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
 
     :return: tuple of Nominal Discount Rate (%), WACC (%)
-
-    FIXME WIP account for Bond Financing Start Year & Construction Bond Interest Rate
     """
 
     econ = model.economics

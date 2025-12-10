@@ -316,6 +316,10 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_SAM-single-owner-PPA-4.txt <tests/examples/example_SAM-single-owner-PPA-4.txt>`__
      - `.out <tests/examples/example_SAM-single-owner-PPA-4.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA-4>`__
+   * - SAM Single Owner PPA: Multiple Construction Years
+     - `example_SAM-single-owner-PPA-5.txt <tests/examples/example_SAM-single-owner-PPA-5.txt>`__
+     - `.out <tests/examples/example_SAM-single-owner-PPA-5.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA-5>`__
 .. raw:: html
 
    <embed>

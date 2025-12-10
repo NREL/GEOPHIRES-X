@@ -39,6 +39,7 @@ from geophires_x.EconomicsUtils import (
     total_capex_parameter_output_parameter,
     royalty_cost_output_parameter,
     overnight_capital_cost_output_parameter,
+    _SAM_EM_MOIC_RETURNS_TAX_QUALIFIER,
 )
 from geophires_x.EconomicsSamPreRevenue import (
     _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
@@ -337,6 +338,16 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 def _cash_flow_total_after_tax_returns_all_years(
     cash_flow: list[list[Any]], pre_revenue_years_count: int
 ) -> list[float]:
+    return _cash_flow_total_returns_all_years(cash_flow, pre_revenue_years_count, tax_qualifier='after-tax')
+
+
+def _cash_flow_total_returns_all_years(
+    cash_flow: list[list[Any]], pre_revenue_years_count: int, tax_qualifier='after-tax'
+) -> list[float]:
+
+    if tax_qualifier not in ['after-tax', 'pre-tax']:
+        raise ValueError(f'Invalid tax qualifier: {tax_qualifier}')
+
     def _get_row(row_name__: str) -> list[Any]:
         for r in cash_flow:
             if r[0] == row_name__:
@@ -344,9 +355,21 @@ def _cash_flow_total_after_tax_returns_all_years(
 
         raise ValueError(f'Could not find row with name {row_name__}')
 
+    def _construction_returns_row(_construction_tax_qualifier: str) -> list[Any]:
+        return _get_row(f'Total {_construction_tax_qualifier} returns [construction] ($)')
+
+    try:
+        construction_returns_row = _construction_returns_row(tax_qualifier)
+    except ValueError as ve:
+        if tax_qualifier == 'pre-tax':
+            # TODO log warning
+            construction_returns_row = _construction_returns_row('after-tax')
+        else:
+            raise ve
+
     return [
-        *[float(it) for it in _get_row('Total after-tax returns [construction] ($)') if is_float(it)],
-        *[float(it) for it in _get_row('Total after-tax returns ($)')[pre_revenue_years_count:] if is_float(it)],
+        *[float(it) for it in construction_returns_row if is_float(it)],
+        *[float(it) for it in _get_row(f'Total {tax_qualifier} returns ($)')[pre_revenue_years_count:] if is_float(it)],
     ]
 
 
@@ -416,12 +439,16 @@ def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Single
 
 def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
     try:
-        total_capital_invested_USD: Decimal = Decimal(_cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0])
+        total_capital_invested_USD: Decimal = Decimal(
+            next(it for it in _cash_flow_profile_row(cash_flow, 'Issuance of equity ($)') if is_float(it))
+        )
 
         total_value_received_from_investment_USD: Decimal = sum(
             [
                 Decimal(it)
-                for it in _cash_flow_total_after_tax_returns_all_years(cash_flow, _pre_revenue_years_count(model))
+                for it in _cash_flow_total_returns_all_years(
+                    cash_flow, _pre_revenue_years_count(model), tax_qualifier=_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER
+                )
             ]
         )
         return float(total_value_received_from_investment_USD / total_capital_invested_USD)

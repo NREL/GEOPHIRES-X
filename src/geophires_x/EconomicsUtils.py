@@ -45,11 +45,14 @@ def BuildPricingModel(
     return Price
 
 
+_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER = 'pre-tax'  # TODO/WIP switch to after-tax...
+
+
 def moic_parameter() -> OutputParameter:
     return OutputParameter(
         "Project MOIC",
         ToolTipText='Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the '
-        'sum of Total pre-tax returns (total value received) '
+        f'sum of Total {_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER} returns (total value received) '
         'divided by Issuance of equity (total capital invested).',
         UnitType=Units.PERCENT,
         PreferredUnits=PercentUnit.TENTH,

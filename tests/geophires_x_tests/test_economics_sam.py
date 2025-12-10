@@ -36,7 +36,7 @@ from geophires_x.EconomicsSamCashFlow import (
     _SAM_CASH_FLOW_NAN_STR,
 )
 from geophires_x.Units import convertible_unit
-from geophires_x_client import GeophiresInputParameters
+from geophires_x_client import GeophiresInputParameters, ImmutableGeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
 
@@ -534,7 +534,7 @@ class EconomicsSamTestCase(BaseTestCase):
             m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
 
             sam_econ = calculate_sam_economics(m)
-            cash_flow = sam_econ.sam_cash_flow_profile
+            cash_flow = sam_econ._sam_cash_flow_profile_operational_years
 
             def get_row(name: str):
                 return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
@@ -947,6 +947,20 @@ class EconomicsSamTestCase(BaseTestCase):
             schedule,
             places=3,
         )
+
+    def test_sam_cash_flow_total_after_tax_returns_all_years(self):
+        input_file = self._egs_test_file_path()
+        additional_params = {'Construction Years': 2}
+        m: Model = EconomicsSamTestCase._new_model(input_file, additional_params=additional_params)
+
+        input_params = ImmutableGeophiresInputParameters(additional_params, from_file_path=Path(input_file))
+
+        sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
+        after_tax_returns_cash_flow = sam_econ.sam_cash_flow_total_after_tax_returns_all_years
+        construction_years = EconomicsSamTestCase.get_input_parameter(input_params, 'Construction Years')
+        plant_lifetime = EconomicsSamTestCase.get_input_parameter(input_params, 'Plant Lifetime')
+
+        self.assertEqual(construction_years + plant_lifetime, len(after_tax_returns_cash_flow))
 
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:

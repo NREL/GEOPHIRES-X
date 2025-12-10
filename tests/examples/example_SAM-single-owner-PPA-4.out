@@ -6,8 +6,8 @@ Simulation Metadata
 ----------------------
  GEOPHIRES Version: 3.10.16
  Simulation Date: 2025-12-10
- Simulation Time:  08:37
- Calculation Time:      1.189 sec
+ Simulation Time:  08:58
+ Calculation Time:      1.242 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -203,13 +203,14 @@ Overnight capital expenditure [construction] ($) 	-215,055,748
 plus:
 Inflation cost [construction] ($)                	-10,752,787
 equals:
-Purchase of property [construction] ($)          	-225,808,536
+Total capital expenditure [construction] ($)     	-225,808,536
 
 Issuance of equity [construction] ($)            	135,485,121
 Issuance of debt [construction] ($)              	90,323,414
 Debt balance [construction] ($)                  	90,323,414
 Debt interest payment [construction] ($)         	0
 
+Total installed cost [construction] ($)          	-225,808,536
 Total after-tax returns [construction] ($)       	-135,485,121
 
 ENERGY

@@ -127,6 +127,8 @@ def _calculate_pre_revenue_costs_and_cashflow(
     debt_balance_usd_vec: list[float] = []
     interest_accrued_vec: list[float] = []
 
+    total_installed_cost_vec: list[float] = []
+
     for year_index in range(pre_revenue_years_count):
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
         base_capex_vec.append(base_capex_this_year_usd)
@@ -158,6 +160,8 @@ def _calculate_pre_revenue_costs_and_cashflow(
 
         current_debt_balance_usd += new_debt_draw_usd + interest_this_year_usd
         debt_balance_usd_vec.append(current_debt_balance_usd)
+
+        total_installed_cost_vec.append(-capex_this_year_usd + -interest_this_year_usd)
 
     logger.info(
         f"Phased CAPEX calculation complete: "
@@ -193,7 +197,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     _append_row(f'plus:', [])
     _append_row(f'Inflation cost ($)', [round(-it) for it in inflation_cost_vec])
     _append_row(f'equals:', [])
-    _append_row(f'Purchase of property ($)', [-x for x in capex_spend_vec])
+    _append_row(f'Total capital expenditure ($)', [-x for x in capex_spend_vec])
 
     if include_summary_line_items:
         _append_row(
@@ -238,6 +242,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     if include_summary_line_items:
         _append_row(f'Total pre-tax returns ($)', equity_cash_flow_usd)
 
+    _append_row('Total installed cost ($)', [round(it) for it in total_installed_cost_vec])
     _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
 
     return PreRevenueCostsAndCashflow(

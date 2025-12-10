@@ -54,7 +54,11 @@ from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Un
 
 @dataclass
 class SamEconomicsCalculations:
-    sam_cash_flow_profile: list[list[Any]]
+    _sam_cash_flow_profile_operational_years: list[list[Any]]
+    """
+    Operational cash flow profile from SAM financial engine
+    """
+
     pre_revenue_costs_and_cash_flow: PreRevenueCostsAndCashflow
 
     lcoe_nominal: OutputParameter = field(
@@ -96,14 +100,16 @@ class SamEconomicsCalculations:
 
     @property
     def sam_cash_flow_profile_all_years(self) -> list[list[Any]]:
-        ret: list[list[Any]] = self.sam_cash_flow_profile.copy()
-        col_count = len(self.sam_cash_flow_profile[0])
+        ret: list[list[Any]] = self._sam_cash_flow_profile_operational_years.copy()
+        col_count = len(self._sam_cash_flow_profile_operational_years[0])
 
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
-        construction_rows: list[list[Any]] = [['CONSTRUCTION'] + [''] * (len(self.sam_cash_flow_profile[0]) - 1)]
+        construction_rows: list[list[Any]] = [
+            ['CONSTRUCTION'] + [''] * (len(self._sam_cash_flow_profile_operational_years[0]) - 1)
+        ]
 
-        for row_index in range(len(self.sam_cash_flow_profile)):
+        for row_index in range(len(self._sam_cash_flow_profile_operational_years)):
             pre_revenue_row_content = [''] * pre_revenue_years_to_insert
             insert_index = 1
 
@@ -122,7 +128,7 @@ class SamEconomicsCalculations:
             adjusted_row = [ret[row_index][0]] + pre_revenue_row_content + ret[row_index][insert_index:]
             ret[row_index] = adjusted_row
 
-        construction_rows.append([''] * len(self.sam_cash_flow_profile[0]))
+        construction_rows.append([''] * len(self._sam_cash_flow_profile_operational_years[0]))
         for construction_row in reversed(construction_rows):
             ret.insert(1, construction_row)
 
@@ -163,21 +169,9 @@ class SamEconomicsCalculations:
 
     @property
     def sam_cash_flow_total_after_tax_returns_all_years(self) -> list[float]:
-        def _get_row(row_name__: str) -> list[Any]:
-            for r in self.sam_cash_flow_profile_all_years:
-                if r[0] == row_name__:
-                    return r[1:]
-
-            raise ValueError(f'Could not find row with name {row_name__}')
-
-        return [
-            *[float(it) for it in _get_row('Total after-tax returns [construction] ($)') if is_float(it)],
-            *[
-                float(it)
-                for it in _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
-                if is_float(it)
-            ],
-        ]
+        return _cash_flow_total_after_tax_returns_all_years(
+            self.sam_cash_flow_profile_all_years, self._pre_revenue_years_count
+        )
 
 
 def validate_read_parameters(model: Model) -> None:
@@ -299,13 +293,13 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     for module in modules:
         module.execute()
 
-    cash_flow = _calculate_sam_economics_cash_flow(model, single_owner)
+    cash_flow_operational_years = _calculate_sam_economics_cash_flow(model, single_owner)
 
     def sf(_v: float, num_sig_figs: int = 5) -> float:
         return sig_figs(_v, num_sig_figs)
 
     sam_economics: SamEconomicsCalculations = SamEconomicsCalculations(
-        sam_cash_flow_profile=cash_flow,
+        _sam_cash_flow_profile_operational_years=cash_flow_operational_years,
         pre_revenue_costs_and_cash_flow=calculate_pre_revenue_costs_and_cashflow(model),
     )
 
@@ -314,9 +308,9 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     )
 
     sam_economics.lcoe_nominal.value = sf(single_owner.Outputs.lcoe_nom)
-    sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow, model))
+    sam_economics.after_tax_irr.value = sf(_get_after_tax_irr_pct(single_owner, cash_flow_operational_years, model))
 
-    sam_economics.project_npv.value = sf(_get_project_npv_musd(single_owner, cash_flow, model))
+    sam_economics.project_npv.value = sf(_get_project_npv_musd(single_owner, cash_flow_operational_years, model))
     sam_economics.capex.value = single_owner.Outputs.adjusted_installed_cost * 1e-6
 
     if model.economics.royalty_rate.Provided:
@@ -326,18 +320,36 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
             *_pre_revenue_years_vector(model),
             *[
                 quantity(it, 'USD / year').to(sam_economics.royalties_opex.CurrentUnits).magnitude
-                for it in _cash_flow_profile_row(cash_flow, 'O&M production-based expense ($)')
+                for it in _cash_flow_profile_row(cash_flow_operational_years, 'O&M production-based expense ($)')
             ],
         ]
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner
     )
-    sam_economics.moic.value = _calculate_moic(cash_flow, model)
-    sam_economics.project_vir.value = _calculate_project_vir(cash_flow, model)
-    sam_economics.project_payback_period.value = _calculate_project_payback_period(cash_flow, model)
+    sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile_all_years, model)
+    sam_economics.project_vir.value = _calculate_project_vir(cash_flow_operational_years, model)  # FIXME WIP TODO
+    sam_economics.project_payback_period.value = _calculate_project_payback_period(
+        cash_flow_operational_years, model
+    )  # FIXME WIP TODO
 
     return sam_economics
+
+
+def _cash_flow_total_after_tax_returns_all_years(
+    cash_flow: list[list[Any]], pre_revenue_years_count: int
+) -> list[float]:
+    def _get_row(row_name__: str) -> list[Any]:
+        for r in cash_flow:
+            if r[0] == row_name__:
+                return r[1:]
+
+        raise ValueError(f'Could not find row with name {row_name__}')
+
+    return [
+        *[float(it) for it in _get_row('Total after-tax returns [construction] ($)') if is_float(it)],
+        *[float(it) for it in _get_row('Total after-tax returns ($)')[pre_revenue_years_count:] if is_float(it)],
+    ]
 
 
 def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
@@ -408,9 +420,11 @@ def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
     try:
         total_capital_invested_USD: Decimal = Decimal(_cash_flow_profile_row(cash_flow, 'Issuance of equity ($)')[0])
 
-        # FIXME WIP sum sam_cash_flow_total_after_tax_returns_all_years instead
         total_value_received_from_investment_USD: Decimal = sum(
-            [Decimal(it) for it in _cash_flow_profile_row(cash_flow, 'Total pre-tax returns ($)')]
+            [
+                Decimal(it)
+                for it in _cash_flow_total_after_tax_returns_all_years(cash_flow, _pre_revenue_years_count(model))
+            ]
         )
         return float(total_value_received_from_investment_USD / total_capital_invested_USD)
     except Exception as e:

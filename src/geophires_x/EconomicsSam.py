@@ -327,7 +327,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
         model, single_owner
     )
     sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile, model)
-    sam_economics.project_vir.value = _calculate_project_vir(cash_flow_operational_years, model)  # FIXME WIP TODO
+    sam_economics.project_vir.value = _calculate_project_vir(sam_economics.sam_cash_flow_profile, model)
     sam_economics.project_payback_period.value = _calculate_project_payback_period(
         sam_economics.sam_cash_flow_profile, model
     )
@@ -344,7 +344,6 @@ def _cash_flow_total_after_tax_returns_all_years(
 def _cash_flow_total_returns_all_years(
     cash_flow: list[list[Any]], pre_revenue_years_count: int, tax_qualifier='after-tax'
 ) -> list[float]:
-
     if tax_qualifier not in ['after-tax', 'pre-tax']:
         raise ValueError(f'Invalid tax qualifier: {tax_qualifier}')
 
@@ -414,6 +413,11 @@ def _cash_flow_profile_row(cash_flow: list[list[Any]], row_name: str) -> list[An
     return next(row for row in cash_flow if len(row) > 0 and row[0] == row_name)[1:]  # type: ignore[no-any-return]
 
 
+def _cash_flow_profile_entry(cash_flow: list[list[Any]], row_name: str, year_index: int) -> list[Any]:
+    col_index = cash_flow[0].index(f'Year {year_index}')
+    return _cash_flow_profile_row(cash_flow, row_name)[col_index - 1]
+
+
 def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:
     """
     Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
@@ -463,10 +467,13 @@ def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
     Where CF_0 is the cash flow at Year 0 (the initial investment).
     NPV = CF_0 + PV(Future Cash Flows)
     PV(Future Cash Flows) = NPV - CF_0
+
+    TODO add user-facing documentation (including clarification of CF_0 being Year 0, not first construction year)
     """
+
     try:
         npv_USD = Decimal(_cash_flow_profile_row(cash_flow, 'After-tax cumulative NPV ($)')[-1])
-        cf_0_USD = Decimal(_cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')[0])
+        cf_0_USD = _cash_flow_profile_entry(cash_flow, 'Total after-tax returns ($)', 0)
         pv_of_future_cash_flows_USD = npv_USD - cf_0_USD
         vir = pv_of_future_cash_flows_USD / abs(cf_0_USD)
 

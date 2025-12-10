@@ -5,8 +5,10 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
-from geophires_x.GeoPHIRESUtils import is_float
+from geophires_x.GeoPHIRESUtils import is_float, quantity, sig_figs
 from scipy.interpolate import interp1d
+
+from geophires_x.Units import convertible_unit
 
 _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'Total after-tax returns ($)'
 _IDC_CASH_FLOW_ROW_NAME = 'Debt interest payment ($)'
@@ -117,6 +119,8 @@ def _calculate_pre_revenue_costs_and_cashflow(
     total_interest_accrued_usd = 0.0
     total_inflation_cost_usd = 0.0
 
+    inflation_cost_vec: list[float] = []
+    base_capex_vec: list[float] = []
     capex_spend_vec: list[float] = []
     equity_spend_vec: list[float] = []
     debt_draw_vec: list[float] = []
@@ -125,9 +129,12 @@ def _calculate_pre_revenue_costs_and_cashflow(
 
     for year_index in range(pre_revenue_years_count):
         base_capex_this_year_usd = total_overnight_capex_usd * phased_capex_schedule[year_index]
+        base_capex_vec.append(base_capex_this_year_usd)
 
         inflation_factor = (1.0 + inflation_rate) ** (year_index + 1)
         inflation_cost_this_year_usd = base_capex_this_year_usd * (inflation_factor - 1.0)
+
+        inflation_cost_vec.append(inflation_cost_this_year_usd)
 
         capex_this_year_usd = base_capex_this_year_usd + inflation_cost_this_year_usd
 
@@ -167,10 +174,25 @@ def _calculate_pre_revenue_costs_and_cashflow(
         return round(float(v_)) if k_.endswith('($)') and is_float(v_) else v_
 
     def _append_row(row_name: str, row_vals: list[float | str]) -> None:
-        row_name_adjusted = row_name.split('(')[0] + f'{_CONSTRUCTION_LINE_ITEM_DESIGNATOR} (' + row_name.split('(')[1]
+        row_name_adjusted = row_name
+        if '(' in row_name_adjusted:  # don't apply to plus:/equals: lines
+            row_name_adjusted = (
+                row_name_adjusted.split('(')[0] + f'{_CONSTRUCTION_LINE_ITEM_DESIGNATOR} (' + row_name.split('(')[1]
+            )
         pre_revenue_cf_profile.append([row_name_adjusted] + [_rnd(row_name, it) for it in row_vals])
 
     # --- Investing Activities ---
+    _append_row(
+        f'Capital expenditure schedule (%)',
+        [
+            sig_figs(quantity(x, 'dimensionless').to(convertible_unit('percent')).magnitude, 3)
+            for x in phased_capex_schedule
+        ],
+    )
+    _append_row(f'Overnight capital expenditure ($)', [round(-it) for it in base_capex_vec])
+    _append_row(f'plus:', [])
+    _append_row(f'Inflation cost ($)', [round(-it) for it in inflation_cost_vec])
+    _append_row(f'equals:', [])
     _append_row(f'Purchase of property ($)', [-x for x in capex_spend_vec])
 
     if include_summary_line_items:

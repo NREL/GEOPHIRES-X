@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.13
- Simulation Date: 2025-11-29
- Simulation Time:  11:37
- Calculation Time:      1.163 sec
+ GEOPHIRES Version: 3.10.16
+ Simulation Date: 2025-12-10
+ Simulation Time:  08:37
+ Calculation Time:      1.189 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -198,6 +198,11 @@ Simulation Metadata
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                  	Year 0       	Year 1     	Year 2     	Year 3     	Year 4     	Year 5     	Year 6     	Year 7     	Year 8     	Year 9     	Year 10    	Year 11    	Year 12    	Year 13    	Year 14    	Year 15    	Year 16    	Year 17    	Year 18    	Year 19    	Year 20
 CONSTRUCTION
+Capital expenditure schedule [construction] (%)  	100.0
+Overnight capital expenditure [construction] ($) 	-215,055,748
+plus:
+Inflation cost [construction] ($)                	-10,752,787
+equals:
 Purchase of property [construction] ($)          	-225,808,536
 
 Issuance of equity [construction] ($)            	135,485,121

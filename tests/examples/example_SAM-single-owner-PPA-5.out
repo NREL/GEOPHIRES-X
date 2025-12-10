@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.13
- Simulation Date: 2025-11-29
- Simulation Time:  11:37
- Calculation Time:      1.743 sec
+ GEOPHIRES Version: 3.10.16
+ Simulation Date: 2025-12-10
+ Simulation Time:  08:13
+ Calculation Time:      1.865 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -216,6 +216,11 @@ Simulation Metadata
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                  	Year -6   	Year -5    	Year -4    	Year -3    	Year -2     	Year -1     	Year 0       	Year 1     	Year 2     	Year 3     	Year 4     	Year 5     	Year 6     	Year 7     	Year 8     	Year 9     	Year 10    	Year 11    	Year 12    	Year 13    	Year 14    	Year 15    	Year 16    	Year 17    	Year 18    	Year 19    	Year 20    	Year 21    	Year 22    	Year 23    	Year 24    	Year 25    	Year 26    	Year 27    	Year 28    	Year 29    	Year 30
 CONSTRUCTION
+Capital expenditure schedule [construction] (%)  	1.0       	2.0        	7.0        	10.0       	20.0        	20.0        	40.0
+Overnight capital expenditure [construction] ($) 	-5,994,215	-11,988,430	-41,959,506	-59,942,151	-119,884,303	-119,884,303	-239,768,605
+plus:
+Inflation cost [construction] ($)                	-137,867  	-557,810   	-2,962,306 	-5,707,868 	-14,435,638 	-17,524,996 	-41,370,820
+equals:
 Purchase of property [construction] ($)          	-6,132,082	-12,546,240	-44,921,812	-65,650,020	-134,319,940	-137,409,299	-281,139,426
 
 Issuance of equity [construction] ($)            	6,132,082 	12,546,240 	44,921,812 	22,977,507 	47,011,979  	48,093,255  	98,398,799

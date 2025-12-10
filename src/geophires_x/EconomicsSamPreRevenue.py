@@ -99,7 +99,6 @@ def _calculate_pre_revenue_costs_and_cashflow(
     debt_fraction: float,
     debt_financing_start_year: int,
     logger: logging.Logger,
-    include_summary_line_items: bool = False,
 ) -> PreRevenueCostsAndCashflow:
     """
     Calculates the true capitalized cost and interest during pre-revenue years (exploration/permitting/appraisal,
@@ -199,13 +198,6 @@ def _calculate_pre_revenue_costs_and_cashflow(
     _append_row(f'equals:', [])
     _append_row(f'Total capital expenditure ($)', [-x for x in capex_spend_vec])
 
-    if include_summary_line_items:
-        _append_row(
-            f'Cash flow from investing activities ($)',
-            # 'CAPEX spend ($)'
-            [-x for x in capex_spend_vec],
-        )
-
     pre_revenue_cf_profile.append(blank_row.copy())
 
     # --- Financing Activities ---
@@ -229,18 +221,10 @@ def _calculate_pre_revenue_costs_and_cashflow(
 
     _append_row(_IDC_CASH_FLOW_ROW_NAME, interest_accrued_vec)
 
-    if include_summary_line_items:
-        _append_row(
-            f'Cash flow from financing activities ($)', [e + d for e, d in zip(equity_spend_vec, debt_draw_vec)]
-        )
-
     pre_revenue_cf_profile.append(blank_row.copy())
 
-    # --- Returns ---
+    # --- Total installed cost & Returns ---
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
-
-    if include_summary_line_items:
-        _append_row(f'Total pre-tax returns ($)', equity_cash_flow_usd)
 
     _append_row('Total installed cost ($)', [round(it) for it in total_installed_cost_vec])
     _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)

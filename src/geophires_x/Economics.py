@@ -3416,7 +3416,7 @@ class Economics:
         for year_index in range(plant_lifetime):
             current_rate = r(current_rate)
             schedule.append(min(current_rate, max_rate))
-            if year_index >= (model.economics.royalty_escalation_rate_start_year.value - 1):
+            if year_index >= (model.economics.royalty_escalation_rate_start_year.value - 2):
                 current_rate += escalation_rate
 
         return schedule

@@ -960,24 +960,33 @@ class EconomicsSamTestCase(BaseTestCase):
             )
             return _input_file_path, _additional_params, GeophiresXClient().get_geophires_result(input_params)
 
-        def _royalty_cash_flow(r: GeophiresXResult) -> list[float]:
+        def __cash_flow_row(r: GeophiresXResult, row_name: str) -> str:
             from geophires_x.EconomicsSam import _cash_flow_profile_row
 
-            return [
-                it
-                for it in _cash_flow_profile_row(r.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)')
-                if is_float(it)
-            ][1:]
+            return [it for it in _cash_flow_profile_row(r.result['SAM CASH FLOW PROFILE'], row_name) if is_float(it)]
+
+        def _royalty_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'O&M production-based expense ($)')[1:]  # Drop year 0 ($0 revenue)
+
+        def _royalty_rates_from_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'Royalty rate (%)')
 
         input_file_path, additional_params, result_4 = _get_result(4)
 
-        expected_royalty_rate_schedule_4 = [*([0.04] * 4), *([0.06] * (plant_lifetime - 4))]
+        expected_royalty_rate_schedule_4 = [*([0.04] * 3), *([0.06] * (plant_lifetime - 3))]
         model = EconomicsSamTestCase._new_model(input_file_path, additional_params=additional_params)
-        royalty_rate_schedule_4 = model.economics.get_royalty_rate_schedule(model)
-        self.assertListEqual(expected_royalty_rate_schedule_4, royalty_rate_schedule_4)
+        econ_royalty_rate_schedule_4 = model.economics.get_royalty_rate_schedule(model)
+        self.assertListEqual(expected_royalty_rate_schedule_4, econ_royalty_rate_schedule_4)
 
         result_4_royalty_cash_flow = _royalty_cash_flow(result_4)
         self.assertEqual(len(expected_royalty_rate_schedule_4), len(result_4_royalty_cash_flow))
+
+        econ_royalty_rate_schedule_4_percent = [
+            quantity(it, 'dimensionless').to(convertible_unit('percent')).magnitude
+            for it in econ_royalty_rate_schedule_4
+        ]
+        royalty_rates_from_cash_flow_4 = _royalty_rates_from_cash_flow(result_4)
+        self.assertListEqual(econ_royalty_rate_schedule_4_percent, royalty_rates_from_cash_flow_4)
 
     def test_sam_cash_flow_total_after_tax_returns_all_years(self):
         input_file = self._egs_test_file_path()

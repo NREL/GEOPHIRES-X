@@ -53,6 +53,9 @@ from geophires_x.Parameter import Parameter, OutputParameter, floatParameter, li
 from geophires_x.Units import convertible_unit, EnergyCostUnit, CurrencyUnit, Units
 
 
+ROYALTIES_OPEX_CASH_FLOW_LINE_ITEM_KEY = 'O&M production-based expense ($)'
+
+
 @dataclass
 class SamEconomicsCalculations:
     _sam_cash_flow_profile_operational_years: list[list[Any]]
@@ -73,6 +76,7 @@ class SamEconomicsCalculations:
 
     capex: OutputParameter = field(default_factory=total_capex_parameter_output_parameter)
 
+    _royalties_rate_schedule: list[float] | None = None
     royalties_opex: OutputParameter = field(default_factory=royalty_cost_output_parameter)
 
     project_npv: OutputParameter = field(
@@ -168,7 +172,33 @@ class SamEconomicsCalculations:
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
         ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct
 
-        # TODO insert royalties percent line item if applicable
+        if self._royalties_rate_schedule is not None:
+            ret = self._insert_royalties_rate_schedule(ret)
+
+        return ret
+
+    def _insert_royalties_rate_schedule(self, cf_ret: list[list[Any]]) -> list[list[Any]]:
+        """
+        TODO update user-facing documentation to mention this feature
+            (https://nrel.github.io/GEOPHIRES/SAM-Economic-Models.html#royalties)
+        """
+
+        ret = cf_ret.copy()
+
+        def _get_row_index(row_name_: str) -> list[Any]:
+            return [it[0] for it in ret].index(row_name_)
+
+        ret.insert(
+            _get_row_index(ROYALTIES_OPEX_CASH_FLOW_LINE_ITEM_KEY),
+            [
+                *['Royalty rate (%)'],
+                *([''] * (self._pre_revenue_years_count)),
+                *[
+                    quantity(it, 'dimensionless').to(convertible_unit('percent')).magnitude
+                    for it in self._royalties_rate_schedule
+                ],
+            ],
+        )
 
         return ret
 
@@ -323,9 +353,11 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
             *_pre_revenue_years_vector(model),
             *[
                 quantity(it, 'USD / year').to(sam_economics.royalties_opex.CurrentUnits).magnitude
-                for it in _cash_flow_profile_row(cash_flow_operational_years, 'O&M production-based expense ($)')
+                for it in _cash_flow_profile_row(cash_flow_operational_years, ROYALTIES_OPEX_CASH_FLOW_LINE_ITEM_KEY)
             ],
         ]
+
+        sam_economics._royalties_rate_schedule = model.economics.get_royalty_rate_schedule(model)
 
     sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
         model, single_owner

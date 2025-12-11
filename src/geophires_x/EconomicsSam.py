@@ -104,6 +104,8 @@ class SamEconomicsCalculations:
         ret: list[list[Any]] = self._sam_cash_flow_profile_operational_years.copy()
         col_count = len(self._sam_cash_flow_profile_operational_years[0])
 
+        # TODO support/insert calendar year line item
+
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
         construction_rows: list[list[Any]] = [
@@ -124,7 +126,7 @@ class SamEconomicsCalculations:
                     pre_revenue_row.extend([''] * (col_count - len(pre_revenue_row)))
                     construction_rows.append(pre_revenue_row)
 
-            #  TODO zero-vectors e.g. Debt principal payment ($)
+            #  TODO zero-vectors for non-construction years e.g. Debt principal payment ($)
 
             adjusted_row = [ret[row_index][0]] + pre_revenue_row_content + ret[row_index][insert_index:]
             ret[row_index] = adjusted_row
@@ -165,6 +167,8 @@ class SamEconomicsCalculations:
 
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
         ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct
+
+        # TODO insert royalties percent line item if applicable
 
         return ret
 

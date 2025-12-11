@@ -5,6 +5,10 @@ from geophires_x.Units import Units, PercentUnit, TimeUnit, CurrencyUnit, Curren
 
 CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME = 'Construction CAPEX Schedule'
 
+_YEAR_INDEX_VALUE_EXPLANATION_SNIPPET = (
+    f'The value is specified as a project year index corresponding to the ' f'Year row in the cash flow profile'
+)
+
 
 def BuildPricingModel(
     plantlifetime: int,

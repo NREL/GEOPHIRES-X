@@ -938,6 +938,67 @@ class EconomicsSamTestCase(BaseTestCase):
             places=3,
         )
 
+    def test_royalty_rate_escalation_start_year(self) -> None:
+        construction_years: int = 5
+        plant_lifetime: int = 20
+
+        def _get_result(start_year: int) -> tuple[str, dict[str, Any], GeophiresXResult]:
+            _input_file_path = self._get_test_file_path('generic-egs-case.txt')
+            _additional_params = {
+                'Economic Model': 5,
+                'Construction Years': construction_years,
+                'Plant Lifetime': plant_lifetime,
+                'Royalty Rate': 0.04,
+                'Royalty Rate Maximum': 0.06,
+                'Royalty Rate Escalation': 0.02,
+                'Royalty Rate Escalation Start Year': start_year,
+                'Print Output to Console': 1,
+            }
+            input_params: GeophiresInputParameters = GeophiresInputParameters(
+                from_file_path=_input_file_path,
+                params=_additional_params,
+            )
+            return _input_file_path, _additional_params, GeophiresXClient().get_geophires_result(input_params)
+
+        def __cash_flow_row(r: GeophiresXResult, row_name: str) -> str:
+            from geophires_x.EconomicsSam import _cash_flow_profile_row
+
+            return [it for it in _cash_flow_profile_row(r.result['SAM CASH FLOW PROFILE'], row_name) if is_float(it)]
+
+        def _royalty_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'O&M production-based expense ($)')[1:]  # Drop year 0 ($0 revenue)
+
+        def _royalty_rates_from_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'Royalty rate (%)')
+
+        input_file_path, additional_params, result_4 = _get_result(4)
+
+        expected_royalty_rate_schedule_4 = [*([0.04] * 3), *([0.06] * (plant_lifetime - 3))]
+        model = EconomicsSamTestCase._new_model(input_file_path, additional_params=additional_params)
+        econ_royalty_rate_schedule_4 = model.economics.get_royalty_rate_schedule(model)
+        self.assertListEqual(expected_royalty_rate_schedule_4, econ_royalty_rate_schedule_4)
+
+        result_4_royalty_cash_flow_usd = _royalty_cash_flow(result_4)
+        self.assertEqual(len(expected_royalty_rate_schedule_4), len(result_4_royalty_cash_flow_usd))
+
+        econ_royalty_rate_schedule_4_percent = [
+            quantity(it, 'dimensionless').to(convertible_unit('percent')).magnitude
+            for it in econ_royalty_rate_schedule_4
+        ]
+        royalty_rates_from_cash_flow_4 = _royalty_rates_from_cash_flow(result_4)
+        self.assertListEqual(econ_royalty_rate_schedule_4_percent, royalty_rates_from_cash_flow_4)
+
+        expected_royalties_based_on_cash_flow_ppa_revenue = []
+        cash_flow_ppa_revenue = __cash_flow_row(result_4, 'PPA revenue ($)')[1:]
+        for i, _rev_usd in enumerate(econ_royalty_rate_schedule_4_percent):
+            expected_royalties_based_on_cash_flow_ppa_revenue.append(
+                cash_flow_ppa_revenue[i] * econ_royalty_rate_schedule_4[i]
+            )
+
+        self.assertListAlmostEqual(
+            expected_royalties_based_on_cash_flow_ppa_revenue, result_4_royalty_cash_flow_usd, percent=0.0001
+        )
+
     def test_sam_cash_flow_total_after_tax_returns_all_years(self):
         input_file = self._egs_test_file_path()
         additional_params = {'Construction Years': 2}

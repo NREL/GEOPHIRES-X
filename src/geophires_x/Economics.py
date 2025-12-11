@@ -14,7 +14,8 @@ from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter,
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
     interest_during_construction_output_parameter, total_capex_parameter_output_parameter, \
-    overnight_capital_cost_output_parameter, CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME
+    overnight_capital_cost_output_parameter, CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME, \
+    _YEAR_INDEX_VALUE_EXPLANATION_SNIPPET
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
@@ -1006,6 +1007,17 @@ class Economics:
                         "increases a 4% rate (0.04) to 4.1% (0.041) in the next year."
         )
 
+        self.royalty_escalation_rate_start_year = self.ParameterDict[self.royalty_escalation_rate_start_year.Name] = intParameter(
+            'Royalty Rate Escalation Start Year',
+            DefaultValue=1,
+            AllowableRange=list(range(1, model.surfaceplant.plant_lifetime.AllowableRange[-1], 1)),
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText=f'The first year that the {self.royalty_escalation_rate.Name} is applied. '
+                        f'{_YEAR_INDEX_VALUE_EXPLANATION_SNIPPET}.'
+        )
+
         maximum_royalty_rate_default_val = 1.0
         self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
             'Royalty Rate Maximum',
@@ -1203,8 +1215,7 @@ class Economics:
                         f'Provide {bond_financing_start_year_name} to delay the '
                         f'start of bond financing during construction; years prior to {bond_financing_start_year_name} '
                         f'will be financed with equity only. '
-                        f'The value is specified as a project year index corresponding to the Year row in the cash '
-                        f'flow profile; the first construction year has the year index '
+                        f'{_YEAR_INDEX_VALUE_EXPLANATION_SNIPPET}; the first construction year has the year index '
                         f'{{({model.surfaceplant.construction_years.Name} - 1) * -1}})'
                         f' and the final construction year index is 0. '
                         f'For example, a project with 4 construction years '
@@ -3402,10 +3413,11 @@ class Economics:
 
         schedule = []
         current_rate = r(self.royalty_rate.value)
-        for _ in range(plant_lifetime):
+        for year_index in range(plant_lifetime):
             current_rate = r(current_rate)
             schedule.append(min(current_rate, max_rate))
-            current_rate += escalation_rate
+            if year_index >= (model.economics.royalty_escalation_rate_start_year.value - 2):
+                current_rate += escalation_rate
 
         return schedule
 

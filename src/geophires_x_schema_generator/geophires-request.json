@@ -1665,6 +1665,15 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Royalty Rate Escalation Start Year": {
+      "description": "The first year that the Royalty Rate Escalation is applied. The value is specified as a project year index corresponding to the Year row in the cash flow profile.",
+      "type": "integer",
+      "units": "",
+      "category": "Economics",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 99
+    },
     "Royalty Rate Maximum": {
       "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap). Defaults to 100% (no effective cap).",
       "type": "number",

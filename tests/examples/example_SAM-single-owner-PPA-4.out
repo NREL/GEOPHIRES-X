@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.17
- Simulation Date: 2025-12-10
- Simulation Time:  11:17
- Calculation Time:      1.184 sec
+ GEOPHIRES Version: 3.10.19
+ Simulation Date: 2025-12-11
+ Simulation Time:  09:11
+ Calculation Time:      1.234 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -230,6 +230,7 @@ Property tax net assessed value ($)              	0            	225,808,536	225,
 
 OPERATING EXPENSES
 O&M fixed expense ($)                            	0            	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143  	6,626,143
+Royalty rate (%)                                 	             	5.0        	6.0        	7.00       	8.0        	9.0        	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0       	10.0
 O&M production-based expense ($)                 	0            	1,714,220  	2,069,952  	2,516,875  	2,991,037  	3,492,966  	4,022,825  	4,164,255  	4,305,473  	4,446,544  	4,587,507  	4,728,390  	4,869,211  	5,009,984  	5,150,718  	5,291,422  	5,432,101  	5,572,760  	5,713,403  	5,854,032  	5,994,619
 O&M capacity-based expense ($)                   	0            	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0
 Fuel expense ($)                                 	0            	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0          	0

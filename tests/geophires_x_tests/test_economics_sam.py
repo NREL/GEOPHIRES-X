@@ -271,7 +271,7 @@ class EconomicsSamTestCase(BaseTestCase):
         )
 
         installed_cost_from_construction_cash_flow = (
-            _sum('Total capital expenditure [construction] ($)', abs_val=True) + idc_sum
+            _sum('Nominal capital expenditure [construction] ($)', abs_val=True) + idc_sum
         )
 
         sam_total_installed_cost_usd = abs(_floats(self._get_cash_flow_row(cy4_cf, 'Total installed cost ($)'))[0])
@@ -280,7 +280,7 @@ class EconomicsSamTestCase(BaseTestCase):
             installed_cost_from_construction_cash_flow,
         )
 
-        installed_cost_construction_line_item_sum = _sum('Total installed cost [construction] ($)', abs_val=True)
+        installed_cost_construction_line_item_sum = _sum('Installed cost [construction] ($)', abs_val=True)
         self.assertAlmostEqualWithinSigFigs(sam_total_installed_cost_usd, installed_cost_construction_line_item_sum, 8)
 
         self.assertLess(

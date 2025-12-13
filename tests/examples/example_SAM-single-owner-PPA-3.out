@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.10.17
- Simulation Date: 2025-12-10
- Simulation Time:  11:17
- Calculation Time:      1.174 sec
+ GEOPHIRES Version: 3.10.20
+ Simulation Date: 2025-12-13
+ Simulation Time:  11:10
+ Calculation Time:      1.183 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -202,14 +202,14 @@ Overnight capital expenditure [construction] ($) 	-262,355,642
 plus:
 Inflation cost [construction] ($)                	-13,117,782
 equals:
-Total capital expenditure [construction] ($)     	-275,473,424
+Nominal capital expenditure [construction] ($)   	-275,473,424
 
 Issuance of equity [construction] ($)            	165,284,055
 Issuance of debt [construction] ($)              	110,189,370
 Debt balance [construction] ($)                  	110,189,370
 Debt interest payment [construction] ($)         	0
 
-Total installed cost [construction] ($)          	-275,473,424
+Installed cost [construction] ($)                	-275,473,424
 Total after-tax returns [construction] ($)       	-165,284,055
 
 ENERGY

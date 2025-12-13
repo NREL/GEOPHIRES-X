@@ -12,6 +12,7 @@ from geophires_x.Units import convertible_unit
 
 _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'Total after-tax returns ($)'
 _IDC_CASH_FLOW_ROW_NAME = 'Debt interest payment ($)'
+_INSTALLED_COST_CASH_FLOW_ROW_NAME = 'Installed cost ($)'
 
 
 @dataclass
@@ -196,7 +197,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     _append_row(f'plus:', [])
     _append_row(f'Inflation cost ($)', [round(-it) for it in inflation_cost_vec])
     _append_row(f'equals:', [])
-    _append_row(f'Total capital expenditure ($)', [-x for x in capex_spend_vec])
+    _append_row(f'Nominal capital expenditure ($)', [-x for x in capex_spend_vec])
 
     pre_revenue_cf_profile.append(blank_row.copy())
 
@@ -226,7 +227,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     # --- Total installed cost & Returns ---
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
 
-    _append_row('Total installed cost ($)', [round(it) for it in total_installed_cost_vec])
+    _append_row(_INSTALLED_COST_CASH_FLOW_ROW_NAME, [round(it) for it in total_installed_cost_vec])
     _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
 
     return PreRevenueCostsAndCashflow(

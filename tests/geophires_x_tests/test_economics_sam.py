@@ -1013,6 +1013,11 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertEqual(construction_years + plant_lifetime, len(after_tax_returns_cash_flow))
 
+        self.assertListEqual(
+            EconomicsSamTestCase._get_cash_flow_row(sam_econ.sam_cash_flow_profile, 'After-tax net cash flow ($)'),
+            sam_econ.sam_cash_flow_total_after_tax_returns_all_years,
+        )
+
     @staticmethod
     def _new_model(input_file: Path, additional_params: dict[str, Any] | None = None, read_and_calculate=True) -> Model:
         if additional_params is not None:

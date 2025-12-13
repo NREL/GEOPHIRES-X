@@ -154,6 +154,11 @@ class SamEconomicsCalculations:
             + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
         )
         after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
+        irr_row_name = 'After-tax cumulative IRR (%)'
+        ret.insert(
+            _get_row_index(irr_row_name), ['After-tax net cash flow ($)', *[int(it) for it in after_tax_cash_flow]]
+        )
+
         npv_usd = []
         irr_pct = []
         for year in range(len(after_tax_cash_flow)):
@@ -170,7 +175,7 @@ class SamEconomicsCalculations:
             irr_pct.append(year_irr if not isnan(year_irr) else _SAM_CASH_FLOW_NAN_STR)
 
         ret[_get_row_index('After-tax cumulative NPV ($)')] = ['After-tax cumulative NPV ($)'] + npv_usd
-        ret[_get_row_index('After-tax cumulative IRR (%)')] = ['After-tax cumulative IRR (%)'] + irr_pct
+        ret[_get_row_index('After-tax cumulative IRR (%)')] = [irr_row_name] + irr_pct
 
         if self._royalties_rate_schedule is not None:
             ret = self._insert_royalties_rate_schedule(ret)
@@ -204,6 +209,10 @@ class SamEconomicsCalculations:
 
     @property
     def sam_cash_flow_total_after_tax_returns_all_years(self) -> list[float]:
+        """
+        Equivalent to 'After-tax net cash flow ($)' row
+        """
+
         return _cash_flow_total_after_tax_returns_all_years(self.sam_cash_flow_profile, self._pre_revenue_years_count)
 
 

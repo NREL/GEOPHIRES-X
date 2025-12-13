@@ -17,7 +17,7 @@ from geophires_x.Economics import Economics
 from geophires_x.EconomicsSam import get_sam_cash_flow_profile_tabulated_output
 from geophires_x.OutputsRich import print_outputs_rich
 from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, strParameter, boolParameter, \
-    OutputParameter, ReadParameter
+    OutputParameter, ReadParameter, ParameterEntry
 from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel, FractureShape, ReservoirVolume, \
     PlantType
 from geophires_x.Parameter import Parameter
@@ -104,7 +104,7 @@ class Outputs:
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
-                    ParameterReadIn = model.InputParameters[key]
+                    ParameterReadIn: ParameterEntry = model.InputParameters[key]
 
                     if key in self.filepath_parameter_names:
                         if not Path(ParameterReadIn.sValue).is_absolute() and default_output_path is not None:
@@ -119,16 +119,6 @@ class Outputs:
 
         # handle the special cases
         if len(model.InputParameters) > 0:
-            # if the user wants it, we need to know if the user wants to copy the contents of the
-            # output file to the screen - this serves as the screen report
-            if 'Print Output to Console' in model.InputParameters:
-                ParameterReadIn = model.InputParameters['Print Output to Console']
-
-                # TODO use generic boolParameter read logic instead
-                if ParameterReadIn.sValue.lower().strip() \
-                        if ParameterReadIn.sValue is not None else '' in ['0', 'false']:
-                    self.printoutput.value = False
-
             # loop through all the parameters that the user wishes to set, looking for parameters that contain the
             # prefix "Units:" - that means we want to set a special case for converting this
             # output parameter to new units

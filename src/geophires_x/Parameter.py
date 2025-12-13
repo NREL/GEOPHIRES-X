@@ -438,7 +438,6 @@ def _read_list_parameter(ParameterReadIn: ParameterEntry, ParamToModify, model) 
             return float_n == int_n
 
     is_positional_parameter = ' ' in ParameterReadIn.Name and _is_int(ParamToModify.Name.split(' ')[-1])
-    #if ' ' in ParamToModify.Name:
     if is_positional_parameter:
         New_val = float(ParameterReadIn.sValue)
         # Some list parameters are read in with enumerated parameter names;  in these cases we use the last

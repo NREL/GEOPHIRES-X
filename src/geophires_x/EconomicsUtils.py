@@ -82,7 +82,7 @@ def project_payback_period_parameter() -> OutputParameter:
         CurrentUnits=TimeUnit.YEAR,
         ToolTipText='The time at which cumulative cash flow reaches zero. '
         'For projects that never pay back, the calculated value will be "N/A". '
-        'For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.',
+        'For SAM Economic Models, after-tax net cash flow is used to calculate the cumulative cash flow.',
     )
 
 
@@ -94,9 +94,8 @@ def after_tax_irr_parameter() -> OutputParameter:
         PreferredUnits=PercentUnit.PERCENT,
         ToolTipText='The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to '
         'a net present value (NPV) of zero for PPA SAM Economic models. '
-        'See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, '
-        'numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) '
-        'is used to calculate the value from SAM\'s total after-tax returns.',
+        # TODO describe backfilled calculation using After-tax net cash flow
+        'See https://samrepo.nrelcloud.org/help/mtf_irr.html.',
     )
 
 

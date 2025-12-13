@@ -27,7 +27,10 @@ import PySAM.Utilityrate5 as UtilityRate
 from tabulate import tabulate
 
 from geophires_x import Model as Model
-from geophires_x.EconomicsSamCashFlow import _calculate_sam_economics_cash_flow, _SAM_CASH_FLOW_NAN_STR
+from geophires_x.EconomicsSamCashFlow import (
+    _calculate_sam_economics_cash_flow_operational_years,
+    _SAM_CASH_FLOW_NAN_STR,
+)
 from geophires_x.EconomicsUtils import (
     BuildPricingModel,
     wacc_output_parameter,
@@ -106,7 +109,7 @@ class SamEconomicsCalculations:
         ret: list[list[Any]] = self._sam_cash_flow_profile_operational_years.copy()
         col_count = len(self._sam_cash_flow_profile_operational_years[0])
 
-        # TODO support/insert calendar year line item
+        # TODO support/insert calendar year line item https://github.com/NREL/GEOPHIRES-X/issues/439
 
         pre_revenue_years_to_insert = self._pre_revenue_years_count - 1
 
@@ -148,7 +151,6 @@ class SamEconomicsCalculations:
             raise ValueError(f'Could not find row with name {row_name__}')
 
         after_tax_cash_flow: list[float] = (
-            # _get_row('After-tax net cash flow [construction] ($)')
             self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[_AFTER_TAX_NET_CASH_FLOW_ROW_NAME]
             + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
         )
@@ -330,7 +332,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     for module in modules:
         module.execute()
 
-    cash_flow_operational_years = _calculate_sam_economics_cash_flow(model, single_owner)
+    cash_flow_operational_years = _calculate_sam_economics_cash_flow_operational_years(model, single_owner)
 
     def sf(_v: float, num_sig_figs: int = 5) -> float:
         return sig_figs(_v, num_sig_figs)

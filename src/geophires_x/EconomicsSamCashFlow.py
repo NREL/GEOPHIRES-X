@@ -18,17 +18,16 @@ _SAM_CASH_FLOW_NAN_STR = 'NaN'
 
 
 @lru_cache(maxsize=12)
-def _calculate_sam_economics_cash_flow(model: Model, single_owner: Singleowner) -> list[list[Any]]:
+def _calculate_sam_economics_cash_flow_operational_years(model: Model, single_owner: Singleowner) -> list[list[Any]]:
     log = model.logger
 
     _soo = single_owner.Outputs
 
     profile = []
 
-    # TODO this and/or related logic will need to be adjusted when multiple construction years are supported
-    #  https://github.com/NREL/GEOPHIRES-X/issues/406
-    # FIXME WIP update above comment for impl
-    total_duration = model.surfaceplant.plant_lifetime.value + 1  # + model.surfaceplant.construction_years.value
+    total_duration = model.surfaceplant.plant_lifetime.value + 1
+    # Note we do not include construction years in total_duration because we only calculating cash flow for operational
+    # years.
 
     # Prefix with 'Year ' partially as workaround for tabulate applying float formatting to ints, possibly related
     # to https://github.com/astanin/python-tabulate/issues/18

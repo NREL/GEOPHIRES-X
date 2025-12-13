@@ -10,7 +10,7 @@ from scipy.interpolate import interp1d
 
 from geophires_x.Units import convertible_unit
 
-_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME = 'After-tax net cash flow ($)'
+_AFTER_TAX_NET_CASH_FLOW_ROW_NAME = 'After-tax net cash flow ($)'
 _IDC_CASH_FLOW_ROW_NAME = 'Debt interest payment ($)'
 _INSTALLED_COST_CASH_FLOW_ROW_NAME = 'Installed cost ($)'
 
@@ -29,8 +29,8 @@ class PreRevenueCostsAndCashflow:
         return self.debt_balance_usd / self.total_installed_cost_usd * 100.0
 
     @property
-    def total_after_tax_returns_cash_flow_usd(self):
-        return self.pre_revenue_cash_flow_profile_dict[_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME]
+    def after_tax_net_cash_flow_usd(self):
+        return self.pre_revenue_cash_flow_profile_dict[_AFTER_TAX_NET_CASH_FLOW_ROW_NAME]
 
     @property
     def pre_revenue_cash_flow_profile_dict(self) -> dict[str, list[float]]:
@@ -228,7 +228,7 @@ def _calculate_pre_revenue_costs_and_cashflow(
     equity_cash_flow_usd = [-x for x in equity_spend_vec]
 
     _append_row(_INSTALLED_COST_CASH_FLOW_ROW_NAME, [round(it) for it in total_installed_cost_vec])
-    _append_row(_TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
+    _append_row(_AFTER_TAX_NET_CASH_FLOW_ROW_NAME, equity_cash_flow_usd)
 
     return PreRevenueCostsAndCashflow(
         total_installed_cost_usd=total_capitalized_cost_usd,

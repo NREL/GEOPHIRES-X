@@ -42,7 +42,7 @@ from geophires_x.EconomicsUtils import (
     _SAM_EM_MOIC_RETURNS_TAX_QUALIFIER,
 )
 from geophires_x.EconomicsSamPreRevenue import (
-    _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME,
+    _AFTER_TAX_NET_CASH_FLOW_ROW_NAME,
     PreRevenueCostsAndCashflow,
     calculate_pre_revenue_costs_and_cashflow,
     adjust_phased_schedule_to_new_length,
@@ -98,9 +98,7 @@ class SamEconomicsCalculations:
     @property
     def _pre_revenue_years_count(self) -> int:
         return len(
-            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[
-                _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
-            ]
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[_AFTER_TAX_NET_CASH_FLOW_ROW_NAME]
         )
 
     @property
@@ -151,9 +149,7 @@ class SamEconomicsCalculations:
 
         after_tax_cash_flow: list[float] = (
             # _get_row('After-tax net cash flow [construction] ($)')
-            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[
-                _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
-            ]
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[_AFTER_TAX_NET_CASH_FLOW_ROW_NAME]
             + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
         )
         after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
@@ -212,7 +208,7 @@ class SamEconomicsCalculations:
 
     @property
     def sam_after_tax_net_cash_flow_all_years(self) -> list[float]:
-        return _cash_flow_total_after_tax_returns_all_years(self.sam_cash_flow_profile, self._pre_revenue_years_count)
+        return _after_tax_net_cash_flow_all_years(self.sam_cash_flow_profile, self._pre_revenue_years_count)
 
 
 def validate_read_parameters(model: Model) -> None:
@@ -379,13 +375,11 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
     return sam_economics
 
 
-def _cash_flow_total_after_tax_returns_all_years(
-    cash_flow: list[list[Any]], pre_revenue_years_count: int
-) -> list[float]:
-    return _cash_flow_total_returns_all_years(cash_flow, pre_revenue_years_count, tax_qualifier='after-tax')
+def _after_tax_net_cash_flow_all_years(cash_flow: list[list[Any]], pre_revenue_years_count: int) -> list[float]:
+    return _net_cash_flow_all_years(cash_flow, pre_revenue_years_count, tax_qualifier='after-tax')
 
 
-def _cash_flow_total_returns_all_years(
+def _net_cash_flow_all_years(
     cash_flow: list[list[Any]], pre_revenue_years_count: int, tax_qualifier='after-tax'
 ) -> list[float]:
     if tax_qualifier not in ['after-tax', 'pre-tax']:
@@ -423,7 +417,7 @@ def _cash_flow_total_returns_all_years(
 
 def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.after_tax_net_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
 
@@ -436,7 +430,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
 # noinspection PyUnusedLocal
 def _get_after_tax_irr_pct(single_owner: Singleowner, cash_flow: list[list[Any]], model: Model) -> float:
     pre_revenue_costs: PreRevenueCostsAndCashflow = calculate_pre_revenue_costs_and_cashflow(model)
-    pre_revenue_cash_flow = pre_revenue_costs.total_after_tax_returns_cash_flow_usd
+    pre_revenue_cash_flow = pre_revenue_costs.after_tax_net_cash_flow_usd
     operational_cash_flow = _cash_flow_profile_row(cash_flow, 'Total after-tax returns ($)')
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
     after_tax_irr_pct = npf.irr(combined_cash_flow) * 100.0
@@ -483,7 +477,7 @@ def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
         total_value_received_from_investment_USD: Decimal = sum(
             [
                 Decimal(it)
-                for it in _cash_flow_total_returns_all_years(
+                for it in _net_cash_flow_all_years(
                     cash_flow, _pre_revenue_years_count(model), tax_qualifier=_SAM_EM_MOIC_RETURNS_TAX_QUALIFIER
                 )
             ]
@@ -522,7 +516,7 @@ def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> floa
     """
 
     try:
-        after_tax_cash_flow = _cash_flow_total_after_tax_returns_all_years(cash_flow, _pre_revenue_years_count(model))
+        after_tax_cash_flow = _after_tax_net_cash_flow_all_years(cash_flow, _pre_revenue_years_count(model))
         cumm_cash_flow = np.zeros(len(after_tax_cash_flow))
         cumm_cash_flow[0] = after_tax_cash_flow[0]
         for year in range(1, len(after_tax_cash_flow)):
@@ -553,7 +547,6 @@ def get_sam_cash_flow_profile_tabulated_output(model: Model, **tabulate_kw_args)
         'floatfmt': ',.2f',
         **tabulate_kw_args
     }
-
     # fmt:on
 
     def get_entry_display(entry: Any) -> str:

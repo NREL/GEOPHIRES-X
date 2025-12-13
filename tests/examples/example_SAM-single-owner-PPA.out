@@ -4,10 +4,10 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.9.64
- Simulation Date: 2025-10-11
- Simulation Time:  11:36
- Calculation Time:      1.180 sec
+ GEOPHIRES Version: 3.10.21
+ Simulation Date: 2025-12-13
+ Simulation Time:  13:35
+ Calculation Time:      1.184 sec
 
                            ***SUMMARY OF RESULTS***
 
@@ -28,13 +28,12 @@ Simulation Metadata
       Real Discount Rate:                                    8.00 %
       Nominal Discount Rate:                                10.16 %
       WACC:                                                  7.57 %
-      Accrued financing during construction:                 5.00 %
       Project lifetime:                                      20 yr
       Capacity factor:                                       90.0 %
       Project NPV:                                         126.12 MUSD
       After-tax IRR:                                        24.35 %
       Project VIR=PI=PIR:                                    1.93
-      Project MOIC:                                          4.67
+      Project MOIC:                                          3.85
       Project Payback Period:                                       3.91 yr
       Estimated Jobs Created:                                 125
 
@@ -107,6 +106,7 @@ Simulation Metadata
          Field gathering system costs:                        8.50 MUSD
          Total surface equipment costs:                     152.93 MUSD
          Exploration costs:                                   3.89 MUSD
+         Overnight Capital Cost:                            215.06 MUSD
          Inflation costs during construction:                10.75 MUSD
       Total CAPEX:                                          225.81 MUSD
 
@@ -196,6 +196,22 @@ Simulation Metadata
                             ***************************
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                  	Year 0       	Year 1     	Year 2     	Year 3     	Year 4     	Year 5     	Year 6     	Year 7     	Year 8     	Year 9     	Year 10    	Year 11    	Year 12    	Year 13    	Year 14    	Year 15    	Year 16    	Year 17    	Year 18    	Year 19    	Year 20
+CONSTRUCTION
+Capital expenditure schedule [construction] (%)  	100.0
+Overnight capital expenditure [construction] ($) 	-215,055,748
+plus:
+Inflation cost [construction] ($)                	-10,752,787
+equals:
+Nominal capital expenditure [construction] ($)   	-225,808,536
+
+Issuance of equity [construction] ($)            	135,485,121
+Issuance of debt [construction] ($)              	90,323,414
+Debt balance [construction] ($)                  	90,323,414
+Debt interest payment [construction] ($)         	0
+
+Installed cost [construction] ($)                	-225,808,536
+After-tax net cash flow [construction] ($)       	-135,485,121
+
 ENERGY
 Electricity to grid (kWh)                        	0.0          	428,554,957	431,240,089	432,051,822	432,530,792	432,865,667	433,120,646	433,325,167	433,495,101	433,639,945	433,765,810	433,876,853	433,976,022	434,065,480	434,146,861	434,221,417	434,290,137	434,353,843	434,413,216	434,468,735	434,518,614
 Electricity from grid (kWh)                      	0.0          	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0        	0.0
@@ -286,8 +302,9 @@ State PTC income ($)                             	0            	0          	0   
 State tax benefit (liability) ($)                	0            	-1,284,056 	-972,763   	-1,084,732 	-1,195,555 	-1,306,217 	-1,417,063 	-1,528,267 	-1,639,932 	-1,752,134 	-1,864,934 	-1,978,383 	-2,092,531 	-2,207,424 	-2,323,108 	-2,439,629 	-2,557,033 	-2,675,370 	-2,794,690 	-2,915,044 	-10,939,762
 Total after-tax returns ($)                      	-135,485,121 	83,286,459 	16,938,508 	17,970,292 	18,982,881 	19,986,247 	20,983,647 	21,976,490 	22,965,464 	23,950,924 	24,933,045 	25,911,899 	26,887,488 	27,859,772 	28,828,676 	29,794,101 	30,755,926 	31,714,016 	32,668,223 	33,618,374 	117,514,829
 
-After-tax cumulative IRR (%)                     	NaN          	-38.53     	-22.41     	-8.85      	0.69       	7.21       	11.71      	14.89      	17.19      	18.87      	20.13      	21.08      	21.81      	22.38      	22.82      	23.17      	23.44      	23.66      	23.83      	23.98      	24.35
-After-tax cumulative NPV ($)                     	-135,485,121 	-59,880,130	-45,921,998	-32,479,395	-19,588,995	-7,268,969 	4,472,905  	15,636,159 	26,225,863 	36,251,384 	45,725,442 	54,663,353 	63,082,403 	71,001,333 	78,439,908 	85,418,557 	91,958,078 	98,079,390 	103,803,327	109,150,473	126,117,827
+After-tax net cash flow ($)                      	-135,485,121 	83,286,459 	16,938,508 	17,970,292 	18,982,881 	19,986,247 	20,983,647 	21,976,490 	22,965,464 	23,950,924 	24,933,045 	25,911,899 	26,887,488 	27,859,772 	28,828,676 	29,794,101 	30,755,926 	31,714,016 	32,668,223 	33,618,374 	117,514,829
+After-tax cumulative IRR (%)                     	NaN          	-38.53     	-22.41     	-8.85      	0.69       	7.21       	11.71      	14.89      	17.19      	18.87      	20.13      	21.08      	21.81      	22.38      	22.82      	23.17      	23.44      	23.66      	23.84      	23.98      	24.35
+After-tax cumulative NPV ($)                     	-135,485,121 	-59,880,129	-45,921,997	-32,479,395	-19,588,994	-7,268,969 	4,472,905  	15,636,160 	26,225,864 	36,251,384 	45,725,442 	54,663,354 	63,082,404 	71,001,334 	78,439,909 	85,418,558 	91,958,079 	98,079,391 	103,803,327	109,150,474	126,117,828
 
 AFTER-TAX LCOE AND PPA PRICE
 Annual costs ($)                                 	-135,485,121 	49,002,062 	-17,560,699	-17,985,061	-18,405,081	-18,824,489	-19,244,598	-19,666,059	-20,089,270	-20,514,516	-20,942,027	-21,372,001	-21,804,622	-22,240,066	-22,678,507	-23,120,121	-23,565,084	-24,013,582	-24,465,803	-24,921,943	57,568,641

@@ -101,7 +101,7 @@
         },
         "Accrued financing during construction": {
           "type": "number",
-          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction. For SAM Economic Models, this is calculated automatically by compounding Inflation Rate over Construction Years if Inflation Rate During Construction is not provided.",
+          "description": "The accrued inflation on total capital costs over the construction period, as defined by Inflation Rate During Construction.",
           "units": "%"
         },
         "Inflation costs during construction": {
@@ -123,7 +123,7 @@
         },
         "After-tax IRR": {
           "type": "number",
-          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html. If SAM calculates After-tax IRR as NaN, numpy-financial.irr (https://numpy.org/numpy-financial/latest/irr.html) is used to calculate the value from SAM's total after-tax returns.",
+          "description": "The After-tax IRR (internal rate of return) is the nominal discount rate that corresponds to a net present value (NPV) of zero for PPA SAM Economic models. See https://samrepo.nrelcloud.org/help/mtf_irr.html.",
           "units": "%"
         },
         "Project VIR=PI=PIR": {
@@ -133,13 +133,13 @@
         },
         "Project MOIC": {
           "type": "number",
-          "description": "Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the sum of Total pre-tax returns (total value received) divided by Issuance of equity (total capital invested).",
+          "description": "Project Multiple of Invested Capital. For SAM Economic Models, this is calculated as the sum of Total after-tax returns (total value received) divided by Issuance of equity (total capital invested).",
           "units": ""
         },
         "Fixed Charge Rate (FCR)": {},
         "Project Payback Period": {
           "type": "number",
-          "description": "The time at which cumulative cash flow reaches zero. For projects that never pay back, the calculated value will be \"N/A\". For SAM Economic Models, total after-tax returns are used to calculate cumulative cash flow.",
+          "description": "The time at which cumulative cash flow reaches zero. For projects that never pay back, the calculated value will be \"N/A\". For SAM Economic Models, after-tax net cash flow is used to calculate the cumulative cash flow.",
           "units": "yr"
         },
         "CHP: Percent cost allocation for electrical plant": {},
@@ -442,9 +442,19 @@
           "description": "Investment Tax Credit Value",
           "units": "MUSD"
         },
+        "Overnight Capital Cost": {
+          "type": "number",
+          "description": "Overnight Capital Cost (OCC) represents the total capital cost required to construct the plant if it were built instantly (\"overnight\"). This value excludes time-dependent costs such as inflation and interest incurred during the construction period.",
+          "units": "MUSD"
+        },
         "Inflation costs during construction": {
           "type": "number",
           "description": "The calculated amount of cost escalation due to inflation over the construction period.",
+          "units": "MUSD"
+        },
+        "Interest during construction": {
+          "type": "number",
+          "description": "Interest During Construction (IDC) is the total accumulated interest incurred on debt during the construction phase. This cost is capitalized (added to the loan principal and total installed cost) rather than paid in cash.",
           "units": "MUSD"
         },
         "Total Add-on CAPEX": {

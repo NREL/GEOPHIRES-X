@@ -17,7 +17,7 @@ from geophires_x.Economics import Economics
 from geophires_x.EconomicsSam import get_sam_cash_flow_profile_tabulated_output
 from geophires_x.OutputsRich import print_outputs_rich
 from geophires_x.Parameter import ConvertUnitsBack, ConvertOutputUnits, LookupUnits, strParameter, boolParameter, \
-    OutputParameter, ReadParameter
+    OutputParameter, ReadParameter, ParameterEntry
 from geophires_x.OptionList import EndUseOptions, EconomicModel, ReservoirModel, FractureShape, ReservoirVolume, \
     PlantType
 from geophires_x.Parameter import Parameter
@@ -32,8 +32,11 @@ class Outputs:
 
     VERTICAL_WELL_DEPTH_OUTPUT_NAME = 'Well depth'
 
-    def __init__(self, model:Model, output_file:str ='HDR.out'):
+    def __init__(self, model: Model, output_file: str = 'HDR.out'):
         model.logger.info(f'Init {__class__!s}: {__name__}')
+
+        self.output_file = output_file
+
         self.ParameterDict = {}
         self.OutputParameterDict = {}
         self.filepath_parameter_names = []
@@ -60,6 +63,7 @@ class Outputs:
                 ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
         ))
 
+        # noinspection SpellCheckingInspection
         self.printoutput = self.ParameterDict[self.printoutput.Name] = boolParameter(
                 'Print Output to Console',
                 DefaultValue=True,
@@ -68,11 +72,6 @@ class Outputs:
                 ErrMessage='assume no output to console',
                 ToolTipText='Provide a 0 if you do not want to print output to the console',
             )
-
-        # Dictionary to hold the Units definitions that the user wants for outputs created by GEOPHIRES.
-        # It is empty by default initially - this will expand as the user desires are read from the input file
-        self.printoutput = True
-        self.output_file = output_file
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 
@@ -105,7 +104,7 @@ class Outputs:
                 ParameterToModify = item[1]
                 key = ParameterToModify.Name.strip()
                 if key in model.InputParameters:
-                    ParameterReadIn = model.InputParameters[key]
+                    ParameterReadIn: ParameterEntry = model.InputParameters[key]
 
                     if key in self.filepath_parameter_names:
                         if not Path(ParameterReadIn.sValue).is_absolute() and default_output_path is not None:
@@ -120,13 +119,6 @@ class Outputs:
 
         # handle the special cases
         if len(model.InputParameters) > 0:
-            # if the user wants it, we need to know if the user wants to copy the contents of the
-            # output file to the screen - this serves as the screen report
-            if 'Print Output to Console' in model.InputParameters:
-                ParameterReadIn = model.InputParameters['Print Output to Console']
-                if ParameterReadIn.sValue == '0':
-                    self.printoutput = False
-
             # loop through all the parameters that the user wishes to set, looking for parameters that contain the
             # prefix "Units:" - that means we want to set a special case for converting this
             # output parameter to new units
@@ -274,9 +266,10 @@ class Outputs:
                         label = Outputs._field_label(field.Name, 49)
                         f.write(f'      {label}{field.value:10.2f} {field.CurrentUnits.value}\n')
 
-                acf: OutputParameter = econ.accrued_financing_during_construction_percentage
-                acf_label = Outputs._field_label(acf.display_name, 49)
-                f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
+                if not is_sam_econ_model:  # (parameter is ambiguous to the point of meaninglessness for SAM-EM)
+                    acf: OutputParameter = econ.accrued_financing_during_construction_percentage
+                    acf_label = Outputs._field_label(acf.display_name, 49)
+                    f.write(f'      {acf_label}{acf.value:10.2f} {acf.CurrentUnits.value}\n')
 
                 display_inflation_costs_in_economic_parameters: bool = (
                     econ.econmodel.value in [EconomicModel.BICYCLE,
@@ -514,15 +507,27 @@ class Outputs:
                         #  expenditure.
                         pass
 
-                display_inflation_during_construction_in_capital_costs = is_sam_econ_model
-                if display_inflation_during_construction_in_capital_costs:
+                display_occ_and_inflation_during_construction_in_capital_costs = is_sam_econ_model
+                if display_occ_and_inflation_during_construction_in_capital_costs:
+                    occ_label = Outputs._field_label(econ.overnight_capital_cost.display_name, 47)
+                    f.write(
+                        f'         {occ_label}{econ.overnight_capital_cost.value:10.2f} {econ.overnight_capital_cost.CurrentUnits.value}\n')
+
+                display_idc_in_capital_costs = is_sam_econ_model \
+                                                       and model.surfaceplant.construction_years.value > 1
+                if display_idc_in_capital_costs:
+                    idc_label = Outputs._field_label(econ.interest_during_construction.display_name, 47)
+                    f.write(
+                        f'         {idc_label}{econ.interest_during_construction.value:10.2f} {econ.interest_during_construction.CurrentUnits.value}\n')
+
+                if display_occ_and_inflation_during_construction_in_capital_costs:
                     icc_label = Outputs._field_label(econ.inflation_cost_during_construction.display_name, 47)
                     f.write(f'         {icc_label}{econ.inflation_cost_during_construction.value:10.2f} {econ.inflation_cost_during_construction.CurrentUnits.value}\n')
 
-                    if econ.DoAddOnCalculations.value:
-                        # Non-SAM econ models print this in Extended Economics profile
-                        aoc_label = Outputs._field_label(model.addeconomics.AddOnCAPEXTotal.display_name, 47)
-                        f.write(f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
+                if is_sam_econ_model and econ.DoAddOnCalculations.value:
+                    # Non-SAM econ models print this in Extended Economics profile
+                    aoc_label = Outputs._field_label(model.addeconomics.AddOnCAPEXTotal.display_name, 47)
+                    f.write(f'         {aoc_label}{model.addeconomics.AddOnCAPEXTotal.value:10.2f} {model.addeconomics.AddOnCAPEXTotal.CurrentUnits.value}\n')
 
                 capex_param = econ.CCap if not is_sam_econ_model else econ.capex_total
                 capex_label = Outputs._field_label(capex_param.display_name, 50)

@@ -5,6 +5,9 @@ import numbers
 import os.path
 import unittest
 
+from geophires_x.GeoPHIRESUtils import sig_figs
+from geophires_x_client import GeophiresInputParameters
+
 # noinspection PyProtectedMember
 from geophires_x_client import _get_logger
 
@@ -30,7 +33,10 @@ class BaseTestCase(unittest.TestCase):
             try:
                 self.assertAlmostEqual(expected, actual, msg=msg, delta=abs(percent / 100.0 * expected))
             except AssertionError as ae:
-                difference_percent = abs(100.0 * (actual - expected) / expected)
+                try:
+                    difference_percent = abs(100.0 * (actual - expected) / expected)
+                except ZeroDivisionError:
+                    difference_percent = float('nan')
                 raise AssertionError(f'{actual} != {expected} within {percent}% ({difference_percent:.2f}%)') from ae
         else:
             if isinstance(expected, list) and isinstance(actual, list):
@@ -103,5 +109,36 @@ class BaseTestCase(unittest.TestCase):
                 self.assertListEqual(f1_lines, f2_lines, msg=f'{expected}, {actual}')
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
-    def assertHasLogRecordWithMessage(self, logs_, message):
-        assert message in [record.message for record in logs_.records]
+    def assertHasLogRecordWithMessage(self, logs_, message, treat_substring_match_as_match: bool = False):
+        messages = [record.message for record in logs_.records]
+        assert any(it == message or (treat_substring_match_as_match and message in it) for it in messages)
+
+    def assertAlmostEqualWithinSigFigs(self, expected: float | int, actual: float | int, num_sig_figs: int = 3):
+        self.assertEqual(
+            sig_figs(expected, num_sig_figs),
+            sig_figs(actual, num_sig_figs),
+        )
+
+    # noinspection PyMethodMayBeStatic
+    def _is_github_actions(self):
+        return 'CI' in os.environ or 'TOXPYTHON' in os.environ
+
+    @staticmethod
+    def get_input_parameter(params: GeophiresInputParameters, param_name: str) -> float | str | None:
+        """
+        TODO refactor into generic utility method
+        TODO should return quantity
+        """
+
+        for line in reversed(params.as_text().split('\n')):
+            parts = line.strip().split(',')
+            if parts[0].strip() == param_name:
+                ret = parts[1].strip()
+                try:
+                    return float(ret)
+                except ValueError:
+                    pass
+
+                return str(ret)
+
+        return None

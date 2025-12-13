@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 import sys
@@ -8,6 +9,7 @@ from typing import Any
 
 import numpy as np
 import numpy_financial as npf
+from geophires_x.Parameter import listParameter
 
 from base_test_case import BaseTestCase
 
@@ -22,14 +24,23 @@ from geophires_x.EconomicsSam import (
     _get_fed_and_state_tax_rates,
     SamEconomicsCalculations,
     _get_royalty_rate_schedule,
+    _validate_construction_capex_schedule,
 )
-from geophires_x.GeoPHIRESUtils import sig_figs, quantity
+from geophires_x.GeoPHIRESUtils import sig_figs, quantity, is_float
 
 # noinspection PyProtectedMember
-from geophires_x.EconomicsSamCashFlow import _clean_profile, _is_category_row_label, _is_designator_row_label
-from geophires_x_client import GeophiresInputParameters
+from geophires_x.EconomicsSamCashFlow import (
+    _clean_profile,
+    _is_category_row_label,
+    _is_designator_row_label,
+    _SAM_CASH_FLOW_NAN_STR,
+)
+from geophires_x.Units import convertible_unit
+from geophires_x_client import GeophiresInputParameters, ImmutableGeophiresInputParameters
 from geophires_x_client import GeophiresXClient
 from geophires_x_client import GeophiresXResult
+
+_log = logging.getLogger(__name__)
 
 
 class EconomicsSamTestCase(BaseTestCase):
@@ -180,7 +191,7 @@ class EconomicsSamTestCase(BaseTestCase):
         )
 
     @staticmethod
-    def _get_cash_flow_row(cash_flow, name):
+    def _get_cash_flow_row(cash_flow: list[list[Any]], name: str) -> list[Any]:
 
         def r_0(r):
             if r is not None and len(r) > 0:
@@ -200,17 +211,191 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertIn('Invalid End-Use Option (Direct-Use Heat)', str(e.exception))
 
-    def test_only_1_construction_year_supported(self):
-        # TODO remove this test and uncomment test_multiple_construction_years_supported below once multiple
-        #  construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
-        with self.assertRaises(RuntimeError) as e:
-            self._get_result({'Construction Years': 2})
+    def test_multiple_construction_years(self):
+        construction_years_2: GeophiresXResult = self._get_result(
+            {
+                'Construction Years': 2,
+                'Construction CAPEX Schedule': '0.5,0.5',
+                'Fraction of Investment in Bonds': 0.25,
+            }
+        )
+        self.assertIsNotNone(construction_years_2)
+        cy2_cf = construction_years_2.result['SAM CASH FLOW PROFILE']
+        self.assertEqual('Year -1', cy2_cf[0][1])
+        self.assertEqual('Year 20', cy2_cf[0][-1])
 
-        self.assertIn('Invalid Construction Years (2)', str(e.exception))
-        self.assertIn('SAM_SINGLE_OWNER_PPA only supports Construction Years  = 1.', str(e.exception))
+        try:
+            with self.assertLogs(level='INFO') as logs:
+                construction_years_4 = self._get_result(
+                    {'Construction Years': 4, 'Construction CAPEX Schedule': '0.5,0.5'}
+                )
 
-    # def test_multiple_construction_years_supported(self):
-    #     self.assertIsNotNone(self._get_result({'Construction Years': 2}))
+                self.assertHasLogRecordWithMessage(
+                    logs, 'has been adjusted to: [0.25, 0.25, 0.25, 0.25]', treat_substring_match_as_match=True
+                )
+        except AssertionError as ae:
+            self._handle_assert_logs_failure(ae)
+
+        cy4_cf = construction_years_4.result['SAM CASH FLOW PROFILE']
+
+        cy4_result_npv = construction_years_4.result['ECONOMIC PARAMETERS']['Project NPV']
+        self.assertAlmostEqualWithinSigFigs(
+            quantity(cy4_result_npv['value'], cy4_result_npv['unit']).to('USD').magnitude,
+            self._get_cash_flow_row(cy4_cf, 'After-tax cumulative NPV ($)')[-1],
+            num_sig_figs=4,
+        )
+
+        cy4_result_irr = construction_years_4.result['ECONOMIC PARAMETERS']['After-tax IRR']
+
+        self.assertAlmostEqualWithinSigFigs(
+            quantity(cy4_result_irr['value'], cy4_result_irr['unit']).to(convertible_unit('percent')).magnitude,
+            self._get_cash_flow_row(cy4_cf, 'After-tax cumulative IRR (%)')[-1],
+        )
+
+        def _floats(_cf: list[Any]) -> list[float]:
+            return [float(it) for it in _cf if is_float(it)]
+
+        self.assertEqual(
+            _floats(self._get_cash_flow_row(cy4_cf, 'Debt balance [construction] ($)'))[-1],
+            _floats(self._get_cash_flow_row(cy4_cf, 'Debt balance ($)'))[0],
+        )
+
+        def _sum(cf_row_name: str, abs_val: bool = False) -> float:
+            return sum([abs(it) if abs_val else it for it in _floats(self._get_cash_flow_row(cy4_cf, cf_row_name))])
+
+        idc_sum = _sum('Debt interest payment [construction] ($)')
+
+        cy4_idc = construction_years_4.result['CAPITAL COSTS (M$)']['Interest during construction']
+        self.assertAlmostEqualWithinSigFigs(
+            idc_sum, quantity(cy4_idc['value'], cy4_idc['unit']).to('USD').magnitude, num_sig_figs=4
+        )
+
+        installed_cost_from_construction_cash_flow = (
+            _sum('Nominal capital expenditure [construction] ($)', abs_val=True) + idc_sum
+        )
+
+        sam_total_installed_cost_usd = abs(_floats(self._get_cash_flow_row(cy4_cf, 'Total installed cost ($)'))[0])
+        self.assertEqual(
+            sam_total_installed_cost_usd,
+            installed_cost_from_construction_cash_flow,
+        )
+
+        installed_cost_construction_line_item_sum = _sum('Installed cost [construction] ($)', abs_val=True)
+        self.assertAlmostEqualWithinSigFigs(sam_total_installed_cost_usd, installed_cost_construction_line_item_sum, 8)
+
+        self.assertLess(
+            construction_years_4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value'],
+            installed_cost_from_construction_cash_flow,
+        )
+
+        self.assertLess(
+            construction_years_4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value'],
+            construction_years_4.result['CAPITAL COSTS (M$)']['Total CAPEX']['value'],
+        )
+
+        self.assertAlmostEqualWithinSigFigs(
+            _sum('Issuance of equity [construction] ($)'),
+            _floats(self._get_cash_flow_row(cy4_cf, 'Issuance of equity ($)'))[0],
+            8,
+        )
+
+    def test_validate_construction_capex_schedule(self):
+        model = self._new_model(self._egs_test_file_path(), {'Print Output to Console': 1})
+        model_logger = model.logger
+
+        def _sched(sched: list[float]) -> listParameter:
+            construction_capex_schedule_name = 'Construction CAPEX Schedule'
+            schedule_param = listParameter(
+                construction_capex_schedule_name,
+                DefaultValue=[1.0],
+                Min=0.0,
+                Max=1.0,
+                ToolTipText=construction_capex_schedule_name,
+            )
+            schedule_param.value = sched
+            return schedule_param
+
+        half_half = [0.5, 0.5]
+        self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(half_half), 2, model))
+
+        try:
+            with self.assertLogs(logger=model_logger.name, level='WARNING') as logs:
+                quarters = [0.25] * 4
+                self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(quarters), 2, model))
+                self.assertHasLogRecordWithMessage(
+                    logs, 'has been adjusted to: [0.5, 0.5]', treat_substring_match_as_match=True
+                )
+        except AssertionError as ae:
+            self._handle_assert_logs_failure(ae)
+
+        try:
+            with self.assertLogs(logger=model_logger.name, level='WARNING') as logs2:
+                double_ones = [1.0, 1.0]
+                self.assertListEqual(half_half, _validate_construction_capex_schedule(_sched(double_ones), 2, model))
+                self.assertHasLogRecordWithMessage(logs2, 'does not sum to 1.0', treat_substring_match_as_match=True)
+        except AssertionError as ae:
+            self._handle_assert_logs_failure(ae)
+
+    def test_bond_interest_rate_during_construction(self):
+        fraction_in_bonds: float = 0.5
+        r: GeophiresXResult = self._get_result(
+            {
+                'Construction Years': 2,
+                'Inflation Rate During Construction': 0,
+                'Fraction of Investment in Bonds': fraction_in_bonds,
+                'Inflated Bond Interest Rate During Construction': 0,
+            }
+        )
+
+        def get_equity_usd(_r: GeophiresXResult) -> float:
+            equity_str = self._get_cash_flow_row(_r.result['SAM CASH FLOW PROFILE'], 'Issuance of equity ($)')[-1]
+
+            return float(equity_str)
+
+        equity_musd = quantity(get_equity_usd(r), 'USD').to('MUSD').magnitude
+        total_capex_musd = r.result['SUMMARY OF RESULTS']['Total CAPEX']['value']
+        self.assertAlmostEqual(total_capex_musd * fraction_in_bonds, equity_musd, places=2)
+
+    def test_bond_financing_start_year(self):
+        construction_years = 4
+
+        def _get_result_(_financing_start_year: int, _construction_years: int = construction_years) -> GeophiresXResult:
+            return self._get_result(
+                {
+                    'Construction Years': _construction_years,
+                    'Inflation Rate During Construction': 0,
+                    'Fraction of Investment in Bonds': 0.5,
+                    'Bond Financing Start Year': _financing_start_year,
+                }
+            )
+
+        def get_debt_issuance_usd(_r: GeophiresXResult) -> list[float]:
+            return self._get_cash_flow_row(_r.result['SAM CASH FLOW PROFILE'], 'Issuance of debt [construction] ($)')
+
+        def _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(_r, _financing_start_year: int) -> None:
+            di = get_debt_issuance_usd(_r)
+            year_indexes = [int(it.replace('Year ', '')) for it in _r.result['SAM CASH FLOW PROFILE'][0][1:]]
+            bond_financing_start_cash_flow_index = (
+                year_indexes.index(_financing_start_year) if year_indexes[0] <= _financing_start_year else 0
+            )
+            self.assertTrue(all(it == 0 for it in di[:bond_financing_start_cash_flow_index]))
+            self.assertTrue(all(it > 0 for it in di[bond_financing_start_cash_flow_index:]))
+
+        for financing_start_year in range(-1 * (construction_years - 1), 1):
+            r: GeophiresXResult = _get_result_(financing_start_year)
+            _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r, financing_start_year)
+
+        fsy_min = -13
+        r_prior_construction: GeophiresXResult = _get_result_(fsy_min)
+        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(r_prior_construction, fsy_min)
+
+        max_construction_years = 14
+        _assert_debt_issuance_cash_flow_reflects_bond_financing_start_year(
+            _get_result_(fsy_min, _construction_years=max_construction_years), fsy_min
+        )
+
+        with self.assertRaises(RuntimeError):
+            _get_result_(1)  # Bond financing start year is negative year indexed, so value must be less than 0
 
     def test_ppa_pricing_model(self):
         self.assertListEqual(
@@ -290,12 +475,56 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertAlmostEqual(tic_no_infl * (1 + infl_rate), tic_infl, places=0)
 
+        def _infl_cost_musd(r: GeophiresXResult) -> float:
+            return r.result['CAPITAL COSTS (M$)']['Inflation costs during construction']['value']
+
+        params_3 = {
+            'Construction Years': 3,
+            'Inflation Rate': 0.04769,
+            'Inflated Bond Interest Rate During Construction': 0,
+        }
+        r3: GeophiresXResult = self._get_result(
+            params_3, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+
+        # Validate that inflation during construction is calculated by compounding the inflation rate over construction years
+        occ_3 = r3.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value']
+        infl_rate_3 = params_3['Inflation Rate']
+        # Default uniform schedule for 3 years
+        schedule = [1 / 3, 1 / 3, 1 / 3]
+
+        expected_infl_cost_3 = sum([occ_3 * s * ((1 + infl_rate_3) ** (y + 1) - 1) for y, s in enumerate(schedule)])
+
+        self.assertAlmostEqual(expected_infl_cost_3, _infl_cost_musd(r3), places=1)
+
+        cash_flow_3 = r3.result['SAM CASH FLOW PROFILE']
+        tic_3 = EconomicsSamTestCase._get_cash_flow_row(cash_flow_3, tic)[-1]
+
+        # Verify TIC matches OCC + Inflation Cost (IDC is 0)
+        self.assertAlmostEqual(occ_3 + expected_infl_cost_3, quantity(abs(tic_3), 'USD').to('MUSD').magnitude, places=0)
+
+        params4 = {
+            'Construction Years': 3,
+            'Inflation Rate During Construction': 0.15,
+            'Inflated Bond Interest Rate During Construction': 0,
+        }
+        r4: GeophiresXResult = self._get_result(
+            params4, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
+        )
+
+        # r4 treats 'Inflation Rate During Construction' as the annual inflation rate in the current implementation
+        infl_rate_4 = params4['Inflation Rate During Construction']
+        occ_4 = r4.result['CAPITAL COSTS (M$)']['Overnight Capital Cost']['value']
+
+        expected_infl_cost_4 = sum([occ_4 * s * ((1 + infl_rate_4) ** (y + 1) - 1) for y, s in enumerate(schedule)])
+        self.assertAlmostEqual(expected_infl_cost_4, _infl_cost_musd(r4), places=1)
+
     def test_ptc(self):
         def assert_ptc(params, expected_ptc_usd_per_kWh):
             m: Model = EconomicsSamTestCase._new_model(self._egs_test_file_path(), additional_params=params)
 
             sam_econ = calculate_sam_economics(m)
-            cash_flow = sam_econ.sam_cash_flow_profile
+            cash_flow = sam_econ._sam_cash_flow_profile_operational_years
 
             def get_row(name: str):
                 return EconomicsSamTestCase._get_cash_flow_row(cash_flow, name)
@@ -490,7 +719,7 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertEqual(([21], [9]), _get_fed_and_state_tax_rates(0.3))
         self.assertEqual(([10], [0]), _get_fed_and_state_tax_rates(0.1))
 
-    def test_nan_after_tax_irr(self):
+    def test_nan_after_tax_irr_output_param(self):
         """
         Verify that After-tax IRRs that would have been calculated as NaN by SAM are instead calculated with
         numpy-financial.irr
@@ -509,9 +738,14 @@ class EconomicsSamTestCase(BaseTestCase):
         )
         sam_after_tax_irr_calc = float(after_tax_irr_cash_flow_entries[-1])
 
-        # Test case condition - we expect SAM to have calculated NaN here. If this assertion fails, adjust params passed
-        # to _get_result such that final year of After-tax cumulative IRR is NaN.
-        assert math.isnan(sam_after_tax_irr_calc)
+        try:
+            # As of 2025-11-14, this assertion is expected to fail because After-tax cumulative IRR is now backfilled
+            # upstream by the SAM-EM as part of adjusting IRR for multi-year construction periods.
+            # However, we would want to run the remainder of the test if the assertion does pass, hence why skipping
+            # is conditional.
+            assert math.isnan(sam_after_tax_irr_calc)
+        except AssertionError:
+            self.skipTest('Skipping because NaN after-tax IRR is now handled upstream by SAM-EM')
 
         after_tax_cash_flow = EconomicsSamTestCase._get_cash_flow_row(
             r.result['SAM CASH FLOW PROFILE'], 'Total after-tax returns ($)'
@@ -521,6 +755,30 @@ class EconomicsSamTestCase(BaseTestCase):
         r_irr = _irr(r)
         self.assertFalse(math.isnan(r_irr))
         self.assertAlmostEqual(npf_irr, r_irr, places=2)
+
+    def test_nan_irr_cash_flow_line_items_for_multiple_construction_years(self):
+        """
+        IRR during construction years is expected to be nan - serialized as 'NaN'
+        """
+
+        def _irr(_r: GeophiresXResult) -> float:
+            return _r.result['ECONOMIC PARAMETERS']['After-tax IRR']['value']
+
+        construction_years = 2
+
+        rate_params = {
+            'Electricity Escalation Rate Per Year': 0.00348993288590604,
+            'Starting Electricity Sale Price': 0.13,
+            'Construction Years': construction_years,
+        }
+        r: GeophiresXResult = self._get_result(rate_params)
+        after_tax_irr_cash_flow_entries = EconomicsSamTestCase._get_cash_flow_row(
+            r.result['SAM CASH FLOW PROFILE'], 'After-tax cumulative IRR (%)'
+        )
+        self.assertTrue(
+            all(it == _SAM_CASH_FLOW_NAN_STR for it in after_tax_irr_cash_flow_entries[:construction_years])
+        )
+        self.assertTrue(all(is_float(it) for it in after_tax_irr_cash_flow_entries[construction_years:]))
 
     def test_nan_project_payback_period(self):
         def _payback_period(_r: GeophiresXResult) -> float:
@@ -535,7 +793,12 @@ class EconomicsSamTestCase(BaseTestCase):
 
     def test_accrued_financing_during_construction(self):
         def _accrued_financing(_r: GeophiresXResult) -> float:
-            return _r.result['ECONOMIC PARAMETERS']['Accrued financing during construction']['value']
+            econ_params = _r.result['ECONOMIC PARAMETERS']
+            acf_key = 'Accrued financing during construction'
+            if econ_params[acf_key] is None:
+                self.skipTest(f'Economic parameters do not contain {acf_key}. (This is expected/OK.)')
+
+            return econ_params[acf_key]['value']
 
         params1 = {
             'Construction Years': 1,
@@ -544,7 +807,7 @@ class EconomicsSamTestCase(BaseTestCase):
         r1: GeophiresXResult = self._get_result(
             params1, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         )
-        self.assertAlmostEqual(4.769, _accrued_financing(r1), places=1)
+        self.assertAlmostEqual(0, _accrued_financing(r1), places=1)
 
         params2 = {
             'Construction Years': 1,
@@ -553,28 +816,7 @@ class EconomicsSamTestCase(BaseTestCase):
         r2: GeophiresXResult = self._get_result(
             params2, file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
         )
-        self.assertEqual(15.0, _accrued_financing(r2))
-
-        # TODO enable when multiple construction years are supported https://github.com/NREL/GEOPHIRES-X/issues/406
-        # params3 = {
-        #     'Construction Years': 3,
-        #     'Inflation Rate': 0.04769,
-        # }
-        # r3: GeophiresXResult = self._get_result(
-        #     params3,
-        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
-        # )
-        # self.assertEqual(15.0, _accrued_financing(r3))
-        #
-        # params4 = {
-        #     'Construction Years': 3,
-        #     'Inflation Rate During Construction': 0.15,
-        # }
-        # r4: GeophiresXResult = self._get_result(
-        #     params4,
-        #     file_path=self._get_test_file_path('generic-egs-case-3_no-inflation-rate-during-construction.txt')
-        # )
-        # self.assertEqual(15.0, _accrued_financing(r4))
+        self.assertEqual(0, _accrued_financing(r2))
 
     def test_add_ons(self):
         no_add_ons_result = self._get_result(
@@ -620,6 +862,19 @@ class EconomicsSamTestCase(BaseTestCase):
                 file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
             )
 
+        add_ons_multiple_construction_years_result = self._get_result(
+            {'Do AddOn Calculations': True, 'Construction Years': 3},
+            file_path=self._get_test_file_path('egs-sam-em-add-ons.txt'),
+        )
+        self.assertGreater(
+            add_ons_multiple_construction_years_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+            add_ons_result.result['SUMMARY OF RESULTS']['Total CAPEX']['value'],
+        )
+        self.assertEqual(
+            add_ons_multiple_construction_years_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'],
+            add_ons_result.result['CAPITAL COSTS (M$)']['Total Add-on CAPEX']['value'],
+        )
+
     def _assert_capex_line_items_sum_to_total(self, r: GeophiresXResult):
         capex_line_items = {key: value for key, value in r.result['CAPITAL COSTS (M$)'].items() if value is not None}
 
@@ -629,6 +884,7 @@ class EconomicsSamTestCase(BaseTestCase):
         capex_line_item_sum = 0
         for line_item_name, capex_line_item in capex_line_items.items():
             if line_item_name not in [
+                'Overnight Capital Cost',
                 'Total CAPEX',
                 'Total surface equipment costs',
                 'Drilling and completion costs per well',
@@ -677,30 +933,89 @@ class EconomicsSamTestCase(BaseTestCase):
         schedule: list[float] = _get_royalty_rate_schedule(m)
 
         self.assertListAlmostEqual(
-            [
-                0.1,
-                0.11,
-                0.12,
-                0.13,
-                0.14,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-                0.15,
-            ],
+            [0.1, 0.11, 0.12, 0.13, 0.14, *[0.15] * 15],
             schedule,
             places=3,
+        )
+
+    def test_royalty_rate_escalation_start_year(self) -> None:
+        construction_years: int = 5
+        plant_lifetime: int = 20
+
+        def _get_result(start_year: int) -> tuple[str, dict[str, Any], GeophiresXResult]:
+            _input_file_path = self._get_test_file_path('generic-egs-case.txt')
+            _additional_params = {
+                'Economic Model': 5,
+                'Construction Years': construction_years,
+                'Plant Lifetime': plant_lifetime,
+                'Royalty Rate': 0.04,
+                'Royalty Rate Maximum': 0.06,
+                'Royalty Rate Escalation': 0.02,
+                'Royalty Rate Escalation Start Year': start_year,
+                'Print Output to Console': 1,
+            }
+            input_params: GeophiresInputParameters = GeophiresInputParameters(
+                from_file_path=_input_file_path,
+                params=_additional_params,
+            )
+            return _input_file_path, _additional_params, GeophiresXClient().get_geophires_result(input_params)
+
+        def __cash_flow_row(r: GeophiresXResult, row_name: str) -> str:
+            from geophires_x.EconomicsSam import _cash_flow_profile_row
+
+            return [it for it in _cash_flow_profile_row(r.result['SAM CASH FLOW PROFILE'], row_name) if is_float(it)]
+
+        def _royalty_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'O&M production-based expense ($)')[1:]  # Drop year 0 ($0 revenue)
+
+        def _royalty_rates_from_cash_flow(r: GeophiresXResult) -> list[float]:
+            return __cash_flow_row(r, 'Royalty rate (%)')
+
+        input_file_path, additional_params, result_4 = _get_result(4)
+
+        expected_royalty_rate_schedule_4 = [*([0.04] * 3), *([0.06] * (plant_lifetime - 3))]
+        model = EconomicsSamTestCase._new_model(input_file_path, additional_params=additional_params)
+        econ_royalty_rate_schedule_4 = model.economics.get_royalty_rate_schedule(model)
+        self.assertListEqual(expected_royalty_rate_schedule_4, econ_royalty_rate_schedule_4)
+
+        result_4_royalty_cash_flow_usd = _royalty_cash_flow(result_4)
+        self.assertEqual(len(expected_royalty_rate_schedule_4), len(result_4_royalty_cash_flow_usd))
+
+        econ_royalty_rate_schedule_4_percent = [
+            quantity(it, 'dimensionless').to(convertible_unit('percent')).magnitude
+            for it in econ_royalty_rate_schedule_4
+        ]
+        royalty_rates_from_cash_flow_4 = _royalty_rates_from_cash_flow(result_4)
+        self.assertListEqual(econ_royalty_rate_schedule_4_percent, royalty_rates_from_cash_flow_4)
+
+        expected_royalties_based_on_cash_flow_ppa_revenue = []
+        cash_flow_ppa_revenue = __cash_flow_row(result_4, 'PPA revenue ($)')[1:]
+        for i, _rev_usd in enumerate(econ_royalty_rate_schedule_4_percent):
+            expected_royalties_based_on_cash_flow_ppa_revenue.append(
+                cash_flow_ppa_revenue[i] * econ_royalty_rate_schedule_4[i]
+            )
+
+        self.assertListAlmostEqual(
+            expected_royalties_based_on_cash_flow_ppa_revenue, result_4_royalty_cash_flow_usd, percent=0.0001
+        )
+
+    def test_sam_cash_flow_total_after_tax_returns_all_years(self):
+        input_file = self._egs_test_file_path()
+        additional_params = {'Construction Years': 2}
+        m: Model = EconomicsSamTestCase._new_model(input_file, additional_params=additional_params)
+
+        input_params = ImmutableGeophiresInputParameters(additional_params, from_file_path=Path(input_file))
+
+        sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
+        after_tax_returns_cash_flow = sam_econ.sam_after_tax_net_cash_flow_all_years
+        construction_years = EconomicsSamTestCase.get_input_parameter(input_params, 'Construction Years')
+        plant_lifetime = EconomicsSamTestCase.get_input_parameter(input_params, 'Plant Lifetime')
+
+        self.assertEqual(construction_years + plant_lifetime, len(after_tax_returns_cash_flow))
+
+        self.assertListEqual(
+            EconomicsSamTestCase._get_cash_flow_row(sam_econ.sam_cash_flow_profile, 'After-tax net cash flow ($)'),
+            sam_econ.sam_after_tax_net_cash_flow_all_years,
         )
 
     @staticmethod
@@ -724,3 +1039,14 @@ class EconomicsSamTestCase(BaseTestCase):
             m.Calculate()
 
         return m
+
+    def _handle_assert_logs_failure(self, ae: AssertionError):
+        if sys.version_info[:2] == (3, 8) and self._is_github_actions():
+            # FIXME - see
+            #  https://github.com/softwareengineerprogrammer/GEOPHIRES/actions/runs/19646240874/job/56262028512#step:5:344
+            _log.warning(
+                f'WARNING: Skipping logs assertion in GitHub Actions '
+                f'for Python {sys.version_info.major}.{sys.version_info.minor}'
+            )
+        else:
+            raise ae

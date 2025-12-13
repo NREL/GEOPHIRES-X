@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 from tests.base_test_case import BaseTestCase
@@ -40,6 +42,26 @@ class TestBaseTestCase(BaseTestCase):
                 'Got 2 lists, you probably meant to call:\n\t'
                 'self.assertListAlmostEqual([1, 2, 3], [1.1, 2.2, 3.3], msg=None, percent=10.5)',
             )
+
+    def test_assertHasLogRecordWithMessage(self):
+        class _Message:
+            def __init__(self, msg: str):
+                self.message = msg
+
+        class _Logs:
+            def __init__(self, records: list[str]):
+                self.records: list[_Message] = [_Message(record) for record in records]
+
+        logs = _Logs(
+            [
+                'Parameter given (0.0) for Property Tax Rate is the same as the default value. Consider removing Property '
+                'Tax Rate from the input file unless you wish to change it from the default value of (0.0)',
+                'Construction CAPEX Schedule length (2) did not match construction years (4). It has been adjusted to: '
+                '[0.25, 0.25, 0.25, 0.25]',
+                "complete <class 'geophires_x.Economics.Economics'>: read_parameters",
+            ]
+        )
+        self.assertHasLogRecordWithMessage(logs, 'has been adjusted to', treat_substring_match_as_match=True)
 
 
 if __name__ == '__main__':

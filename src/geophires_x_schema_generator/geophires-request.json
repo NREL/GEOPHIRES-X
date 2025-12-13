@@ -320,7 +320,16 @@
       "category": "Reservoir",
       "default": 10,
       "minimum": 1,
-      "maximum": 99999
+      "maximum": 1000000
+    },
+    "Number of Fractures per Stimulated Well": {
+      "description": "Number of identical parallel fractures per stimulated well in EGS fracture-based reservoir model. (Note that injection wells are assumed to be stimulated by default; production wells are assumed to be stimulated if Reservoir Stimulation Capital Cost per Production Well is provided.)",
+      "type": "integer",
+      "units": null,
+      "category": "Reservoir",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 1000000
     },
     "Fracture Separation": {
       "description": "Separation of identical parallel fractures with uniform spatial distribution             in EGS fracture-based reservoir",
@@ -1261,13 +1270,13 @@
       "maximum": 1.0
     },
     "Construction Years": {
-      "description": "Number of years spent in construction (assumes whole years, no fractions). Capital costs are spread evenly over construction years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years.",
+      "description": "Number of years spent in construction (assumes whole years, no fractions). By default, capital costs are spread evenly over construction years e.g. if total capital costs are $500M and there are 2 construction years, then $250M will be spent in both the first and second construction years. For SAM Economic Models, provide Construction CAPEX Schedule to use a custom spread instead.",
       "type": "integer",
       "units": null,
       "category": "Surface Plant",
       "default": 1,
       "minimum": 1,
-      "maximum": 14
+      "maximum": 15
     },
     "Working Fluid Heat Capacity": {
       "description": "Heat capacity of the working fluid",
@@ -1656,6 +1665,15 @@
       "minimum": 0.0,
       "maximum": 1.0
     },
+    "Royalty Rate Escalation Start Year": {
+      "description": "The first year that the Royalty Rate Escalation is applied. The value is specified as a project year index corresponding to the Year row in the cash flow profile.",
+      "type": "integer",
+      "units": "",
+      "category": "Economics",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 99
+    },
     "Royalty Rate Maximum": {
       "description": "The maximum royalty rate after escalation, expressed as a fraction (e.g., 0.06 for a 6% cap). Defaults to 100% (no effective cap).",
       "type": "number",
@@ -1684,7 +1702,7 @@
       "maximum": null
     },
     "Fraction of Investment in Bonds": {
-      "description": "Fraction of geothermal project financing through bonds (debt).",
+      "description": "Fraction of geothermal project financing through bonds (debt/loans).",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1693,7 +1711,16 @@
       "maximum": 1.0
     },
     "Inflated Bond Interest Rate": {
-      "description": "Inflated bond interest rate (see docs)",
+      "description": "Inflated bond interest rate (for debt/loans)",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.05,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Inflated Bond Interest Rate During Construction": {
+      "description": "Inflated bond interest rate during construction (for debt/loans)",
       "type": "number",
       "units": "",
       "category": "Economics",
@@ -1763,6 +1790,26 @@
       "default": 0.0,
       "minimum": 0.0,
       "maximum": 1.0
+    },
+    "Construction CAPEX Schedule": {
+      "description": "A list of fractions of the total overnight CAPEX spent in each construction year. For example, for 3 construction years with 10% in the first year, 40% in the second, and 50% in the third, provide Construction CAPEX Schedule = 0.1,0.4,0.5. The schedule will be automatically interpolated to match the number of construction years and normalized to sum to 1.0.",
+      "type": "array",
+      "units": null,
+      "category": "Economics",
+      "default": [
+        1.0
+      ],
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Bond Financing Start Year": {
+      "description": "By default, bond financing (debt/loans) starts during the first construction year (if Fraction of Investment in Bonds is >0). Provide Bond Financing Start Year to delay the start of bond financing during construction; years prior to Bond Financing Start Year will be financed with equity only. The value is specified as a project year index corresponding to the Year row in the cash flow profile; the first construction year has the year index {(Construction Years - 1) * -1}) and the final construction year index is 0. For example, a project with 4 construction years where bond financing starts on the third construction year would have a Bond Financing Start Year value of -1; construction starts in Year -3, the second year is Year -2, and the final 2 bond-financed construction years are Year -1 and Year 0. Bond financing will start on the first construction year if the specified year index is prior to the first construction year.",
+      "type": "integer",
+      "units": "yr",
+      "category": "Economics",
+      "default": -14,
+      "minimum": -14,
+      "maximum": 0
     },
     "Contingency Percentage": {
       "description": "The contingency percentage applied to the direct capital costs for stimulation, field gathering system, exploration, and surface plant. (Note: well drilling and completion costs do not have contingency applied and are not affected by this parameter.)",

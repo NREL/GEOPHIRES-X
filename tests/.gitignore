@@ -3,3 +3,5 @@ HIP.out
 MC_*Result.json
 MC_*Result.txt
 *.png
+examples/Deadwood_M8.txt
+examples/Doublet_v1.dat

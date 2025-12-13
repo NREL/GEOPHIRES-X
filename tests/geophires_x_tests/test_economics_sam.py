@@ -756,7 +756,7 @@ class EconomicsSamTestCase(BaseTestCase):
         self.assertFalse(math.isnan(r_irr))
         self.assertAlmostEqual(npf_irr, r_irr, places=2)
 
-    def test_nan__irr_cash_flow_line_items_for_multiple_construction_years(self):
+    def test_nan_irr_cash_flow_line_items_for_multiple_construction_years(self):
         """
         IRR during construction years is expected to be nan - serialized as 'NaN'
         """
@@ -1007,7 +1007,7 @@ class EconomicsSamTestCase(BaseTestCase):
         input_params = ImmutableGeophiresInputParameters(additional_params, from_file_path=Path(input_file))
 
         sam_econ: SamEconomicsCalculations = calculate_sam_economics(m)
-        after_tax_returns_cash_flow = sam_econ.sam_cash_flow_total_after_tax_returns_all_years
+        after_tax_returns_cash_flow = sam_econ.sam_after_tax_net_cash_flow_all_years
         construction_years = EconomicsSamTestCase.get_input_parameter(input_params, 'Construction Years')
         plant_lifetime = EconomicsSamTestCase.get_input_parameter(input_params, 'Plant Lifetime')
 
@@ -1015,7 +1015,7 @@ class EconomicsSamTestCase(BaseTestCase):
 
         self.assertListEqual(
             EconomicsSamTestCase._get_cash_flow_row(sam_econ.sam_cash_flow_profile, 'After-tax net cash flow ($)'),
-            sam_econ.sam_cash_flow_total_after_tax_returns_all_years,
+            sam_econ.sam_after_tax_net_cash_flow_all_years,
         )
 
     @staticmethod

@@ -150,7 +150,10 @@ class SamEconomicsCalculations:
             raise ValueError(f'Could not find row with name {row_name__}')
 
         after_tax_cash_flow: list[float] = (
-            _get_row('Total after-tax returns [construction] ($)')
+            # _get_row('After-tax net cash flow [construction] ($)')
+            self.pre_revenue_costs_and_cash_flow.pre_revenue_cash_flow_profile_dict[
+                _TOTAL_AFTER_TAX_RETURNS_CASH_FLOW_ROW_NAME
+            ]
             + _get_row('Total after-tax returns ($)')[self._pre_revenue_years_count :]
         )
         after_tax_cash_flow = [float(it) for it in after_tax_cash_flow if is_float(it)]
@@ -208,11 +211,7 @@ class SamEconomicsCalculations:
         return ret
 
     @property
-    def sam_cash_flow_total_after_tax_returns_all_years(self) -> list[float]:
-        """
-        Equivalent to 'After-tax net cash flow ($)' row
-        """
-
+    def sam_after_tax_net_cash_flow_all_years(self) -> list[float]:
         return _cash_flow_total_after_tax_returns_all_years(self.sam_cash_flow_profile, self._pre_revenue_years_count)
 
 
@@ -400,7 +399,12 @@ def _cash_flow_total_returns_all_years(
         raise ValueError(f'Could not find row with name {row_name__}')
 
     def _construction_returns_row(_construction_tax_qualifier: str) -> list[Any]:
-        return _get_row(f'Total {_construction_tax_qualifier} returns [construction] ($)')
+        returns_row_name = (
+            f'Total {_construction_tax_qualifier} returns [construction] ($)'
+            if tax_qualifier == 'pre-tax'
+            else f'After-tax net cash flow [construction] ($)'
+        )
+        return _get_row(returns_row_name)
 
     try:
         construction_returns_row = _construction_returns_row(tax_qualifier)

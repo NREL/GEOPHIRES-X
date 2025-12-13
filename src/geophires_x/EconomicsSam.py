@@ -280,7 +280,7 @@ def _validate_construction_capex_schedule(
     if len(adjust_schedule_reasons) > 0:
         capex_schedule = adjust_phased_schedule_to_new_length(econ_capex_schedule.value, construction_years)
 
-        if model.outputs.printoutput:
+        if model.outputs.printoutput.value:
             # Use printoutput as a proxy for whether the user has requested logging;
             #  TODO to implement/support logging-specific config
 

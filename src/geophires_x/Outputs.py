@@ -32,8 +32,11 @@ class Outputs:
 
     VERTICAL_WELL_DEPTH_OUTPUT_NAME = 'Well depth'
 
-    def __init__(self, model:Model, output_file:str ='HDR.out'):
+    def __init__(self, model: Model, output_file: str = 'HDR.out'):
         model.logger.info(f'Init {__class__!s}: {__name__}')
+
+        self.output_file = output_file
+
         self.ParameterDict = {}
         self.OutputParameterDict = {}
         self.filepath_parameter_names = []
@@ -60,6 +63,7 @@ class Outputs:
                 ToolTipText='Provide a HTML output name if you want to have HTML output (no output if not provided)',
         ))
 
+        # noinspection SpellCheckingInspection
         self.printoutput = self.ParameterDict[self.printoutput.Name] = boolParameter(
                 'Print Output to Console',
                 DefaultValue=True,
@@ -68,11 +72,6 @@ class Outputs:
                 ErrMessage='assume no output to console',
                 ToolTipText='Provide a 0 if you do not want to print output to the console',
             )
-
-        # Dictionary to hold the Units definitions that the user wants for outputs created by GEOPHIRES.
-        # It is empty by default initially - this will expand as the user desires are read from the input file
-        self.printoutput = True
-        self.output_file = output_file
 
         model.logger.info(f'Complete {__class__!s}: {__name__}')
 
@@ -124,8 +123,11 @@ class Outputs:
             # output file to the screen - this serves as the screen report
             if 'Print Output to Console' in model.InputParameters:
                 ParameterReadIn = model.InputParameters['Print Output to Console']
-                if ParameterReadIn.sValue == '0':
-                    self.printoutput = False
+
+                # TODO use generic boolParameter read logic instead
+                if ParameterReadIn.sValue.lower().strip() \
+                        if ParameterReadIn.sValue is not None else '' in ['0', 'false']:
+                    self.printoutput.value = False
 
             # loop through all the parameters that the user wishes to set, looking for parameters that contain the
             # prefix "Units:" - that means we want to set a special case for converting this

@@ -184,11 +184,6 @@ class SamEconomicsCalculations:
         return ret
 
     def _insert_royalties_rate_schedule(self, cf_ret: list[list[Any]]) -> list[list[Any]]:
-        """
-        TODO update user-facing documentation to mention this feature
-            (https://nrel.github.io/GEOPHIRES/SAM-Economic-Models.html#royalties)
-        """
-
         ret = cf_ret.copy()
 
         def _get_row_index(row_name_: str) -> list[Any]:

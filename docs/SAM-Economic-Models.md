@@ -52,7 +52,6 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 1. Only Electricity end-use is supported
 2. Add-ons with electricity and heat are not currently supported. (Add-ons CAPEX, OPEX, and profit are supported.)
 
-
 ## Multiple Construction Years
 
 Multiple construction years are supported by providing the `Construction Years` parameter.
@@ -60,7 +59,6 @@ GEOPHIRES simulates the pre-revenue construction phase to calculate the project'
 which serves as the basis for depreciation and permanent debt sizing.
 This calculation accounts for the timing of capital deployment defined in by `Construction CAPEX Schedule`,
 capturing both inflation costs and interest during construction (IDC) accrued prior to the start of operations.
-
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 
@@ -95,16 +93,17 @@ expense in SAM matches the royalty due on gross revenue.
 Input Parameters:
 
 1. `Royalty Rate`: The percentage of the project's gross annual revenue paid to the royalty holder. It can be optionally
-   escalated by providing `Royalty Rate Escalation` and capped with `Royalty Rate Maximum`.
+   escalated by providing `Royalty Rate Escalation` and capped with `Royalty Rate Maximum`, starting at
+   `Royalty Rate Escalation Start Year`.
 1. `Royalty Holder Discount Rate` (optional): The discount rate used to calculate the Net Present Value (NPV) of the
    royalty holder's income stream. This is separate from the project's main discount rate to reflect the different risk
    profiles of the two parties.
 
 Output Parameters:
 
+1.  Cash Flow: The royalty rate schedule is displayed in the `Royalty rate (%)` cash flow line item. The royalties expense for each year is included in the cash flow line item `O&M production-based expense ($)`.
 1. `Average Annual Royalty Cost`: The developer's average annual royalty expense over the project's lifetime after
-   construction is complete (Year 1). The same value is also output as `Royalty Holder Average Annual Revenue`. The
-   individual royalties for each year are included in the cash flow line item `O&M production-based expense ($)`.
+   construction is complete (Year 1). The same value is also output as `Royalty Holder Average Annual Revenue`.
 1. `Royalty Holder Total Revenue`: The total gross (pre-tax), undiscounted royalty income over the project's lifetime.
 1. `Royalty Holder NPV`: The pre-tax Net Present Value of the royalty holder's income stream, calculated using the
    `Royalty Holder Discount Rate`. This is a pre-tax value because the model does not account for the royalty holder's

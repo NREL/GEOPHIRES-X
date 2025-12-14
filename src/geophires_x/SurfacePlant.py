@@ -670,6 +670,12 @@ class SurfacePlant:
                             if ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:
                                 model.wellbores.impedancemodelallowed.value = False
                                 self.setinjectionpressurefixed = True
+                        if model.wellbores.impedancemodelused.value and \
+                            ParameterToModify.value in [PlantType.SINGLE_FLASH, PlantType.DOUBLE_FLASH]:
+                            msg = ('Flash plant is being used with impedance model. When reservoir impedance '
+                                   'is specified, no flashing is allowed in production wells or at surface.')
+                            print(f'Warning: {msg}')
+                            model.logger.warning(msg)
                     elif ParameterToModify.Name == 'Plant Outlet Pressure':
                         if ParameterToModify.value < self.plant_outlet_pressure.Min or ParameterToModify.value > self.plant_outlet_pressure.Max:
                                 if self.setinjectionpressurefixed:

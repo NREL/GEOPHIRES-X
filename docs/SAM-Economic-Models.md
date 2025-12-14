@@ -56,6 +56,8 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 
 Multiple construction years are supported by providing the `Construction Years` parameter.
 
+[Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
+
 GEOPHIRES simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost,
 which serves as the basis for depreciation and permanent debt sizing.
 This calculation accounts for the timing of capital deployment defined by `Construction CAPEX Schedule`,
@@ -63,7 +65,19 @@ capturing both inflation costs and interest during construction (IDC) accrued pr
 Debt financing may be delayed during the construction period by providing `Bond Financing Start Year`; prior years will
 be financed with equity only.
 
-[Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
+The `CONSTRUCTION` cash flow category displays construction-related cash flows. As in SAM, construction years are
+indexed
+relative to the first year of operations, which is Year 1. A project with a single construction year will therefore have
+cash flow beginning in Year 0. A project with two construction years will have cash flow beginning in Year -1, three in
+Year -2, etc.
+
+![](_images/sam-em-mcy-construction-cash-flow-category.png)
+
+The `After-tax net cash flow ($)` line item displays the basis from which `After-tax cumulative IRR (%)` and
+`After-tax cumulative NPV ($)` are calculated. It combines `After-tax net cash flow [construction] ($)` until Year 0 and
+`Total after-tax returns ($)` starting at Year 1.
+
+![](_images/sam-em-mcy-after-tax-net-cash-flow-irr-npv.png)
 
 ## Add-Ons
 
@@ -104,7 +118,8 @@ Input Parameters:
 
 Output Parameters:
 
-1.  Cash Flow: The royalty rate schedule is displayed in the `Royalty rate (%)` cash flow line item. The royalties expense for each year is included in the cash flow line item `O&M production-based expense ($)`.
+1. Cash Flow: The royalty rate schedule is displayed in the `Royalty rate (%)` cash flow line item. The royalties
+   expense for each year is included in the cash flow line item `O&M production-based expense ($)`.
 1. `Average Annual Royalty Cost`: The developer's average annual royalty expense over the project's lifetime after
    construction is complete (Year 1). The same value is also output as `Royalty Holder Average Annual Revenue`.
 1. `Royalty Holder Total Revenue`: The total gross (pre-tax), undiscounted royalty income over the project's lifetime.

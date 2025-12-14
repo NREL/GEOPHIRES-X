@@ -55,10 +55,13 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 ## Multiple Construction Years
 
 Multiple construction years are supported by providing the `Construction Years` parameter.
+
 GEOPHIRES simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost,
 which serves as the basis for depreciation and permanent debt sizing.
-This calculation accounts for the timing of capital deployment defined in by `Construction CAPEX Schedule`,
+This calculation accounts for the timing of capital deployment defined by `Construction CAPEX Schedule`,
 capturing both inflation costs and interest during construction (IDC) accrued prior to the start of operations.
+Debt financing may be delayed during the construction period by providing `Bond Financing Start Year`; prior years will
+be financed with equity only.
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 

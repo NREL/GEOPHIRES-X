@@ -1,7 +1,7 @@
 # Example: SAM Single Owner PPA Economic Model: Multiple Construction Years
 # Models a 120 MW nameplate capacity EGS project with a 7-year construction period. The first 3 years of construction
 # are financed with equity and the remaining 4 years are financed with both bonds (debt) and equity.
-# See "SAM Economic Models" in GEOPHIRES documentation: https://nrel.github.io/GEOPHIRES-X/SAM-Economic-Models.html
+# See documentation: https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#multiple-construction-years
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***
 # *************************************

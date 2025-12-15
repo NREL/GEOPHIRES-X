@@ -65,6 +65,8 @@ capturing both inflation costs and interest during construction (IDC) accrued pr
 Debt financing may be delayed during the construction period by providing `Bond Financing Start Year`; prior years will
 be financed with equity only.
 
+![](_images/sam-em-mcy-design-diagram.png)
+
 The `CONSTRUCTION` cash flow category displays construction-related cash flows. As in SAM, construction years are
 indexed
 relative to the first year of operations, which is Year 1. A project with a single construction year will therefore have

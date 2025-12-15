@@ -71,6 +71,7 @@ def project_vir_parameter() -> OutputParameter:
         UnitType=Units.PERCENT,
         PreferredUnits=PercentUnit.TENTH,
         CurrentUnits=PercentUnit.TENTH,
+        ToolTipText='For SAM Economic Models, VIR = PV(Returns) / abs(PV(Investment)).',
     )
 
 

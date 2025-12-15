@@ -360,7 +360,7 @@ def calculate_sam_economics(model: Model) -> SamEconomicsCalculations:
 
         sam_economics._royalties_rate_schedule = model.economics.get_royalty_rate_schedule(model)
 
-    sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc(
+    sam_economics.nominal_discount_rate.value, sam_economics.wacc.value = _calculate_nominal_discount_rate_and_wacc_pct(
         model, single_owner
     )
     sam_economics.moic.value = _calculate_moic(sam_economics.sam_cash_flow_profile, model)
@@ -419,7 +419,7 @@ def _get_project_npv_musd(single_owner: Singleowner, cash_flow: list[list[Any]],
     combined_cash_flow = pre_revenue_cash_flow + operational_cash_flow[1:]
 
     true_npv_usd = npf.npv(
-        _calculate_nominal_discount_rate_and_wacc(model, single_owner)[0] / 100.0, combined_cash_flow
+        _calculate_nominal_discount_rate_and_wacc_pct(model, single_owner)[0] / 100.0, combined_cash_flow
     )
     return true_npv_usd * 1e-6  # Convert to M$
 
@@ -444,15 +444,21 @@ def _cash_flow_profile_entry(cash_flow: list[list[Any]], row_name: str, year_ind
     return _cash_flow_profile_row(cash_flow, row_name)[col_index - 1]
 
 
-def _calculate_nominal_discount_rate_and_wacc(model: Model, single_owner: Singleowner) -> tuple[float]:
+def _calculate_nominal_discount_rate_pct(model: Model) -> float:
+    econ = model.economics
+    return ((1 + econ.discountrate.value) * (1 + econ.RINFL.value) - 1) * 100
+
+
+def _calculate_nominal_discount_rate_and_wacc_pct(model: Model, single_owner: Singleowner) -> tuple[float]:
     """
     Calculation per SAM Help -> Financial Parameters -> Commercial -> Commercial Loan Parameters -> WACC
 
     :return: tuple of Nominal Discount Rate (%), WACC (%)
     """
 
+    nominal_discount_rate_pct = _calculate_nominal_discount_rate_pct(model)
+
     econ = model.economics
-    nominal_discount_rate_pct = ((1 + econ.discountrate.value) * (1 + econ.RINFL.value) - 1) * 100
     fed_tax_rate = max(single_owner.Outputs.cf_federal_tax_frac)
     state_tax_rate = max(single_owner.Outputs.cf_state_tax_frac)
     effective_tax_rate = (fed_tax_rate * (1 - state_tax_rate) + state_tax_rate) * 100
@@ -485,26 +491,33 @@ def _calculate_moic(cash_flow: list[list[Any]], model) -> float | None:
         return None
 
 
-def _calculate_project_vir(cash_flow: list[list[Any]], model) -> float | None:
-    """
-    VIR = PV(Future Cash Flows) / |CF_0|
-    Where CF_0 is the cash flow at Year 0 (the initial investment).
-    NPV = CF_0 + PV(Future Cash Flows)
-    PV(Future Cash Flows) = NPV - CF_0
+def _calculate_project_vir(cash_flow: list[list[Any]], model: Model) -> float:
+    nominal_discount_rate = _calculate_nominal_discount_rate_pct(model) / 100
 
-    TODO add user-facing documentation (including clarification of CF_0 being Year 0, not first construction year)
-    """
+    net_equity_cash_flow = _cash_flow_profile_row(cash_flow, 'After-tax net cash flow ($)')
 
-    try:
-        npv_USD = Decimal(_cash_flow_profile_row(cash_flow, 'After-tax cumulative NPV ($)')[-1])
-        cf_0_USD = _cash_flow_profile_entry(cash_flow, 'Total after-tax returns ($)', 0)
-        pv_of_future_cash_flows_USD = npv_USD - cf_0_USD
-        vir = pv_of_future_cash_flows_USD / abs(cf_0_USD)
+    pv_inflows = 0.0
+    pv_outflows = 0.0
 
-        return float(vir)
-    except Exception as e:
-        model.logger.error(f'Encountered exception calculating Project VIR: {e}')
-        return None
+    for t, cf in enumerate(net_equity_cash_flow):
+        # Calculate Discount Factor for year t (where t=0 is start of construction)
+        discount_factor = 1 / ((1 + nominal_discount_rate) ** t)
+        discounted_value = cf * discount_factor
+
+        if cf >= 0:
+            pv_inflows += discounted_value
+        else:
+            # Accumulate negative flows (Investment).
+            # Note: We keep this negative here and take abs() at the end.
+            pv_outflows += discounted_value
+
+    # Guard against division by zero (unlikely in a construction project)
+    if pv_outflows == 0:
+        return 0.0
+
+    # VIR = PV(Returns) / abs(PV(Investment)).
+    vir = pv_inflows / abs(pv_outflows)
+    return vir
 
 
 def _calculate_project_payback_period(cash_flow: list[list[Any]], model) -> float | None:

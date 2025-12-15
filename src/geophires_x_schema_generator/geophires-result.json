@@ -128,7 +128,7 @@
         },
         "Project VIR=PI=PIR": {
           "type": "number",
-          "description": "Project Value Investment Ratio",
+          "description": "Project Value Investment Ratio. For SAM Economic Models, VIR = PV(Returns) / abs(PV(Investment)).",
           "units": ""
         },
         "Project MOIC": {

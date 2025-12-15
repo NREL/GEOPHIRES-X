@@ -54,9 +54,9 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 
 ## Multiple Construction Years
 
-Multiple construction years are supported by providing the `Construction Years` parameter.
-
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
+
+Multiple construction years are supported by providing the `Construction Years` parameter.
 
 GEOPHIRES simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost,
 which serves as the basis for depreciation and permanent debt sizing.
@@ -81,6 +81,8 @@ The `After-tax net cash flow ($)` line item displays the basis from which `After
 
 ## Add-Ons
 
+[Add-Ons example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-3)
+
 SAM Economic Models incorporate add-ons directly, unlike other GEOPHIRES economic models, which calculate separate
 extended economics.
 Total Add-on CAPEX is added to Total CAPEX.
@@ -90,9 +92,9 @@ Total AddOn Profit Gained per year is treated as fixed amount Capacity payment r
 Add-ons CAPEX, OPEX, and profit are supported.
 Add-ons with electricity and heat are not currently supported, but may be supported in the future.
 
-[Add-Ons example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-3)
-
 ## Royalties
+
+[Royalties example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-4)
 
 SAM Economic Models can model a royalty agreement where a percentage of the project's gross revenue is paid to a third
 party (the "royalty holder"). This feature is enabled by providing the `Royalty Rate` parameter.
@@ -126,8 +128,6 @@ Output Parameters:
 1. `Royalty Holder NPV`: The pre-tax Net Present Value of the royalty holder's income stream, calculated using the
    `Royalty Holder Discount Rate`. This is a pre-tax value because the model does not account for the royalty holder's
    specific tax liabilities.
-
-[Royalties example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-4)
 
 ## Examples
 

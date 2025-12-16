@@ -2,19 +2,25 @@
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 
-GEOPHIRES SAM Economic Models support multi-year construction timelines through the `Construction Years` parameter.
-This feature simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost.
-This final cost serves as the accurate basis for depreciation and debt sizing in the operational phase.
-This calculation accounts for the specific timing of capital deployment defined by the `Construction CAPEX Schedule`,
-capturing both inflation effects and Interest During Construction (IDC) accrued prior to the Commercial Operation Date (
-COD).
+GEOPHIRES SAM Economic Models support multi-year construction timelines to deliver accurate, time-adjusted financial
+metrics, including IRR and NPV, for projects with extended development periods.
+This feature models the pre-revenue phase to capture the real-world economic impact of Interest During Construction (
+IDC), inflation, and capital deployment timing.
+This ensures that key investment decision metrics correctly reflect the time value of money leading up to the Commercial
+Operation Date (COD).
+
+To enable this feature, set the `Construction Years` parameter to the desired duration (e.g., 3). The spending profile
+is defined by the `Construction CAPEX Schedule`, which allocates a percentage of the `Overnight Capital Cost` to each
+pre-revenue year. Users can further refine the financing model using `Bond Financing Start Year` to delay debt
+drawdowns (funding early years purely with equity) and adjust `Inflation Rate During Construction` or
+`Inflated Bond Interest Rate During Construction` to match specific market conditions.
 
 ## Construction Cash Flows
 
 The `CONSTRUCTION` cash flow category displays detailed financial movements during the pre-operational phase.
 Construction-specific line items are suffixed with `[construction]`.
 Construction years are indexed relative to the first year of operations (Year 1).
-A project with two construction years will have cash flows in Year -1 and Year 0.
+A project with three construction years will have cash flows in Year -2, Year -1 and Year 0.
 A project with seven construction years, as in the example below, will start in Year -6.
 
 ![](_images/sam-em-mcy-construction-cash-flow-category.png)
@@ -27,7 +33,8 @@ For each construction year, the `CONSTRUCTION` cash flow is calculated as follow
    percentage of the total `Overnight Capital Cost` based on the `Construction CAPEX Schedule`.
 1. **Inflation**: An inflation adder is calculated using `Inflation Rate During Construction` and added to the overnight
    cost to yield `Nominal capital expenditure [construction]`.
-1. **Debt & Equity Draws**: Costs are covered by issuance of equity and debt based on `Fraction of Investment in Bonds`. Debt
+1. **Debt & Equity Draws**: Costs are covered by issuance of equity and debt based on `Fraction of Investment in Bonds`.
+   Debt
    financing can be delayed by specifying `Bond Financing Start Year`. Years prior to this threshold are financed 100%
    by equity.
 1. **IDC (Interest During Construction)**: Interest on the accumulated debt balance is calculated using

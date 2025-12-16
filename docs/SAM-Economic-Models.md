@@ -56,27 +56,16 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 
-Multiple construction years are supported by providing the `Construction Years` parameter.
-GEOPHIRES simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost,
-which serves as the basis for depreciation and operational phase debt sizing.
-This calculation accounts for the timing of capital deployment defined by `Construction CAPEX Schedule`,
-capturing both inflation costs and interest during construction (IDC) accrued prior to the start of operations.
-Debt financing may be delayed during the construction period by providing `Bond Financing Start Year`; prior years will
-be financed with equity only.
+For projects with extended development timelines, GEOPHIRES SAM Economic Models improve financial accuracy by simulating the pre-revenue
+construction phase.
+SAM Economic Models account for the timing of capital deployment (Construction CAPEX Schedule), inflation, and Interest
+During Construction (IDC)
+based on the value of `Construction Years` parameter.
+The simulation calculates a capitalized cost at the Commercial Operation Date (COD; Year 1), ensuring that the final
+depreciation basis, debt sizing, and resulting metrics (IRR, NPV) correctly reflect the time value of money during
+construction.
 
-![](_images/sam-em-mcy-design-diagram.png)
-
-The `CONSTRUCTION` cash flow category displays construction-related cash flows. Construction years are indexed relative to the first year of operations, which is Year 1.
-A project with a single construction year will therefore have cash flow beginning in Year 0.
-A project with two construction years will have cash flow beginning in Year -1, three in Year -2, etc.
-
-![](_images/sam-em-mcy-construction-cash-flow-category.png)
-
-The `After-tax net cash flow ($)` line item displays the basis from which `After-tax cumulative IRR (%)` and
-`After-tax cumulative NPV ($)` are calculated. It combines `After-tax net cash flow [construction] ($)` until Year 0 and
-`Total after-tax returns ($)` starting at Year 1.
-
-![](_images/sam-em-mcy-after-tax-net-cash-flow-irr-npv.png)
+See [SAM Economic Models: Multiple Construction Years documentation](SAM-EM_Multiple-Construction-Years.html).
 
 ## Add-Ons
 

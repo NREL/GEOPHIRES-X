@@ -56,11 +56,14 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 
-GEOPHIRES SAM Economic Models support multi-year construction timelines through the `Construction Years` parameter.
-This feature simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost.
-This final cost serves as the accurate basis for depreciation and debt sizing in the operational phase.
-This calculation accounts for the specific timing of capital deployment defined by the `Construction CAPEX Schedule`,
-capturing both inflation effects and Interest During Construction (IDC) accrued prior to the Commercial Operation Date (COD).
+For projects with extended development timelines, GEOPHIRES SAM Economic Models improve financial accuracy by simulating the pre-revenue
+construction phase.
+SAM Economic Models account for the timing of capital deployment (Construction CAPEX Schedule), inflation, and Interest
+During Construction (IDC)
+based on the value of `Construction Years` parameter.
+The simulation calculates a capitalized cost at the Commercial Operation Date (COD; Year 1), ensuring that the final
+depreciation basis, debt sizing, and resulting metrics (IRR, NPV) correctly reflect the time value of money during
+construction.
 
 See [SAM Economic Models: Multiple Construction Years documentation](SAM-EM_Multiple-Construction-Years.html).
 

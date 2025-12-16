@@ -56,49 +56,49 @@ The following table describes how GEOPHIRES parameters are transformed into SAM 
 
 [Multiple Construction Years example web interface link](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=example_SAM-single-owner-PPA-5)
 
-Multiple construction years are supported by providing the `Construction Years` parameter.
-GEOPHIRES simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost,
-which serves as the basis for depreciation and operational phase debt sizing.
-This calculation accounts for the timing of capital deployment defined by `Construction CAPEX Schedule`,
-capturing both inflation costs and interest during construction (IDC) accrued prior to the start of operations.
-Debt financing may be delayed during the construction period by providing `Bond Financing Start Year`; prior years will
-be financed with equity only.
+GEOPHIRES supports multi-year construction timelines through the `Construction Years` parameter.
+This feature simulates the pre-revenue construction phase to calculate the project's Year 0 equivalent capitalized cost.
+This final cost serves as the accurate basis for depreciation and debt sizing in the operational phase.
+This calculation accounts for the specific timing of capital deployment defined by the `Construction CAPEX Schedule`,
+capturing both inflation effects and Interest During Construction (IDC) accrued prior to the Commercial Operation Date (COD).
 
-The `CONSTRUCTION` cash flow category displays construction-related cash flows. Construction years are indexed relative
-to the first year of operations, which is Year 1.
-A project with a single construction year will therefore have cash flow beginning in Year 0.
-A project with two construction years will have cash flow beginning in Year -1, three in Year -2, etc.
+### Construction Cash Flows
+
+The `CONSTRUCTION` cash flow category displays detailed financial movements during the pre-operational phase.
 Construction-specific line items are suffixed with `[construction]`.
+Construction years are indexed relative to the first year of operations (Year 1).
+A project with two construction years will have cash flows in Year -1 and Year 0.
+A project with seven construction years, as in the example below, will start in Year -6.
 
 ![](_images/sam-em-mcy-construction-cash-flow-category.png)
 
-For each construction year, GEOPHIRES calculates annual `Overnight capital expenditure [construction]` as a percentage
-of the project's total `Overnight Capital Cost`
-according to `Construction CAPEX Schedule`. Inflation cost, according to the inflation rate defined by
-`Inflation Rate During Construction`,
-is added to yield annual `Nominal capital expenditure [construction]`.
+### Calculation Logic
 
-Equity and debt matching the nominal capital expenditure are issued
-based on `Fraction of Investment in Bonds` and whether the current construction year index is less than or equal to
-`Bond Financing Start Year` (if provided). Issued debt is added to `Debt balance [construction]`.
-`Debt interest payment` (IDC), whose rate is defined by `Inflated Bond Interest Rate During Construction`, is added to
-the
-debt balance based on the prior year's balance. Annual `Installed cost [construction]` is calculated as the sum of
-`Nominal capital expenditure [construction]` and `Debt interest payment [construction]`.
-
-At the end of the construction phase, whose final year is Year 0, annual `Installed cost [construction]` values are
-summed to calculate the `Total installed cost` that is passed to SAM (`total_installed_cost`).
-`Issuance of equity [construction]` and `Issuance of debt [construction]` are summed to compute an effective debt:equity
-ratio that is passed to SAM (`debt_percent`).
+1. **CAPEX Deployment**: For each year, GEOPHIRES calculates `Overnight capital expenditure [construction]` as a percentage of the total `Overnight Capital Cost` based on the `Construction CAPEX Schedule`.
+1. **Inflation**: An inflation adder is calculated using `Inflation Rate During Construction` and added to the overnight cost to yield `Nominal capital expenditure [construction]`.
+1. **Debt & Equity Draws**: Costs are covered by equity and debt based on `Fraction of Investment in Bonds`. Debt financing can be delayed by specifying `Bond Financing Start Year`. Years prior to this threshold are financed 100% by equity.
+1. **IDC (Interest During Construction)**: Interest on the accumulated debt balance is calculated using `Inflated Bond Interest Rate During Construction`. This interest is capitalized (added to `Debt balance [construction]`) rather than paid out as cash.
+1. **Annual Installed Cost**: The annual `Installed cost [construction]` is the sum of `Nominal capital expenditure [construction]` and `Debt interest payment [construction]` (capitalized IDC).
 
 ![](_images/sam-em-mcy-design-diagram.png)
 
-After SAM computes the cash flow based on `total_installed_cost` and `debt_percent` (in addition to
-non-construction-specific parameters),
-GEOPHIRES post-processes IRR and NPV calculations to account for construction-specific cash flows.
-The `After-tax net cash flow ($)` line item displays the basis from which `After-tax cumulative IRR (%)` and
-`After-tax cumulative NPV ($)` are calculated. It combines `After-tax net cash flow [construction] ($)` until Year 0 and
-`Total after-tax returns ($)` starting at Year 1.
+### SAM Integration & Metrics
+
+At the end of the construction phase, total installed cost and effective debt percentage are passed to the SAM financial engine.
+This ensures the operational model starts with the correct depreciation basis and loan principal.
+Annual `Installed cost [construction]` values are
+summed to calculate the total installed cost that is passed to SAM (`total_installed_cost`).
+`Issuance of equity [construction]` and `Issuance of debt [construction]` are summed to compute an effective debt:equity
+ratio that is passed to SAM (`debt_percent`).
+
+**Post-Processing**: After SAM computes the operational cash flows, GEOPHIRES "stitches" the construction phase and operational phase together to report accurate project-level metrics.
+
+The `After-tax net cash flow ($)` row represents the complete project lifecycle:
+
+- Years -N to 0: Contains `After-tax net cash flow [construction] ($)` (equity outflows).
+- Years 1+: Contains `Total after-tax returns ($)` from operations.
+
+`After-tax cumulative IRR (%)` and `After-tax cumulative NPV ($)` are re-calculated based on this unified cash flow stream to account for the time value of money during the construction delay.
 
 ![](_images/sam-em-mcy-after-tax-net-cash-flow-irr-npv.png)
 

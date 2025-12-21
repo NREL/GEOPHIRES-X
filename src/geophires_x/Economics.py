@@ -13,12 +13,15 @@ from geophires_x.EconomicsSam import calculate_sam_economics, SamEconomicsCalcul
 from geophires_x.EconomicsUtils import BuildPricingModel, wacc_output_parameter, nominal_discount_rate_parameter, \
     real_discount_rate_parameter, after_tax_irr_parameter, moic_parameter, project_vir_parameter, \
     project_payback_period_parameter, inflation_cost_during_construction_output_parameter, \
-    total_capex_parameter_output_parameter
+    interest_during_construction_output_parameter, total_capex_parameter_output_parameter, \
+    overnight_capital_cost_output_parameter, CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME, \
+    _YEAR_INDEX_VALUE_EXPLANATION_SNIPPET
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
     _WellDrillingCostCorrelationCitation
 from geophires_x.Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, boolParameter, \
-    coerce_int_params_to_enum_values
+    coerce_int_params_to_enum_values, listParameter, Parameter
+from geophires_x.SurfacePlantUtils import MAX_CONSTRUCTION_YEARS
 from geophires_x.Units import *
 from geophires_x.WellBores import calculate_total_drilling_lengths_m
 
@@ -1004,6 +1007,17 @@ class Economics:
                         "increases a 4% rate (0.04) to 4.1% (0.041) in the next year."
         )
 
+        self.royalty_escalation_rate_start_year = self.ParameterDict[self.royalty_escalation_rate_start_year.Name] = intParameter(
+            'Royalty Rate Escalation Start Year',
+            DefaultValue=1,
+            AllowableRange=list(range(1, model.surfaceplant.plant_lifetime.AllowableRange[-1], 1)),
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText=f'The first year that the {self.royalty_escalation_rate.Name} is applied. '
+                        f'{_YEAR_INDEX_VALUE_EXPLANATION_SNIPPET}.'
+        )
+
         maximum_royalty_rate_default_val = 1.0
         self.maximum_royalty_rate = self.ParameterDict[self.maximum_royalty_rate.Name] = floatParameter(
             'Royalty Rate Maximum',
@@ -1050,28 +1064,43 @@ class Economics:
                         'See https://github.com/NREL/GEOPHIRES-X/discussions/344 for further details.'
         )
 
+        default_fraction_in_bonds = 0.5
         self.FIB = self.ParameterDict[self.FIB.Name] = floatParameter(
             "Fraction of Investment in Bonds",
-            DefaultValue=0.5,
+            DefaultValue=default_fraction_in_bonds,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default fraction of investment in bonds (0.5)",
-            ToolTipText="Fraction of geothermal project financing through bonds (debt)."
+            ErrMessage=f"assume default fraction of investment in bonds ({default_fraction_in_bonds})",
+            ToolTipText="Fraction of geothermal project financing through bonds (debt/loans)."
         )
+
+        default_bond_interest_rate = 0.05
         self.BIR = self.ParameterDict[self.BIR.Name] = floatParameter(
             "Inflated Bond Interest Rate",
-            DefaultValue=0.05,
+            DefaultValue=default_bond_interest_rate,
             Min=0.0,
             Max=1.0,
             UnitType=Units.PERCENT,
             PreferredUnits=PercentUnit.TENTH,
             CurrentUnits=PercentUnit.TENTH,
-            ErrMessage="assume default inflated bond interest rate (0.05)",
-            ToolTipText="Inflated bond interest rate (see docs)"
+            ErrMessage=f"assume default inflated bond interest rate ({default_bond_interest_rate})",
+            ToolTipText="Inflated bond interest rate (for debt/loans)"
         )
+
+        self.bond_interest_rate_during_construction = self.ParameterDict[self.bond_interest_rate_during_construction.Name] = floatParameter(
+            'Inflated Bond Interest Rate During Construction',
+            DefaultValue=self.BIR.DefaultValue,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText='Inflated bond interest rate during construction (for debt/loans)'
+        )
+
         self.EIR = self.ParameterDict[self.EIR.Name] = floatParameter(
             "Inflated Equity Interest Rate",
             DefaultValue=0.1,
@@ -1153,6 +1182,50 @@ class Economics:
                         'This value defines the Accrued financing during construction output. '
                         'Note: For SAM Economic Models, if this parameter is not provided, inflation costs will be '
                         'calculated automatically by compounding Inflation Rate over Construction Years.'
+        )
+
+        self.construction_capex_schedule = self.ParameterDict[self.construction_capex_schedule.Name] = listParameter(
+            CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME,
+            DefaultValue=[1.],
+            Min=0.0,
+            Max=1.0,
+            ToolTipText=f'A list of fractions of the total overnight CAPEX spent in each construction year. '
+                        f'For example, for 3 construction years with 10% in the first year, 40% in the second, '
+                        f'and 50% in the third, provide {CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME} = 0.1,0.4,0.5. '
+                        f'The schedule will be automatically interpolated to match the number of construction years '
+                        f'and normalized to sum to 1.0.'
+        )
+
+        bond_financing_start_year_name = 'Bond Financing Start Year'
+        min_bond_financing_start_year = -1*(MAX_CONSTRUCTION_YEARS - 1)
+        default_bond_financing_start_year = min_bond_financing_start_year
+        latest_allowed_bond_financing_start_year_index = 0
+        self.bond_financing_start_year = self.ParameterDict[self.bond_financing_start_year.Name] = intParameter(
+            bond_financing_start_year_name,
+            DefaultValue=default_bond_financing_start_year,
+            AllowableRange=list(range(
+                min_bond_financing_start_year,
+                latest_allowed_bond_financing_start_year_index + 1,
+                1)),
+            UnitType=Units.TIME,
+            PreferredUnits=TimeUnit.YEAR,
+            CurrentUnits=TimeUnit.YEAR,
+            ToolTipText=f'By default, bond financing (debt/loans) starts during the first construction year '
+                        f'(if {self.FIB.Name} is >0). '
+                        f'Provide {bond_financing_start_year_name} to delay the '
+                        f'start of bond financing during construction; years prior to {bond_financing_start_year_name} '
+                        f'will be financed with equity only. '
+                        f'{_YEAR_INDEX_VALUE_EXPLANATION_SNIPPET}; the first construction year has the year index '
+                        f'{{({model.surfaceplant.construction_years.Name} - 1) * -1}})'
+                        f' and the final construction year index is 0. '
+                        f'For example, a project with 4 construction years '
+                        f'where bond financing starts on the third '
+                        f'{model.surfaceplant.construction_years.Name[:-1].lower()} '
+                        f'would have a {bond_financing_start_year_name} value of -1; construction starts in Year -3, '
+                        f'the second year is Year -2, and the final 2 bond-financed construction years are Year -1 '
+                        f'and Year 0. '
+                        f'Bond financing will start on the first construction year if the specified year index is '
+                        f'prior to the first construction year.'
         )
 
         self.contingency_percentage = self.ParameterDict[self.contingency_percentage.Name] = floatParameter(
@@ -2160,6 +2233,10 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT
         )
+
+        self.overnight_capital_cost = self.OutputParameterDict[
+            self.overnight_capital_cost.Name] = overnight_capital_cost_output_parameter()
+
         self.accrued_financing_during_construction_percentage = self.OutputParameterDict[
           self.accrued_financing_during_construction_percentage.Name] = OutputParameter(
             Name='Accrued financing during construction',
@@ -2167,14 +2244,14 @@ class Economics:
             PreferredUnits=PercentUnit.PERCENT,
             CurrentUnits=PercentUnit.PERCENT,
             ToolTipText='The accrued inflation on total capital costs over the construction period, '
-                        f'as defined by {self.inflrateconstruction.Name}. '
-                        'For SAM Economic Models, this is calculated automatically by compounding '
-                        f'{self.RINFL.Name} over Construction Years '
-                        f'if {self.inflrateconstruction.Name} is not provided.'
+                        f'as defined by {self.inflrateconstruction.Name}.'
         )
 
         self.inflation_cost_during_construction = self.OutputParameterDict[
             self.inflation_cost_during_construction.Name] = inflation_cost_during_construction_output_parameter()
+
+        self.interest_during_construction = self.OutputParameterDict[
+            self.interest_during_construction.Name] = interest_during_construction_output_parameter()
 
         self.after_tax_irr = self.OutputParameterDict[self.after_tax_irr.Name] = (
             after_tax_irr_parameter())
@@ -2551,10 +2628,16 @@ class Economics:
             if self.econmodel.value == EconomicModel.SAM_SINGLE_OWNER_PPA:
                 EconomicsSam.validate_read_parameters(model)
             else:
-                if self.royalty_rate.Provided:
-                    raise NotImplementedError('Royalties are only supported for SAM Economic Models')
+                sam_em_only_params: list[Parameter] = [
+                    self.royalty_rate,
+                    # TODO other royalty params
+                    self.construction_capex_schedule,
+                    self.bond_financing_start_year
+                ]
+                for sam_em_only_param in sam_em_only_params:
+                    if sam_em_only_param.Provided:
+                        raise NotImplementedError(f'{sam_em_only_param.Name} is only supported for SAM Economic Models')
 
-                # TODO validate that other SAM-EM-only parameters have not been provided
         else:
             model.logger.info("No parameters read because no content provided")
 
@@ -3330,10 +3413,11 @@ class Economics:
 
         schedule = []
         current_rate = r(self.royalty_rate.value)
-        for _ in range(plant_lifetime):
+        for year_index in range(plant_lifetime):
             current_rate = r(current_rate)
             schedule.append(min(current_rate, max_rate))
-            current_rate += escalation_rate
+            if year_index >= (model.economics.royalty_escalation_rate_start_year.value - 2):
+                current_rate += escalation_rate
 
         return schedule
 
@@ -3436,7 +3520,7 @@ class Economics:
 
     def _calculate_sam_economics(self, model: Model) -> None:
         non_calculated_output_placeholder_val = -1
-        self.sam_economics_calculations = calculate_sam_economics(model)
+        self.sam_economics_calculations: SamEconomicsCalculations = calculate_sam_economics(model)
 
         # Setting capex_total distinguishes capex from CCap's display name of 'Total capital costs',
         # since SAM Economic Model doesn't subtract ITC from this value.
@@ -3444,6 +3528,14 @@ class Economics:
                                   .to(self.capex_total.CurrentUnits.value).magnitude)
         self.CCap.value = (self.sam_economics_calculations.capex.quantity()
                            .to(self.CCap.CurrentUnits.value).magnitude)
+
+        self.overnight_capital_cost.value = (self.sam_economics_calculations.overnight_capital_cost.quantity()
+                                             .to(self.overnight_capital_cost.CurrentUnits.value).magnitude)
+
+        self.interest_during_construction.value = quantity(
+            self.sam_economics_calculations.pre_revenue_costs_and_cash_flow.interest_during_construction_usd,
+            'USD'
+        ).to(self.interest_during_construction.CurrentUnits.value).magnitude
 
 
         if self.royalty_rate.Provided:

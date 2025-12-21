@@ -198,7 +198,13 @@ class GeophiresXTestCase(BaseTestCase):
             example_files.remove(ef)
             example_files.append(ef)
 
-        assert len(example_files) > 0  # test integrity check - no files means something is misconfigured
+        # Test integrity check - no files means something is misconfigured
+        assert len(example_files) > 0, 'Test integrity check failed: example files is misconfigured.'
+        if self._is_github_actions():
+            # Additional integrity check to catch when temporary local overrides to example file list are accidentally
+            # checked in.
+            assert len(example_files) > 10, 'Test integrity check failed: list of example files is too small.'
+
         regenerate_cmds = []
         for example_file_path in example_files:
             with self.subTest(msg=example_file_path):
@@ -1312,62 +1318,82 @@ Print Output to Console, 1"""
 
         zero_royalty_npv = None
         for royalty_rate in [0, 0.1]:
-            result = GeophiresXClient().get_geophires_result(
-                ImmutableGeophiresInputParameters(
-                    from_file_path=self._get_test_file_path(
-                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
-                    ),
-                    params={
-                        'Royalty Rate': royalty_rate,
-                    },
-                )
-            )
-            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+            with self.subTest(msg=f'royalty_rate={royalty_rate}'):
 
-            self.assertIsNotNone(opex_result[royalties_output_name])
-            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
-
-            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
-
-            opex_line_item_sum = 0
-            for line_item_names in [
-                'Wellfield maintenance costs',
-                'Power plant maintenance costs',
-                'Water costs',
-                royalties_output_name,
-            ]:
-                opex_line_item_sum += opex_result[line_item_names]['value']
-
-            self.assertEqual(opex_line_item_sum, total_opex_MUSD)
-
-            econ_result = result.result['EXTENDED ECONOMICS']
-            royalty_holder_npv_MUSD = econ_result['Royalty Holder NPV']['value']
-
-            if royalty_rate > 0.0:
-                self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
-                self.assertGreater(royalty_holder_npv_MUSD, 0)
-
-                # Owner NPV is lower when royalty rate is non-zero
-                self.assertGreater(zero_royalty_npv, result.result['ECONOMIC PARAMETERS']['Project NPV']['value'])
-
-                royalties_cash_flow_MUSD = [
-                    it * 1e-6
-                    for it in _cash_flow_profile_row(
-                        result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                def _get_result(
+                    _royalty_rate: float, additional_params: dict[str, Any] | None = None
+                ) -> GeophiresXResult:
+                    if additional_params is None:
+                        additional_params = {}
+                    return GeophiresXClient().get_geophires_result(
+                        ImmutableGeophiresInputParameters(
+                            from_file_path=self._get_test_file_path(
+                                'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                            ),
+                            params={'Royalty Rate': _royalty_rate, **additional_params},
+                        )
                     )
-                ]
 
-                self.assertAlmostEqual(
-                    np.average(royalties_cash_flow_MUSD[1:]), opex_result[royalties_output_name]['value'], places=1
-                )
+                result = _get_result(royalty_rate)
+                opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
 
-                if royalty_rate == 0.1:
-                    self.assertAlmostEqual(708.07, royalty_holder_npv_MUSD, places=2)
+                self.assertIsNotNone(opex_result[royalties_output_name])
+                self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
 
-            if royalty_rate == 0.0:
-                self.assertEqual(0, opex_result[royalties_output_name]['value'])
-                self.assertEqual(0, royalty_holder_npv_MUSD)
-                zero_royalty_npv = result.result['ECONOMIC PARAMETERS']['Project NPV']['value']
+                total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+
+                opex_line_item_sum = 0
+                for line_item_names in [
+                    'Wellfield maintenance costs',
+                    'Power plant maintenance costs',
+                    'Water costs',
+                    royalties_output_name,
+                ]:
+                    opex_line_item_sum += opex_result[line_item_names]['value']
+
+                self.assertEqual(opex_line_item_sum, total_opex_MUSD)
+
+                def _royalty_holder_npv_MUSD(r: GeophiresXResult) -> float:
+                    econ_result = r.result['EXTENDED ECONOMICS']
+                    return econ_result['Royalty Holder NPV']['value']
+
+                # econ_result = result.result['EXTENDED ECONOMICS']
+                royalty_holder_npv_MUSD = _royalty_holder_npv_MUSD(
+                    result
+                )  #  econ_result['Royalty Holder NPV']['value']
+
+                if royalty_rate > 0.0:
+                    self.assertEqual(58.88, opex_result[royalties_output_name]['value'])
+                    self.assertGreater(royalty_holder_npv_MUSD, 0)
+
+                    # Owner NPV is lower when royalty rate is non-zero
+                    self.assertGreater(zero_royalty_npv, result.result['ECONOMIC PARAMETERS']['Project NPV']['value'])
+
+                    royalties_cash_flow_MUSD = [
+                        it * 1e-6
+                        for it in _cash_flow_profile_row(
+                            result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                        )
+                    ]
+
+                    self.assertAlmostEqual(
+                        np.average(royalties_cash_flow_MUSD[1:]), opex_result[royalties_output_name]['value'], places=1
+                    )
+
+                    if royalty_rate == 0.1:
+                        base_expected_royalty_holder_npv_MUSD = 708.07
+                        self.assertAlmostEqual(base_expected_royalty_holder_npv_MUSD, royalty_holder_npv_MUSD, places=2)
+
+                        result_multiple_construction_years = _get_result(
+                            royalty_rate, additional_params={'Construction Years': 5}
+                        )
+                        mcy_royalty_npv = _royalty_holder_npv_MUSD(result_multiple_construction_years)
+                        self.assertLess(mcy_royalty_npv, base_expected_royalty_holder_npv_MUSD)
+
+                if royalty_rate == 0.0:
+                    self.assertEqual(0, opex_result[royalties_output_name]['value'])
+                    self.assertEqual(0, royalty_holder_npv_MUSD)
+                    zero_royalty_npv = result.result['ECONOMIC PARAMETERS']['Project NPV']['value']
 
     def test_royalty_rate_escalation(self):
         royalties_output_name = 'Average Annual Royalty Cost'
@@ -1376,59 +1402,61 @@ Print Output to Console, 1"""
         escalation_rate = 0.01
 
         for max_rate in [0.08, 1.0]:
-            result = GeophiresXClient().get_geophires_result(
-                ImmutableGeophiresInputParameters(
-                    from_file_path=self._get_test_file_path(
-                        'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
-                    ),
-                    params={
-                        'Royalty Rate': base_royalty_rate,
-                        'Royalty Rate Escalation': escalation_rate,
-                        'Royalty Rate Maximum': max_rate,
-                    },
+            with self.subTest(msg=f'max_rate={max_rate}'):
+                result = GeophiresXClient().get_geophires_result(
+                    ImmutableGeophiresInputParameters(
+                        from_file_path=self._get_test_file_path(
+                            'geophires_x_tests/generic-egs-case-2_sam-single-owner-ppa.txt'
+                        ),
+                        params={
+                            'Royalty Rate': base_royalty_rate,
+                            'Royalty Rate Escalation': escalation_rate,
+                            'Royalty Rate Maximum': max_rate,
+                        },
+                    )
                 )
-            )
-            opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
+                opex_result = result.result['OPERATING AND MAINTENANCE COSTS (M$/yr)']
 
-            self.assertIsNotNone(opex_result[royalties_output_name])
-            self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
+                self.assertIsNotNone(opex_result[royalties_output_name])
+                self.assertEqual('MUSD/yr', opex_result[royalties_output_name]['unit'])
 
-            total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
+                total_opex_MUSD = opex_result['Total operating and maintenance costs']['value']
 
-            opex_line_item_sum = 0
-            for line_item_names in [
-                'Wellfield maintenance costs',
-                'Power plant maintenance costs',
-                'Water costs',
-                royalties_output_name,
-            ]:
-                opex_line_item_sum += opex_result[line_item_names]['value']
+                opex_line_item_sum = 0
+                for line_item_names in [
+                    'Wellfield maintenance costs',
+                    'Power plant maintenance costs',
+                    'Water costs',
+                    royalties_output_name,
+                ]:
+                    opex_line_item_sum += opex_result[line_item_names]['value']
 
-            self.assertAlmostEqual(opex_line_item_sum, total_opex_MUSD, places=4)
+                self.assertAlmostEqual(opex_line_item_sum, total_opex_MUSD, places=4)
 
-            project_lifetime_yrs = result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
+                project_lifetime_yrs = result.result['ECONOMIC PARAMETERS']['Project lifetime']['value']
 
-            royalties_cash_flow_MUSD = [
-                it * 1e-6
-                for it in _cash_flow_profile_row(
-                    result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                royalties_cash_flow_MUSD = [
+                    it * 1e-6
+                    for it in _cash_flow_profile_row(
+                        result.result['SAM CASH FLOW PROFILE'], 'O&M production-based expense ($)'
+                    )
+                ][1:]
+
+                ppa_revenue_MUSD = [
+                    it * 1e-6
+                    for it in _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'PPA revenue ($)')
+                ][1:]
+
+                actual_royalty_rate = [None] * len(ppa_revenue_MUSD)
+                for i in range(len(ppa_revenue_MUSD)):
+                    actual_royalty_rate[i] = royalties_cash_flow_MUSD[i] / ppa_revenue_MUSD[i]
+
+                max_expected_rate = (
+                    max_rate if max_rate < 1.0 else base_royalty_rate + escalation_rate * (project_lifetime_yrs - 1)
                 )
-            ][1:]
 
-            ppa_revenue_MUSD = [
-                it * 1e-6 for it in _cash_flow_profile_row(result.result['SAM CASH FLOW PROFILE'], 'PPA revenue ($)')
-            ][1:]
-
-            actual_royalty_rate = [None] * len(ppa_revenue_MUSD)
-            for i in range(len(ppa_revenue_MUSD)):
-                actual_royalty_rate[i] = royalties_cash_flow_MUSD[i] / ppa_revenue_MUSD[i]
-
-            max_expected_rate = (
-                max_rate if max_rate < 1.0 else base_royalty_rate + escalation_rate * (project_lifetime_yrs - 1)
-            )
-
-            expected_last_year_revenue = ppa_revenue_MUSD[-1] * max_expected_rate
-            self.assertAlmostEqual(expected_last_year_revenue, royalties_cash_flow_MUSD[-1], places=3)
+                expected_last_year_revenue = ppa_revenue_MUSD[-1] * max_expected_rate
+                self.assertAlmostEqual(expected_last_year_revenue, royalties_cash_flow_MUSD[-1], places=3)
 
     def test_royalty_rate_with_addon(self):
         """
@@ -1469,4 +1497,73 @@ Print Output to Console, 1"""
                 )
             )
 
-        self.assertIn('Royalties are only supported for SAM Economic Models', str(re.exception))
+        self.assertIn('Royalty Rate is only supported for SAM Economic Models', str(re.exception))
+
+    def test_royalty_rate_with_multiple_construction_years(self):
+        royalty_rate_example_stem = 'examples/example_SAM-single-owner-PPA-4'  # Royalty rate example
+
+        royalty_rate_example_input_file_path = self._get_test_file_path(f'{royalty_rate_example_stem}.txt')
+
+        # Test assumes example has 1 construction year; if this changes for some reason, a version of the example with
+        # a single construction year should be used instead.
+        assert (
+            BaseTestCase.get_input_parameter(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=royalty_rate_example_input_file_path,
+                ),
+                'Construction Years',
+            )
+            == 1
+        )
+
+        base_result = GeophiresXResult(self._get_test_file_path(f'{royalty_rate_example_stem}.out'))
+
+        mcy_result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=royalty_rate_example_input_file_path,
+                params={
+                    'Construction Years': 3,
+                },
+            )
+        )
+
+        def _royalty_holder_npv(r: GeophiresXResult) -> float:
+            econ_result = r.result['EXTENDED ECONOMICS']
+            return econ_result['Royalty Holder NPV']['value']
+
+        self.assertGreater(_royalty_holder_npv(base_result), _royalty_holder_npv(mcy_result))
+
+    def test_sam_em_add_ons_with_multiple_construction_years(self):
+        example_stem = 'examples/example_SAM-single-owner-PPA-3'  # SAM-EM Add-Ons example
+
+        example_input_file_path = self._get_test_file_path(f'{example_stem}.txt')
+
+        # Test assumes example has 1 construction year; if this changes for some reason, a version of the example with
+        # a single construction year should be used instead.
+        assert (
+            BaseTestCase.get_input_parameter(
+                ImmutableGeophiresInputParameters(
+                    from_file_path=example_input_file_path,
+                ),
+                'Construction Years',
+            )
+            == 1
+        )
+
+        base_result = GeophiresXResult(self._get_test_file_path(f'{example_stem}.out'))
+
+        mcy_years = 3
+        mcy_result = GeophiresXClient().get_geophires_result(
+            ImmutableGeophiresInputParameters(
+                from_file_path=example_input_file_path,
+                params={'Construction Years': mcy_years},
+            )
+        )
+
+        def _add_on_cash_flow(r: GeophiresXResult) -> list[float]:
+            return _cash_flow_profile_row(r.result['SAM CASH FLOW PROFILE'], 'Capacity payment revenue ($)')
+
+        base_addon_cash_flow = _add_on_cash_flow(base_result)
+        mcy_addon_cash_flow = _add_on_cash_flow(mcy_result)
+
+        self.assertListEqual(base_addon_cash_flow, mcy_addon_cash_flow[mcy_years - 1 :])

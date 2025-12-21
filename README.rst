@@ -58,9 +58,9 @@ Free software: `MIT license <LICENSE>`__
     :alt: Supported implementations
     :target: https://pypi.org/project/geophires-x
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.9.65.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/softwareengineerprogrammer/GEOPHIRES-X/v3.10.24.svg
     :alt: Commits since latest release
-    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.9.65...main
+    :target: https://github.com/softwareengineerprogrammer/GEOPHIRES-X/compare/v3.10.24...main
 
 .. |docs| image:: https://readthedocs.org/projects/GEOPHIRES-X/badge/?style=flat
     :target: https://nrel.github.io/GEOPHIRES-X
@@ -316,6 +316,10 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `example_SAM-single-owner-PPA-4.txt <tests/examples/example_SAM-single-owner-PPA-4.txt>`__
      - `.out <tests/examples/example_SAM-single-owner-PPA-4.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA-4>`__
+   * - SAM Single Owner PPA: Multiple Construction Years
+     - `example_SAM-single-owner-PPA-5.txt <tests/examples/example_SAM-single-owner-PPA-5.txt>`__
+     - `.out <tests/examples/example_SAM-single-owner-PPA-5.out>`__
+     - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=example_SAM-single-owner-PPA-5>`__
 .. raw:: html
 
    <embed>

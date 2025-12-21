@@ -36,6 +36,7 @@ Property Tax Rate, 0
 End-Use Option, 1, -- Electricity
 Power Plant Type, 2, -- Supercritical ORC
 Plant Lifetime, 20
+Construction Years, 1
 
 Reservoir Model, 1
 

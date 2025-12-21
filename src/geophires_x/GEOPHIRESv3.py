@@ -79,7 +79,7 @@ def main(enable_geophires_logging_config=True):
         f.write(json.dumps(json_merged))
 
     # if the user has asked for it, copy the output file to the screen
-    if model.outputs.printoutput:
+    if model.outputs.printoutput.value:
         outputfile = Path(original_cwd, 'HDR.out')
         if len(sys.argv) > 2:
             outputfile = sys.argv[2]

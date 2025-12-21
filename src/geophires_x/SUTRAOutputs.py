@@ -9,12 +9,14 @@ from geophires_x.OptionList import EconomicModel
 
 import numpy as np
 
-NL="\n"
+from geophires_x.Parameter import boolParameter
+
+NL = "\n"
 
 
 class SUTRAOutputs(Outputs):
 
-    def __init__(self, model:Model, output_file:str ='HDR.out'):
+    def __init__(self, model: Model, output_file: str = 'HDR.out'):
         """
         The __init__ function is called automatically when a class is instantiated.
         It initializes the attributes of an object, and sets default values for certain arguments that can be
@@ -27,11 +29,21 @@ class SUTRAOutputs(Outputs):
 
         model.logger.info(f'Init {str(__class__)}: {sys._getframe().f_code.co_name}')
 
-        # Dictionary to hold the Units definitions that the user wants for outputs created by GEOPHIRES.
-        # It is empty by default initially - this will expand as the user desires are read from the input file
-        self.ParameterDict = {}
-        self.printoutput = True
         self.output_file = output_file
+
+        self.ParameterDict = {}
+        self.OutputParameterDict = {}
+        self.filepath_parameter_names = []
+
+        # noinspection SpellCheckingInspection
+        self.printoutput = self.ParameterDict[self.printoutput.Name] = boolParameter(
+                'Print Output to Console',
+                DefaultValue=True,
+                Required=False,
+                Provided=False,
+                ErrMessage='assume no output to console',
+                ToolTipText='Provide a 0 if you do not want to print output to the console',
+            )
 
         model.logger.info(f'Complete {str(__class__)}: {sys._getframe().f_code.co_name}')
 

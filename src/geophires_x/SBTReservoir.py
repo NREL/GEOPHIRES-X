@@ -14,6 +14,7 @@ import CoolProp.CoolProp as CP
 import geophires_x.Model as Model
 from .CylindricalReservoir import CylindricalReservoir
 from .MatplotlibUtils import plt_show
+from .NumpyUtils import np_trapz
 from .OptionList import FlowrateModel, InjectionTemperatureModel, Configuration
 from .Parameter import intParameter, floatParameter, OutputParameter, ReadParameter, strParameter, boolParameter
 from .Reservoir import Reservoir
@@ -1392,7 +1393,7 @@ class SBTReservoir(CylindricalReservoir):
             if Amin1 > Amax1:
                 Amax1 = 10 * Amin1
             Adomain1 = np.logspace(np.log10(Amin1), np.log10(Amax1), NoDiscrFinitePipeCorrection)
-            finitecorrectiony[i] = np.trapz(-1 / (Adomain1 * 4 * np.pi * self.krock.value) * erfc(1/2 * np.power(Adomain1, 1/2)), Adomain1)
+            finitecorrectiony[i] = np_trapz(-1 / (Adomain1 * 4 * np.pi * self.krock.value) * erfc(1/2 * np.power(Adomain1, 1/2)), Adomain1)
 
         besselminarg = alpha_m * (min(times[1:] - times[:-1])) / max(radiusvector)**2
         besselmaxarg = alpha_m * timeforlinesource / min(radiusvector)**2
@@ -1401,7 +1402,7 @@ class SBTReservoir(CylindricalReservoir):
         besselcylinderresult = np.zeros(NoArgumentsInfCylIntegration)
 
         for i, argumentbessel in enumerate(argumentbesselvec):
-            besselcylinderresult[i] = 2 / (self.krock.value * np.pi**3) * np.trapz((1 - np.exp(-deltazbessel**2 * argumentbessel)) / (deltazbessel**3 * (jv(1, deltazbessel)**2 + yv(1, deltazbessel)**2)), deltazbessel)
+            besselcylinderresult[i] = 2 / (self.krock.value * np.pi**3) * np_trapz((1 - np.exp(-deltazbessel**2 * argumentbessel)) / (deltazbessel**3 * (jv(1, deltazbessel)**2 + yv(1, deltazbessel)**2)), deltazbessel)
 
         N = len(Deltaz)  # Number of elements
         elementcenters = 0.5 * np.column_stack((x[1:], y[1:], z[1:])) + 0.5 * np.column_stack((x[:-1], y[:-1], z[:-1]))  # Matrix that stores the mid point coordinates of each element

@@ -2,6 +2,7 @@ import numpy as np
 
 from .EconomicsUtils import CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME
 from .GeoPHIRESUtils import quantity
+from .NumpyUtils import np_trapz
 from .OptionList import EndUseOptions, PlantType
 from .Parameter import floatParameter, intParameter, OutputParameter, ReadParameter, \
     coerce_int_params_to_enum_values
@@ -33,7 +34,7 @@ class SurfacePlant:
 
         dx_steps = len(_slice) - 1
 
-        integral = np.trapz(
+        integral = np_trapz(
             _slice,
             dx=1. / dx_steps * 365. * 24.
         )

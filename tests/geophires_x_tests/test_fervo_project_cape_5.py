@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import math
 import re
-from pathlib import Path
 from typing import Any
 
 from pint.facets.plain import PlainQuantity
 
 from base_test_case import BaseTestCase
-from geophires_docs import generate_fervo_project_cape_5_md
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.GeoPHIRESUtils import sig_figs
 from geophires_x.Parameter import HasQuantity
@@ -69,7 +67,7 @@ class FervoProjectCape5TestCase(BaseTestCase):
         params: GeophiresInputParameters, include_parameter_comments: bool = False, include_line_comments: bool = False
     ) -> dict[str, Any]:
         """
-        TODO consolidate with src/geophires_docs/generate_fervo_project_cape_5_md.py:30 as a common utility function.
+        TODO consolidate with src/geophires_docs/generate_fervo_project_cape_7_md.py:30 as a common utility function.
             Note doing so is non-trivial because there would need to be a mechanism to ensure parsing exactly matches
             GEOPHIRES behavior, which may diverge from the below implementation under some circumstances.
         """
@@ -156,15 +154,9 @@ class FervoProjectCape5TestCase(BaseTestCase):
         Useful for catching when minor updates are made to the case study which need to be manually synced to the
         documentation.
 
-        Note that the relevant Markdown is largely generated from input and result in
-        src/geophires_docs/generate_fervo_project_cape_5_md.py, meaning this test is somewhat redundant,
-        but it still serves as a useful sanity check for the generated documentation.
+        docs/Fervo_Project_Cape-5.md is a static copy of the documentation generated for the February 2026 Update of
+        the case study, which Fervo_Project_Cape-7 supersedes.
         """
-
-        def generate_documentation_markdown() -> None:
-            generate_fervo_project_cape_5_md.main(project_root=Path(self._get_test_file_path('../../')).absolute())
-
-        generate_documentation_markdown()  # Ensure we're testing the latest version of the generated doc
 
         documentation_file_content = '\n'.join(
             self._get_test_file_content('../../docs/Fervo_Project_Cape-5.md', encoding='utf-8')

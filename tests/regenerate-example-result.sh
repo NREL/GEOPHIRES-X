@@ -63,6 +63,10 @@ fi
 
 if [[ $1 == "Fervo_Project_Cape-7" ]]
 then
+    # The documentation reads the flow rate parametric data, so regenerate it first.
+    echo "Regenerating Fervo_Project_Cape-7 flow rate parametric data..."
+    python ../src/geophires_docs/fervo_project_cape_7_scenarios.py
+
     python ../src/geophires_docs/generate_fervo_project_cape_7_docs.py
 
     if [ ! -f regenerate-example-result.env ] && [ -f regenerate-example-result.env.template ]; then

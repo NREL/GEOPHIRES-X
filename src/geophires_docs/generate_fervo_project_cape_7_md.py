@@ -1153,6 +1153,7 @@ _FPC7_PREVIOUS_VERSION_INPUT_CHANGE_RATIONALE_BY_PARAM_NAME: dict[str, str] = {
         'observed in Phase I operations (Norbeck, 2026).'
     ),
     'Productivity Index': 'Derated in proportion with the Injectivity Index.',
+    'Redrilling Learning Rate': '',
 }
 
 # Groups of input parameters that are shown consecutively, in the listed order, in the Previous Versions input changes

@@ -18,7 +18,7 @@ from geophires_x.EconomicsUtils import BuildPricingModel, end_price_or_max, wacc
     interest_during_construction_output_parameter, total_capex_parameter_output_parameter, \
     overnight_capital_cost_output_parameter, CONSTRUCTION_CAPEX_SCHEDULE_PARAMETER_NAME, \
     _YEAR_INDEX_VALUE_EXPLANATION_SNIPPET, investment_tax_credit_output_parameter, lcoh_output_parameter, \
-    lcoc_output_parameter
+    lcoc_output_parameter, redrilling_cost_multipliers
 from geophires_x.ParameterUtils import expand_schedule_dsl, CALCULATED_PARAMETER_PLACEHOLDER_VALUE
 from geophires_x.GeoPHIRESUtils import quantity
 from geophires_x.OptionList import Configuration, WellDrillingCostCorrelation, EconomicModel, EndUseOptions, PlantType, \
@@ -835,6 +835,24 @@ class Economics:
             Provided=False,
             Valid=True,
             ToolTipText="Multiplier for built-in wellfield O&M cost correlation"
+        )
+        self.redrilling_learning_rate = self.ParameterDict[self.redrilling_learning_rate.Name] = floatParameter(
+            "Redrilling Learning Rate",
+            DefaultValue=0.0,
+            Min=0.0,
+            Max=0.99,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            Provided=False,
+            Valid=True,
+            ToolTipText="Learning rate of redrilling at the site (Wright's law): each doubling of the number of "
+                        "wellfields drilled at the site lowers the cost of the next by this fraction. Redrilling "
+                        "event k (k = 1, 2, ...) drills the site's (k + 1)th wellfield, at "
+                        "(k + 1)^log2(1 - Redrilling Learning Rate) times the drilling and completion cost plus the "
+                        "stimulation cost of the original wellfield. For example, at 0.15 the first redrilling costs "
+                        "85% of the original wellfield and the third 72%. At 0 (the default), every redrilling event "
+                        "costs as much as the original wellfield."
         )
 
         self.ccplantfixed = self.ParameterDict[self.ccplantfixed.Name] = floatParameter(
@@ -2116,7 +2134,8 @@ class Economics:
             CurrentUnits=CurrencyFrequencyUnit.MDOLLARSPERYEAR,
             ToolTipText=f'Total redrilling costs over the {model.surfaceplant.plant_lifetime.Name} are calculated as '
                         f'({self.Cwell.display_name} + {self.Cstim.display_name}) '
-                        f'× {model.wellbores.redrill.display_name}. '
+                        f'× {model.wellbores.redrill.display_name}, '
+                        f'reduced by {self.redrilling_learning_rate.Name} if provided. '
                         f'The total is then divided over {model.surfaceplant.plant_lifetime.Name} years to calculate '
                         f'Redrilling costs per year.'
         )
@@ -3826,8 +3845,21 @@ class Economics:
 
     def calculate_redrilling_costs(self, model: Model) -> PlainQuantity:
         return ((self.Cwell.quantity() + self.Cstim.quantity())
+                * self.redrilling_cost_factor(model)
                 * model.wellbores.redrill.quantity()
                 / model.surfaceplant.plant_lifetime.quantity())
+
+    def average_redrilling_event_cost(self, cost: OutputParameter, model: Model) -> float:
+        """The average cost of a wellfield capital cost (Cwell or Cstim) per redrilling event, in cost's units."""
+        return cost.value * self.redrilling_cost_factor(model)
+
+    def redrilling_cost_factor(self, model: Model) -> float:
+        """
+        The average cost of a redrilling event relative to the original wellfield: 1 unless Redrilling Learning Rate
+        is provided (see redrilling_cost_multipliers).
+        """
+        multipliers = redrilling_cost_multipliers(int(model.wellbores.redrill.value), self.redrilling_learning_rate.value)
+        return sum(multipliers) / len(multipliers) if multipliers else 1.0
 
     def build_price_models(self, model: Model) -> None:
         # build the PTC price models

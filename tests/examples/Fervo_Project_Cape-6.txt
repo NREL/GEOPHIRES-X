@@ -1,4 +1,4 @@
-# Case Study: 100 MWe EGS Project Modeled on Fervo Cape Station Phase I
+# [Deprecated] Case Study: 100 MWe EGS Project Modeled on Fervo Cape Station Phase I
 # See documentation: https://softwareengineerprogrammer.github.io/GEOPHIRES/Fervo_Project_Cape-5.html#Fervo_Project_Cape-6-section
 
 # *** ECONOMIC/FINANCIAL PARAMETERS ***

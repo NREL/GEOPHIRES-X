@@ -8,7 +8,7 @@ GEOPHIRES v3 (2023-2026)
 3.19
 ^^^^
 
-3.19.2: `Redrilling Learning Rate <https://github.com/softwareengineerprogrammer/GEOPHIRES/pull/190>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.19.2>`__
+3.19.3: `Redrilling Learning Rate; 100 MW EGS Case Study Update (Fervo_Project_Cape-8) <https://github.com/softwareengineerprogrammer/GEOPHIRES/pull/190>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.19.3>`__
 
 3.19: `Apply Surface Plant Capital Cost Adjustment Factor to provided Capital Cost for Power Plant for Electricity Generation <https://github.com/NatLabRockies/GEOPHIRES-X/pull/532>`__; `500 MW EGS Case Study Update (Fervo_Project_Cape-7); Depreciation Schedule (5-year MACRS) <https://github.com/NREL/GEOPHIRES-X/pull/531>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.19.0>`__  | **Changed:** Surface Plant Capital Cost Adjustment Factor is now applied when Capital Cost for Power Plant for Electricity Generation is provided, consistent with drilling and stimulation cost handling. See `the tracking issue <https://github.com/NatLabRockies/GEOPHIRES-X/issues/435>`__ for details.
 

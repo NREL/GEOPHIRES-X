@@ -24,8 +24,8 @@ Contents
    :caption: Examples
 
    GEOPHIRES-Examples
-   Fervo_Project_Cape-7
    Fervo_Project_Red
+   Fervo_Project_Cape-7
 
 
 ..   reference/index

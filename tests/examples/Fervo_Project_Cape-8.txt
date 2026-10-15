@@ -2,6 +2,7 @@
 # See documentation: https://softwareengineerprogrammer.github.io/GEOPHIRES/Fervo_Project_Cape-7.html#Fervo_Project_Cape-8-section
 # 100 MWe variant of Fervo_Project_Cape-7 with capacity equivalent to Cape Station Phase I, derived by
 # tests/regenerate-example-result.sh. Comments inherited from Fervo_Project_Cape-7 describe the 500 MWe case.
+#
 # October 2026 Update: subsurface design aligned with the Fervo 3.0 well design disclosed for Cape Station Phase II
 # (Fervo Energy Q2 2026 earnings call, 2026-08-12). The case study remains a second-of-a-kind (SOAK) analog;
 # the wellfield is re-sized for the 3.0 design rather than matched to Fervo's as-built well count, and

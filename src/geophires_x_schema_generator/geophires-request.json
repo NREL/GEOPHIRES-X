@@ -1868,6 +1868,15 @@
         }
       ]
     },
+    "Salvage Value Rate": {
+      "description": "Net pre-tax salvage value at the end of the plant lifetime, as a fraction of total installed cost, credited as revenue in the final year. Decommissioning costs (such as well plugging and abandonment and site restoration) are not modeled separately, so this value should be net of them. SAM Single Owner PPA economic model only.",
+      "type": "number",
+      "units": "",
+      "category": "Economics",
+      "default": 0.1,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
     "Inflated Equity Interest Rate": {
       "description": "Inflated equity interest rate (see docs)",
       "type": "number",

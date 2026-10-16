@@ -1208,6 +1208,19 @@ class Economics:
                         "owner can use them (for example, against other taxable income or through a tax equity "
                         "partner). SAM Single Owner PPA economic model only."
         )
+        self.salvage_value_rate = self.ParameterDict[self.salvage_value_rate.Name] = floatParameter(
+            "Salvage Value Rate",
+            DefaultValue=0.1,
+            Min=0.0,
+            Max=1.0,
+            UnitType=Units.PERCENT,
+            PreferredUnits=PercentUnit.TENTH,
+            CurrentUnits=PercentUnit.TENTH,
+            ToolTipText="Net pre-tax salvage value at the end of the plant lifetime, as a fraction of total installed "
+                        "cost, credited as revenue in the final year. Decommissioning costs (such as well plugging and "
+                        "abandonment and site restoration) are not modeled separately, so this value should be net of "
+                        "them. SAM Single Owner PPA economic model only."
+        )
         self.EIR = self.ParameterDict[self.EIR.Name] = floatParameter(
             "Inflated Equity Interest Rate",
             DefaultValue=0.1,
@@ -2888,7 +2901,8 @@ class Economics:
                     self.construction_capex_schedule,
                     self.bond_financing_start_year,
                     self.ritc_state_amount,
-                    self.debt_tenor
+                    self.debt_tenor,
+                    self.salvage_value_rate,
                 ]
                 for sam_em_only_param in sam_em_only_params:
                     if sam_em_only_param.Provided:

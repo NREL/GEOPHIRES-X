@@ -394,8 +394,8 @@ class FervoProjectCape7TestCase(BaseTestCase):
 
         self.assertEqual(round(result.result['ECONOMIC PARAMETERS']['Project NPV']['value'], 1), values['npv_musd'])
 
-        # The SAM Single Owner PPA template's salvage percentage
-        self.assertEqual('50', values['salvage_value_pct_of_total_capex'])
+        # The default Salvage Value Rate
+        self.assertEqual('10', values['salvage_value_pct_of_total_capex'])
 
         self.assertGreaterEqual(values['min_dscr_year'], 1)
         self.assertGreater(float(values['min_dscr']), 1.0)
@@ -459,7 +459,7 @@ class FervoProjectCape7TestCase(BaseTestCase):
         result_changes_md = generate_fervo_project_cape_7_md.generate_fpc7_previous_version_result_changes_table_md(
             previous_result, result
         )
-        self.assertIn('| LCOE ($/MWh) | 85.0 |', result_changes_md)
+        self.assertIn('| LCOE ($/MWh) | 85.5 |', result_changes_md)
         self.assertIn('| Redrilling events | 3 |', result_changes_md)
 
         # Previous and this version compared to themselves

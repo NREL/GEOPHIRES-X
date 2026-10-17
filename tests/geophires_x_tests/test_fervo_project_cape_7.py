@@ -465,8 +465,8 @@ class FervoProjectCape7TestCase(BaseTestCase):
 
         self.assertEqual(round(result.result['ECONOMIC PARAMETERS']['Project NPV']['value'], 1), values['npv_musd'])
 
-        # The SAM Single Owner PPA template's salvage percentage
-        self.assertEqual('50', values['salvage_value_pct_of_total_capex'])
+        # The default Salvage Value Rate
+        self.assertEqual('10', values['salvage_value_pct_of_total_capex'])
 
         self.assertGreaterEqual(values['min_dscr_year'], 1)
         self.assertGreater(float(values['min_dscr']), 1.0)

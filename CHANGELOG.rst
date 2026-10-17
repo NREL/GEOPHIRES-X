@@ -5,10 +5,13 @@ Changelog
 GEOPHIRES v3 (2023-2026)
 ------------------------
 
-3.19
+3.20
 ^^^^
 
-3.19.3: `Fervo_Project_Cape-7 (500 MW EGS) and Fervo_Project_Cape-8 (100 MW) public release; Redrilling Learning Rate <https://github.com/NREL/GEOPHIRES-X/pull/535>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.19.3>`__
+3.20: `Fervo_Project_Cape-7 (500 MW EGS) and Fervo_Project_Cape-8 (100 MW) public release; Redrilling Learning Rate; Salvage Value Rate <https://github.com/NREL/GEOPHIRES-X/pull/535>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.20.0>`__ | **Changed:** SAM Economic Models default salvage value rate has been updated from 0.5 to 0.1.
+
+3.19
+^^^^
 
 3.19: `Apply Surface Plant Capital Cost Adjustment Factor to provided Capital Cost for Power Plant for Electricity Generation <https://github.com/NatLabRockies/GEOPHIRES-X/pull/532>`__; `500 MW EGS Case Study Update (Fervo_Project_Cape-7); Depreciation Schedule (5-year MACRS) <https://github.com/NREL/GEOPHIRES-X/pull/531>`__ | `release <https://github.com/NREL/GEOPHIRES-X/releases/tag/v3.19.0>`__  | **Changed:** Surface Plant Capital Cost Adjustment Factor is now applied when Capital Cost for Power Plant for Electricity Generation is provided, consistent with drilling and stimulation cost handling. See `the tracking issue <https://github.com/NatLabRockies/GEOPHIRES-X/issues/435>`__ for details.
 

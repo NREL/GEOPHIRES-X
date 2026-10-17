@@ -530,7 +530,7 @@ class FervoProjectCape7TestCase(BaseTestCase):
         result_changes_md = generate_fervo_project_cape_7_md.generate_fpc7_previous_version_result_changes_table_md(
             previous_result, result
         )
-        self.assertIn('| LCOE ($/MWh) | 85.5 |', result_changes_md)
+        self.assertIn('| LCOE ($/MWh) | 85.0 |', result_changes_md)
         self.assertIn('| Redrilling events | 3 |', result_changes_md)
 
         # Previous and this version compared to themselves

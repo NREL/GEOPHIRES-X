@@ -103,12 +103,12 @@ then
     fi
 
     source regenerate-example-result.env
-    if [ -n "$GEOPHIRES_FPC5_SENSITIVITY_ANALYSIS_PROJECT_ROOT" ]; then
+    if [ -n "$GEOPHIRES_FPC7_SENSITIVITY_ANALYSIS_PROJECT_ROOT" ]; then
         echo "Updating sensitivity analysis..."
         STASH_PWD_2=$(pwd)
-        cd $GEOPHIRES_FPC5_SENSITIVITY_ANALYSIS_PROJECT_ROOT
+        cd $GEOPHIRES_FPC7_SENSITIVITY_ANALYSIS_PROJECT_ROOT
         source venv/bin/activate
-        python -m fpc_sensitivity_analysis.generate_geophires_fpc5_sensitivity_analysis
+        python -m fpc_sensitivity_analysis.generate_geophires_fpc7_sensitivity_analysis
         deactivate
         cd $STASH_PWD_2
     fi

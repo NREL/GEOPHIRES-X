@@ -4,16 +4,16 @@
 
 Simulation Metadata
 ----------------------
- GEOPHIRES Version: 3.19.0
- Simulation Date: 2026-10-16
- Simulation Time:  16:47
- Calculation Time:      3.564 sec
+ GEOPHIRES Version: 3.19.3
+ Simulation Date: 2026-10-17
+ Simulation Time:  09:38
+ Calculation Time:      1.002 sec
 
                            ***SUMMARY OF RESULTS***
 
       End-Use Option: Electricity
       Average Net Electricity Production:                     1.99 MW
-      Electricity breakeven price:                           70.59 cents/kWh
+      Electricity breakeven price:                           45.69 cents/kWh
       Total CAPEX:                                           28.10 MUSD
       Total CAPEX ($/kW):                                    13692 USD/kW
       Number of production wells:                             1
@@ -32,10 +32,10 @@ Simulation Metadata
       Investment Tax Credit:                                 8.43 MUSD
       Project lifetime:                                       2 yr
       Capacity factor:                                       90.0 %
-      Project NPV:                                         -15.71 MUSD
-      After-tax IRR:                                   NaN %
-      Project VIR=PI=PIR:                                    0.00
-      Project MOIC:                                         -2.12
+      Project NPV:                                          -9.31 MUSD
+      After-tax IRR:                                       -81.22 %
+      Project VIR=PI=PIR:                                    0.05
+      Project MOIC:                                         -1.11
       Project Payback Period:                                 N/A
       Estimated Jobs Created:                                 6
 
@@ -191,8 +191,8 @@ PPA price (cents/kWh)                            	0.0        	9.50       	9.50
 PPA revenue ($)                                  	0          	1,533,454  	1,468,949
 Curtailment payment revenue ($)                  	0          	0          	0
 Capacity payment revenue ($)                     	0          	0          	0
-Salvage value ($)                                	0          	0          	2,809,531
-Total revenue ($)                                	0          	1,533,454  	4,278,480
+Salvage value ($)                                	0          	0          	14,047,653
+Total revenue ($)                                	0          	1,533,454  	15,516,603
 
 Property tax net assessed value ($)              	0          	28,095,306 	28,095,306
 
@@ -206,10 +206,10 @@ Property tax expense ($)                         	0          	61,810     	61,810
 Insurance expense ($)                            	0          	0          	0
 Total operating expenses ($)                     	0          	940,707    	940,707
 
-EBITDA ($)                                       	0          	592,747    	3,337,773
+EBITDA ($)                                       	0          	592,747    	14,575,895
 
 OPERATING ACTIVITIES
-EBITDA ($)                                       	0          	592,747    	3,337,773
+EBITDA ($)                                       	0          	592,747    	14,575,895
 Interest earned on reserves ($)                  	0          	0          	0
 plus PBI if not available for debt service:
 Federal PBI income ($)                           	0          	0          	0
@@ -217,7 +217,7 @@ State PBI income ($)                             	0          	0          	0
 Utility PBI income ($)                           	0          	0          	0
 Other PBI income ($)                             	0          	0          	0
 Debt interest payment ($)                        	0          	1,376,670  	711,612
-Cash flow from operating activities ($)          	0          	-783,923   	2,626,161
+Cash flow from operating activities ($)          	0          	-783,923   	13,864,283
 
 INVESTING ACTIVITIES
 Total installed cost ($)                         	-28,095,306
@@ -251,47 +251,47 @@ Cash flow from financing activities ($)          	28,095,306 	-9,500,828 	-10,16
 
 PROJECT RETURNS
 Pre-tax Cash Flow:
-Cash flow from operating activities ($)          	0          	-783,923   	2,626,161
+Cash flow from operating activities ($)          	0          	-783,923   	13,864,283
 Cash flow from investing activities ($)          	-28,095,306	0          	0
 Cash flow from financing activities ($)          	28,095,306 	-9,500,828 	-10,165,886
-Total pre-tax cash flow ($)                      	0          	-10,284,751	-7,539,726
+Total pre-tax cash flow ($)                      	0          	-10,284,751	3,698,397
 
 Pre-tax Returns:
 Issuance of equity ($)                           	8,428,592
-Total pre-tax cash flow ($)                      	0          	-10,284,751	-7,539,726
-Total pre-tax returns ($)                        	-8,428,592 	-10,284,751	-7,539,726
+Total pre-tax cash flow ($)                      	0          	-10,284,751	3,698,397
+Total pre-tax returns ($)                        	-8,428,592 	-10,284,751	3,698,397
 
 After-tax Returns:
-Total pre-tax returns ($)                        	-8,428,592 	-10,284,751	-7,539,726
+Total pre-tax returns ($)                        	-8,428,592 	-10,284,751	3,698,397
 Federal ITC total income ($)                     	0          	8,428,592  	0
 Federal PTC income ($)                           	0          	0          	0
-Federal tax benefit (liability) ($)              	0          	276,804    	-287,059
+Federal tax benefit (liability) ($)              	0          	276,804    	-2,539,685
 State ITC total income ($)                       	0          	0          	0
 State PTC income ($)                             	0          	0          	0
-State tax benefit (liability) ($)                	0          	62,833     	-65,161
-Total after-tax returns ($)                      	-8,428,592 	-1,516,522 	-7,891,946
+State tax benefit (liability) ($)                	0          	62,833     	-576,496
+Total after-tax returns ($)                      	-8,428,592 	-1,516,522 	582,217
 
-After-tax net cash flow ($)                      	-8,428,592 	-1,516,522 	-7,891,946
-After-tax cumulative IRR (%)                     	NaN        	NaN        	NaN
-After-tax cumulative NPV ($)                     	-8,428,592 	-9,747,032 	-15,711,987
+After-tax net cash flow ($)                      	-8,428,592 	-1,516,522 	582,217
+After-tax cumulative IRR (%)                     	NaN        	NaN        	-81.22
+After-tax cumulative NPV ($)                     	-8,428,592 	-9,747,032 	-9,306,976
 
 AFTER-TAX LCOE AND PPA PRICE
-Annual costs ($)                                 	-8,428,592 	-3,049,976 	-9,360,895
+Annual costs ($)                                 	-8,428,592 	-3,049,976 	-886,733
 PPA revenue ($)                                  	0          	1,533,454  	1,468,949
 Electricity to grid (kWh)                        	0          	16,141,623 	15,462,625
 
-Present value of annual costs ($)                	18,155,420
+Present value of annual costs ($)                	11,750,409
 
-Present value of annual energy costs ($)         	18,155,420
+Present value of annual energy costs ($)         	11,750,409
 Present value of annual energy nominal (kWh)     	25,720,353
-LCOE Levelized cost of energy nominal (cents/kWh)	70.59
+LCOE Levelized cost of energy nominal (cents/kWh)	45.69
 
 Present value of PPA revenue ($)                 	2,443,433
 Present value of annual energy nominal (kWh)     	25,720,353
 LPPA Levelized PPA price nominal (cents/kWh)     	9.50
 
 PROJECT STATE INCOME TAXES
-EBITDA ($)                                       	0          	592,747    	3,337,773
+EBITDA ($)                                       	0          	592,747    	14,575,895
 State taxable PBI income ($)                     	0          	0          	0
 Interest earned on reserves ($)                  	0          	0          	0
 State taxable IBI income ($)                     	0
@@ -300,15 +300,15 @@ minus:
 Debt interest payment ($)                        	0          	1,376,670  	711,612
 Total state tax depreciation ($)                 	0          	597,025    	1,194,051
 equals:
-State taxable income ($)                         	0          	-1,380,948 	1,432,110
+State taxable income ($)                         	0          	-1,380,948 	12,670,233
 
 State income tax rate (frac)                     	0.0        	0.05       	0.05
-State tax benefit (liability) ($)                	0          	62,833     	-65,161
+State tax benefit (liability) ($)                	0          	62,833     	-576,496
 
 PROJECT FEDERAL INCOME TAXES
-EBITDA ($)                                       	0          	592,747    	3,337,773
+EBITDA ($)                                       	0          	592,747    	14,575,895
 Interest earned on reserves ($)                  	0          	0          	0
-State tax benefit (liability) ($)                	0          	62,833     	-65,161
+State tax benefit (liability) ($)                	0          	62,833     	-576,496
 State ITC total income ($)                       	0          	0          	0
 State PTC income ($)                             	0          	0          	0
 Federal taxable IBI income ($)                   	0
@@ -318,10 +318,10 @@ minus:
 Debt interest payment ($)                        	0          	1,376,670  	711,612
 Total federal tax depreciation ($)               	0          	597,025    	1,194,051
 equals:
-Federal taxable income ($)                       	0          	-1,318,115 	1,366,949
+Federal taxable income ($)                       	0          	-1,318,115 	12,093,737
 
 Federal income tax rate (frac)                   	0.0        	0.21       	0.21
-Federal tax benefit (liability) ($)              	0          	276,804    	-287,059
+Federal tax benefit (liability) ($)              	0          	276,804    	-2,539,685
 
 CASH INCENTIVES
 Federal IBI income ($)                           	0
@@ -361,16 +361,16 @@ Debt principal payment ($)                       	0          	9,500,828  	10,165
 Debt total payment ($)                           	0          	10,877,498 	10,877,498
 
 DSCR (DEBT FRACTION)
-EBITDA ($)                                       	0          	592,747    	3,337,773
+EBITDA ($)                                       	0          	592,747    	14,575,895
 minus:
 Reserves major equipment 1 funding ($)           	0          	0          	0
 Reserves major equipment 2 funding ($)           	0          	0          	0
 Reserves major equipment 3 funding ($)           	0          	0          	0
 Reserves receivables funding ($)                 	0          	0          	0
 equals:
-Cash available for debt service (CAFDS) ($)      	0          	592,747    	3,337,773
+Cash available for debt service (CAFDS) ($)      	0          	592,747    	14,575,895
 Debt total payment ($)                           	0          	10,877,498 	10,877,498
-DSCR (pre-tax)                                   	0.0        	0.05       	0.31
+DSCR (pre-tax)                                   	0.0        	0.05       	1.34
 
 RESERVES
 Reserves working capital funding ($)             	0          	0          	0

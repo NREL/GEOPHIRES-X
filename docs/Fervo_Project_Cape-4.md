@@ -14,7 +14,7 @@ Financial results are calculated
 using
 the [SAM Single Owner PPA Economic Model](https://softwareengineerprogrammer.github.io/GEOPHIRES/SAM-Economic-Models.html#sam-single-owner-ppa).
 
-Key case study results include LCOE = $81.5/MWh and CAPEX = $5000/kW.
+Key case study results include LCOE = $81.1/MWh and CAPEX = $5000/kW.
 
 [Click here](https://gtp.scientificwebservices.com/geophires/?geophires-example-id=Fervo_Project_Cape-4) to
 interactively explore the case study in the GEOPHIRES web interface.
@@ -89,13 +89,13 @@ in source code for the complete results.
 
 | Metric                             | Result Value                                           | Reference Value(s)                                             | Reference Source                                 |
 |------------------------------------|--------------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------|
-| LCOE                               | $81.5/MWh                                              | $80/MWh                                                        | Horne et al, 2025                                |
+| LCOE                               | $81.1/MWh                                              | $80/MWh                                                        | Horne et al, 2025                                |
 | Project capital costs: Total CAPEX | $2.66B                                                 |                                                                |                                                  |
 | Project capital costs: $/kW        | $5000/kW (based on maximum net electricity generation) | $5000/kW; $4500/kW; $3000–$6000/kW                             | McClure, 2024; Horne et al, 2025; Latimer, 2025. |
 | Well Drilling and Completion Costs | $3.96M/well; $467.75M total                            | $<4M/well                                                      | Latimer, 2025.                                   |
 | Stimulation Costs                  | $4.6M/well; $542.8M total                              | $4.65M/well (based on 46%:54% drilling:stimulation cost ratio) | (Yusifov & Enriquez, 2025)                       |
 | WACC                               | 8.3%                                                   | 8.3%                                                           | Matson, 2024.                                    |
-| After-tax IRR                      | 27.52%                                                 | 15–25%                                                         | Typical levered returns for energy projects      |
+| After-tax IRR                      | 27.55%                                                 | 15–25%                                                         | Typical levered returns for energy projects      |
 
 ### Technical & Engineering Results
 

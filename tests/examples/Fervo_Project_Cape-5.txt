@@ -49,6 +49,7 @@ Royalty Rate Escalation Start Year, 11, -- After the first 10 years of productio
 Royalty Rate Escalation, 0.0175, -- Escalation at Year 11 from 1.75% to 3.5%.
 Royalty Rate Maximum, 0.035, -- No further escalation beyond 3.5%.
 
+Salvage Value Rate, 0.5, -- GEOPHIRES legacy default value
 
 # *** SURFACE & SUBSURFACE TECHNICAL PARAMETERS ***
 # *************************************************

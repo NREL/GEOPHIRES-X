@@ -172,8 +172,8 @@ Example-specific web interface deeplinks are listed in the Link column.
      - `Fervo_Project_Cape-7.txt <tests/examples/Fervo_Project_Cape-7.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-7.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-7>`__
-   * - Case Study: 100 MW EGS Modeled on Fervo Cape Station (October 2026 Update) (`documentation <https://softwareengineerprogrammer.github.io/GEOPHIRES/Fervo_Project_Cape-8.html>`__)
-     - `Fervo_Project_Cape-7.txt <tests/examples/Fervo_Project_Cape-8.txt>`__
+   * - Case Study: 100 MW EGS Modeled on Fervo Cape Station (October 2026 Update) (`documentation <https://softwareengineerprogrammer.github.io/GEOPHIRES/Fervo_Project_Cape-7.html#Fervo_Project_Cape-8-section>`__)
+     - `Fervo_Project_Cape-8.txt <tests/examples/Fervo_Project_Cape-8.txt>`__
      - `.out <tests/examples/Fervo_Project_Cape-8.out>`__
      - `link <https://gtp.scientificwebservices.com/geophires?geophires-example-id=Fervo_Project_Cape-8>`__
    * -  
